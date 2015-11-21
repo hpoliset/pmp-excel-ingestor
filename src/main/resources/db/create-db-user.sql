@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS pmp;
+
+GRANT ALL ON pmp.* TO 'pmpuser'@'%' IDENTIFIED BY 'heartfulness' WITH GRANT OPTION ;
