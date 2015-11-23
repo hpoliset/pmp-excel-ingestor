@@ -10,9 +10,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.srcm.heartfulness.PmpApplication;
+import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by vsonnathi on 11/17/15.
@@ -35,6 +37,9 @@ public class ExcelDataExtractorV2ImplTest {
         Assert.notNull(program, "Not able to parse valid V21 file: [" + fileName + "]");
         System.out.println("compute hash: " + program.computeHashCode());
         System.out.println("program = " + program);
+
+        List<Participant> participantList = v2Extractor.getParticipantList();
+        Assert.notEmpty(participantList, "Not able read particpants");
     }
 
     @Test(expected = InvalidExcelFileException.class)

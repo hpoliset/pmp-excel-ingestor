@@ -9,7 +9,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.srcm.heartfulness.PmpApplication;
+import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 
 import java.util.Date;
@@ -25,6 +27,9 @@ public class ProgramRepositoryImplTest {
     ProgramRepository programRepository;
 
     @Autowired
+    ParticipantRepository participantRepository;
+
+    @Autowired
     JdbcTemplate jdbcTemplate;
 
     @Test
@@ -34,10 +39,18 @@ public class ProgramRepositoryImplTest {
         programRepository.save(program);
         Assert.assertNotEquals("Incorrect Id => Not able save?", 0, program.getProgramId());
 
-
-
 //         delete the new created row from the database
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "program", "program_id=?", program.getProgramId());
+    }
+
+    @Test
+    public void testInsertParticipant() {
+        Participant participant = createPartcipant();
+
+        participantRepository.save(participant);
+        Assert.assertNotEquals("Incorrect Id => Not able save?", 0, participant.getId());
+
+//        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "participant", "id=?", participant.getId());
     }
 
     @Test
@@ -75,6 +88,46 @@ public class ProgramRepositoryImplTest {
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "program", "program_id=?", program.getProgramId());
     }
 
+    @Test
+    public void testUpdateParticipant() {
+        Participant participant = createPartcipant();
+        Program program = new Program();
+        program.setProgramId(1);
+        participant.setProgram(program);
+
+        participantRepository.save(participant);
+        Assert.assertNotEquals("Incorrect Id => Not able save?", 0, participant.getId());
+
+        Participant newParticipant = participantRepository.findById(participant.getId());
+        Assert.assertNotNull("Could not find newly created object", newParticipant);
+
+        String updatedRemarks = newParticipant.getRemarks() + " Updated";
+        newParticipant.setRemarks(updatedRemarks);
+
+        String updatedPrintName = newParticipant.getPrintName() + " Updated";
+        newParticipant.setPrintName(updatedPrintName);
+
+        String updatedCoordinatorMobile = "9840-49-2831";
+        newParticipant.setMobilePhone(updatedCoordinatorMobile);
+
+        // Update.
+        newParticipant.setProgram(program);
+        participantRepository.save(newParticipant);
+
+        // Read
+        Participant updatedParticipant = participantRepository.findById(newParticipant.getId());
+
+        Assert.assertEquals("Remarks not updated", updatedRemarks, updatedParticipant.getRemarks());
+        Assert.assertEquals("WelcomeCardSignedByName not updated", updatedPrintName,
+                updatedParticipant.getPrintName());
+        Assert.assertEquals("CoordinatorMobile not updated", updatedCoordinatorMobile,
+                updatedParticipant.getMobilePhone());
+        Assert.assertNotNull("Address1 is null", updatedParticipant.getAddressLine1());
+
+        // Clean up the new created/updated row.
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "program", "program_id=?", newParticipant.getId());
+    }
+
     private Program createProgram() {
         Program program = new Program();
         program.setProgramChannel("U Connect");
@@ -106,6 +159,34 @@ public class ProgramRepositoryImplTest {
 
         program.setRemarks("Attended BSC, MSC 1st year students");
         return program;
+    }
+
+    private Participant createPartcipant() {
+        Participant participant = new Participant();
+//        participant.setId;
+        participant.setPrintName("Print Name");
+        participant.setEmail("participate@test.com");
+        participant.setMobilePhone("9900213110");
+        participant.setGender("M");
+        participant.setDateOfBirth(new Date());
+        participant.setDateOfRegistration(new Date());
+        participant.setAbhyasiId("USVSAA013");
+        participant.setStatus(1);
+        participant.setAddressLine1("201 Ebony");
+        participant.setAddressLine2("River View Link Road");
+        participant.setCity("Chennai");
+        participant.setState("TN");
+        participant.setCountry("India");
+        participant.setProgramId(1);
+        participant.setProfession("Software Engineer");
+        participant.setIntroductionDate(new Date());
+        participant.setIntroducedBy("Test prefect");
+        participant.setAgeGroup("30-40");
+        participant.setFirstSittingDate(new Date());
+        participant.setSecondSittingDate(new Date());
+        participant.setThirdSittingDate(new Date());
+
+        return participant;
     }
 
 

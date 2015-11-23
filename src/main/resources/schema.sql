@@ -1,4 +1,3 @@
-
 -- Coordinator Table
 
 DROP TABLE IF EXISTS `coordinator`;
@@ -23,8 +22,8 @@ CREATE TABLE `uploaded_files` (
   `id` int(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `file_name` VARCHAR(128) NOT NULL,
   `file_content` LONGBLOB,
-  `uploaded_date` DATETIME DEFAULT CURRENT_TIME
-);
+  `uploaded_date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `organization`;
 
@@ -83,29 +82,30 @@ CREATE TABLE IF NOT EXISTS `program` (
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `seeker_aims`;
+DROP TABLE IF EXISTS `participant`;
 
-CREATE TABLE IF NOT EXISTS `seeker_aims` (
-  `seeker_id` int(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS `participant` (
+  `id` int(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `print_name` VARCHAR(150) NOT NULL,
   `first_name` varchar(150) DEFAULT NULL,
   `last_name` varchar(150) DEFAULT NULL,
   `middle_name` varchar(50) DEFAULT NULL,
   `email` varchar(250) DEFAULT NULL,
-  `phone_mobile` varchar(25) DEFAULT NULL,
-  `gender` int(11) DEFAULT NULL,
+  `mobile_phone` varchar(25) DEFAULT NULL,
+  `gender` VARCHAR(10) DEFAULT NULL,
   `date_of_birth` date DEFAULT NULL,
   `date_of_registration` date DEFAULT NULL,
   `abhyasi_id` varchar(100) DEFAULT NULL,
   `status` tinyint(1) DEFAULT '0' COMMENT '0 means Active\\n1 means Inactive',
-  `address_Line_1` varchar(150) DEFAULT NULL,
-  `address_Line_2` varchar(150) DEFAULT NULL,
+  `address_line1` varchar(150) DEFAULT NULL,
+  `address_line2` varchar(150) DEFAULT NULL,
   `city` varchar(50) DEFAULT NULL,
   `state` varchar(50) DEFAULT NULL,
   `country` varchar(50) DEFAULT NULL,
   `program_id` int(11) NOT NULL,
-  `occupation` varchar(50) DEFAULT NULL,
+  `profession` varchar(50) DEFAULT NULL,
   `remarks` varchar(500) DEFAULT NULL,
-  `id_card_num` varchar(45) DEFAULT NULL,
+  `id_card_number` varchar(45) DEFAULT NULL,
   `language` varchar(45) DEFAULT NULL,
   `sync_status` varchar(45) DEFAULT NULL,
   `introduced` tinyint(1) DEFAULT '0' COMMENT '0 means No   and 1 means Yes',
@@ -122,7 +122,6 @@ CREATE TABLE IF NOT EXISTS `seeker_aims` (
   `first_sitting_date` date DEFAULT NULL,
   `second_sitting_date` date DEFAULT NULL,
   `third_sitting_date` date DEFAULT NULL,
-  `occupation_stream` varchar(50) DEFAULT NULL,
   `batch` varchar(50) DEFAULT NULL,
   `receive_updates` varchar(1) DEFAULT 'Y',
   KEY `ProgramId_FK` (`program_id`)

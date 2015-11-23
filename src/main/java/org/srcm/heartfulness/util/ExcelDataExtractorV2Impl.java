@@ -3,11 +3,14 @@ package org.srcm.heartfulness.util;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by vsonnathi on 11/16/15.
@@ -45,6 +48,91 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
     @Override
     public Program getProgram() {
         return program;
+    }
+
+    @Override
+    public List<Participant> getParticipantList() {
+        List<Participant> participantList = new ArrayList<Participant>();
+        int totalRows = participantsSheet.getPhysicalNumberOfRows();
+        // skip first two
+        for (int i=1; i < totalRows; i++) {
+            System.out.println("rownumber = " + i);
+            Row currentRow = participantsSheet.getRow(i);
+            Participant participant = parseParticipantRow(currentRow);
+            if ("".equals(participant.getPrintName())) {
+                break; // Not able to figure out how to get correct rows.
+            }
+            participantList.add(participant);
+
+        }
+
+        return participantList;
+    }
+
+    private Participant parseParticipantRow(Row participantRow) {
+        Participant participant = new Participant();
+        participant.setPrintName(participantRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString());
+        String firstSittingStr = participantRow.getCell(1, Row.CREATE_NULL_AS_BLANK).toString();
+
+        SimpleDateFormat mmddyy = new SimpleDateFormat("mm/dd/yy");
+        if (!"Y".equals(firstSittingStr)) {
+            try {
+                Date firstSittingDate = mmddyy.parse(firstSittingStr);
+                participant.setFirstSittingDate(firstSittingDate);
+            } catch (ParseException e) {
+                // ignore
+            }
+        } else {
+            participant.setFirstSittingTaken(1);
+        }
+
+        String secondSittingStr = participantRow.getCell(2, Row.CREATE_NULL_AS_BLANK).toString();
+        if (!"Y".equals(firstSittingStr)) {
+            try {
+                Date firstSittingDate = mmddyy.parse(firstSittingStr);
+                participant.setSecondSittingDate(firstSittingDate);
+            } catch (ParseException e) {
+                // ignore
+            }
+        } else {
+            participant.setSecondSittingTaken(1);
+        }
+
+        String thirdSittingStr = participantRow.getCell(3, Row.CREATE_NULL_AS_BLANK).toString();
+        if (!"Y".equals(firstSittingStr)) {
+            try {
+                Date sittingDate = mmddyy.parse(thirdSittingStr);
+                participant.setThirdSittingDate(sittingDate);
+            } catch (ParseException e) {
+                // ignore
+            }
+        } else {
+            participant.setThirdSittingTaken(1);
+        }
+
+        participant.setCountry(participantRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString());
+        participant.setState(participantRow.getCell(5, Row.CREATE_NULL_AS_BLANK).toString());
+        participant.setCity(participantRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString());
+        participant.setEmail(participantRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString());
+        Double numbericMobilePhone = participantRow.getCell(8, Row.CREATE_NULL_AS_BLANK).getNumericCellValue();
+        participant.setMobilePhone(String.valueOf(numbericMobilePhone));
+        participant.setProfession(participantRow.getCell(9, Row.CREATE_NULL_AS_BLANK).toString());
+        participant.setDepartment(participantRow.getCell(10, Row.CREATE_NULL_AS_BLANK).toString());
+        participant.setBatch(participantRow.getCell(11, Row.CREATE_NULL_AS_BLANK).toString());
+        String receiveUpdateStr = participantRow.getCell(12, Row.CREATE_NULL_AS_BLANK).toString();
+        if ("Y".equalsIgnoreCase(receiveUpdateStr)) {
+            participant.setReceiveUpdates(1);
+        } else {
+            participant.setReceiveUpdates(0);
+        }
+
+        participant.setGender(participantRow.getCell(13, Row.CREATE_NULL_AS_BLANK).toString());
+        participant.setAgeGroup(participantRow.getCell(14, Row.CREATE_NULL_AS_BLANK).toString());
+        participant.setLanguage(participantRow.getCell(15, Row.CREATE_NULL_AS_BLANK).toString());
+        participant.setWelcomeCardNumber(participantRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString());
+        participant.setWelcomeCardDate(participantRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString());
+
+        return participant;
     }
 
     private Program parseProgram() throws InvalidExcelFileException {
@@ -89,4 +177,5 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 
         return program;
     }
+
 }
