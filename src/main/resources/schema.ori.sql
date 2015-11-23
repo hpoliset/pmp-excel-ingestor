@@ -20,6 +20,7 @@ CREATE TABLE `coordinator` (
   `Coord_Mobile` varchar(45) DEFAULT NULL,
   `Coord_Phone` varchar(45) DEFAULT NULL,
   `Coord_Other` varchar(45) DEFAULT NULL,
+  `Coord_ID_Card_Number` VARCHAR(100) DEFAULT NULL,
   `create_time` datetime DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,
   `Created_by` varchar(45) DEFAULT NULL,
