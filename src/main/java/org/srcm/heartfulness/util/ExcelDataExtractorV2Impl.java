@@ -51,7 +51,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
     }
 
     @Override
-    public List<Participant> getParticipantList() {
+    public List<Participant> getParticipantList() throws InvalidExcelFileException {
         List<Participant> participantList = new ArrayList<Participant>();
         int totalRows = participantsSheet.getPhysicalNumberOfRows();
         // skip first two
@@ -69,7 +69,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
         return participantList;
     }
 
-    private Participant parseParticipantRow(Row participantRow) {
+    private Participant parseParticipantRow(Row participantRow) throws InvalidExcelFileException {
         Participant participant = new Participant();
         participant.setPrintName(participantRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString());
         String firstSittingStr = participantRow.getCell(1, Row.CREATE_NULL_AS_BLANK).toString();
@@ -115,7 +115,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
         participant.setCity(participantRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString());
         participant.setEmail(participantRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString());
         Double numbericMobilePhone = participantRow.getCell(8, Row.CREATE_NULL_AS_BLANK).getNumericCellValue();
-        participant.setMobilePhone(String.valueOf(numbericMobilePhone));
+        participant.setMobilePhone(String.valueOf(numbericMobilePhone.longValue()));
         participant.setProfession(participantRow.getCell(9, Row.CREATE_NULL_AS_BLANK).toString());
         participant.setDepartment(participantRow.getCell(10, Row.CREATE_NULL_AS_BLANK).toString());
         participant.setBatch(participantRow.getCell(11, Row.CREATE_NULL_AS_BLANK).toString());
@@ -130,7 +130,17 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
         participant.setAgeGroup(participantRow.getCell(14, Row.CREATE_NULL_AS_BLANK).toString());
         participant.setLanguage(participantRow.getCell(15, Row.CREATE_NULL_AS_BLANK).toString());
         participant.setWelcomeCardNumber(participantRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString());
-        participant.setWelcomeCardDate(participantRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString());
+        String welcomeCardDateStr = participantRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString();
+        SimpleDateFormat mmDDDYYformat = new SimpleDateFormat("dd-MMM-yy");
+        Date welcomeCardDate = null;
+        try {
+            if (!"".equals(welcomeCardDateStr)) {
+                welcomeCardDate = mmDDDYYformat.parse(welcomeCardDateStr);
+            }
+        } catch (ParseException e) {
+            throw new InvalidExcelFileException("Unable to parse v2 file:[" + fileName + "] and Abhyasi Sheet ", e);
+        }
+        participant.setWelcomeCardDate(welcomeCardDate);
 
         return participant;
     }

@@ -1,10 +1,12 @@
 package org.srcm.heartfulness.repository;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by vsonnathi on 11/23/15.
@@ -27,6 +29,8 @@ public interface ParticipantRepository {
      * @throws org.springframework.dao.DataRetrievalFailureException if not found
      */
     Participant findById(int id) throws DataAccessException;
+
+    List<Participant> findByProgramId(int programId);
 
     /**
      * Save an <code>Participant</code> to the data store, either inserting or updating it.

@@ -11,5 +11,5 @@ import java.util.List;
 public interface ExcelDataExtractor {
     public Program getProgram() throws InvalidExcelFileException;
 
-    public List<Participant> getParticipantList();
+    public List<Participant> getParticipantList() throws InvalidExcelFileException;
 }

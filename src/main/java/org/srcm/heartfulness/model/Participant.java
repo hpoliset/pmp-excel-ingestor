@@ -32,7 +32,7 @@ public class Participant {
     private Date introductionDate;
     private String introducedBy;
     private String welcomeCardNumber;
-    private String welcomeCardDate;
+    private Date welcomeCardDate;
     private String ageGroup;
     private String uploadStatus;
     private Date firstSittingDate;
@@ -251,11 +251,11 @@ public class Participant {
         this.welcomeCardNumber = welcomeCardNumber;
     }
 
-    public String getWelcomeCardDate() {
+    public Date getWelcomeCardDate() {
         return welcomeCardDate;
     }
 
-    public void setWelcomeCardDate(String welcomeCardDate) {
+    public void setWelcomeCardDate(Date welcomeCardDate) {
         this.welcomeCardDate = welcomeCardDate;
     }
 

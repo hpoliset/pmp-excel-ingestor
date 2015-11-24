@@ -10,12 +10,15 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StreamUtils;
+import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.repository.ProgramRepository;
+import org.srcm.heartfulness.util.ExcelDataExtractor;
 import org.srcm.heartfulness.util.ExcelParserUtils;
 import org.srcm.heartfulness.util.InvalidExcelFileException;
 
 import java.io.IOException;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PmpApplication.class)
@@ -34,7 +37,10 @@ public class PmpApplicationTests {
         Resource v2ValidResource = resourceLoader.getResource("classpath:" + fileName);
 
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
-        Program validV21Program = ExcelParserUtils.getProgramFromExcel(fileName, fileContent);
+        ExcelDataExtractor v21Extractor = ExcelParserUtils.getExcelDataExtractor(fileName, fileContent);
+        Program validV21Program = v21Extractor.getProgram();
+        List<Participant> participantList = v21Extractor.getParticipantList();
+        validV21Program.setParticipantList(participantList);
 
         programRepository.save(validV21Program);
 

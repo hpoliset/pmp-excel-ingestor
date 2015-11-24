@@ -75,6 +75,10 @@ CREATE TABLE IF NOT EXISTS `program` (
   `welcome_card_signed_by_name` varchar(45) DEFAULT NULL,
   `welcome_card_signer_id_card_number` varchar(45) DEFAULT NULL,
   `remarks` varchar(500) DEFAULT NULL,
+  `batch_processed_time` DATETIME DEFAULT NULL,
+  `coordinator_id` int(4) DEFAULT NULL,
+  `event_id` int(4) DEFAULT NULL,
+  `organization_id` int(4) DEFAULT NULL,
   `create_time` datetime DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,
   `created_by` varchar(45) DEFAULT NULL,
@@ -86,6 +90,7 @@ DROP TABLE IF EXISTS `participant`;
 
 CREATE TABLE IF NOT EXISTS `participant` (
   `id` int(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `excel_sheet_sequence_number` int(4) UNSIGNED NOT NULL, -- For now use the row number and later in v3.0 use the sequence no.
   `print_name` VARCHAR(150) NOT NULL,
   `first_name` varchar(150) DEFAULT NULL,
   `last_name` varchar(150) DEFAULT NULL,
@@ -124,5 +129,9 @@ CREATE TABLE IF NOT EXISTS `participant` (
   `third_sitting_date` date DEFAULT NULL,
   `batch` varchar(50) DEFAULT NULL,
   `receive_updates` varchar(1) DEFAULT 'Y',
+  `batch_processed_time` DATETIME DEFAULT NULL,
+  `aims_sync_time` DATETIME DEFAULT NULL,
+  `update_time` DATETIME DEFAULT NULL,
+  `create_time` DATETIME DEFAULT NULL,
   KEY `ProgramId_FK` (`program_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

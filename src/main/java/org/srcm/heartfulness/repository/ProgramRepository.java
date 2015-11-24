@@ -1,6 +1,7 @@
 package org.srcm.heartfulness.repository;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.model.Program;
 
 import java.util.Collection;

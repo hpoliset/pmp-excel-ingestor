@@ -3,10 +3,15 @@ package org.srcm.heartfulness.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.srcm.heartfulness.model.Participant;
+import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.util.ExcelDataExtractor;
 import org.srcm.heartfulness.util.ExcelParserUtils;
 import org.srcm.heartfulness.util.InvalidExcelFileException;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by vsonnathi on 11/19/15.
@@ -15,7 +20,7 @@ import org.srcm.heartfulness.util.InvalidExcelFileException;
 public class PmpIngestionServiceImpl implements PmpIngestionService {
 
     @Autowired
-    ProgramRepository programRepository;
+    private ProgramRepository programRepository;
 
     @Override
     @Transactional
@@ -25,7 +30,15 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
         ExcelDataExtractor dataExtractor = ExcelParserUtils.getExcelDataExtractor(fileName, fileContent);
 
         //Persist the program
-        programRepository.save(dataExtractor.getProgram());
+        Program program = dataExtractor.getProgram();
+        List<Participant> participantList = dataExtractor.getParticipantList();
+        program.setParticipantList(participantList);
+
+        programRepository.save(program);
+    }
+
+    @Override
+    public void normalizeStagingRecords(Date batchProcessingTime) {
 
     }
 }

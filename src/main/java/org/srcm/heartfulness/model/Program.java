@@ -4,7 +4,9 @@ import org.springframework.util.DigestUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Domain class representing Program.
@@ -47,6 +49,7 @@ public class Program {
     private Date updateTime;
     private String createdBy;
     private String updatedBy;
+    private List<Participant> participantList = Collections.emptyList();
 
     public int getProgramId() {
         return programId;
@@ -341,5 +344,13 @@ public class Program {
                 ", createdBy='" + createdBy + '\'' +
                 ", updatedBy='" + updatedBy + '\'' +
                 '}';
+    }
+
+    public void setParticipantList(List<Participant> participantList) {
+        this.participantList = participantList;
+    }
+
+    public List<Participant> getParticipantList() {
+        return participantList;
     }
 }
