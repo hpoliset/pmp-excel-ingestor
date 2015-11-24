@@ -1,7 +1,56 @@
 
+-- Coordinator Table
+
+DROP TABLE IF EXISTS `coordinator`;
+
+CREATE TABLE `coordinator` (
+  `id` int(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `name` varchar(75) DEFAULT NULL,
+  `email` varchar(75) DEFAULT NULL,
+  `mobile` varchar(45) DEFAULT NULL,
+  `phone` varchar(45) DEFAULT NULL, -- is it required?
+  `other` varchar(45) DEFAULT NULL,
+  `id_card_number` VARCHAR(100) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `created_by` varchar(45) DEFAULT NULL,
+  `updated_by` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `uploaded_files`;
+
+CREATE TABLE `uploaded_files` (
+  `id` int(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `file_name` VARCHAR(128) NOT NULL,
+  `file_content` LONGBLOB,
+  `uploaded_date` DATETIME DEFAULT CURRENT_TIME
+);
+
+DROP TABLE IF EXISTS `organization`;
+
+CREATE TABLE `organization` (
+  `id` int(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(150) NOT NULL,
+  `contact_name` VARCHAR(150) DEFAULT NULL,
+  `email` VARCHAR(150) DEFAULT NULL,
+  `web_site` varchar(150) DEFAULT NULL,
+  `phone` varchar(25) DEFAULT NULL,
+  `address_line_1` varchar(100) DEFAULT NULL,
+  `address_line_2` varchar(100) DEFAULT NULL,
+  `city` VARCHAR(50) DEFAULT NULL,
+  `state` VARCHAR(50) DEFAULT NULL,
+  `zip` VARCHAR(50) DEFAULT NULL,
+  `country` VARCHAR(75) DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `created_by` varchar(45) DEFAULT NULL,
+  `updated_by` varchar(45) DEFAULT NULL
+);
+
+
 -- --------------------------------------------------
 -- Staging table from here
-# DROP TABLE IF EXISTS `program`;
+DROP TABLE IF EXISTS `program`;
 
 CREATE TABLE IF NOT EXISTS `program` (
   `program_id` int(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -34,38 +83,39 @@ CREATE TABLE IF NOT EXISTS `program` (
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `seeker_aims`;
 
 CREATE TABLE IF NOT EXISTS `seeker_aims` (
-  `First_Name` varchar(150) DEFAULT NULL,
-  `Last_Name` varchar(150) DEFAULT NULL,
-  `Middle_Name` varchar(50) DEFAULT NULL,
-  `Email` varchar(250) DEFAULT NULL,
-  `Phone_Mobile` varchar(25) DEFAULT NULL,
-  `Gender` int(11) DEFAULT NULL,
-  `Date_of_Birth` date DEFAULT NULL,
-  `Date_of_Registration` date DEFAULT NULL,
-  `Abhyasi_ID` varchar(100) DEFAULT NULL,
-  `Status` tinyint(1) DEFAULT '0' COMMENT '0 means Active\\n1 means Inactive',
-  `Address_Line_1` varchar(150) DEFAULT NULL,
-  `Address_Line_2` varchar(150) DEFAULT NULL,
-  `City` varchar(50) DEFAULT NULL,
-  `State` varchar(50) DEFAULT NULL,
-  `Country` varchar(50) DEFAULT NULL,
-  `Seeker_ID` int(11) NOT NULL,
-  `Program_id` int(11) NOT NULL,
-  `Occupation` varchar(50) DEFAULT NULL,
-  `Remarks` varchar(500) DEFAULT NULL,
-  `ID_Card_Num` varchar(45) DEFAULT NULL,
-  `Language` varchar(45) DEFAULT NULL,
-  `Sync_Status` varchar(45) DEFAULT NULL,
-  `Introduced` tinyint(1) DEFAULT '0' COMMENT '0 means No   and 1 means Yes',
-  `Introduced_Date` date DEFAULT NULL,
-  `Introduced_raw_date` varchar(50) DEFAULT NULL,
-  `Introduced_By` varchar(75) DEFAULT NULL,
-  `Welcome_Card_Num` varchar(45) DEFAULT NULL,
-  `Welcome_Card_Date` date DEFAULT NULL,
-  `Age_Group` varchar(45) DEFAULT NULL,
-  `Upload_Status` tinyint(1) DEFAULT '0' COMMENT '0 Means Uploaded, 1 means De-Dup done, 2- Normalized, 3 - Synced to AIMS',
+  `seeker_id` int(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `first_name` varchar(150) DEFAULT NULL,
+  `last_name` varchar(150) DEFAULT NULL,
+  `middle_name` varchar(50) DEFAULT NULL,
+  `email` varchar(250) DEFAULT NULL,
+  `phone_mobile` varchar(25) DEFAULT NULL,
+  `gender` int(11) DEFAULT NULL,
+  `date_of_birth` date DEFAULT NULL,
+  `date_of_registration` date DEFAULT NULL,
+  `abhyasi_id` varchar(100) DEFAULT NULL,
+  `status` tinyint(1) DEFAULT '0' COMMENT '0 means Active\\n1 means Inactive',
+  `address_Line_1` varchar(150) DEFAULT NULL,
+  `address_Line_2` varchar(150) DEFAULT NULL,
+  `city` varchar(50) DEFAULT NULL,
+  `state` varchar(50) DEFAULT NULL,
+  `country` varchar(50) DEFAULT NULL,
+  `program_id` int(11) NOT NULL,
+  `occupation` varchar(50) DEFAULT NULL,
+  `remarks` varchar(500) DEFAULT NULL,
+  `id_card_num` varchar(45) DEFAULT NULL,
+  `language` varchar(45) DEFAULT NULL,
+  `sync_status` varchar(45) DEFAULT NULL,
+  `introduced` tinyint(1) DEFAULT '0' COMMENT '0 means No   and 1 means Yes',
+  `introduction_date` date DEFAULT NULL,
+  `introduction_raw_date` varchar(50) DEFAULT NULL,
+  `introduced_by` varchar(75) DEFAULT NULL,
+  `welcome_card_number` varchar(45) DEFAULT NULL,
+  `welcome_card_date` date DEFAULT NULL,
+  `age_group` varchar(45) DEFAULT NULL,
+  `upload_status` tinyint(1) DEFAULT '0' COMMENT '0 Means Uploaded, 1 means De-Dup done, 2- Normalized, 3 - Synced to AIMS',
   `first_sitting` int(11) DEFAULT NULL,
   `second_sitting` int(11) DEFAULT NULL,
   `third_sitting` int(11) DEFAULT NULL,
@@ -75,6 +125,5 @@ CREATE TABLE IF NOT EXISTS `seeker_aims` (
   `occupation_stream` varchar(50) DEFAULT NULL,
   `batch` varchar(50) DEFAULT NULL,
   `receive_updates` varchar(1) DEFAULT 'Y',
-  PRIMARY KEY (`Seeker_ID`),
-  KEY `ProgramId_FK` (`Program_id`)
+  KEY `ProgramId_FK` (`program_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
