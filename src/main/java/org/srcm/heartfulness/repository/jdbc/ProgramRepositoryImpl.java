@@ -5,6 +5,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -15,6 +18,8 @@ import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +32,7 @@ import java.util.Map;
 @Repository
 public class ProgramRepositoryImpl implements ProgramRepository {
 
+    private final JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private SimpleJdbcInsert insertProgram;
@@ -41,6 +47,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
                 .withTableName("program")
                 .usingGeneratedKeyColumns("program_id");
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     @Override
@@ -66,13 +73,27 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
     @Override
     public void save(Program program) {
-       /* // Find if there is an existing program row
-        Map params = new HashMap<>();
-        params.put("programHashCode", program.getProgramHashCode());
-        Program programByHashCode = this.namedParameterJdbcTemplate.query(
-                "SELECT program_id from program where program_hash_code=:programHashCode",
-                params, new BeanPropertyRowMapper<>()
-        );*/
+
+        // Find if there is an existing program row
+        if (program.getProgramId() == 0) {
+            int programId = this.jdbcTemplate.query(
+                    "SELECT program_id from program where program_hash_code=?",
+                    new Object[]{program.getProgramHashCode()},
+                    new ResultSetExtractor<Integer>() {
+                        @Override
+                        public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+                            if (resultSet.next()) {
+                                return resultSet.getInt(1);
+                            }
+                            return 0;
+                        }
+                    }
+            );
+
+            if (programId > 0) {
+                program.setProgramId(programId);
+            }
+        }
 
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(program);
         if (program.getProgramId() == 0) {
@@ -109,8 +130,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
         // If there are participants update them.
         List<Participant> participants = program.getParticipantList();
-        for (int i = 0; i < participants.size(); i++) {
-            Participant participant = participants.get(i);
+        for (Participant participant : participants) {
             participant.setProgramId(program.getProgramId());
             participantRepository.save(participant);
         }

@@ -2,7 +2,7 @@ package org.srcm.heartfulness.repository.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.*;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -13,6 +13,8 @@ import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +27,7 @@ import java.util.Map;
 @Repository
 public class ParticipantRepositoryImpl implements ParticipantRepository {
 
+    private final JdbcTemplate jdbcTemplate;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private SimpleJdbcInsert insertParticipant;
@@ -32,6 +35,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
     @Autowired
     public ParticipantRepositoryImpl(DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
 
         this.insertParticipant = new SimpleJdbcInsert(dataSource)
                 .withTableName("participant")
@@ -71,6 +75,28 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
     @Override
     public void save(Participant participant) {
+
+        //See if this participant already exists or not
+        if (participant.getId() == 0) {
+            Integer participantId = this.jdbcTemplate.query(
+                    "SELECT id from participant where excel_sheet_sequence_number=? AND print_name=? AND program_id=?",
+                    new Object[]{participant.getExcelSheetSequenceNumber(), participant.getPrintName(), participant.getProgramId()},
+                    new ResultSetExtractor<Integer>() {
+                        @Override
+                        public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+                            if (resultSet.next()) {
+                                return resultSet.getInt(1);
+                            }
+                            return 0;
+                        }
+                    }
+            );
+
+            if (participantId > 0) {
+                participant.setId(participantId);
+            }
+        }
+
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(participant);
         if (participant.getId() == 0) {
             Number newId = this.insertParticipant.executeAndReturnKey(parameterSource);

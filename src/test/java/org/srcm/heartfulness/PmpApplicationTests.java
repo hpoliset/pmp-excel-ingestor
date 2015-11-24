@@ -48,6 +48,17 @@ public class PmpApplicationTests {
         Program newProgram = programRepository.findById(validV21Program.getProgramId());
         Assert.assertNotNull("Could not find newly created object", newProgram);
 
+        Assert.assertEquals("Should be same number of participants", newProgram.getParticipantList().size(), participantList.size());
+
+        //Let's insert the excel file one more time.
+        ExcelDataExtractor v21ExtractorDuplicate = ExcelParserUtils.getExcelDataExtractor(fileName, fileContent);
+        Program validV21ProgramDuplicate = v21Extractor.getProgram();
+        List<Participant> participantListDuplicate = v21Extractor.getParticipantList();
+        validV21ProgramDuplicate.setParticipantList(participantListDuplicate);
+        programRepository.save(validV21ProgramDuplicate);
+
+        Assert.assertEquals("Should not have create a new row", validV21ProgramDuplicate.getProgramId(),
+                validV21Program.getProgramId());
         // delete it ...
 
     }

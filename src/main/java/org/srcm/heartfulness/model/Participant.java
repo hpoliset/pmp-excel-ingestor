@@ -49,6 +49,7 @@ public class Participant {
     private String language;
 
     private Program program;
+    private int excelSheetSequenceNumber;
 
 
     public int getId() {
@@ -378,5 +379,13 @@ public class Participant {
     public void setProgram(Program program) {
         this.program = program;
         this.setProgramId(program.getProgramId());
+    }
+
+    public void setExcelSheetSequenceNumber(int excelSheetSequenceNumber) {
+        this.excelSheetSequenceNumber = excelSheetSequenceNumber;
+    }
+
+    public int getExcelSheetSequenceNumber() {
+        return excelSheetSequenceNumber;
     }
 }

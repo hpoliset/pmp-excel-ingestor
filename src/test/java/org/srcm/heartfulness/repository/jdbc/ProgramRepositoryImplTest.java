@@ -91,8 +91,9 @@ public class ProgramRepositoryImplTest {
     @Test
     public void testUpdateParticipant() {
         Participant participant = createPartcipant();
-        Program program = new Program();
-        program.setProgramId(1);
+        Program program = createProgram();
+
+        programRepository.save(program);
         participant.setProgram(program);
 
         participantRepository.save(participant);
@@ -125,7 +126,8 @@ public class ProgramRepositoryImplTest {
         Assert.assertNotNull("Address1 is null", updatedParticipant.getAddressLine1());
 
         // Clean up the new created/updated row.
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "program", "program_id=?", newParticipant.getId());
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "program", "program_id=?", program.getProgramId());
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "participant", "id=?", newParticipant.getId());
     }
 
     private Program createProgram() {

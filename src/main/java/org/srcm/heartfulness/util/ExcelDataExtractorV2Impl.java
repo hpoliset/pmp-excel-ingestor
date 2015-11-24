@@ -56,14 +56,16 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
         int totalRows = participantsSheet.getPhysicalNumberOfRows();
         // skip first two
         for (int i=1; i < totalRows; i++) {
-            System.out.println("rownumber = " + i);
             Row currentRow = participantsSheet.getRow(i);
             Participant participant = parseParticipantRow(currentRow);
+            // this will go away
+            if (participant.getExcelSheetSequenceNumber() == 0) {
+                participant.setExcelSheetSequenceNumber(i);
+            }
             if ("".equals(participant.getPrintName())) {
                 break; // Not able to figure out how to get correct rows.
             }
             participantList.add(participant);
-
         }
 
         return participantList;
