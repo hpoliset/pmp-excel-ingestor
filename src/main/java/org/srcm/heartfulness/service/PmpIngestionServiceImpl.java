@@ -40,5 +40,8 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
     @Override
     public void normalizeStagingRecords(Date batchProcessingTime) {
 
+        // Find out all the program records that are updated after the batchProcessingTime
+
+
     }
 }

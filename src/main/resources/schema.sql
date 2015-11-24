@@ -90,7 +90,7 @@ DROP TABLE IF EXISTS `participant`;
 
 CREATE TABLE IF NOT EXISTS `participant` (
   `id` int(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `excel_sheet_sequence_number` int(4) UNSIGNED NOT NULL, -- For now use the row number and later in v3.0 use the sequence no.
+#   `excel_sheet_sequence_number` int(4) UNSIGNED NOT NULL, -- For now use the row number and later in v3.0 use the sequence no.
   `print_name` VARCHAR(150) NOT NULL,
   `first_name` varchar(150) DEFAULT NULL,
   `last_name` varchar(150) DEFAULT NULL,

@@ -66,6 +66,14 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
     @Override
     public void save(Program program) {
+       /* // Find if there is an existing program row
+        Map params = new HashMap<>();
+        params.put("programHashCode", program.getProgramHashCode());
+        Program programByHashCode = this.namedParameterJdbcTemplate.query(
+                "SELECT program_id from program where program_hash_code=:programHashCode",
+                params, new BeanPropertyRowMapper<>()
+        );*/
+
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(program);
         if (program.getProgramId() == 0) {
             Number newId = this.insertProgram.executeAndReturnKey(parameterSource);
