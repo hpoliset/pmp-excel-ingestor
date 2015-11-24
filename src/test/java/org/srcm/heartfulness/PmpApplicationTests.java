@@ -6,9 +6,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.util.StreamUtils;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
@@ -27,6 +29,9 @@ public class PmpApplicationTests {
 
     @Autowired
     private ResourceLoader resourceLoader;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private ProgramRepository programRepository;
@@ -59,7 +64,9 @@ public class PmpApplicationTests {
 
         Assert.assertEquals("Should not have create a new row", validV21ProgramDuplicate.getProgramId(),
                 validV21Program.getProgramId());
+
         // delete it ...
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant");
 
     }
 

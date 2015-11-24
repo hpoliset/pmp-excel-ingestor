@@ -143,6 +143,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
             throw new InvalidExcelFileException("Unable to parse v2 file:[" + fileName + "] and Abhyasi Sheet ", e);
         }
         participant.setWelcomeCardDate(welcomeCardDate);
+        participant.setRemarks(participantRow.getCell(18, Row.CREATE_NULL_AS_BLANK).toString());
 
         return participant;
     }

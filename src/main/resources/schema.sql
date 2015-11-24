@@ -79,8 +79,8 @@ CREATE TABLE IF NOT EXISTS `program` (
   `coordinator_id` int(4) DEFAULT NULL,
   `event_id` int(4) DEFAULT NULL,
   `organization_id` int(4) DEFAULT NULL,
-  `create_time` datetime DEFAULT NULL,
-  `update_time` datetime DEFAULT NULL,
+  `update_time` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `create_time` TIMESTAMP NOT NULL,
   `created_by` varchar(45) DEFAULT NULL,
   `updated_by` varchar(45) DEFAULT NULL
 
@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS `participant` (
   `receive_updates` varchar(1) DEFAULT 'Y',
   `batch_processed_time` DATETIME DEFAULT NULL,
   `aims_sync_time` DATETIME DEFAULT NULL,
-  `update_time` DATETIME DEFAULT NULL,
-  `create_time` DATETIME DEFAULT NULL,
+  `update_time` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `create_time` TIMESTAMP NOT NULL,
   KEY `ProgramId_FK` (`program_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
