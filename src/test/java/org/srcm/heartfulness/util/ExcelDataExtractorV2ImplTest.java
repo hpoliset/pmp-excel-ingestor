@@ -28,26 +28,45 @@ public class ExcelDataExtractorV2ImplTest {
 
     @Test
     public void testValidV2ExcelFile() throws IOException, InvalidExcelFileException {
-        String fileName = "v21ValidEventDate.xlsm";
-        Resource v2ValidResource = resourceLoader.getResource("classpath:" + fileName);
+        String fileName = "HFN-DATA-MH-PUNE-INPSAD332-20151016.xlsx";
+
+        String resourceName = "classpath:" + fileName;
+        parseFile(resourceName);
+    }
+
+    private void parseFile(String resourceName) throws IOException, InvalidExcelFileException {
+        Resource v2ValidResource = resourceLoader.getResource(resourceName);
 
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
-        ExcelDataExtractor v2Extractor = new ExcelDataExtractorV2Impl(fileName, fileContent);
+        ExcelDataExtractor v2Extractor = new ExcelDataExtractorV2Impl(resourceName, fileContent);
         Program program = v2Extractor.getProgram();
-        Assert.notNull(program, "Not able to parse valid V21 file: [" + fileName + "]");
+        Assert.notNull(program, "Not able to parse valid V21 file: [" + resourceName + "]");
         System.out.println("compute hash: " + program.computeHashCode());
         System.out.println("program = " + program);
 
         List<Participant> participantList = v2Extractor.getParticipantList();
-        Assert.notEmpty(participantList, "Not able read particpants");
+        Assert.notEmpty(participantList, "Not able read participants");
     }
 
     @Test(expected = InvalidExcelFileException.class)
     public void testInValidV2ExcelFile() throws IOException, InvalidExcelFileException {
-        String fileName = "v21InValidEventDate.xlsm";
-        Resource v2ValidResource = resourceLoader.getResource("classpath:" + fileName);
+        String invalidFileName = "v21InValidEventDate.xlsm";
+        Resource v2ValidResource = resourceLoader.getResource("classpath:" + invalidFileName);
 
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
-        ExcelDataExtractor v2Extractor = new ExcelDataExtractorV2Impl(fileName, fileContent);
+        ExcelDataExtractor v2Extractor = new ExcelDataExtractorV2Impl(invalidFileName, fileContent);
+    }
+
+    @Test
+    public void testValidSampleFromField () throws IOException, InvalidExcelFileException {
+        String fileName = "file://"+"/Users/vsonnathi/Downloads/fwdday1andday3files/HFN-Data-MH-Pune-INAKAE143-20151031.xlsm";
+        parseFile(fileName);
+    }
+
+
+    @Test
+    public void testValidSample1FromField () throws IOException, InvalidExcelFileException {
+        String fileName = "file://"+"/Users/vsonnathi/Downloads/fwdday1andday3files/HFN-Data-MH-Pune-INSSAB360-20151028 v1.xlsm";
+        parseFile(fileName);
     }
 }

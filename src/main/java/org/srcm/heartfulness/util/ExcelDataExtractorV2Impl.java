@@ -1,5 +1,6 @@
 package org.srcm.heartfulness.util;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -11,6 +12,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Created by vsonnathi on 11/16/15.
@@ -23,6 +27,8 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
     private final Sheet eventSheet;
     private final Sheet participantsSheet;
     private Program program;
+
+    static final Logger LOGGER = LoggerFactory.getLogger(ExcelDataExtractorV2Impl.class);
 
     public ExcelDataExtractorV2Impl(String fileName, byte[] fileContent) throws InvalidExcelFileException {
         this.fileName = fileName;
@@ -116,8 +122,14 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
         participant.setState(participantRow.getCell(5, Row.CREATE_NULL_AS_BLANK).toString());
         participant.setCity(participantRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString());
         participant.setEmail(participantRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString());
-        Double numbericMobilePhone = participantRow.getCell(8, Row.CREATE_NULL_AS_BLANK).getNumericCellValue();
-        participant.setMobilePhone(String.valueOf(numbericMobilePhone.longValue()));
+        Cell mobilePhoneCell = participantRow.getCell(8, Row.CREATE_NULL_AS_BLANK);
+        try {
+            Double numbericMobilePhone = mobilePhoneCell.getNumericCellValue();
+            participant.setMobilePhone(String.valueOf(numbericMobilePhone.longValue()));
+        } catch (Exception e) {
+            LOGGER.info("Participant mobile phone number is not numeric, trying as string");
+            participant.setMobilePhone(mobilePhoneCell.toString());
+        }
         participant.setProfession(participantRow.getCell(9, Row.CREATE_NULL_AS_BLANK).toString());
         participant.setDepartment(participantRow.getCell(10, Row.CREATE_NULL_AS_BLANK).toString());
         participant.setBatch(participantRow.getCell(11, Row.CREATE_NULL_AS_BLANK).toString());
@@ -133,15 +145,22 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
         participant.setLanguage(participantRow.getCell(15, Row.CREATE_NULL_AS_BLANK).toString());
         participant.setWelcomeCardNumber(participantRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString());
         String welcomeCardDateStr = participantRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString();
-        SimpleDateFormat mmDDDYYformat = new SimpleDateFormat("dd-MMM-yy");
         Date welcomeCardDate = null;
         try {
+            welcomeCardDate = DateUtils.parseDate(welcomeCardDateStr);
+        } catch (ParseException e) {
+            throw new InvalidExcelFileException(
+                    "Unable to part v2 file:[" + fileName + "] welcome card date: [" + welcomeCardDateStr + "]");
+        }
+        /*SimpleDateFormat mmDDDYYformat = new SimpleDateFormat("dd-MMM-yy");
+        Date welcomeCardDateFromStr = null;
+        try {
             if (!"".equals(welcomeCardDateStr)) {
-                welcomeCardDate = mmDDDYYformat.parse(welcomeCardDateStr);
+                welcomeCardDateFromStr = mmDDDYYformat.parse(welcomeCardDateStr);
             }
         } catch (ParseException e) {
             throw new InvalidExcelFileException("Unable to parse v2 file:[" + fileName + "] and Abhyasi Sheet ", e);
-        }
+        }*/
         participant.setWelcomeCardDate(welcomeCardDate);
         participant.setRemarks(participantRow.getCell(18, Row.CREATE_NULL_AS_BLANK).toString());
 
@@ -168,12 +187,17 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
         program.setRemarks(eventSheet.getRow(17).getCell(0, Row.CREATE_NULL_AS_BLANK).toString());
 
         String eventDateStr = eventSheet.getRow(3).getCell(3, Row.CREATE_NULL_AS_BLANK).toString();
-        SimpleDateFormat mmDDDYYformat = new SimpleDateFormat("dd-MMM-yy");
+//        SimpleDateFormat mmDDDYYformat = new SimpleDateFormat("dd-MMM-yy");
         Date eventDate = null;
-        try {
+        /*try {
             eventDate = mmDDDYYformat.parse(eventDateStr);
         } catch (ParseException e) {
             throw new InvalidExcelFileException("Unable to parse v2 file:[" + fileName + "]", e);
+        }*/
+        try {
+            eventDate = DateUtils.parseDate(eventDateStr);
+        } catch (ParseException e) {
+            throw new InvalidExcelFileException("Not able to parse program event date:[" + eventDateStr + "]");
         }
         program.setProgramStartDate(eventDate);
 
@@ -182,8 +206,14 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
         program.setCoordinatorEmail(eventSheet.getRow(7).getCell(3, Row.CREATE_NULL_AS_BLANK).toString());
         program.setOrganizationContactName(eventSheet.getRow(9).getCell(3, Row.CREATE_NULL_AS_BLANK).toString());
         program.setOrganizationContactEmail(eventSheet.getRow(10).getCell(3, Row.CREATE_NULL_AS_BLANK).toString());
-        Double numbericPhoneNumber = eventSheet.getRow(11).getCell(3, Row.CREATE_NULL_AS_BLANK).getNumericCellValue();
-        program.setOrganizationContactMobile(String.valueOf(numbericPhoneNumber.longValue()));
+        Cell organizationContactMobile = eventSheet.getRow(11).getCell(3, Row.CREATE_NULL_AS_BLANK);
+        try {
+            Double numbericPhoneNumber = organizationContactMobile.getNumericCellValue();
+            program.setOrganizationContactMobile(String.valueOf(numbericPhoneNumber.longValue()));
+        } catch (Exception e) {
+            LOGGER.info("OrganizationPhoneNumber is not numeric, trying as string");
+            program.setOrganizationContactMobile(organizationContactMobile.toString());
+        }
 
         program.setWelcomeCardSignedByName(eventSheet.getRow(13).getCell(3, Row.CREATE_NULL_AS_BLANK).toString());
         program.setWelcomeCardSignerIdCardNumber(eventSheet.getRow(14).getCell(3, Row.CREATE_NULL_AS_BLANK).toString());
