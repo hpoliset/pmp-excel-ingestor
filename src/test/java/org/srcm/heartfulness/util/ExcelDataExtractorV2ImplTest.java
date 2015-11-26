@@ -2,6 +2,8 @@ package org.srcm.heartfulness.util;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.core.io.Resource;
@@ -14,6 +16,8 @@ import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -22,6 +26,7 @@ import java.util.List;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PmpApplication.class)
 public class ExcelDataExtractorV2ImplTest {
+    static final Logger LOGGER = LoggerFactory.getLogger(ExcelDataExtractorV2ImplTest.class);
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -57,16 +62,22 @@ public class ExcelDataExtractorV2ImplTest {
         ExcelDataExtractor v2Extractor = new ExcelDataExtractorV2Impl(invalidFileName, fileContent);
     }
 
-    @Test
-    public void testValidSampleFromField () throws IOException, InvalidExcelFileException {
-        String fileName = "file://"+"/Users/vsonnathi/Downloads/fwdday1andday3files/HFN-Data-MH-Pune-INAKAE143-20151031.xlsm";
-        parseFile(fileName);
-    }
-
-
-    @Test
+   /* @Test
     public void testValidSample1FromField () throws IOException, InvalidExcelFileException {
-        String fileName = "file://"+"/Users/vsonnathi/Downloads/fwdday1andday3files/HFN-Data-MH-Pune-INSSAB360-20151028 v1.xlsm";
-        parseFile(fileName);
-    }
+        // Read from the directory.
+
+        Files.walk(Paths.get("/Users/vsonnathi/final/testHFNExcelFiles")).forEach(filePath -> {
+            if (Files.isRegularFile(filePath)) {
+                try {
+                    parseFile("file://"+ filePath.toString());
+                } catch (IOException e) {
+                    LOGGER.error("Could not parse file: [" + filePath + "]", e);
+                } catch (InvalidExcelFileException e) {
+                    LOGGER.error("Could not parse file: [" + filePath + "]", e);
+                }
+                LOGGER.info("Done with: [" + filePath + "]");
+            }
+        });
+
+    }*/
 }
