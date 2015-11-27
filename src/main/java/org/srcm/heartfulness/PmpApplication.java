@@ -3,6 +3,7 @@ package org.srcm.heartfulness;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -11,6 +12,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import java.util.Arrays;
 
 @SpringBootApplication
+@EnableScheduling
 //@EnableOAuth2Sso
 //public class PmpApplication extends WebSecurityConfigurerAdapter {
 public class PmpApplication {

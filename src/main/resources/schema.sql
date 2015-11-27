@@ -34,8 +34,8 @@ CREATE TABLE `organization` (
   `email` VARCHAR(150) DEFAULT NULL,
   `web_site` varchar(150) DEFAULT NULL,
   `phone` varchar(25) DEFAULT NULL,
-  `address_line_1` varchar(100) DEFAULT NULL,
-  `address_line_2` varchar(100) DEFAULT NULL,
+  `address_line1` varchar(100) DEFAULT NULL,
+  `address_line2` varchar(100) DEFAULT NULL,
   `city` VARCHAR(50) DEFAULT NULL,
   `state` VARCHAR(50) DEFAULT NULL,
   `zip` VARCHAR(50) DEFAULT NULL,
@@ -45,6 +45,34 @@ CREATE TABLE `organization` (
   `created_by` varchar(45) DEFAULT NULL,
   `updated_by` varchar(45) DEFAULT NULL
 );
+
+DROP TABLE IF EXISTS `event`;
+
+CREATE TABLE `event` (
+  `id` int(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `channel_id` int(4) NOT NULL,
+  `coordinator_id` int(4) NOT NULL,
+  `organization_id` int(4) NOT NULL,
+  `place` VARCHAR(75) DEFAULT NULL,
+  `date` DATETIME NOT NULL,
+  `address_line1` VARCHAR(75) DEFAULT NULL,
+  `address_line2` VARCHAR(75) DEFAULT NULL,
+  `city` VARCHAR(50) DEFAULT NULL,
+  `state` VARCHAR(50) DEFAULT NULL,
+  `zip` VARCHAR(50) DEFAULT NULL,
+  `country` VARCHAR(75) DEFAULT NULL,
+  `preceptor_name` varchar(45) DEFAULT NULL,
+  `preceptor_id_card_number` varchar(45) DEFAULT NULL,
+  `welcome_card_signed_by_name` varchar(45) DEFAULT NULL,
+  `welcome_card_signer_id_card_number` varchar(45) DEFAULT NULL,
+  `remarks` varchar(500) DEFAULT NULL,
+  `update_time` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `create_time` TIMESTAMP NOT NULL,
+  `created_by` varchar(45) DEFAULT NULL,
+  `updated_by` varchar(45) DEFAULT NULL
+
+);
+
 
 
 -- --------------------------------------------------

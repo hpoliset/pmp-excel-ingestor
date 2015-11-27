@@ -1,6 +1,9 @@
 package org.srcm.heartfulness.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.srcm.heartfulness.model.Participant;
@@ -18,6 +21,8 @@ import java.util.List;
  */
 @Service
 public class PmpIngestionServiceImpl implements PmpIngestionService {
+
+    static Logger LOGGER = LoggerFactory.getLogger(PmpIngestionServiceImpl.class);
 
     @Autowired
     private ProgramRepository programRepository;
@@ -38,9 +43,16 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
     }
 
     @Override
-    public void normalizeStagingRecords(Date batchProcessingTime) {
+//    every 15 minutes
+    @Scheduled(cron = "0 0/15 * * * *")
+//    @Scheduled(cron = "0/5 * * * * *")
+    public void normalizeStagingRecords() {
 
         // Find out all the program records that are updated after the batchProcessingTime
+        LOGGER.info("normalizedStagingRecords ... invoked at:[" + new Date() + "]");
+
+        // Find all program objects that have been modified since last normalized run.
+
 
 
     }

@@ -11,7 +11,7 @@ public interface PmpIngestionService {
 
     void parseAndPersistExcelFile(String fileName, byte[] fileContent) throws InvalidExcelFileException;
 
-    void normalizeStagingRecords(Date batchProcessingTime);
+    void normalizeStagingRecords();
 
 //    void syncRecordsToAims(Date aimsSyncTime);
 
