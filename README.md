@@ -1,10 +1,11 @@
 #pmp-excel-ingestor
 PMP Service that's responsible for ingesting contents of HFN Excel Spreadsheets into our DB
 
-#Download and install Mysql server on your laptop/desktop
-#Mac users can try MAMP and Windows users well you are on your own.
-#You can try searching for lamp for windows on Google. There are a number of options
-#you can install either WinLAMP or Wamp or XAMPP whichever suits your liking
+#Environment Setup
+Download and install Mysql server on your laptop/desktop.
+Mac users can try MAMP and Windows users well you are on your own.
+You can try searching for lamp for windows on Google. There are a number of options
+you can install either WinLAMP or Wamp or XAMPP whichever suits your liking
 
 #Setup and run Mysql from the application of your choice.
 
