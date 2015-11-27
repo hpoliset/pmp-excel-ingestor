@@ -47,5 +47,5 @@ Run using the command
 Access the site using
 >> http://localhost:8080/ingest/inputForm (select the valid excel file in src/test/resources/v21ValidEventDate.xlsm)
 
-If prompted for User/Password on accessing the above link: use user/pmp
+When prompted for User/Password on accessing the above link: use user/pmp
 
