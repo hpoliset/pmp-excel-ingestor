@@ -7,8 +7,7 @@ Mac users can try MAMP and Windows users well you are on your own.
 You can try searching for lamp for windows on Google. There are a number of options
 you can install either WinLAMP or Wamp or XAMPP whichever suits your liking
 
-#Setup and run Mysql from the application of your choice.
-
+Setup and run Mysql from the application of your choice.
 Verify that you are able to connect to mysql
 Command using Explicit host and port
 >> mysql -uroot -proot
