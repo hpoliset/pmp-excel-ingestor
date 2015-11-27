@@ -7,6 +7,7 @@ Mac users can try MAMP and Windows users well you are on your own.
 You can try searching for lamp for windows on Google. There are a number of options
 you can install either WinLAMP or Wamp or XAMPP whichever suits your liking
 
+#Database setup
 Setup and run Mysql from the application of your choice.
 Verify that you are able to connect to mysql
 Command using Explicit host and port
@@ -38,13 +39,13 @@ Flush the tables
 Load the schema into mysql
 >> mysql -upmpuser -pheartfulness -Dpmp < src/main/resources/schema.sql
 
-Build using maven
+#Build using maven
 >> mvn clean package (-DskipTests to skip tests)
 
-Run using the command
+#To run PMP locally
 >> java -jar target/pmp-excel-ingestor-0.0.1-SNAPSHOT.war
 
-Access the site using
+#Access the site
 >> http://localhost:8080/ingest/inputForm (select the valid excel file in src/test/resources/v21ValidEventDate.xlsm)
 
 When prompted for User/Password on accessing the above link: use user/pmp
