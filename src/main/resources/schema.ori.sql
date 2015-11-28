@@ -58,7 +58,7 @@ CREATE TABLE `maturity` (
   PRIMARY KEY (`Maturity_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE `organization` (
+CREATE TABLE `organisation` (
   `Organization_ID` int(11) NOT NULL,
   `Organization_Name` varchar(150) NOT NULL,
   `Organization_SPOC` varchar(150) DEFAULT NULL,
@@ -106,7 +106,7 @@ CREATE TABLE `event` (
   KEY `Organization_id_FKey2` (`Organization_ID`),
   CONSTRAINT `Channel_Fkey2` FOREIGN KEY (`Channel_ID`) REFERENCES `channel` (`Channel_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `Coord_id_FKey2` FOREIGN KEY (`Coordinator_ID`) REFERENCES `coordinator` (`Coordinator_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `Organization_id_FKey2` FOREIGN KEY (`Organization_ID`) REFERENCES `organization` (`Organization_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `Organization_id_FKey2` FOREIGN KEY (`Organization_ID`) REFERENCES `organisation` (`Organization_ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 

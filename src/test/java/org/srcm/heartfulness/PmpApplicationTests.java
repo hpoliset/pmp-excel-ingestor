@@ -112,7 +112,6 @@ public class PmpApplicationTests {
 
         // delete it ...
         JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant");
-
     }
 
 }

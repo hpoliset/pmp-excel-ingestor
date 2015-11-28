@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.srcm.heartfulness.model.Organisation;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.repository.OrganisationRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.util.ExcelDataExtractor;
 import org.srcm.heartfulness.util.ExcelParserUtils;
@@ -26,6 +28,9 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 
     @Autowired
     private ProgramRepository programRepository;
+
+    @Autowired
+    private OrganisationRepository organisationRepository;
 
     @Override
     @Transactional
@@ -52,8 +57,16 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
         LOGGER.info("normalizedStagingRecords ... invoked at:[" + new Date() + "]");
 
         // Find all program objects that have been modified since last normalized run.
+        List<Integer> programIds = programRepository.findUpdatedProgramIdsSince(new Date());
+        for (Integer programId : programIds) {
+            Program program = programRepository.findById(programId);
+            normalizeProgram(program);
+        }
+    }
 
-
-
+    private void normalizeProgram(Program program) {
+        // Look up Organisation based on name and address_line1
+        Organisation organisation = organisationRepository.findByNameAndWebsite(program.getOrganizationName(),
+                program.getOrganizationWebSite());
     }
 }

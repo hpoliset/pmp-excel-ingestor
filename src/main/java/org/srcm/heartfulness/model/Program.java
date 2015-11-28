@@ -285,7 +285,7 @@ public class Program {
     }
 
     /**
-     * Generates a MD5 hash code based on program channel, Organization Name, Organization Dept, Event Date, Event Place
+     * Generates a MD5 hash code based on program channel, Organisation Name, Organisation Dept, Event Date, Event Place
      *
      * @return computed MD5 hash code.
      */

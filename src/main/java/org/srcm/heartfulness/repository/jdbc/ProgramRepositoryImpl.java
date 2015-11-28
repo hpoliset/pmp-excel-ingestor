@@ -20,10 +20,7 @@ import org.srcm.heartfulness.repository.ProgramRepository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Program Repository
@@ -69,6 +66,16 @@ public class ProgramRepositoryImpl implements ProgramRepository {
         List<Participant> participants = this.participantRepository.findByProgramId(id);
         program.setParticipantList(participants);
         return program;
+    }
+
+    @Override
+    public List<Integer> findUpdatedProgramIdsSince(Date lastBatchRun) {
+        List<Integer> programIds = this.jdbcTemplate.queryForList("SELECT program_id from program where update_time > ?",
+                new Object[]{lastBatchRun}, Integer.class);
+        //update the last batch run
+        this.jdbcTemplate.update("UPDATE batch_operation_status set last_normalization_run=?", new Date());
+
+        return programIds;
     }
 
     @Override
