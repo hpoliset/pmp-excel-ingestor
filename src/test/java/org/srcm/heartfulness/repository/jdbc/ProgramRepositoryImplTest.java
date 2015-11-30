@@ -17,6 +17,8 @@ import org.srcm.heartfulness.repository.ProgramRepository;
 import java.util.Date;
 
 /**
+ * Test class for ProgramRepository JDBC implementation.
+ *
  * Created by vsonnathi on 11/18/15.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -64,16 +66,16 @@ public class ProgramRepositoryImplTest {
         Assert.assertNotNull("Could not find newly created object", newProgram);
 
         String updatedRemarks = program.getRemarks() + " Updated";
-        program.setRemarks(updatedRemarks);
+        newProgram.setRemarks(updatedRemarks);
 
         String updatedWelcomeCardSignedByName = program.getWelcomeCardSignedByName() + " Updated";
-        program.setWelcomeCardSignedByName(updatedWelcomeCardSignedByName);
+        newProgram.setWelcomeCardSignedByName(updatedWelcomeCardSignedByName);
 
         String updatedCoordinatorMobile = "9840-49-2831";
-        program.setCoordinatorMobile(updatedCoordinatorMobile);
+        newProgram.setCoordinatorMobile(updatedCoordinatorMobile);
 
         // Update.
-        programRepository.save(program);
+        programRepository.save(newProgram);
 
         // Read
         Program updatedProgram = programRepository.findById(program.getProgramId());

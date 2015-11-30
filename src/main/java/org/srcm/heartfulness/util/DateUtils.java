@@ -55,6 +55,10 @@ public class DateUtils {
      * @see SimpleDateFormat
      */
     public static String determineDateFormat(String dateString) {
+        if (dateString == null || dateString.isEmpty()) {
+            return null;
+        }
+
         for (String regexp : DATE_FORMAT_REGEXPS.keySet()) {
             if (dateString.toLowerCase().matches(regexp)) {
                 return DATE_FORMAT_REGEXPS.get(regexp);
@@ -64,11 +68,16 @@ public class DateUtils {
     }
 
     public static Date parseDate(String dateString) throws ParseException {
-        String dateFormat = determineDateFormat(dateString);
-        if (dateFormat != null) {
-            SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-            return sdf.parse(dateString);
+        if (dateString == null || dateString.isEmpty()) {
+            return null;
         }
-        return null;
+
+        String dateFormat = determineDateFormat(dateString);
+        if (dateFormat == null) {
+            throw new ParseException("Could not parse:[" + dateString + "] - un supported format", 0);
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        return sdf.parse(dateString);
     }
 }
