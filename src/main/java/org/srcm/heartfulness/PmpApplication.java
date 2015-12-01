@@ -2,6 +2,8 @@ package org.srcm.heartfulness;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,12 +17,17 @@ import java.util.Arrays;
 @EnableScheduling
 //@EnableOAuth2Sso
 //public class PmpApplication extends WebSecurityConfigurerAdapter {
-public class PmpApplication {
+public class PmpApplication extends SpringBootServletInitializer {
 
     /*@Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.antMatcher("/ingest*//**").authorizeRequests().anyRequest().authenticated();
     }*/
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(PmpApplication.class);
+    }
 
     public static void main(String[] args) {
         ApplicationContext ctx = SpringApplication.run(PmpApplication.class, args);

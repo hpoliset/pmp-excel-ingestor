@@ -10,7 +10,7 @@
 <body>
 <div align="center">
     <h1>Heartfulness Event Data Upload Screen</h1>
-    <form method="POST" action="/ingest/processUpload" enctype="multipart/form-data">
+    <form method="POST" action="processUpload" enctype="multipart/form-data">
         <table border="0">
             <tr>
                 <td>Pick file #1:</td>
