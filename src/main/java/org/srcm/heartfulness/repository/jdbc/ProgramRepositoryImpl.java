@@ -73,7 +73,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
         List<Integer> programIds = this.jdbcTemplate.queryForList("SELECT program_id from program where update_time > ?",
                 new Object[]{lastBatchRun}, Integer.class);
         //update the last batch run
-        this.jdbcTemplate.update("UPDATE batch_operation_status set last_normalization_run=?", new Date());
+        this.jdbcTemplate.update("UPDATE batch_operations_status set last_normalization_run=?", new Date());
 
         return programIds;
     }

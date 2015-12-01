@@ -47,9 +47,10 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
         programRepository.save(program);
     }
 
-    //every 15 minutes
     @Override
-    @Scheduled(cron = "0 0/15 * * * *")
+//    every 15 minutes
+//    @Scheduled(cron = "0 0/15 * * * *")
+//    @Scheduled(cron = "0/5 * * * * *")
     public void normalizeStagingRecords() {
 
         // Find out all the program records that are updated after the batchProcessingTime
@@ -67,5 +68,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
         // Look up Organisation based on name and address_line1
         Organisation organisation = organisationRepository.findByNameAndWebsite(program.getOrganizationName(),
                 program.getOrganizationWebSite());
+
+
     }
 }
