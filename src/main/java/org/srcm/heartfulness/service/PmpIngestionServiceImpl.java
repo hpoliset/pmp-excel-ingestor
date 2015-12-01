@@ -47,10 +47,9 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
         programRepository.save(program);
     }
 
+    //every 15 minutes
     @Override
-//    every 15 minutes
     @Scheduled(cron = "0 0/15 * * * *")
-//    @Scheduled(cron = "0/5 * * * * *")
     public void normalizeStagingRecords() {
 
         // Find out all the program records that are updated after the batchProcessingTime
