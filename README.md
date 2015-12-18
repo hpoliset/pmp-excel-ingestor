@@ -51,9 +51,44 @@ Type the following commands
 >> delete from user where User=''; #delete the entry from the table
 >> quit; #Quit database
 ----end resolution------
-
 Flush the tables
 >> mysqladmin -uroot -proot flush-tables;
 >> mysqladmin -uroot -proot reload;
+
 ### Problem in running build (mvn clean package) 
 Sometimes you may face errors while doing the build, please ensure the ports are not blocked by any other processes. Also you can use the skip tests option in mvn command by appending -DskipTest (mvn clean package -DskipTests)
+
+# Setting up PMP on Server machine (Amazon Linux/RHEL/CentOS)
+##Install Java
+$ wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u60-b27/jdk-8u60-linux-x64.rpm"
+$ sudo yum localinstall jdk-8u60-linux-x64.rpm 
+$ java -version
+$ export $JAVA_HOME=/usr/java/jdk1.8.0_60
+
+##Install Maven
+  >> $ wget http://www.eu.apache.org/dist/maven/maven-3/3.3.3/binaries/apache-maven-3.3.3-bin.tar.gz
+  >> $ unzip apache-maven-3.3.3-bin.tar.gz 
+  >> $ tar -xvzf apache-maven-3.3.3-bin.tar.gz 
+  >> $ sudo mv apache-maven-3.3.3 /opt/maven
+  >> $ sudo ln -s /opt/maven/bin/mvn /usr/bin/mvn
+
+##Install tomcat7
+  >> $ sudo yum install tomcat7
+  >> $ sudo /etc/init.d/tomcat7 start 
+  >> Webapp folder will be in /usr/share/tomcat7/webapps
+
+##Install and configure Git
+  >> $ sudo yum install git
+  >> $ git config --global user.name "User Name"
+  >> $ git config --global user.email user.email@email.com
+  
+##Checkout code and build
+  >> $ git clone https://github.com/hpoliset/pmp-excel-ingestor.git pmp-excel-ingestor
+  >> Update application properties to point to mysql database 
+  >> mvn clean package
+  
+##Deploy
+  >> Copy pmp.war from target folder to tomcat webapp folder
+  >> Access with application at https://hostname.org:8443/pmp
+
+
