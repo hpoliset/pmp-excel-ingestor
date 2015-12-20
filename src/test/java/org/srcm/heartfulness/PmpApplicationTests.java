@@ -38,6 +38,10 @@ public class PmpApplicationTests {
 
 	@Test
 	public void parseAndPersistValidV21ExcelFile() throws IOException, InvalidExcelFileException {
+
+        // start with clean slate.
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant");
+
         String fileName = "v21ValidEventDate.xlsm";
         Resource v2ValidResource = resourceLoader.getResource("classpath:" + fileName);
 
