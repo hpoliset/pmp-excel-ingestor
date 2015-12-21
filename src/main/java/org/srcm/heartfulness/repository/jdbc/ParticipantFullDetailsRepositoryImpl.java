@@ -1,28 +1,23 @@
 package org.srcm.heartfulness.repository.jdbc;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.*;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.ParticipantFullDetails;
 import org.srcm.heartfulness.repository.ParticipantFullDetailsRepository;
-import org.srcm.heartfulness.repository.ParticipantRepository;
-
-import javax.sql.DataSource;
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -32,42 +27,19 @@ import java.util.Map;
 public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDetailsRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-    private SimpleJdbcInsert insertParticipant;
 
     @Autowired
     public ParticipantFullDetailsRepositoryImpl(DataSource dataSource) {
-        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
         this.jdbcTemplate = new JdbcTemplate(dataSource);
 
-        this.insertParticipant = new SimpleJdbcInsert(dataSource)
-                .withTableName("participant")
-                .usingGeneratedKeyColumns("id");
     }
 
-//    @Override
-//    public Collection<ParticipantFullDetails> findByHashCode(String hashCode) throws DataAccessException {
-//        return null;
-//    }
-
-//    @Override
-//    public ParticipantFullDetails findById(int id) throws DataAccessException {
-//        ParticipantFullDetails participant =null;
-//        Map<String, Object> params = new HashMap<>();
-//        params.put("id", id);
-////        participant = this.namedParameterJdbcTemplate.queryForObject(
-////                "SELECT * FROM participant WHERE id=:id",
-////                params, BeanPropertyRowMapper.newInstance(Participant.class)
-////        );
-//        return participant;
-//    }
 
     @Override
     public Collection<ParticipantFullDetails> findByChannel(String programChannel) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("programChannel", programChannel);
-        SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+//        Map<String, Object> params = new HashMap<>();
+//        params.put("programChannel", programChannel);
+//        SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
         PreparedStatementSetter pstst = new PreparedStatementSetter() {
 			
 			@Override
@@ -77,28 +49,108 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 
 			}
 		}; 
-
-//        List<ParticipantFullDetails> participants = this.namedParameterJdbcTemplate.query(
-//                "SELECT * FROM participant WHERE program_id=:programId", sqlParameterSource,
-//                BeanPropertyRowMapper.newInstance(Participant.class)
-//        );
-        
+     
         FullParticipantRowCallbackHandler rowCallbackHandler = new FullParticipantRowCallbackHandler();
+        
         jdbcTemplate.query(
-        	     "select pg.program_channel, " +
-                  "pg.program_start_date, " +
-                  "pg.event_state, " +
+        	     "select " + 
+        	      "pg.program_id," +
+        	      "pg.program_channel, " +
+//                  "pg.program_channel_id, " +
+        	      "pg.program_start_date, " +
+        	      "pg.program_end_date," +
+
+                  "pg.event_id, " +
+                  "pg.event_place, " +
                   "pg.event_city, " +
-                  "pg.organization_name, " +
+                  "pg.event_state, " +
+                  "pg.event_country, " +
+
+                  "pg.coordinator_id," +
+                  "pg.coordinator_name," +
+        	      "pg.coordinator_email," +
+        	      "pg.coordinator_mobile," +
+        	      
+        	      "pg.organization_id," +
+        	      "pg.organization_name," +
+        	      "pg.organization_department," +
+        	      "pg.organization_web_site," +
+        	      "pg.organization_contact_name," +
+        	      "pg.organization_contact_email," +
+        	      "pg.organization_contact_mobile," +
+        	    		 
+                  "pg.preceptor_name," +
+        	      "pg.preceptor_id_card_number," +
+        	      "pg.welcome_card_signed_by_name," +
+        	      "pg.welcome_card_signer_id_card_number," +
+        	      "pg.remarks," +
+
+                  "pg.batch_processed_time, " +
+                  "pg.create_time, " +
+                  "pg.update_time, " +
+                  "pg.created_by, " +
+                  "pg.updated_by, " +
+                  
                   "pr.id, " +
+                  "pr.excel_sheet_sequence_number, " +
+                  "pr.print_name, " +
                   "pr.first_name, " +
                   "pr.last_name, " +
-                  "pr.email " +
+                  "pr.middle_name, " +
+                  "pr.email, " +
+                  "pr.mobile_phone, " +
+                  "pr.gender, " +
+                  "pr.date_of_birth, " +
+                  "pr.date_of_registration, " +
+                  "pr.abhyasi_id, " +
+                  "pr.status, " +
+  
+                  "pr.address_line1, " +
+                  "pr.address_line2, " +
+                  "pr.city, " +
+                  "pr.state, " +
+                  "pr.country, " +
+                  
+                  "pr.program_id, " +
+                  "pr.profession, " +
+                  "pr.remarks, " +
+                  "pr.id_card_number, " +
+                  "pr.language, " +
+                  "pr.sync_status, " +
+                  "pr.introduced, " +
+                  "pr.introduction_date, " +
+                  "pr.introduction_raw_date, " +
+                  "pr.introduced_by, " +
+                  "pr.welcome_card_number, " +
+                  "pr.welcome_card_date, " +
+                  "pr.age_group, " +
+                  "pr.upload_status, " +
+                  "pr.first_sitting, " +
+                  "pr.second_sitting, " +
+                  "pr.third_sitting, " +
+                  "pr.first_sitting_date, " +
+                  "pr.second_sitting_date, " +
+                  "pr.third_sitting_date, " +
+                  
+                  "pr.batch, " +
+                  "pr.receive_updates, " +
+                  "pr.batch_processed_time, " +
+                  "pr.aims_sync_time, " +
+                  "pr.introduction_raw_date, " +
+                  "pr.create_time, " +
+                  "pr.update_time " +
             "from participant pr " +
             "left outer join program pg on pr.program_id = pg.program_id " +
             "where pg.program_channel = ? " +
             "order by pg.program_channel, pg.program_start_date, pg.organization_name,  pr.first_name",
-            pstst,
+            new PreparedStatementSetter() {
+    			
+    			@Override
+    			public void setValues(PreparedStatement preparedStatement) throws SQLException {
+    				// TODO Auto-generated method stub
+    				preparedStatement.setString(1, programChannel);
+    			}
+    		},
            rowCallbackHandler);
        
 

@@ -24,7 +24,7 @@ public class ParticipantFullDetails {
     private String city;
     private String state;
     private String country;
-//    private int program_id;
+
     private String remarks;
     private String idCardNumber;
     private String syncStatus;
@@ -38,7 +38,6 @@ public class ParticipantFullDetails {
     private Date firstSittingDate;
     private Date secondSittingDate;
     private Date thirdSittingDate;
-    private String batch;
     private int receiveUpdates;
     private String printName;
     private int firstSittingTaken;
@@ -48,8 +47,13 @@ public class ParticipantFullDetails {
     private String department;
     private String language;
 
-//    private Program program;
+    private String batch;
     private int excelSheetSequenceNumber;
+    private Date batchProcessedTime;
+    private Date aimsSyncTime; 
+    private Date introductionRawDate;
+    private Date createTime;
+    private Date updateTime;
 
     // PROGRAM FIELDS
     private int programId;
@@ -59,6 +63,7 @@ public class ParticipantFullDetails {
     private Date programStartDate;
     private Date programEndDate;
 
+    private int coordinatorId;
     private String coordinatorName;
     private String coordinatorEmail;
     private String coordinatorMobile;
@@ -68,8 +73,9 @@ public class ParticipantFullDetails {
     private String eventState;
     private String eventCountry;
 
-    private String organizationDepartment;
+    private int organizationId;
     private String organizationName;
+    private String organizationDepartment;
     private String organizationWebSite;
     private String organizationContactName;
     private String organizationContactEmail;
@@ -80,6 +86,12 @@ public class ParticipantFullDetails {
 
     private String welcomeCardSignedByName;
     private String welcomeCardSignerIdCardNumber;
+    private String pgmRemarks;
+    private Date pgmBatchProcessedTime;
+    private Date pgmCreateTime;
+    private Date pgmUpdateTime;
+    private String pgmCreatedBy;
+    private String pgmUpdatedBy;
 
 
     public int getId() {
@@ -586,8 +598,123 @@ public class ParticipantFullDetails {
 	public void setWelcomeCardSignerIdCardNumber(String welcomeCardSignerIdCardNumber) {
 		this.welcomeCardSignerIdCardNumber = welcomeCardSignerIdCardNumber;
 	}
-	
-	public String toString(){
-		return programChannel+","+programStartDate+","+eventState+","+eventCity+","+organizationName+","+firstName+","+lastName+","+email;
+
+	public int getCoordinatorId() {
+		return coordinatorId;
 	}
+
+	public void setCoordinatorId(int coordinatorId) {
+		this.coordinatorId = coordinatorId;
+	}
+
+	public Date getBatchProcessedTime() {
+		return batchProcessedTime;
+	}
+
+	public void setBatchProcessedTime(Date batchProcessedTime) {
+		this.batchProcessedTime = batchProcessedTime;
+	}
+
+	public Date getAimsSyncTime() {
+		return aimsSyncTime;
+	}
+
+	public void setAimsSyncTime(Date aimsSyncTime) {
+		this.aimsSyncTime = aimsSyncTime;
+	}
+
+	public Date getIntroductionRawDate() {
+		return introductionRawDate;
+	}
+
+	public void setIntroductionRawDate(Date introductionRawDate) {
+		this.introductionRawDate = introductionRawDate;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	public int getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(int organizationId) {
+		this.organizationId = organizationId;
+	}
+
+	public String getPgmRemarks() {
+		return pgmRemarks;
+	}
+
+	public void setPgmRemarks(String pgmRemarks) {
+		this.pgmRemarks = pgmRemarks;
+	}
+
+	public Date getPgmBatchProcessedTime() {
+		return pgmBatchProcessedTime;
+	}
+
+	public void setPgmBatchProcessedTime(Date pgmBatchProcessedTime) {
+		this.pgmBatchProcessedTime = pgmBatchProcessedTime;
+	}
+
+	public Date getPgmCreateTime() {
+		return pgmCreateTime;
+	}
+
+	public void setPgmCreateTime(Date pgmCreateTime) {
+		this.pgmCreateTime = pgmCreateTime;
+	}
+
+	public Date getPgmUpdateTime() {
+		return pgmUpdateTime;
+	}
+
+	public void setPgmUpdateTime(Date pgmUpdateTime) {
+		this.pgmUpdateTime = pgmUpdateTime;
+	}
+
+	public String getPgmCreatedBy() {
+		return pgmCreatedBy;
+	}
+
+	public void setPgmCreatedBy(String pgmCreatedBy) {
+		this.pgmCreatedBy = pgmCreatedBy;
+	}
+
+	public String getPgmUpdatedBy() {
+		return pgmUpdatedBy;
+	}
+
+	public void setPgmUpdatedBy(String pgmUpdatedBy) {
+		this.pgmUpdatedBy = pgmUpdatedBy;
+	}
+
+	public String toString(){
+		return 
+				id+"\t"+printName+"\t"+firstName+"\t"+middleName+"\t"+lastName+"\t"+email+"\t"+mobilePhone+"\t"+
+				gender+"\t"+dateOfBirth+"\t"+dateOfRegistration+"\t"+language+"\t"+profession+"\t"+
+				abhyasiId+"\t"+idCardNumber+"\t"+status+"\t"+addressLine1+"\t"+addressLine2+"\t"+city+"\t"+state+"\t"+country+"\t"+remarks+"\t"+
+				introduced+"\t"+introducedBy+"\t"+introductionDate+"\t"+welcomeCardNumber+"\t"+welcomeCardDate+"\t"+ageGroup+"\t"+
+				firstSittingTaken+"\t"+firstSittingDate+"\t"+secondSittingTaken+"\t"+secondSittingDate+"\t"+thirdSittingTaken+"\t"+thirdSittingDate+"\t"+
+				batch+"\t"+receiveUpdates+"\t"+syncStatus+"\t"+aimsSyncTime+"\t"+uploadStatus+"\t"+
+				programId+"\t"+programChannel+"\t"+programStartDate+"\t"+programEndDate+"\t"+
+				eventPlace+"\t"+eventState+"\t"+eventCity+"\t"+eventCountry+"\t"+
+				organizationId+"\t"+organizationName+"\t"+organizationDepartment+"\t"+organizationWebSite+"\t"+organizationContactName+"\t"+organizationContactEmail+"\t"+organizationContactMobile+"\t"+
+				preceptorName+"\t"+preceptorIdCardNumber+"\t"+welcomeCardSignedByName+"\t"+welcomeCardSignerIdCardNumber ;
+	}
+
 }
