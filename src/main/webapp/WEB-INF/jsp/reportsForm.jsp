@@ -23,36 +23,36 @@
             <div class="four columns">
               <label for="channel">Enter Channel</label>
               <select class="u-full-width" id="channel" name="channel">
+                <option value="ALL">All Channels</option>
                 <option value="Heartfulness">Heartfulness</option>
                 <option value="U-Connect">U-Connect</option>
                 <option value="C-Connect">C-Connect</option>
                 <option value="G-Connect">G-Connect</option>
                 <option value="V-Connect">V-Connect</option>
-                <option value="ALL">All Channels</option>
               </select>
             </div>
             <div class="four columns">
               <label for="fromDate">From Date</label>
-              <input class="u-full-width" type="text" placeholder="Enter From Date" id="fromDate" name="fromDate">
+              <input class="u-full-width" type="text" placeholder="Enter From Date" id="fromDate" name="fromDate" disabled>
             </div>
             <div class="four columns">
               <label for="fromDate">Till Date</label>
-              <input class="u-full-width" type="text" placeholder="Enter Till Date" id="tillDate" name="tillDate">
+              <input class="u-full-width" type="text" placeholder="Enter Till Date" id="tillDate" name="tillDate" disabled>
             </div>
           </div>
 
           <div class="row">
             <div class="four columns">
               <label for="city">Enter City</label>
-              <input class="u-full-width" type="text" placeholder="Enter City" id="city" name="city">
+              <input class="u-full-width" type="text" placeholder="Enter City" id="city" name="city" disabled>
             </div>
             <div class="four columns">
               <label for="fromDate">Enter State</label>
-              <input class="u-full-width" type="text" placeholder="Enter State" id="state" name="state">
+              <input class="u-full-width" type="text" placeholder="Enter State" id="state" name="state" disabled>
             </div>
             <div class="four columns">
               <label for="fromDate">Enter County</label>
-              <input class="u-full-width" type="text" placeholder="Enter Country" id="country" name="country">
+              <input class="u-full-width" type="text" placeholder="Enter Country" id="country" name="country" disabled>
             </div>
           </div>
 
@@ -63,7 +63,7 @@
           </div>
           <div class="row">
             <div class="six columns">
-				<p><i>(Report is tab separated file. currently available only by channel)</i></p>
+				<p><i>(Report is downloaded into the downloads folder with name starting as Report_by_Channel. Currently report by Channel is enabled. The report file is a Tab separated file, can be opened in MS Excel )</i></p>
             </div>
           </div>
       </form>

@@ -73,7 +73,7 @@ public class ReportsController {
         	}
 
         	response.getOutputStream().println(sb.toString());
-        	System.out.println(sb.toString());
+        	//System.out.println(sb.toString());
         	
         } catch (IOException e) {
         		
