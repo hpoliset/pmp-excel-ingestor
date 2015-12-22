@@ -28,6 +28,7 @@
                 <option value="C-Connect">C-Connect</option>
                 <option value="G-Connect">G-Connect</option>
                 <option value="V-Connect">V-Connect</option>
+                <option value="ALL">All Channels</option>
               </select>
             </div>
             <div class="four columns">
@@ -59,8 +60,10 @@
             <div class="six columns">          
 				<input class="button-primary" type="submit" value="Download Report" />
             </div>
+          </div>
+          <div class="row">
             <div class="six columns">
-				<p>(Report is tab separated file. currently available only by channel)</p>
+				<p><i>(Report is tab separated file. currently available only by channel)</i></p>
             </div>
           </div>
       </form>

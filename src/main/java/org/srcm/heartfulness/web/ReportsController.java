@@ -15,7 +15,7 @@ import java.util.Collection;
 import java.util.Date;
 
 /**
- * Created by vsonnathi on 11/12/15.
+ * Created by MaheshK on 11/12/15.
  */
 @Controller
 public class ReportsController {
@@ -61,9 +61,9 @@ public class ReportsController {
           .append("\n");
         
         response.reset();
-        response.setContentType("text/csv"); //or whatever file type you want to send. 
+        response.setContentType("text/plain");
         response.setHeader("Content-disposition", "attachment; filename=Report_by_Channel_" + channel + "_" +
-        		new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss").format(new Date()) +".csv");
+        		new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss").format(new Date()) +".txt");
         
         try 
         {

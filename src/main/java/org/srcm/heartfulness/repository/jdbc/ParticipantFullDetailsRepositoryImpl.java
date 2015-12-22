@@ -40,18 +40,14 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 //        Map<String, Object> params = new HashMap<>();
 //        params.put("programChannel", programChannel);
 //        SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
-        PreparedStatementSetter pstst = new PreparedStatementSetter() {
-			
-			@Override
-			public void setValues(PreparedStatement preparedStatement) throws SQLException {
-				// TODO Auto-generated method stub
-				preparedStatement.setString(1, programChannel);
+		StringBuilder whereCondition = new StringBuilder(" where 1 = 1 ");
 
-			}
-		}; 
-     
+		if (!("ALL".equals(programChannel))) {
+			whereCondition.append(" and pg.program_channel = ? ");
+		}
+
         FullParticipantRowCallbackHandler rowCallbackHandler = new FullParticipantRowCallbackHandler();
-        
+
         jdbcTemplate.query(
         	     "select " + 
         	      "pg.program_id," +
@@ -141,18 +137,19 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
                   "pr.update_time " +
             "from participant pr " +
             "left outer join program pg on pr.program_id = pg.program_id " +
-            "where pg.program_channel = ? " +
+            whereCondition +
             "order by pg.program_channel, pg.program_start_date, pg.organization_name,  pr.first_name",
-            new PreparedStatementSetter() {
-    			
-    			@Override
-    			public void setValues(PreparedStatement preparedStatement) throws SQLException {
-    				// TODO Auto-generated method stub
-    				preparedStatement.setString(1, programChannel);
-    			}
-    		},
-           rowCallbackHandler);
-       
+
+            (PreparedStatement preparedStatement) ->
+            {
+                if (!("ALL".equals(programChannel))) {
+                    preparedStatement.setString(1, programChannel);
+                }
+            },
+
+           rowCallbackHandler
+        );
+
 
         Collection<ParticipantFullDetails> participantDetails = rowCallbackHandler.getParticipantDetails();
 
