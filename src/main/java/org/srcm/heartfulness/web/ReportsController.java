@@ -64,16 +64,13 @@ public class ReportsController {
         response.setContentType("text/plain");
         response.setHeader("Content-disposition", "attachment; filename=Report_by_Channel_" + channel + "_" +
         		new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss").format(new Date()) +".txt");
+    	response.getOutputStream().print(sb.toString());
         
         try 
         {
         	for (ParticipantFullDetails participant: participants ){
-        		sb.append(participant.toString());
-        		sb.append("\n");
+            	response.getOutputStream().println(participant.toString());
         	}
-
-        	response.getOutputStream().println(sb.toString());
-        	//System.out.println(sb.toString());
         	
         } catch (IOException e) {
         		
