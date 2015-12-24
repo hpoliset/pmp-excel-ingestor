@@ -1,4 +1,4 @@
-package org.srcm.heartfulness.repository;
+package org.srcm.heartfulness.repository.jdbc;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Repository;
@@ -31,17 +31,10 @@ public interface ParticipantFullDetailsRepository {
      */
 //    ParticipantFullDetails findById(int id) throws DataAccessException;
 
-    Collection<ParticipantFullDetails> getParticipantFullDetails(String programChannel,String fromDate,
-    		String tillDate,String city,String state,String country);
+    Collection<ParticipantFullDetails> findByChannel(String programChannel);
 
     /**
      * Save an <code>Participant</code> to the data store, either inserting or updating it.
      */
     //void save(Participant participant);
-    
-    List<String> getEventStatesForEventCountry(String country);
-
-    List<String> getAllUniqueEventTypes();
-
-	List<String> getAllEventCountries();
 }

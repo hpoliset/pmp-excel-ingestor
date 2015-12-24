@@ -1,23 +1,20 @@
 package org.srcm.heartfulness.repository.jdbc;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.model.ParticipantFullDetails;
 import org.srcm.heartfulness.repository.ParticipantFullDetailsRepository;
+import org.srcm.heartfulness.util.DateUtils;
 
 /**
  *
@@ -27,7 +24,8 @@ import org.srcm.heartfulness.repository.ParticipantFullDetailsRepository;
 public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDetailsRepository {
 
     private final JdbcTemplate jdbcTemplate;
-
+    private final String DATE_FORMAT="dd/MMM/yyyy";
+    
     @Autowired
     public ParticipantFullDetailsRepositoryImpl(DataSource dataSource) {
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -36,16 +34,52 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 
 
     @Override
-    public Collection<ParticipantFullDetails> findByChannel(String programChannel) {
+    public Collection<ParticipantFullDetails> getParticipantFullDetails(String programChannel,String fromDate,
+    		String tillDate,String city,String state,String country) {
 //        Map<String, Object> params = new HashMap<>();
 //        params.put("programChannel", programChannel);
 //        SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
 		StringBuilder whereCondition = new StringBuilder(" where 1 = 1 ");
-
+		List<Object> parameters = new ArrayList<>();
 		if (!("ALL".equals(programChannel))) {
 			whereCondition.append(" and pg.program_channel = ? ");
+			parameters.add(programChannel);
+		}
+		
+		if((fromDate!=null && !fromDate.isEmpty()) && tillDate==null){
+			try {
+				whereCondition.append(" and (pg.program_start_date >= ? and pg.program_end_date <= NOW())");
+				parameters.add(DateUtils.parseToSqlDate(fromDate, DATE_FORMAT));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
 		}
 
+		if((fromDate!=null && !fromDate.isEmpty()) && (tillDate!=null && !tillDate.isEmpty())){
+			try {
+				whereCondition.append(" and (pg.program_start_date >= ? and pg.program_end_date <= ?)");
+				parameters.add(DateUtils.parseToSqlDate(fromDate, DATE_FORMAT));
+				parameters.add(DateUtils.parseToSqlDate(tillDate, DATE_FORMAT));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if (city!=null && !city.isEmpty()) {
+			whereCondition.append(" and pg.event_city = ? ");
+			parameters.add(city);
+		}
+		
+		if (!("ALL".equals(state))) {
+			whereCondition.append(" and pg.event_state = ? ");
+			parameters.add(state);
+		}
+		
+		if (!("ALL".equals(country))) {
+			whereCondition.append(" and pg.event_country = ? ");
+			parameters.add(country);
+		}
+		
         FullParticipantRowCallbackHandler rowCallbackHandler = new FullParticipantRowCallbackHandler();
 
         jdbcTemplate.query(
@@ -142,9 +176,17 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 
             (PreparedStatement preparedStatement) ->
             {
-                if (!("ALL".equals(programChannel))) {
-                    preparedStatement.setString(1, programChannel);
-                }
+                /*if (!("ALL".equals(programChannel))) {
+                    
+                }*/
+                for(int i=0;i<parameters.size();i++){
+        			Object param = parameters.get(i);
+        			if (param instanceof Date) {
+        				preparedStatement.setDate(i+1, (Date)param);
+        			}else if(param instanceof String){
+        				preparedStatement.setString(i+1, (String)param);
+        			}
+        		}
             },
 
            rowCallbackHandler
@@ -156,4 +198,24 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
         return participantDetails;
     }
 
+    @Override
+	public List<String> getAllEventCountries() {
+		 List<String> eventUniqueCountries = this.jdbcTemplate.queryForList("SELECT distinct event_country from program order by event_country asc",
+	                null, String.class);
+		return eventUniqueCountries;
+	}
+
+	@Override
+	public List<String> getEventStatesForEventCountry(String country) {
+		 List<String> eventUniqueStates = this.jdbcTemplate.queryForList("SELECT distinct event_state FROM program WHERE event_country = ? order by event_state asc",
+				 new Object[]{country}, String.class);
+		return eventUniqueStates;
+	}
+	
+	@Override
+	public List<String> getAllUniqueEventTypes(){
+		List<String> uniqueEventTypes = this.jdbcTemplate.queryForList("SELECT distinct program_channel FROM program order by program_channel asc",
+				 new Object[]{}, String.class);
+		return uniqueEventTypes;
+	}
 }

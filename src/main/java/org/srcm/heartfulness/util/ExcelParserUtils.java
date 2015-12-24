@@ -1,10 +1,9 @@
 package org.srcm.heartfulness.util;
 
-import org.apache.poi.hssf.extractor.ExcelExtractor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.srcm.heartfulness.constants.HeartfulnessConstants;
 import org.srcm.heartfulness.model.Program;
 
 import java.io.ByteArrayInputStream;
@@ -39,8 +38,15 @@ public abstract class ExcelParserUtils {
         return workbook;
     }
 
-    public static ExcelDataExtractor getExcelDataExtractor(String fileName, byte[] fileContent) throws InvalidExcelFileException {
+    public static ExcelDataExtractor getExcelDataExtractor(String fileName, byte[] fileContent,String version) throws InvalidExcelFileException {
         // TODO: v1 parser.
-        return new ExcelDataExtractorV2Impl(fileName, fileContent);
+    	if(version.equals(HeartfulnessConstants.VERSION_ONE)){
+    		return new ExcelDataExtractorV1Impl(fileName, fileContent);
+    	}else if(version.equals(HeartfulnessConstants.VERSION_TWO)){
+    		return new ExcelDataExtractorV2Impl(fileName, fileContent);
+    	}else{
+    		//Need to change
+    		return new InvalidExcelDataExtractor();
+    	}
     }
 }

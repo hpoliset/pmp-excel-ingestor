@@ -1,18 +1,23 @@
 package org.srcm.heartfulness.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.srcm.heartfulness.model.ParticipantFullDetails;
-import org.srcm.heartfulness.service.ReportingService;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.srcm.heartfulness.model.ParticipantFullDetails;
+import org.srcm.heartfulness.service.ReportingService;
 
 /**
  * Created by MaheshK on 11/12/15.
@@ -24,7 +29,13 @@ public class ReportsController {
     private ReportingService reportingService;
 
     @RequestMapping(value = "/reports/reportsForm", method = RequestMethod.GET)
-    public String showReportsForm(HttpServletRequest request) {
+    public String showReportsForm(HttpServletRequest request,ModelMap modelMap) 
+    {
+    	List<String> eventCountries = reportingService.getAllEventCountries();
+    	List<String> eventTypes = reportingService.getAllUniqueEventTypes();
+    	modelMap.addAttribute("eventCountries", eventCountries);
+    	modelMap.addAttribute("eventTypes", eventTypes);
+    	
         return "reportsForm";
     }
 
@@ -41,10 +52,13 @@ public class ReportsController {
             throws InvalidExcelFileException, IOException {
 */
     public void generateReport(HttpServletRequest request, HttpServletResponse response,
-                                    @RequestParam String channel)
+                                    @RequestParam(required=false) String channel,@RequestParam(required=false) String fromDate,
+                                    @RequestParam(required=false) String tillDate,@RequestParam(required=false) String city,
+                                    @RequestParam(required=false) String state,@RequestParam(required=false) String country)
             throws IOException {
 
-        Collection<ParticipantFullDetails> participants = reportingService.getParticipantsByChannel(channel);
+        Collection<ParticipantFullDetails> participants = reportingService.getParticipantsByChannel(channel,fromDate,
+        		tillDate,city,state,country);
 
         StringBuilder sb = new StringBuilder();
         
@@ -62,15 +76,18 @@ public class ReportsController {
         
         response.reset();
         response.setContentType("text/plain");
-        response.setHeader("Content-disposition", "attachment; filename=Report_by_Channel_" + channel + "_" +
+        response.setHeader("Content-disposition", "attachment; filename=Report_" +
         		new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss").format(new Date()) +".txt");
-    	response.getOutputStream().print(sb.toString());
         
         try 
         {
         	for (ParticipantFullDetails participant: participants ){
-            	response.getOutputStream().println(participant.toString());
+        		sb.append(participant.toString());
+        		sb.append("\n");
         	}
+
+        	response.getOutputStream().println(sb.toString());
+        	//System.out.println(sb.toString());
         	
         } catch (IOException e) {
         		
@@ -80,5 +97,12 @@ public class ReportsController {
         
     }
 
+    @RequestMapping(value = "/reports/getStates", method = RequestMethod.POST)
+    @ResponseBody
+    public List<String> getEventStatesForCountry(HttpServletRequest request,ModelMap modelMap,
+    		@RequestParam(required=false,name="eventCountry") String eventCountry){
+    	List<String> eventStates = reportingService.getEventStatesForEventCountry(eventCountry);
+    	return eventStates;
+    }
 
 }

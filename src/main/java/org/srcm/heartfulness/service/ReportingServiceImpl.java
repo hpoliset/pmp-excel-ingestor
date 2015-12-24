@@ -34,10 +34,11 @@ public class ReportingServiceImpl implements ReportingService {
 
     @Override
     @Transactional
-    public Collection<ParticipantFullDetails> getParticipantsByChannel(String channel) {
+    public Collection<ParticipantFullDetails> getParticipantsByChannel(String channel,String fromDate,
+    		String tillDate,String city,String state,String country) {
 
     	
-    	return participantFullDetailsRepository.findByChannel(channel);
+    	return participantFullDetailsRepository.getParticipantFullDetails(channel,fromDate,tillDate,city,state,country);
     	
         //Validate and Parse the excel file
         //ExcelDataExtractor dataExtractor = ExcelParserUtils.getExcelDataExtractor(fileName, fileContent);
@@ -49,4 +50,19 @@ public class ReportingServiceImpl implements ReportingService {
 
         //programRepository.save(program);
     }
+    
+    @Override
+	public List<String> getAllEventCountries() {
+		return participantFullDetailsRepository.getAllEventCountries();
+	}
+    
+    @Override
+	public List<String> getEventStatesForEventCountry(String country) {
+		return participantFullDetailsRepository.getEventStatesForEventCountry(country);
+	}
+    
+    @Override
+	public List<String> getAllUniqueEventTypes(){
+		return participantFullDetailsRepository.getAllUniqueEventTypes();
+	}
 }

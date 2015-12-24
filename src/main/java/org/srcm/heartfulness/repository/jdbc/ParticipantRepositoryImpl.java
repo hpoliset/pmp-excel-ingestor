@@ -126,6 +126,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
                             "remarks=:remarks," +
                             "id_card_number=:idCardNumber," +
                             "language=:language," +
+                            "introduced=:introduced,"+
                             "introduction_date=:introductionDate," +
                             "introduced_by=:introducedBy," +
                             "welcome_card_number=:welcomeCardNumber," +

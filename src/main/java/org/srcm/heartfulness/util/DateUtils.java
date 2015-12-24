@@ -80,4 +80,20 @@ public class DateUtils {
         SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
         return sdf.parse(dateString);
     }
+    
+    public static java.sql.Date parseToSqlDate(String dateString,String dateFormat) throws ParseException{
+    	 if (dateString == null || dateString.isEmpty()) {
+             return null;
+         }
+    	 
+    	 SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        // String dateFormat = determineDateFormat(dateString);
+         if (dateFormat == null) {
+             throw new ParseException("Could not parse:[" + dateString + "] - un supported format", 0);
+         }
+         
+         Date parsed = sdf.parse(dateString);
+         java.sql.Date sqlDate = new java.sql.Date(parsed.getTime());
+         return sqlDate;
+    }
 }
