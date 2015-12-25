@@ -61,22 +61,22 @@ public class ReportsController {
           .append("\n");
         
         response.reset();
-        response.setContentType("text/plain");
+        response.setContentType("text/plain; charset=utf-8");
         response.setHeader("Content-disposition", "attachment; filename=Report_by_Channel_" + channel + "_" +
-        		new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss").format(new Date()) +".txt");
-    	response.getOutputStream().print(sb.toString());
-        
-        try 
-        {
-        	for (ParticipantFullDetails participant: participants ){
-            	response.getOutputStream().println(participant.toString());
-        	}
-        	
-        } catch (IOException e) {
-        		
-            System.out.println("ERROR IN WRITING RESPONSE in ReportsController");
-        }
+                        new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss").format(new Date()) +".txt");
+        response.getWriter().print(sb.toString());
 
+        try
+        {
+                for (ParticipantFullDetails participant: participants ){
+                response.getWriter().println(participant.toString());
+                }
+
+        } catch (IOException e) {
+
+            System.out.println("ERROR IN WRITING RESPONSE in ReportsController" + e.getMessage());
+            e.printStackTrace();
+        }
         
     }
 
