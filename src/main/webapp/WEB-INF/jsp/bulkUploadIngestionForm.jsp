@@ -17,7 +17,7 @@
 		<div class="container">
 			<h3>Heartfulness Event Data Upload Screen</h3>
 			<div class="six columns">
-				<input id="fileupload" type="file" name="excelDataFiles" multiple>
+				<input id="fileupload" type="file" name="uploadedExcelFiles" multiple>
 			</div>
 			<div class="six columns">
 				<input type="submit" id="process" value="Start uploading excels"  />
