@@ -1,18 +1,22 @@
 package org.srcm.heartfulness.service;
 
-import org.srcm.heartfulness.util.InvalidExcelFileException;
+import java.io.IOException;
+import java.util.List;
 
-import java.util.Date;
+import org.springframework.web.multipart.MultipartFile;
+import org.srcm.heartfulness.service.response.ExcelUploadResponse;
 
 /**
  * Created by vsonnathi on 11/19/15.
  */
 public interface PmpIngestionService {
 
-    void parseAndPersistExcelFile(String fileName, byte[] fileContent) throws InvalidExcelFileException;
+	ExcelUploadResponse parseAndPersistExcelFile(String fileName, byte[] fileContent);
 
-    void normalizeStagingRecords();
+	List<ExcelUploadResponse> parseAndPersistExcelFile(MultipartFile[] excels) throws IOException;
 
-//    void syncRecordsToAims(Date aimsSyncTime);
+	void normalizeStagingRecords();
+
+	// void syncRecordsToAims(Date aimsSyncTime);
 
 }

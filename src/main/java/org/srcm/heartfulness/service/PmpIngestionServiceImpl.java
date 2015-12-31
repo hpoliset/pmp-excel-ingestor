@@ -1,22 +1,33 @@
 package org.srcm.heartfulness.service;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.srcm.heartfulness.constants.HeartfulnessConstants;
+import org.srcm.heartfulness.enumeration.ExcelType;
+import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractor;
 import org.srcm.heartfulness.model.Organisation;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.repository.OrganisationRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
-import org.srcm.heartfulness.util.ExcelDataExtractor;
+import org.srcm.heartfulness.service.response.ExcelUploadResponse;
 import org.srcm.heartfulness.util.ExcelParserUtils;
 import org.srcm.heartfulness.util.InvalidExcelFileException;
-
-import java.util.Date;
-import java.util.List;
+import org.srcm.heartfulness.util.VersionIdentifier;
+import org.srcm.heartfulness.validator.EventDetailsExcelValidatorFactory;
 
 /**
  * Created by vsonnathi on 11/19/15.
@@ -24,51 +35,106 @@ import java.util.List;
 @Service
 public class PmpIngestionServiceImpl implements PmpIngestionService {
 
-    static Logger LOGGER = LoggerFactory.getLogger(PmpIngestionServiceImpl.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(PmpIngestionServiceImpl.class);
 
-    @Autowired
-    private ProgramRepository programRepository;
+	@Autowired
+	private ProgramRepository programRepository;
 
-    @Autowired
-    private OrganisationRepository organisationRepository;
+	@Autowired
+	private OrganisationRepository organisationRepository;
 
-    @Override
-    @Transactional
-    public void parseAndPersistExcelFile(String fileName, byte[] fileContent) throws InvalidExcelFileException {
+	@Autowired
+	private VersionIdentifier versionIdentifier;
+	
+	/**
+	 * This method is used to parse the excel file and populate the data into database.
+	 * 
+	 * @param fileName
+	 * @param fileContent
+	 * @return the status and error messages. 
+	 */
+	@Override
+	@Transactional
+	public ExcelUploadResponse parseAndPersistExcelFile(String fileName, byte[] fileContent) {
+		ExcelUploadResponse response = new ExcelUploadResponse();
+		response.setFileName(fileName);
+		List<String> errorResponse = new ArrayList<String>();
+		Workbook workBook = ExcelParserUtils.getWorkbook(fileName, fileContent);
+		// Validate and Parse the excel file
+		ExcelType version = versionIdentifier.findVersion(workBook);
+		response.setExcelVersion(version);
+		errorResponse = EventDetailsExcelValidatorFactory.validateExcel(workBook, version);
+		if (!errorResponse.isEmpty()) {
+			response.setErrorMsg(errorResponse);
+			response.setStatus(HeartfulnessConstants.FAILURE_STATUS);
+			return response;
+		} else {
+			try {
+				ExcelDataExtractor dataExtractor = version.getExtractor();
+				// Persist the program
+				Program program = dataExtractor.getProgram(workBook);
+				List<Participant> participantList = dataExtractor.getParticipantList(workBook);
+				program.setParticipantList(participantList);
+				programRepository.save(program);
+				response.setStatus(HeartfulnessConstants.SUCCESS_STATUS);
+			} catch (InvalidExcelFileException ex) {
+				LOGGER.error(ex.getMessage());
+				errorResponse.add(ex.getMessage());
+				response.setErrorMsg(errorResponse);
+				response.setStatus(HeartfulnessConstants.FAILURE_STATUS);
+			}
+			return response;
+		}
+	}
 
-        //Validate and Parse the excel file
-        ExcelDataExtractor dataExtractor = ExcelParserUtils.getExcelDataExtractor(fileName, fileContent);
+	@Override
+	// every 15 minutes
+	// @Scheduled(cron = "0 0/15 * * * *")
+	// @Scheduled(cron = "0/5 * * * * *")
+	public void normalizeStagingRecords() {
 
-        //Persist the program
-        Program program = dataExtractor.getProgram();
-        List<Participant> participantList = dataExtractor.getParticipantList();
-        program.setParticipantList(participantList);
+		// Find out all the program records that are updated after the
+		// batchProcessingTime
+		LOGGER.info("normalizedStagingRecords ... invoked at:[" + new Date() + "]");
 
-        programRepository.save(program);
-    }
+		// Find all program objects that have been modified since last
+		// normalized run.
+		List<Integer> programIds = programRepository.findUpdatedProgramIdsSince(new Date());
+		for (Integer programId : programIds) {
+			Program program = programRepository.findById(programId);
+			normalizeProgram(program);
+		}
+	}
 
-    @Override
-//    every 15 minutes
-//    @Scheduled(cron = "0 0/15 * * * *")
-//    @Scheduled(cron = "0/5 * * * * *")
-    public void normalizeStagingRecords() {
+	private void normalizeProgram(Program program) {
+		// Look up Organisation based on name and address_line1
+		Organisation organisation = organisationRepository.findByNameAndWebsite(program.getOrganizationName(),
+				program.getOrganizationWebSite());
 
-        // Find out all the program records that are updated after the batchProcessingTime
-        LOGGER.info("normalizedStagingRecords ... invoked at:[" + new Date() + "]");
+	}
 
-        // Find all program objects that have been modified since last normalized run.
-        List<Integer> programIds = programRepository.findUpdatedProgramIdsSince(new Date());
-        for (Integer programId : programIds) {
-            Program program = programRepository.findById(programId);
-            normalizeProgram(program);
-        }
-    }
+	/**
+	 * This method is used to parse the excel files.
+	 * 
+	 * @param excelFiles
+	 * @return List of ExcelUploadResponse
+	 * @see {@link ExcelUploadResponse}
+	 */
+	@Override
+	public List<ExcelUploadResponse> parseAndPersistExcelFile(MultipartFile[] excelFiles) throws IOException {
 
-    private void normalizeProgram(Program program) {
-        // Look up Organisation based on name and address_line1
-        Organisation organisation = organisationRepository.findByNameAndWebsite(program.getOrganizationName(),
-                program.getOrganizationWebSite());
+		List<ExcelUploadResponse> responseList = new LinkedList<ExcelUploadResponse>();
+		// sorting the files based on excel file name
+		Arrays.sort(excelFiles, new Comparator<MultipartFile>() {
+			@Override
+			public int compare(MultipartFile mpf1, MultipartFile mpf2) {
+				return mpf1.getOriginalFilename().compareTo(mpf2.getOriginalFilename());
+			}
+		});
+		for (MultipartFile multipartFile : excelFiles) {
+			responseList.add(parseAndPersistExcelFile(multipartFile.getOriginalFilename(), multipartFile.getBytes()));
+		}
+		return responseList;
+	}
 
-
-    }
 }
