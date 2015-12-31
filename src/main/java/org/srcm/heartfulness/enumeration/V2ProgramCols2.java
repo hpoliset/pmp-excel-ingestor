@@ -29,8 +29,11 @@ public enum V2ProgramCols2 {
 	WELCOME_CARD_SIGNER_ID("Welcome Card Signer's ID", 2, 14), 
 	REMARKS("Remarks:", 0, 16);
 	
+	/**Instance to identify the header value for participants in v2.1 template. */
 	private String header;
+	/**Instance to identify the cell value for participants in v2.1 template. */
 	private int cell;
+	/**Instance to identify the row value for participants in v2.1 template. */
 	private int row;
 
 	private V2ProgramCols2(String header, int cell, int row) {
@@ -40,21 +43,26 @@ public enum V2ProgramCols2 {
 	}
 
 	/**
-	 * @return the row
+	 *  get hold of the event row value for v2.1 template.
+	 * 
+	 * @return row value
 	 */
 	public int getRow() {
 		return row;
 	}
 
 	/**
+	 * set the event row value for v2.1 template.
+	 * 
 	 * @param row
-	 *            the row to set
 	 */
 	public void setRow(int row) {
 		this.row = row;
 	}
 
 	/**
+	 * get hold of the event header value for v2.1 template.
+	 * 
 	 * @return the header
 	 */
 	public String getHeader() {
@@ -62,14 +70,18 @@ public enum V2ProgramCols2 {
 	}
 
 	/**
+	 * set the event header value for v2.1 template.
+	 * 
 	 * @param header
-	 *            the header to set
+	 *  
 	 */
 	public void setHeader(String header) {
 		this.header = header;
 	}
 
 	/**
+	 * get hold of the event column value for v2.1 template.
+	 * 
 	 * @return the cell
 	 */
 	public int getCell() {
@@ -77,8 +89,10 @@ public enum V2ProgramCols2 {
 	}
 
 	/**
+	 * set the event column value for v2.1 template.
+	 * 
 	 * @param cell
-	 *            the cell to set
+	 * 
 	 */
 	public void setCell(int cell) {
 		this.cell = cell;

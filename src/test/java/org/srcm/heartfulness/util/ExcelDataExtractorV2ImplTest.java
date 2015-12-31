@@ -13,7 +13,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.srcm.heartfulness.PmpApplication;
+import org.srcm.heartfulness.enumeration.ExcelType;
 import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractor;
+import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractorFactory;
 import org.srcm.heartfulness.excelupload.transformer.impl.ExcelDataExtractorV2Impl;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
@@ -47,13 +49,11 @@ public class ExcelDataExtractorV2ImplTest {
 
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
         Workbook workbook = ExcelParserUtils.getWorkbook(resourceName, fileContent);
-        ExcelDataExtractor v2Extractor = new ExcelDataExtractorV2Impl();
-        Program program = v2Extractor.getProgram(workbook);
+        Program program =  ExcelDataExtractorFactory.extractProgramDetails(workbook,ExcelType.V2_1);
         Assert.notNull(program, "Not able to parse valid V21 file: [" + resourceName + "]");
         System.out.println("compute hash: " + program.computeHashCode());
         System.out.println("program = " + program);
-
-        List<Participant> participantList = v2Extractor.getParticipantList(workbook);
+        List<Participant> participantList = program.getParticipantList();
        // Assert.notEmpty(participantList, "Not able read participants");
     }
 
@@ -64,7 +64,7 @@ public class ExcelDataExtractorV2ImplTest {
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
         Workbook workbook = ExcelParserUtils.getWorkbook(invalidFileName, fileContent);
         ExcelDataExtractor v2Extractor = new ExcelDataExtractorV2Impl();
-        v2Extractor.getProgram(workbook);
+        v2Extractor.extractExcel(workbook);
     }
 
    /* @Test

@@ -13,7 +13,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.srcm.heartfulness.constants.HeartfulnessConstants;
+import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.enumeration.V1ParticipantCols;
 import org.srcm.heartfulness.enumeration.V1ProgramCols;
 import org.srcm.heartfulness.util.DateUtils;
@@ -37,7 +37,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 			errorList.add("Workbook is not valid or empty.");
 			return errorList;
 		}
-		Sheet sheet = workBook.getSheet(HeartfulnessConstants.V1_SHEET_NAME);
+		Sheet sheet = workBook.getSheet(EventDetailsUploadConstants.V1_SHEET_NAME);
 		if (sheet == null) {
 			errorList.add("Sheet is not present/invalid or empty.");
 			return errorList;
@@ -76,7 +76,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 	 */
 	public void validateParticipantDetails(Sheet sheet, List<String> errorList) {
 
-		LOGGER.info("INFO : Started validating Participation Details structure for altered 1.0 template.");
+		LOGGER.debug("INFO : Started validating Participation Details structure for altered 1.0 template.");
 		int row, col;
 		for (V1ParticipantCols column : V1ParticipantCols.values()) {
 			row = column.getRow();
@@ -86,7 +86,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 						+ " is not present as per the template.");
 			}
 		}
-		LOGGER.info("INFO : Participants Details structure validation completed for altered 1.0 template.");
+		LOGGER.debug("INFO : Participants Details structure validation completed for altered 1.0 template.");
 	}
 
 	/**
@@ -111,13 +111,13 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 
 	public void checkParticipantMandatoryFields(Sheet sheet, List<String> eventErrorList) {
 
-		LOGGER.info("INFO : Started validating participant detail fields for altered 1.0 template.");
+		LOGGER.debug("INFO : Started validating participant detail fields for altered 1.0 template.");
 		int rowCount = sheet.getPhysicalNumberOfRows();
 		for (int i = 15; i < rowCount; i++) {
 			Row currentRow = sheet.getRow(i);
 			eventErrorList.addAll(parseParticipantData(currentRow, i + 1));
 		}
-		LOGGER.info("INFO : Participants detail field validation completed for altered 1.0 template.");
+		LOGGER.debug("INFO : Participants detail field validation completed for altered 1.0 template.");
 	}
 
 	private List<String> parseParticipantData(Row currentRow, int rowNumber) {

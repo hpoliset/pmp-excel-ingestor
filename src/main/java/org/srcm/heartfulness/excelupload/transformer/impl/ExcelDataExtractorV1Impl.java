@@ -14,7 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.srcm.heartfulness.constants.HeartfulnessConstants;
+import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractor;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
@@ -29,28 +29,31 @@ import org.srcm.heartfulness.util.InvalidExcelFileException;
  */
 public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 
-	static final Logger LOGGER = LoggerFactory.getLogger(ExcelDataExtractorV1Impl.class);
-	private Sheet sheet;
-	private Program program;
+	private static final Logger LOGGER = LoggerFactory.getLogger(ExcelDataExtractorV1Impl.class);
+	
 
-
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractor#extractExcel(org.apache.poi.ss.usermodel.Workbook)
+	 */
 	@Override
-	public Program getProgram(Workbook workbook) throws InvalidExcelFileException {
-		this.sheet = workbook.getSheet(HeartfulnessConstants.V1_SHEET_NAME);
-		this.program = parseProgram();
+	public Program extractExcel(Workbook workbook) throws InvalidExcelFileException {
+		Sheet sheet = workbook.getSheet(EventDetailsUploadConstants.V1_SHEET_NAME);
+		Program program = new Program();
+		program = parseProgram(sheet);
+		program.setParticipantList(getParticipantList(sheet));
 		return program;
 	}
 
+	
 	/**
      * This method is used to parse the Participant details and fill all the data in Participant POJO class.
      *
      * @return List of Participant details
      */
-	@Override
-	public List<Participant> getParticipantList(Workbook workbook) throws InvalidExcelFileException {
+	private List<Participant> getParticipantList(Sheet sheet) throws InvalidExcelFileException {
 		LOGGER.debug("Started to parse participant data for altered 1.0 template.");
 		List<Participant> participantList = new ArrayList<Participant>();
-		sheet = sheet!=null ? sheet : workbook.getSheet(HeartfulnessConstants.V1_SHEET_NAME);
 		int totalRows = sheet.getPhysicalNumberOfRows();
 		for (int i = 15; i < totalRows; i++) {
 			Row currentRow = sheet.getRow(i);
@@ -121,7 +124,7 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
      * @return Program details.
      * @throws InvalidExcelFileException
      */
-	private Program parseProgram() throws InvalidExcelFileException {
+	private Program parseProgram(Sheet sheet) throws InvalidExcelFileException {
 		LOGGER.debug("Started to parse program data for altered 1.0 template.");
 		Program program = new Program();
 		program.setProgramChannel(sheet.getRow(3).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
@@ -144,4 +147,5 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 		LOGGER.debug("Parsing program data completed for altered 1.0 template.");
 		return program;
 	}
+
 }

@@ -3,11 +3,8 @@
  */
 package org.srcm.heartfulness.util;
 
-import java.util.List;
-
 import org.apache.poi.ss.usermodel.Workbook;
 import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractor;
-import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 
 /**
@@ -17,13 +14,18 @@ import org.srcm.heartfulness.model.Program;
  */
 public class InvalidExcelDataExtractor implements ExcelDataExtractor{
 
-	@Override
+/*	@Override
 	public Program getProgram(Workbook workbook) throws InvalidExcelFileException{
 		throw new InvalidExcelFileException("Template version is invalid");
 	}
 
 	@Override
 	public List<Participant> getParticipantList(Workbook workbook) throws InvalidExcelFileException {
+		throw new InvalidExcelFileException("Template version is invalid");
+	}
+*/
+	@Override
+	public Program extractExcel(Workbook workbook) throws InvalidExcelFileException {
 		throw new InvalidExcelFileException("Template version is invalid");
 	}
 

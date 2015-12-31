@@ -15,11 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.srcm.heartfulness.constants.HeartfulnessConstants;
+import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.enumeration.ExcelType;
-import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractor;
+import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractorFactory;
 import org.srcm.heartfulness.model.Organisation;
-import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.repository.OrganisationRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
@@ -45,7 +44,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 
 	@Autowired
 	private VersionIdentifier versionIdentifier;
-	
+
 	/**
 	 * This method is used to parse the excel file and populate the data into database.
 	 * 
@@ -58,33 +57,31 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	public ExcelUploadResponse parseAndPersistExcelFile(String fileName, byte[] fileContent) {
 		ExcelUploadResponse response = new ExcelUploadResponse();
 		response.setFileName(fileName);
+		response.setExcelVersion(ExcelType.INVALID);
 		List<String> errorResponse = new ArrayList<String>();
-		Workbook workBook = ExcelParserUtils.getWorkbook(fileName, fileContent);
-		// Validate and Parse the excel file
-		ExcelType version = versionIdentifier.findVersion(workBook);
-		response.setExcelVersion(version);
-		errorResponse = EventDetailsExcelValidatorFactory.validateExcel(workBook, version);
-		if (!errorResponse.isEmpty()) {
-			response.setErrorMsg(errorResponse);
-			response.setStatus(HeartfulnessConstants.FAILURE_STATUS);
-			return response;
-		} else {
-			try {
-				ExcelDataExtractor dataExtractor = version.getExtractor();
-				// Persist the program
-				Program program = dataExtractor.getProgram(workBook);
-				List<Participant> participantList = dataExtractor.getParticipantList(workBook);
-				program.setParticipantList(participantList);
-				programRepository.save(program);
-				response.setStatus(HeartfulnessConstants.SUCCESS_STATUS);
-			} catch (InvalidExcelFileException ex) {
-				LOGGER.error(ex.getMessage());
-				errorResponse.add(ex.getMessage());
+		try {
+			Workbook workBook = ExcelParserUtils.getWorkbook(fileName, fileContent);
+			// Validate and Parse the excel file
+			ExcelType version = versionIdentifier.findVersion(workBook);
+			response.setExcelVersion(version);
+			errorResponse = EventDetailsExcelValidatorFactory.validateExcel(workBook, version);
+			if (!errorResponse.isEmpty()) {
 				response.setErrorMsg(errorResponse);
-				response.setStatus(HeartfulnessConstants.FAILURE_STATUS);
+				response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
+			} else {
+				// Persist the program
+				Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version);
+				programRepository.save(program);
+				response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
 			}
-			return response;
+		}catch (InvalidExcelFileException ex) {
+			// To show the error message to the end user.
+			LOGGER.error(ex.getMessage());
+			errorResponse.add(ex.getMessage());
+			response.setErrorMsg(errorResponse);
+			response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 		}
+		return response;
 	}
 
 	@Override
@@ -108,6 +105,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 
 	private void normalizeProgram(Program program) {
 		// Look up Organisation based on name and address_line1
+		@SuppressWarnings("unused")
 		Organisation organisation = organisationRepository.findByNameAndWebsite(program.getOrganizationName(),
 				program.getOrganizationWebSite());
 

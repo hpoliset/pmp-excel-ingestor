@@ -1,14 +1,13 @@
 package org.srcm.heartfulness.model;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Test for Program Domain Object.

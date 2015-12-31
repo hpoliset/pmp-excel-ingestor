@@ -6,6 +6,11 @@ package org.srcm.heartfulness.util;
 
 public class InvalidExcelFileException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public InvalidExcelFileException(String message) {
 		super(message);
 	}

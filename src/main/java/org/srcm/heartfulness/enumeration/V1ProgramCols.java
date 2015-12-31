@@ -19,8 +19,11 @@ public enum V1ProgramCols {
 	WEBSITE("Website", 10, 0),
 	PROGRAM_DATE("Dates of the program", 11, 0);
 
+	/**Instance to identify the header value for event in v1.0 template. */
 	private String header;
+	/**Instance to identify the cell value for event in v1.0 template. */
 	private int cell;
+	/**Instance to identify the row value for event in v1.0 template. */
 	private int row;
 
 	private V1ProgramCols(String header, int row, int cell) {
@@ -30,21 +33,26 @@ public enum V1ProgramCols {
 	}
 
 	/**
-	 * @return the row
+	 *  get hold of the event row value for v1.0 template.
+	 * 
+	 * @return row value
 	 */
 	public int getRow() {
 		return row;
 	}
 
 	/**
+	 * set the event row value for v1.0 template.
+	 * 
 	 * @param row
-	 *            the row to set
 	 */
 	public void setRow(int row) {
 		this.row = row;
 	}
 
 	/**
+	 * get hold of the event header value for v1.0 template.
+	 * 
 	 * @return the header
 	 */
 	public String getHeader() {
@@ -52,14 +60,18 @@ public enum V1ProgramCols {
 	}
 
 	/**
+	 * set the event header value for v1.0 template.
+	 * 
 	 * @param header
-	 *            the header to set
+	 *  
 	 */
 	public void setHeader(String header) {
 		this.header = header;
 	}
 
 	/**
+	 * get hold of the event column value for v1.0 template.
+	 * 
 	 * @return the cell
 	 */
 	public int getCell() {
@@ -67,12 +79,13 @@ public enum V1ProgramCols {
 	}
 
 	/**
+	 * set the event column value for v1.0 template.
+	 * 
 	 * @param cell
-	 *            the cell to set
+	 * 
 	 */
 	public void setCell(int cell) {
 		this.cell = cell;
 	}
-
 
 }

@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -25,7 +24,6 @@ import org.srcm.heartfulness.util.InvalidExcelFileException;
 @Controller
 public class IngestionController {
 
-
 	@Autowired
 	private PmpIngestionService pmpIngestionService;
 
@@ -41,14 +39,8 @@ public class IngestionController {
 	}
 
 	@RequestMapping(value = "/ingest/processUpload", method = RequestMethod.POST)
-	/*
-    public String processFileUpload(HttpServletRequest request,
-                                    @RequestParam MultipartFile[] excelDataFile)
-            throws InvalidExcelFileException, IOException {
-	 */
-	public String processFileUpload(HttpServletRequest request,
-			@RequestParam MultipartFile excelDataFile)
-					throws InvalidExcelFileException, IOException {
+	public String processFileUpload(HttpServletRequest request, @RequestParam MultipartFile excelDataFile)
+			throws InvalidExcelFileException, IOException {
 
 		MultipartFile uploadedFile = excelDataFile;
 
@@ -57,25 +49,34 @@ public class IngestionController {
 		return "success";
 	}
 
+	/**
+	 * Mapping method called to display the bulk upload form.
+	 * 
+	 * @param request
+	 * @see {@link HttpServletRequest}
+	 * @return The bulk upload form.
+	 */
 	@RequestMapping(value = "/ingest/bulkUploadForm", method = RequestMethod.GET)
 	public String showBulkUploadForm(HttpServletRequest request) {
 		return "bulkUploadIngestionForm";
 	}
+
 	/**
-	 * This method is used to process multiple excel file and call the service method.
+	 * This method is used to process multiple excel file upload.
 	 * 
-	 * @param excelDataFiles
+	 * @param uploadedExcelFiles
 	 * @param modelMap
 	 * @return bulkUploadResponse.jsp
 	 * @throws IOException
 	 */
-	@RequestMapping(value="/ingest/processBulkUpload", method = RequestMethod.POST)
-	public String processFileUpload(@RequestParam MultipartFile excelDataFiles[],ModelMap modelMap) throws IOException {
-		
-		List<ExcelUploadResponse> responseList = pmpIngestionService.parseAndPersistExcelFile(excelDataFiles);
-		modelMap.addAttribute("uploadReponse",responseList);
+	@RequestMapping(value = "/ingest/processBulkUpload", method = RequestMethod.POST)
+	public String processFileUpload(@RequestParam MultipartFile uploadedExcelFiles[], ModelMap modelMap,
+			HttpServletResponse response, HttpServletRequest request) throws IOException {
+
+		List<ExcelUploadResponse> responseList = pmpIngestionService.parseAndPersistExcelFile(uploadedExcelFiles);
+		modelMap.addAttribute("uploadReponse", responseList);
 		return "bulkUploadResponse";
-		
+
 	}
 
 }

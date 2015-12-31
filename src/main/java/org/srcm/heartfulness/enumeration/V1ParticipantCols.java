@@ -19,9 +19,12 @@ public enum V1ParticipantCols {
 	INTRODUCED_DATE("Introduced Date" + "\n" + "(dd/mm/yyyy)", 14, 8),
 	INTRODUCED_BY("Introduced By", 14, 9),
 	REMARKS("Remarks",14, 10);
-
+	
+	/**Instance to identify the header value for participants in v1.0 template. */
 	private String header;
+	/**Instance to identify the row value for participants in v1.0 template. */
 	private int row;
+	/**Instance to identify the column value for participants in v1.0 template. */
 	private int cell;
 
 	private V1ParticipantCols(String header,int row, int cell) {
@@ -31,6 +34,8 @@ public enum V1ParticipantCols {
 	}
 
 	/**
+	 * get hold of the participant header value for v1.0 template.
+	 * 
 	 * @return the header
 	 */
 	public String getHeader() {
@@ -38,31 +43,47 @@ public enum V1ParticipantCols {
 	}
 
 	/**
+	 * set the participant header value for v1.0 template.
+	 * 
 	 * @param header
-	 *            the header to set
+	 *  
 	 */
 	public void setHeader(String header) {
 		this.header = header;
 	}
-
+	
+	/**
+	 *  get hold of the participant row value for v1.0 template.
+	 * 
+	 * @return row value
+	 */
 	public int getRow() {
 		return row;
 	}
-
+	
+	/**
+	 * set the participant row value for v1.0 template.
+	 * 
+	 * @param row
+	 */
 	public void setRow(int row) {
 		this.row = row;
 	}
 
 	/**
-	 * @return the column
+	 * get hold of the participant column value for v1.0 template.
+	 * 
+	 * @return the cell
 	 */
 	public int getCell() {
 		return cell;
 	}
 
 	/**
-	 * @param column
-	 *            the column to set
+	 * set the participant column value for v1.0 template.
+	 * 
+	 * @param cell
+	 * 
 	 */
 	public void setCell(int cell) {
 		this.cell = cell;

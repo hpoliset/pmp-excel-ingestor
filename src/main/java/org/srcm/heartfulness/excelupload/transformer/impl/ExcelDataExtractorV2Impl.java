@@ -24,19 +24,28 @@ import org.srcm.heartfulness.util.InvalidExcelFileException;
  */
 public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 
-	private Sheet eventSheet;
+	/*private Sheet eventSheet;
 	private Sheet participantsSheet;
-	private Program program;
+	private Program program;*/
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExcelDataExtractorV2Impl.class);
-	
 	
 	public ExcelDataExtractorV2Impl() {
 		super();
 	}
-
+	
 	@Override
-	public Program getProgram(Workbook workbook) throws InvalidExcelFileException {
+	public Program extractExcel(Workbook workbook) throws InvalidExcelFileException {
+		Program program =  new Program();
+		Sheet eventSheet = workbook.getSheet("Event Details");
+		Sheet participantSheet =  workbook.getSheet("Participants Details");
+		program = parseProgram(eventSheet);
+		program.setParticipantList(getParticipantList(participantSheet));
+		return program;
+	}
+
+	
+	/*public Program getProgram(Workbook workbook) throws InvalidExcelFileException {
 		this.eventSheet = workbook.getSheet("Event Details");
 		this.participantsSheet = workbook.getSheet("Participants Details");
 		if (this.eventSheet == null) {
@@ -45,12 +54,11 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		// Read Program
 		this.program = parseProgram();
 		return program;
-	}
+	}*/
 
-	@Override
-	public List<Participant> getParticipantList(Workbook workbook) throws InvalidExcelFileException {
+
+	private List<Participant> getParticipantList(Sheet participantsSheet) throws InvalidExcelFileException {
 		List<Participant> participantList = new ArrayList<Participant>();
-		participantsSheet =  participantsSheet!=null ? participantsSheet : workbook.getSheet("Participants Details");
 		int totalRows = participantsSheet.getPhysicalNumberOfRows();
 		// skip first two
 		for (int i=1; i < totalRows; i++) {
@@ -159,7 +167,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		return participant;
 	}
 
-	private Program parseProgram() throws InvalidExcelFileException {
+	private Program parseProgram(Sheet eventSheet) throws InvalidExcelFileException {
 
 		Program program = new Program();
 

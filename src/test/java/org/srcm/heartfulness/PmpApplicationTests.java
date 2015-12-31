@@ -1,31 +1,28 @@
 package org.srcm.heartfulness;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.util.StreamUtils;
-import org.srcm.heartfulness.constants.HeartfulnessConstants;
 import org.srcm.heartfulness.enumeration.ExcelType;
-import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractor;
-import org.srcm.heartfulness.excelupload.transformer.impl.ExcelDataExtractorV1Impl;
-import org.srcm.heartfulness.excelupload.transformer.impl.ExcelDataExtractorV2Impl;
+import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractorFactory;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.util.ExcelParserUtils;
 import org.srcm.heartfulness.util.InvalidExcelFileException;
-
-import java.io.IOException;
-import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PmpApplication.class)
@@ -52,11 +49,8 @@ public class PmpApplicationTests {
 
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
         Workbook workbook = ExcelParserUtils.getWorkbook(fileName, fileContent);
-        ExcelDataExtractor v21Extractor = new ExcelDataExtractorV2Impl(); 
-        Program validV21Program = v21Extractor.getProgram(workbook);
-        List<Participant> participantList = v21Extractor.getParticipantList(workbook);
-        validV21Program.setParticipantList(participantList);
-
+        Program validV21Program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1);
+        List<Participant> participantList = validV21Program.getParticipantList();
         programRepository.save(validV21Program);
 
         //Validate that is stored.
@@ -66,10 +60,7 @@ public class PmpApplicationTests {
         Assert.assertEquals("Should be same number of participants", newProgram.getParticipantList().size(), participantList.size());
 
         //Let's insert the excel file one more time.
-        ExcelDataExtractor v21ExtractorDuplicate = new ExcelDataExtractorV2Impl(); 
-        Program validV21ProgramDuplicate = v21ExtractorDuplicate.getProgram(workbook);
-        List<Participant> participantListDuplicate = v21ExtractorDuplicate.getParticipantList(workbook);
-        validV21ProgramDuplicate.setParticipantList(participantListDuplicate);
+        Program validV21ProgramDuplicate = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1);
         programRepository.save(validV21ProgramDuplicate);
 
         Assert.assertEquals("Should not have create a new row", validV21ProgramDuplicate.getProgramId(),
@@ -90,9 +81,8 @@ public class PmpApplicationTests {
 
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
         Workbook workbook = ExcelParserUtils.getWorkbook(fileName, fileContent);
-        ExcelDataExtractor v21Extractor = new ExcelDataExtractorV2Impl(); 
-        Program validV21Program = v21Extractor.getProgram(workbook);
-        List<Participant> participantList = v21Extractor.getParticipantList(workbook);
+        Program validV21Program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1);
+        List<Participant> participantList = validV21Program.getParticipantList();
         validV21Program.setParticipantList(participantList);
 
         programRepository.save(validV21Program);
@@ -107,10 +97,9 @@ public class PmpApplicationTests {
         String day3FileName = "HFN-DATA-MH-PUNE-INPSAD332-20151018.xlsx";
         Resource v21Day3Resource = resourceLoader.getResource("classpath:" + day3FileName);
         byte[] v21Day3FileContent = StreamUtils.copyToByteArray(v21Day3Resource.getInputStream());
-        workbook = ExcelParserUtils.getWorkbook(fileName, fileContent);
-        ExcelDataExtractor v21ExtractorDuplicate = new ExcelDataExtractorV2Impl();
-        Program validV21ProgramDuplicate = v21ExtractorDuplicate.getProgram(workbook);
-        List<Participant> participantListDuplicate = v21ExtractorDuplicate.getParticipantList(workbook);
+        workbook = ExcelParserUtils.getWorkbook(fileName, v21Day3FileContent);
+        Program validV21ProgramDuplicate = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1);
+        List<Participant> participantListDuplicate = validV21ProgramDuplicate.getParticipantList();
         validV21ProgramDuplicate.setParticipantList(participantListDuplicate);
         programRepository.save(validV21ProgramDuplicate);
 
