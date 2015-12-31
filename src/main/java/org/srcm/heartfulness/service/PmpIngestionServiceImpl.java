@@ -1,14 +1,11 @@
 package org.srcm.heartfulness.service;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.srcm.heartfulness.constants.HeartfulnessConstants;
-import org.srcm.heartfulness.model.ExcelMetaData;
 import org.srcm.heartfulness.model.Organisation;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
@@ -16,14 +13,8 @@ import org.srcm.heartfulness.repository.OrganisationRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.util.ExcelDataExtractor;
 import org.srcm.heartfulness.util.ExcelParserUtils;
-import org.srcm.heartfulness.util.ExcelSheetValidator;
-import org.srcm.heartfulness.util.ExcelSheetValidatorV1Impl;
-import org.srcm.heartfulness.util.ExcelSheetValidatorV2Impl;
 import org.srcm.heartfulness.util.InvalidExcelFileException;
-import org.srcm.heartfulness.util.VersionVerification;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -40,46 +31,20 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 
     @Autowired
     private OrganisationRepository organisationRepository;
-    
-    @Autowired
-	private VersionVerification versionVerification;
 
     @Override
     @Transactional
-    public ExcelMetaData parseAndPersistExcelFile(String fileName, byte[] fileContent) throws InvalidExcelFileException {
-    	ExcelMetaData excelMetaData = new ExcelMetaData();
-		excelMetaData.setFileName(fileName);
-		excelMetaData.setFileSize(fileContent.length);
-		List<String> errorResponse = new ArrayList<String>();
-		//Validate and Parse the excel file
-		String version = versionVerification.validateExcelVersion(fileContent);
-		errorResponse = validateExcelFile(fileContent,version);
-		if(!errorResponse.isEmpty()){
-			excelMetaData.setExcelVersion(version);
-			excelMetaData.setErrorMsg(errorResponse);
-			excelMetaData.setStatus(HeartfulnessConstants.FAILURE_STATUS);
-			return excelMetaData;
-		}else{
-			try{
-				ExcelDataExtractor dataExtractor = ExcelParserUtils.getExcelDataExtractor(fileName, fileContent,version);
-				//Persist the program
-				Program program = dataExtractor.getProgram();
-				List<Participant> participantList = dataExtractor.getParticipantList();
-				program.setParticipantList(participantList);
-				programRepository.save(program);
-				excelMetaData.setExcelVersion(version);
-				excelMetaData.setErrorMsg(errorResponse);
-				excelMetaData.setStatus(HeartfulnessConstants.SUCCESS_STATUS);
-				return excelMetaData;
-			}catch(InvalidExcelFileException ex){
-				LOGGER.error(ex.getMessage());
-				errorResponse.add(ex.getMessage());
-				excelMetaData.setExcelVersion(version);
-				excelMetaData.setErrorMsg(errorResponse);
-				excelMetaData.setStatus(HeartfulnessConstants.FAILURE_STATUS);
-				return excelMetaData;
-			}
-		}
+    public void parseAndPersistExcelFile(String fileName, byte[] fileContent) throws InvalidExcelFileException {
+
+        //Validate and Parse the excel file
+        ExcelDataExtractor dataExtractor = ExcelParserUtils.getExcelDataExtractor(fileName, fileContent);
+
+        //Persist the program
+        Program program = dataExtractor.getProgram();
+        List<Participant> participantList = dataExtractor.getParticipantList();
+        program.setParticipantList(participantList);
+
+        programRepository.save(program);
     }
 
     @Override
@@ -106,88 +71,4 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 
 
     }
-    
-    @Override
-	public List<String> validateExcelFile(byte[] excelContent,String version) {
-		List<String> finalResponse = new ArrayList<String>();
-		List<String> eventResponse = null ;  
-		List<String> participantResponse = null;
-		ExcelSheetValidator excelSheetValidator = null;
-		if(version.equals(HeartfulnessConstants.VERSION_ONE)){
-			try{
-				excelSheetValidator = new ExcelSheetValidatorV1Impl();
-				excelSheetValidator.initializeAll(excelContent);
-				eventResponse	= excelSheetValidator.validateEventDetails();
-				participantResponse = excelSheetValidator.validateParticipantDetails();
-			}catch(IOException | InvalidFormatException ex){
-				LOGGER.error(ex.getMessage());
-				finalResponse.add(ex.getMessage());
-			}
-			if(!eventResponse.isEmpty()){
-				finalResponse.addAll(eventResponse);
-			} 
-			if(!participantResponse.isEmpty()){
-				finalResponse.addAll(participantResponse);
-			}
-			if(eventResponse.isEmpty() && participantResponse.isEmpty()){
-				try{
-					eventResponse = excelSheetValidator.checkEventMandatoryFields();
-					participantResponse = excelSheetValidator.checkParticipantMandatoryFields();
-				}catch(IOException ex){
-					LOGGER.error(ex.getMessage());
-					finalResponse.add(ex.getMessage());
-				}
-				if(!eventResponse.isEmpty()){
-					finalResponse.addAll(eventResponse);
-				} 
-				if(!participantResponse.isEmpty()){
-					finalResponse.addAll(participantResponse);
-				}
-			}
-			System.out.println("EL=="+eventResponse.size());
-			System.out.println("PL=="+participantResponse.size());
-			System.out.println("FL=="+finalResponse.size());
-			return finalResponse;
-		}else if(version.equals(HeartfulnessConstants.VERSION_TWO)){
-			try {
-				excelSheetValidator = new ExcelSheetValidatorV2Impl();
-				excelSheetValidator.initializeAll(excelContent);
-				eventResponse	= excelSheetValidator.validateEventDetails();
-				participantResponse = excelSheetValidator.validateParticipantDetails();
-			} catch (IOException | InvalidFormatException e) {
-				LOGGER.error(e.getMessage());
-				finalResponse.add(e.getMessage());
-			}
-			if(!eventResponse.isEmpty()){
-				finalResponse.addAll(eventResponse);
-			} 
-			if(!participantResponse.isEmpty()){
-				finalResponse.addAll(participantResponse);
-			}
-			if(eventResponse.isEmpty() && participantResponse.isEmpty()){
-				try{
-					eventResponse = excelSheetValidator.checkEventMandatoryFields();
-					participantResponse = excelSheetValidator.checkParticipantMandatoryFields();
-				}catch(IOException ex){
-					LOGGER.error(ex.getMessage());
-					finalResponse.add(ex.getMessage());
-				}
-				if(!eventResponse.isEmpty()){
-					finalResponse.addAll(eventResponse);
-				} 
-				if(!participantResponse.isEmpty()){
-					finalResponse.addAll(participantResponse);
-				}
-			}
-			System.out.println("EL=="+eventResponse.size());
-			System.out.println("PL=="+participantResponse.size());
-			System.out.println("FL=="+finalResponse.size());
-			return finalResponse;
-		}else{
-			LOGGER.error(HeartfulnessConstants.INVALID_TEMPLATE_MSG);
-			finalResponse.add(HeartfulnessConstants.INVALID_TEMPLATE_MSG);
-			System.out.println("FL=="+finalResponse.size());
-			return finalResponse;
-		}
-	}
 }

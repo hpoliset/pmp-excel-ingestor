@@ -12,7 +12,6 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.util.StreamUtils;
-import org.srcm.heartfulness.constants.HeartfulnessConstants;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.repository.ProgramRepository;
@@ -47,7 +46,7 @@ public class PmpApplicationTests {
         Resource v2ValidResource = resourceLoader.getResource("classpath:" + fileName);
 
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
-        ExcelDataExtractor v21Extractor = ExcelParserUtils.getExcelDataExtractor(fileName, fileContent,HeartfulnessConstants.VERSION_TWO);
+        ExcelDataExtractor v21Extractor = ExcelParserUtils.getExcelDataExtractor(fileName, fileContent);
         Program validV21Program = v21Extractor.getProgram();
         List<Participant> participantList = v21Extractor.getParticipantList();
         validV21Program.setParticipantList(participantList);
@@ -61,7 +60,7 @@ public class PmpApplicationTests {
         Assert.assertEquals("Should be same number of participants", newProgram.getParticipantList().size(), participantList.size());
 
         //Let's insert the excel file one more time.
-        ExcelDataExtractor v21ExtractorDuplicate = ExcelParserUtils.getExcelDataExtractor(fileName, fileContent,HeartfulnessConstants.VERSION_TWO);
+        ExcelDataExtractor v21ExtractorDuplicate = ExcelParserUtils.getExcelDataExtractor(fileName, fileContent);
         Program validV21ProgramDuplicate = v21ExtractorDuplicate.getProgram();
         List<Participant> participantListDuplicate = v21ExtractorDuplicate.getParticipantList();
         validV21ProgramDuplicate.setParticipantList(participantListDuplicate);
@@ -84,7 +83,7 @@ public class PmpApplicationTests {
         Resource v2ValidResource = resourceLoader.getResource("classpath:" + fileName);
 
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
-        ExcelDataExtractor v21Extractor = ExcelParserUtils.getExcelDataExtractor(fileName, fileContent,HeartfulnessConstants.VERSION_TWO);
+        ExcelDataExtractor v21Extractor = ExcelParserUtils.getExcelDataExtractor(fileName, fileContent);
         Program validV21Program = v21Extractor.getProgram();
         List<Participant> participantList = v21Extractor.getParticipantList();
         validV21Program.setParticipantList(participantList);
@@ -102,7 +101,7 @@ public class PmpApplicationTests {
         Resource v21Day3Resource = resourceLoader.getResource("classpath:" + day3FileName);
         byte[] v21Day3FileContent = StreamUtils.copyToByteArray(v21Day3Resource.getInputStream());
 
-        ExcelDataExtractor v21ExtractorDuplicate = ExcelParserUtils.getExcelDataExtractor(day3FileName, v21Day3FileContent,HeartfulnessConstants.VERSION_TWO);
+        ExcelDataExtractor v21ExtractorDuplicate = ExcelParserUtils.getExcelDataExtractor(day3FileName, v21Day3FileContent);
         Program validV21ProgramDuplicate = v21ExtractorDuplicate.getProgram();
         List<Participant> participantListDuplicate = v21ExtractorDuplicate.getParticipantList();
         validV21ProgramDuplicate.setParticipantList(participantListDuplicate);
