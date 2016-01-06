@@ -24,27 +24,18 @@ public class VersionIdentifier {
 	 * @param uploadedExcelWorkbook
 	 * @see{@link Workbook}
 	 * @return The version type in the form of Enum. @see {@link ExcelType}
-	 * @throws InvalidExcelFileException
 	 */
-	public ExcelType findVersion(Workbook uploadedExcelWorkbook) throws InvalidExcelFileException {
+	public ExcelType findVersion(Workbook uploadedExcelWorkbook) {
+
 		ExcelType version = ExcelType.INVALID;
-		try {
-			Sheet sheet = uploadedExcelWorkbook.getSheet(EventDetailsUploadConstants.EVENT_SHEET_NAME);
-			if (sheet != null) {
-				String versionName = sheet.getRow(1).getCell(0, Row.CREATE_NULL_AS_BLANK).toString();
-				// TODO Change to use Regular Expression
-				String[] array = versionName.split("/");
-				for (String value : array) {
-					if (value.contains("V2.1")) {
-						version = ExcelType.V2_1;
-						break;
-					}
-				}
-			} else if (uploadedExcelWorkbook.getNumberOfSheets() == 2) {
-				version = ExcelType.V1;
+		Sheet sheet = uploadedExcelWorkbook.getSheet(EventDetailsUploadConstants.EVENT_SHEET_NAME);
+		if (sheet != null) {
+			String versionName = sheet.getRow(1).getCell(0, Row.CREATE_NULL_AS_BLANK).toString();
+			if (versionName != null && versionName.contains("/V2.1/")) {
+				version = ExcelType.V2_1;
 			}
-		} catch (NullPointerException e) {
-			throw new InvalidExcelFileException("Invalid File");
+		} else if (uploadedExcelWorkbook.getNumberOfSheets() == 2) {
+			version = ExcelType.V1;
 		}
 		return version;
 	}

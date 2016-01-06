@@ -93,7 +93,7 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 		try {
 			Double numbericMobilePhone = phoneCell.getNumericCellValue();
 			participant.setMobilePhone(String.valueOf(numbericMobilePhone.longValue()));
-		} catch (NumberFormatException | ClassCastException e) {
+		} catch (NumberFormatException | ClassCastException | IllegalStateException e) {
 			LOGGER.error("Participant mobile phone number is not numeric, trying as string");
 			participant.setMobilePhone(phoneCell.toString());
 		}

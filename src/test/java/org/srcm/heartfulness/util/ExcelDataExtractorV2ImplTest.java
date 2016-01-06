@@ -59,7 +59,7 @@ public class ExcelDataExtractorV2ImplTest {
 
     @Test(expected = InvalidExcelFileException.class)
     public void testInValidV2ExcelFile() throws IOException, InvalidExcelFileException {
-        String invalidFileName = "v21InValidEventDate.xlsm";
+        String invalidFileName = "v21InvalidEventDate.xlsm";
         Resource v2ValidResource = resourceLoader.getResource("classpath:" + invalidFileName);
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
         Workbook workbook = ExcelParserUtils.getWorkbook(invalidFileName, fileContent);
