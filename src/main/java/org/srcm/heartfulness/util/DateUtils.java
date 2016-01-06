@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
  * Created by vsonnathi on 11/25/15.
  */
 public class DateUtils {
-	 /*private static final Map<String, String> DATE_FORMAT_REGEXPS = new HashMap<String, String>() {{
+	 private static final Map<String, String> DATE_FORMAT_REGEXPS = new HashMap<String, String>() {{
         put("^\\d{8}$", "yyyyMMdd");
         put("^\\d{1,2}-\\s[a-z]{3}-\\d{2}$", "dd-MMM-yy");
         put("^\\d{1,2}\\.\\d{1,2}\\.\\d{4}$", "dd.MM.yyyy");
@@ -39,11 +39,13 @@ public class DateUtils {
         put("^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}$", "yyyy/MM/dd HH:mm:ss");
         put("^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd MMM yyyy HH:mm:ss");
         put("^\\d{1,2}\\s[a-z]{4,}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}$", "dd MMMM yyyy HH:mm:ss");
-    }};*/
-	private static final Map<String, String> DATE_FORMAT_REGEXPS = new HashMap<String, String>() {{
+        put("^\\d{1,2}-[a-zA-Z]{3,}-\\d{2,}$", "dd-MMM-yy");
+    }};
+	/*private static final Map<String, String> DATE_FORMAT_REGEXPS = new HashMap<String, String>() {{
 		put("^\\d{1,2}-[a-zA-Z]{3,}-\\d{2,}$", "dd-MMM-yy");
 		put("^\\d{1,2}\\.\\d{1,2}\\.\\d{4}$", "dd.MM.yyyy");
-	}};
+		put("^\\d{1,2}-\\d{1,2}-\\d{4}$", "dd-MM-yyyy");
+	}};*/
 	private static final Logger LOGGER = LoggerFactory.getLogger(DateUtils.class);
 
 	/**

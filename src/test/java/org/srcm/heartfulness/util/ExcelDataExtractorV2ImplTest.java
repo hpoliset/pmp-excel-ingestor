@@ -1,5 +1,6 @@
 package org.srcm.heartfulness.util;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -12,6 +13,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.srcm.heartfulness.PmpApplication;
+import org.srcm.heartfulness.enumeration.ExcelType;
+import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractor;
+import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractorFactory;
+import org.srcm.heartfulness.excelupload.transformer.impl.ExcelDataExtractorV2Impl;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 
@@ -43,23 +48,23 @@ public class ExcelDataExtractorV2ImplTest {
         Resource v2ValidResource = resourceLoader.getResource(resourceName);
 
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
-        ExcelDataExtractor v2Extractor = new ExcelDataExtractorV2Impl(resourceName, fileContent);
-        Program program = v2Extractor.getProgram();
+        Workbook workbook = ExcelParserUtils.getWorkbook(resourceName, fileContent);
+        Program program =  ExcelDataExtractorFactory.extractProgramDetails(workbook,ExcelType.V2_1);
         Assert.notNull(program, "Not able to parse valid V21 file: [" + resourceName + "]");
         System.out.println("compute hash: " + program.computeHashCode());
         System.out.println("program = " + program);
-
-        List<Participant> participantList = v2Extractor.getParticipantList();
-        Assert.notEmpty(participantList, "Not able read participants");
+        List<Participant> participantList = program.getParticipantList();
+       // Assert.notEmpty(participantList, "Not able read participants");
     }
 
     @Test(expected = InvalidExcelFileException.class)
     public void testInValidV2ExcelFile() throws IOException, InvalidExcelFileException {
         String invalidFileName = "v21InValidEventDate.xlsm";
         Resource v2ValidResource = resourceLoader.getResource("classpath:" + invalidFileName);
-
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
-        ExcelDataExtractor v2Extractor = new ExcelDataExtractorV2Impl(invalidFileName, fileContent);
+        Workbook workbook = ExcelParserUtils.getWorkbook(invalidFileName, fileContent);
+        ExcelDataExtractor v2Extractor = new ExcelDataExtractorV2Impl();
+        v2Extractor.extractExcel(workbook);
     }
 
    /* @Test
