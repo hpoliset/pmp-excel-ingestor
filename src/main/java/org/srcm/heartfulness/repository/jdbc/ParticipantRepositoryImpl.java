@@ -121,6 +121,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 							"city=:city," +
 							"state=:state," +
 							"country=:country," +
+							"pincode=:pincode," +
 							"program_id=:programId," +
 							"profession=:profession," +
 							"remarks=:remarks," +

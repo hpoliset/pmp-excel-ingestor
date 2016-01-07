@@ -11,16 +11,19 @@ public class EventDetailsUploadConstants {
 	//for v2.1
 	
 	/** Holds the name of the sheet that contains Event details for Excel version 2.1. */
-	public static final String EVENT_SHEET_NAME = "Event Details";
+	public static final String V2_EVENT_SHEET_NAME = "Event Details";
 	
 	/** Holds the name of the sheet that contains Participant details for Excel version 2.1. */
-	public static final String PARTICIPANT_SHEET_NAME = "Participants Details";
+	public static final String V2_PARTICIPANT_SHEET_NAME = "Participants Details";
 	
 	
 	//for altered v1.0
 	/** Holds the name of the sheet for Excel version 1.0. For Version 1.0, there is only one sheet available.  */
 	public static final String V1_SHEET_NAME = "Sheet1";
 	
+	//for altered v3.0
+	/** Holds the name of the sheet for Excel version 3.0. For Version 3.0, there is only one sheet available.  */
+	public static final String V3_SHEET_NAME = "Heartfulness Data";
 	
 	//TODO move this constant out, incase of internationalization requirements  
 	/** Holds the error message to be displayed when the user tries to upload an invalid template.  */

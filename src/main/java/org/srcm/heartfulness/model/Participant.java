@@ -47,6 +47,7 @@ public class Participant {
     private String profession;
     private String department;
     private String language;
+    private int pincode;
 
     private Program program;
     private int excelSheetSequenceNumber;
@@ -372,7 +373,15 @@ public class Participant {
         this.language = language;
     }
 
-    public Program getProgram() {
+    public int getPincode() {
+		return pincode;
+	}
+
+	public void setPincode(int pincode) {
+		this.pincode = pincode;
+	}
+
+	public Program getProgram() {
         return program;
     }
 

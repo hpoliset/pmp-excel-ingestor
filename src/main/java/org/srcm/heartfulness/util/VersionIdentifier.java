@@ -28,12 +28,22 @@ public class VersionIdentifier {
 	public ExcelType findVersion(Workbook uploadedExcelWorkbook) {
 
 		ExcelType version = ExcelType.INVALID;
-		Sheet sheet = uploadedExcelWorkbook.getSheet(EventDetailsUploadConstants.EVENT_SHEET_NAME);
-		if (sheet != null) {
-			String versionName = sheet.getRow(1).getCell(0, Row.CREATE_NULL_AS_BLANK).toString();
-			if (versionName != null && versionName.contains("/V2.1/")) {
-				version = ExcelType.V2_1;
-			}
+		String versionName = null;
+		Sheet sheet = null;
+		//v2.1 
+		sheet = uploadedExcelWorkbook.getSheet(EventDetailsUploadConstants.V2_EVENT_SHEET_NAME);
+		versionName = sheet != null ? sheet.getRow(1).getCell(0, Row.CREATE_NULL_AS_BLANK).toString() : null;
+		//v3
+		if (versionName == null) {
+			sheet = uploadedExcelWorkbook.getSheet(EventDetailsUploadConstants.V3_SHEET_NAME);
+			versionName = sheet != null ? sheet.getRow(0).getCell(8, Row.CREATE_NULL_AS_BLANK).toString() : null;
+		}else{
+			
+		}
+		// identify the version
+		if (versionName != null) {
+			version = versionName.contains("/V2.1/") ? ExcelType.V2_1 : (versionName.contains("/v3/") ? ExcelType.V3
+					: ExcelType.INVALID);
 		} else if (uploadedExcelWorkbook.getNumberOfSheets() == 2) {
 			version = ExcelType.V1;
 		}

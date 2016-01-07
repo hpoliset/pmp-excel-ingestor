@@ -26,6 +26,21 @@ Verify that you can login using the new credentials
 
 Load the schema into mysql
   >> mysql -upmpuser -pheartfulness -Dpmp < src/main/resources/schema.sql
+  
+#Database Migrations & Versions
+Flyway updates the database from one version to the next using migrations.
+
+The migrations are scripts in the form V<VERSION>__<NAME>.sql (with <VERSION> an underscore-separated version, e.g. ‘V1_1_description.sql’ or ‘V2_1_description.sql’).
+It will scan the filesystem or your classpath for available migrations. It will compare them to the migrations that have been applied to the database. If any difference is found, it will migrate the database to close the gap.
+
+Migrate should preferably be executed on application startup to avoid any incompatibilities between the database and the expectations of the code.
+
+  *Example 1: We have migrations available up to version 9, and the database is at version 5.
+     Migrate will apply the migrations 6, 7, 8 and 9 in order.
+  *Example 2: We have migrations available up to version 9, and the database is at version 9.
+     Migrate does nothing.
+
+By default they live in a folder classpath:db/migration but we can modify that using flyway.locations property in application.properties.  
 
 #Build using maven
  >>  mvn clean package (-DskipTests to skip tests)

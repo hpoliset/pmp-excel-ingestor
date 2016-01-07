@@ -3,9 +3,11 @@ package org.srcm.heartfulness.enumeration;
 import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractor;
 import org.srcm.heartfulness.excelupload.transformer.impl.ExcelDataExtractorV1Impl;
 import org.srcm.heartfulness.excelupload.transformer.impl.ExcelDataExtractorV2Impl;
+import org.srcm.heartfulness.excelupload.transformer.impl.ExcelDataExtractorV3Impl;
 import org.srcm.heartfulness.validator.EventDetailsExcelValidator;
 import org.srcm.heartfulness.validator.impl.ExcelV1ValidatorImpl;
 import org.srcm.heartfulness.validator.impl.ExcelV2ValidatorImpl;
+import org.srcm.heartfulness.validator.impl.ExcelV3ValidatorImpl;
 
 /**
  * Enumeration to identify the excel upload types used for event details upload program of Heartfulness.
@@ -16,7 +18,8 @@ import org.srcm.heartfulness.validator.impl.ExcelV2ValidatorImpl;
 public enum ExcelType {
 
 	V1(new ExcelV1ValidatorImpl(), new ExcelDataExtractorV1Impl()),					 // Denotes Excel version altered 1.0
-	V2_1 (new ExcelV2ValidatorImpl(), new ExcelDataExtractorV2Impl()),				 // Denotes Excel extractor for altered 1.0
+	V2_1 (new ExcelV2ValidatorImpl(), new ExcelDataExtractorV2Impl()),				 // Denotes Excel extractor for v2.1
+	V3 (new ExcelV3ValidatorImpl(), new ExcelDataExtractorV3Impl()),				 // Denotes Excel extractor for V3.0
 	INVALID(null); 																	 // Holder to display error message for invalid formats
 
 
