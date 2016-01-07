@@ -114,9 +114,11 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 							"program_channel=:programChannel, " +
 							"program_start_date=:programStartDate, " +
 							"program_end_date=:programEndDate," +
+							"coordinator_id=:coordinatorId," +
 							"coordinator_name=:coordinatorName," +
 							"coordinator_email=:coordinatorEmail," +
 							"coordinator_mobile=:coordinatorMobile," +
+							"event_id=:eventId," +
 							"event_place=:eventPlace," +
 							"event_city=:eventCity," +
 							"event_state=:eventState," +

@@ -1,0 +1,1 @@
+ALTER TABLE `participant` ADD `pincode` INT( 11 ) NOT NULL AFTER `country` 

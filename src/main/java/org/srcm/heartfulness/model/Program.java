@@ -21,10 +21,12 @@ public class Program {
     private Date programStartDate;
     private Date programEndDate;
 
+    private String coordinatorId;
     private String coordinatorName;
     private String coordinatorEmail;
     private String coordinatorMobile;
 
+    private String eventId;
     private String eventPlace;
     private String eventCity;
     private String eventState;
@@ -284,7 +286,23 @@ public class Program {
         this.programHashCode = programHashCode;
     }
 
-    /**
+    public String getCoordinatorId() {
+		return coordinatorId;
+	}
+
+	public void setCoordinatorId(String coordinatorId) {
+		this.coordinatorId = coordinatorId;
+	}
+
+	public String getEventId() {
+		return eventId;
+	}
+
+	public void setEventId(String eventId) {
+		this.eventId = eventId;
+	}
+
+	/**
      * Generates a MD5 hash code based on program channel, Organisation Name, Organisation Dept, Event Date, Event Place
      *
      * @return computed MD5 hash code.
@@ -321,9 +339,11 @@ public class Program {
                 ", programChannel='" + programChannel + '\'' +
                 ", programStartDate=" + programStartDate +
                 ", programEndDate=" + programEndDate +
+                ", coordinatorId='" + coordinatorId + '\'' +
                 ", coordinatorName='" + coordinatorName + '\'' +
                 ", coordinatorEmail='" + coordinatorEmail + '\'' +
                 ", coordinatorMobile='" + coordinatorMobile + '\'' +
+                ", eventId='" + eventId + '\'' +
                 ", eventPlace='" + eventPlace + '\'' +
                 ", eventCity='" + eventCity + '\'' +
                 ", eventState='" + eventState + '\'' +

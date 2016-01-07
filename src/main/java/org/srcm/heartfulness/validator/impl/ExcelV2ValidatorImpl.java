@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.enumeration.V2ParticipantCols;
-import org.srcm.heartfulness.enumeration.V2ProgramCols2;
+import org.srcm.heartfulness.enumeration.V2ProgramCols;
 import org.srcm.heartfulness.validator.EventDetailsExcelValidator;
 
 /**
@@ -35,8 +35,8 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 			return errorList;
 		}
 
-		Sheet eventSheet = workbook.getSheet(EventDetailsUploadConstants.EVENT_SHEET_NAME);
-		Sheet participantSheet = workbook.getSheet(EventDetailsUploadConstants.PARTICIPANT_SHEET_NAME);
+		Sheet eventSheet = workbook.getSheet(EventDetailsUploadConstants.V2_EVENT_SHEET_NAME);
+		Sheet participantSheet = workbook.getSheet(EventDetailsUploadConstants.V2_PARTICIPANT_SHEET_NAME);
 
 		if (eventSheet == null) {
 			errorList.add("Event Details Sheet is not present/invalid or empty.");
@@ -61,7 +61,7 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 
 		LOGGER.debug("Started validating Event Details structure for v2 template.");
 		int row, col;
-		for (V2ProgramCols2 column : V2ProgramCols2.values()) {
+		for (V2ProgramCols column : V2ProgramCols.values()) {
 			row = column.getRow();
 			col = column.getCell();
 			if (!column.getHeader().equalsIgnoreCase(sheet.getRow(row).getCell(col).getStringCellValue().trim())) {
