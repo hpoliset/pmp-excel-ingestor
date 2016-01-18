@@ -102,8 +102,8 @@ public class ReportsController {
         
         response.reset();
         response.setContentType("text/plain; charset=utf-8");
-        response.setHeader("Content-disposition", "attachment; filename=Report_by_all_filters_"+
-                        new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss").format(new Date()) +".txt");
+        response.setHeader("Content-disposition", "attachment; filename=Report_"+
+                        new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss").format(new Date()) +".csv");
         response.getWriter().print(sb.toString());
         for (ParticipantFullDetails participant: participants ){
         	response.getWriter().println(participant.toString());
