@@ -60,11 +60,11 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 				LOGGER.error("Error While converting date", e);
 			}
 		}
-
+		 
 		if (reportVO.getTillDate() != null && !reportVO.getTillDate().isEmpty()) {
 			try {
-				whereCondition.append(whereCondition.length() > 0 ? " and pg.program_end_date <= ? "
-						:" pg.program_end_date <= ? ");
+				whereCondition.append(whereCondition.length() > 0 ? " and CASE WHEN pg.program_end_date IS NOT NULL THEN program_end_date <=? ELSE TRUE END "
+						:" CASE WHEN pg.program_end_date IS NOT NULL THEN program_end_date <=? ELSE TRUE END ");
 				parameters.add(DateUtils.parseToSqlDate(reportVO.getTillDate()));
 			} catch (ParseException e) {
 				LOGGER.error("Error While converting date", e);
