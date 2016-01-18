@@ -8,20 +8,18 @@
     <title>Heartfulness Data Upload</title>
 </head>
 <body>
-<div align="center">
-    <h1>Heartfulness Event Data Upload Screen</h1>
+<div align="center" >
+	<div class="row">
+	<h1>Heartfulness Event Data Upload Screen</h1>
+	</div>
     <form method="POST" action="processUpload" enctype="multipart/form-data">
         <table border="0">
             <tr>
-                <td>Pick file #1:</td>
-                <td><input type="file" name="excelDataFile" size="50" /></td>
+                <td class="row">Pick file #1:</td>
+                <td><input type="file" name="excelDataFile" size="50" class="row"/></td>
             </tr>
-           <%-- <tr>
-                <td>Pick file #2:</td>
-                <td><input type="file" name="excelDataFile" size="50" /></td>
-            </tr>--%>
             <tr>
-                <td colspan="2" align="center"><input type="submit" value="Process Data File" /></td>
+                <td colspan="2" align="center"><input type="submit" class="button-primary" value="Process Data File" /></td>
             </tr>
         </table>
     </form>

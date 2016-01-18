@@ -11,25 +11,24 @@
 <link rel="stylesheet" href="../css/skeleton.css">
 </head>
 <body>
-	<form method="POST" action="processBulkUpload"
-		enctype="multipart/form-data">
-
-		<div class="container">
+	<form method="POST" action="processBulkUpload" enctype="multipart/form-data" >
+		
+		<div   align="center" class="container">
 			<h3>Heartfulness Event Data Upload Screen</h3>
-			<div class="six columns">
-				<input id="fileupload" type="file" name="uploadedExcelFiles" multiple>
+			<div class="six columns"  align="center" >
+				<input id="fileupload"  type="file" name="uploadedExcelFiles" multiple>
 			</div>
-			<div class="six columns">
+			<div class="six columns" align="center">
 				<input type="submit" id="process" value="Start uploading excels"  />
 			</div>
 			<br>
-			<div id="table-view" style="display: none;">
+			<div id="table-view" align="center" style="display: none;">
 			<br>
-			
 				<table class="u-full-width" id="uploaded-files">
 				</table>
+					
 			</div>
-			</div>
+		</div>
 	</form>
 </body>
 <script type="text/javascript">

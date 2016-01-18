@@ -9,12 +9,13 @@
 <link rel="stylesheet" href="../css/normalize.css">
 <link rel="stylesheet" href="../css/skeleton.css">
 </head>
-<body>
-	<div class="container">
-
+<body >
+	<div class="container" align="center" >
 		<h3>Heartfulness Data Upload Results</h3>
-
-		<table class="u-full-width">
+		<div>
+     <!--  <a href="/gotoEventServices">Go Back To Services</a> -->
+      </div>
+		<table class="u-full-width" >
 			<c:if test="${uploadReponse!=null}">
 				<tr>
 					<th align="left">Excel Name</th>

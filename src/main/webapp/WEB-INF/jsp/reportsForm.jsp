@@ -29,7 +29,7 @@
 	</style>   
 </head>
 <body>
-	<div class="container">
+	<div class="container" align="center">
   
       <div class="row">    
         <h3>Heartfulness Reports Form</h3>
@@ -40,15 +40,10 @@
             <div class="four columns">
               <label for="channel">Enter Channel</label>
               <select class="u-full-width" id="channel" name="channel">
-                <%-- <c:forEach items="${eventTypes}" var="eventType"> 
+                <option value="ALL">All Channels</option>
+                <c:forEach items="${eventTypes}" var="eventType"> 
 				  	<option value="${eventType}">${eventType}</option>
-				</c:forEach> --%>
-				<option value="ALL">All Channels</option>
-                <option value="Heartfulness">Heartfulness</option>
-                <option value="U-Connect">U-Connect</option>
-                <option value="C-Connect">C-Connect</option>
-                <option value="G-Connect">G-Connect</option>
-                <option value="V-Connect">V-Connect</option>
+				</c:forEach>
               </select>
             </div>
             <div class="four columns">
@@ -84,17 +79,20 @@
 	              <input class="u-full-width" type="text" placeholder="Enter City" id="city" name="city">
 	            </div>
           </div>
-          <div class="row">
+          <div class="row" align="left">
             <div class="six columns">          
 				<input class="button-primary" type="submit" value="Download Report" />
             </div>
           </div>
-          <div class="row">
+          <div class="row" align="left">
             <div class="six columns">
 				<p><i>(Report is downloaded into the downloads folder with name starting as Report_.The report file is a Tab separated file, can be opened in MS Excel )</i></p>
             </div>
           </div>
       </form>
+      <!-- <div>
+      <a href="/gotoEventServices">Go Back To Services</a>
+      </div> -->
    </div>
 </body>
 </html>
