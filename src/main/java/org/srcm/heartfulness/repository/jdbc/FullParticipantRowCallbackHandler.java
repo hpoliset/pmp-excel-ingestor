@@ -26,7 +26,7 @@ class FullParticipantRowCallbackHandler implements RowCallbackHandler {
        int programId = rs.getInt("pg.program_id");
        String programChannel = rs.getString("pg.program_channel");
    	   Date programStartDate = rs.getDate("pg.program_start_date");   
-       Date programEndDate = rs.getDate("pg.program_start_date");
+       Date programEndDate = rs.getDate("pg.program_end_date");
 
        String eventPlace = rs.getString("pg.event_place");
        String eventCity = rs.getString("pg.event_city");

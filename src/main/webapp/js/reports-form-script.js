@@ -18,16 +18,28 @@ $(document).ready(function() {
 		buttonText: "Event Till Date"
 	});
 	$('#country').change(function(event){
-		populateStatesForCountry($(this).val());		
+		if($(this).val()!='ALL'){
+			populateStatesForCountry($(this).val());
+		}else{
+			$('#state').empty();
+			$('<option>').val("ALL").text("All States").appendTo('#state');
+		}
 	});
 });
 
 function populateStatesForCountry(countryName){
 	$.ajax({
-		url: '/reports/getStates',
+		url: 'getStates',
 		type:'POST',
 		data:{country:countryName},
 		async: false,
+		datatype:"json",
+		statusCode: {
+             407: function() {
+                 $.ajaxSetup({ dataType: "jsonp" });
+                 populateStatesForCountry(countryName);
+             }
+        },
 		success: function(result) {
 			$('#state').empty();
 			$('<option>').val("ALL").text("All States").appendTo('#state');
