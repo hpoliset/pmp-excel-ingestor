@@ -30,7 +30,9 @@ public class PmpApplication extends SpringBootServletInitializer {
     }
 
     public static void main(String[] args) {
-        ApplicationContext ctx = SpringApplication.run(new Class[] { PmpApplication.class, ContextInitializer.class },args);
+       new SpringApplicationBuilder(PmpApplication.class)
+        .initializers(new PmpApplicationContextInitializer())
+        .run(args);
 
         /*System.out.println("Let's inspect the beans provided by Spring Boot:");
 
