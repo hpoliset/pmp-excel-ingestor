@@ -21,7 +21,7 @@ public class ProgramTest {
     private static final String EVENT_PLACE = "Adyar";
     private static final String ORGANIZATION_NAME = "Anna University";
     private static final String ORGANIZATION_DEPARTMENT = "Physics 1st Year Section A";
-    private static final String EXPECTED_PROGRAM_HASH_CODE = "8f2e5062c358b6165c29d9c6a2fa98e8";
+    private static final String EXPECTED_PROGRAM_HASH_CODE = "00e46bad30648651e7297b76174b90e0";
     private static final Calendar programStartCalendar = new GregorianCalendar(1955, 8, 28);
 
 
