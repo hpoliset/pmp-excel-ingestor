@@ -39,13 +39,12 @@ public class IngestionController {
 	}
 
 	@RequestMapping(value = "/ingest/processUpload", method = RequestMethod.POST)
-	public String processFileUpload(HttpServletRequest request, @RequestParam MultipartFile excelDataFile)
+	public String processFileUpload(HttpServletRequest request, @RequestParam MultipartFile excelDataFile, ModelMap modelMap)
 			throws InvalidExcelFileException, IOException {
 
-		MultipartFile uploadedFile = excelDataFile;
-
-		pmpIngestionService.parseAndPersistExcelFile(uploadedFile.getOriginalFilename(), uploadedFile.getBytes());
-
+		MultipartFile[] uploadedFile = new MultipartFile[]{excelDataFile};
+		List<ExcelUploadResponse> responseList = pmpIngestionService.parseAndPersistExcelFile(uploadedFile);
+		modelMap.addAttribute("uploadReponse", responseList);
 		return "success";
 	}
 
