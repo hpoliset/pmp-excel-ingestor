@@ -5,16 +5,19 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * 
  * @author HimaSree
  *
  */
-@JsonPropertyOrder({"id","name","first_name","last_name","email","user_type"})
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(value = Include.NON_NULL)
+@JsonPropertyOrder({ "id", "name", "first_name", "last_name", "email", "user_type" })
+@JsonIgnoreProperties(ignoreUnknown = true, allowGetters = false)
 public class User {
 
 	private int id;
