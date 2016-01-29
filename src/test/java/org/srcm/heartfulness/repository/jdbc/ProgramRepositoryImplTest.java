@@ -1,5 +1,7 @@
 package org.srcm.heartfulness.repository.jdbc;
 
+import java.util.Date;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,8 +15,6 @@ import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
-
-import java.util.Date;
 
 /**
  * Test class for ProgramRepository JDBC implementation.

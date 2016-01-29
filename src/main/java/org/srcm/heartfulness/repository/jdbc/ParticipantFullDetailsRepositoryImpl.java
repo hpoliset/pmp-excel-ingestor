@@ -16,7 +16,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.model.ParticipantFullDetails;
 import org.srcm.heartfulness.repository.ParticipantFullDetailsRepository;
-import org.srcm.heartfulness.service.ReportServiceImpl;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.vo.ReportVO;
 

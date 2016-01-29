@@ -1,5 +1,11 @@
 package org.srcm.heartfulness.web;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,12 +18,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.RestTemplate;
 import org.srcm.heartfulness.PmpApplication;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * Integration test for Ingestion Controller

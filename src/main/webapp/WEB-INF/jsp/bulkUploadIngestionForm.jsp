@@ -2,6 +2,12 @@
 	pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
+<%
+	if (session.getAttribute("AuthenticationResponse") == null) {
+%><jsp:forward page="Home.jsp" />
+<%
+	} else {
+%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -13,14 +19,14 @@
 <body>
 	<form method="POST" action="processBulkUpload"
 		enctype="multipart/form-data">
-
-		<div class="container">
+	<div class="row" align="center" style="padding-top: 10px">
+		<div class="container" align="center">
 			<h3>Heartfulness Event Data Upload Screen</h3>
 			<div class="six columns">
 				<input id="fileupload" type="file" name="uploadedExcelFiles" multiple>
 			</div>
 			<div class="six columns">
-				<input type="submit" id="process" value="Start uploading excels"  />
+				<input type="submit" id="process" class="button-primary"   value="Start uploading excels"  />
 			</div>
 			<br>
 			<div id="table-view" style="display: none;">
@@ -28,6 +34,7 @@
 			
 				<table class="u-full-width" id="uploaded-files">
 				</table>
+			</div>
 			</div>
 			</div>
 	</form>
@@ -58,3 +65,4 @@
 
 
 </html>
+<%}%>

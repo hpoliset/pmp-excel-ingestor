@@ -1,0 +1,375 @@
+/* begin Page */
+
+/* Start Box */
+.art-box {
+   zoom:expression(runtimeStyle.zoom=1,function(e){for(var i=0;i<e.length;i++)insertBefore(document.createElement('div'),firstChild).className='art-box-'+e[ i]}('br,bl,cr,cl,tr,tl'.split(',')));
+}
+.art-box-body {
+   zoom:1;
+}
+.art-box-tl, .art-box-tr, .art-box-cl, .art-box-cr, .art-box-bl, .art-box-br {
+   position:absolute;
+   display:block;
+   top:0;
+   bottom:0;
+   background-repeat: no-repeat;
+}
+.art-box-tl,.art-box-bl,.art-box-cl {
+   left:0;
+}
+.art-box-tr,.art-box-br,.art-box-cr {
+   right:0;
+}
+.art-box-cl, .art-box-cr {
+   background-repeat:repeat-y;
+}
+.art-box-tl {
+   background-position: top left;
+   z-index:-3;
+}
+.art-box-tr {
+   background-position: top right;
+   z-index:-3;
+}
+.art-box-cl {
+   background-position: center left;
+   z-index:-3;
+}
+.art-box-cr {
+   background-position: center right;
+   z-index:-3;
+}
+.art-box-bl {
+   background-position: bottom left;
+   z-index:-3;
+}
+.art-box-br {
+   background-position: bottom right;
+   z-index:-3;
+}
+
+.art-box .art-box-tl,.art-box .art-box-tr,.art-box .art-box-cl,.art-box .art-box-cr,.art-box .art-box-bl,.art-box .art-box-br{
+   z-index:-2;
+}
+.art-box .art-box .art-box-tl,.art-box .art-box .art-box-tr,.art-box .art-box .art-box-cl,.art-box .art-box .art-box-cr,.art-box .art-box .art-box-bl,.art-box .art-box .art-box-br{
+   z-index:-1;
+}
+/* End Box */
+
+/* Start Bar */
+.art-bar {
+   zoom:expression(runtimeStyle.zoom=1,function(e){for(var i=0;i<e.length;i++)insertBefore(document.createElement('div'),firstChild).className='art-bar-'+e[ i]}('r,l'.split(',')));
+}
+.art-bar-l, .art-bar-r {
+   position:absolute;
+   z-index:-1;
+   top:0;
+   bottom:0;
+   content:' ';
+   background-repeat:repeat-y;
+}
+.art-bar-l {
+   left:0;
+   background-position: top left;
+}
+.art-bar-r {
+   right:0;
+   background-position: top right;
+}
+/* End Bar */
+
+/* end Page */
+
+/* begin Header */
+.art-header {
+   zoom:expression(runtimeStyle.zoom=1,insertBefore(document.createElement('div'),firstChild).className='art-header-jpeg');
+   z-index: 1;
+}
+
+.art-header-jpeg
+{
+   position: absolute;
+   z-index:-1;
+   top: 0;
+   width:100%;
+   height: 260px;
+   background-image: url('images/header.jpg');
+   background-repeat: no-repeat;
+   background-position: center center;
+}
+/* end Header */
+
+/* begin Menu */
+.art-nav {
+   position: expression(runtimeStyle.position='relative');
+}
+.art-nav>.art-bar-l, .art-nav>.art-bar-r{
+   background-image: url('images/nav.png');
+}
+.art-nav>.art-bar-l{
+   right: 0;
+}
+.art-nav>.art-bar-r{
+   width: 0;
+}
+.art-hmenu ul li {
+   float: left !important;
+   width:100%;
+}
+.art-hmenu>li 
+{
+   display: inline !important;
+   zoom: 1;
+   float: none !important;
+   vertical-align: top;
+}
+
+/* end Menu */
+
+/* begin MenuItem */
+ul.art-hmenu>li>a{
+   zoom:expression(runtimeStyle.zoom=1,function(e){for(var i=0;i<e.length;i++)insertBefore(document.createElement('span'),firstChild).className='art-hmenu-'+e[ i]}('r,l'.split(',')));
+}
+ul.art-hmenu>li>a>span.art-hmenu-l, ul.art-hmenu>li>a>span.art-hmenu-r
+{
+   position: absolute;
+   display: block;
+   top: 0;
+   bottom:0;
+   z-index: -1;
+   background-image: url('images/menuitem.png');
+}
+
+ul.art-hmenu>li>a>span.art-hmenu-l
+{
+   left: 0;
+   right: 11px;
+   background-position: top left;
+}
+
+ul.art-hmenu>li>a>span.art-hmenu-r
+{
+   width: 11px;
+   right: 0;
+   background-position: top right;
+}
+
+ul.art-hmenu>li>a.active>span.art-hmenu-l {
+   background-position: bottom left;
+} 
+ul.art-hmenu>li>a.active>span.art-hmenu-r {
+   background-position: bottom right;
+}
+ul.art-hmenu>li>a.active {
+   color: #423D41;
+}
+
+ul.art-hmenu>li>a:hover>span.art-hmenu-l, ul.art-hmenu>li:hover>a>span.art-hmenu-l {
+   background-position: center left;
+}
+ul.art-hmenu>li>a:hover>span.art-hmenu-r, ul.art-hmenu>li:hover>a>span.art-hmenu-r {
+   background-position: center right;
+}
+ul.art-hmenu>li>a:hover, ul.art-hmenu>li:hover>a{
+   color: #1D1B1D;
+}
+
+/* end MenuItem */
+
+/* begin MenuSeparator */
+ul.art-hmenu>li:first-child {
+   padding-right:8px;
+}
+/* end MenuSeparator */
+
+/* begin Layout */
+.art-content-layout, .art-content-layout-row, .art-layout-cell 
+{
+   display: block;
+   zoom: 1;
+}
+.art-layout-cell
+{
+   position:relative;
+   float: left;
+   clear: right;
+}
+/* end Layout */
+
+/* begin BlockHeader, VMenuBlockHeader */
+.art-vmenublockheader>.art-bar-l, .art-vmenublockheader>.art-bar-r{
+   background-image: url('images/vmenublockheader.png');
+}
+.art-vmenublockheader>.art-bar-l{
+   right: 17px;
+}
+.art-vmenublockheader>.art-bar-r{
+   width: 17px;
+}
+
+/* end BlockHeader, VMenuBlockHeader */
+
+/* begin VMenuItem */
+ul.art-vmenu, ul.art-vmenu ul, ul.art-vmenu li{
+   zoom: 1;
+}
+ul.art-vmenu>li>a{
+   zoom:expression(runtimeStyle.zoom=1,function(e){for(var i=0;i<e.length;i++)insertBefore(document.createElement('span'),firstChild).className='art-vmenu-'+e[ i]}('r,l'.split(',')));
+}
+ul.art-vmenu>li>a>span.art-vmenu-l, ul.art-vmenu>li>a>span.art-vmenu-r
+{
+   position: absolute;
+   display: block;
+   z-index:-1;
+   background-image: url('images/vmenuitem.png');
+   top:0;
+   height:30px;
+}
+
+ul.art-vmenu>li>a>span.art-vmenu-l{
+   left: 0;
+   right: 20px;
+   background-position: top left;
+}
+ul.art-vmenu>li>a>span.art-vmenu-r{
+   width: 20px;
+   right: 0;
+   background-position: top right;
+}
+ul.art-vmenu>li>a.active>span.art-vmenu-l {
+   background-position: bottom left;
+}
+ul.art-vmenu>li>a.active>span.art-vmenu-r {
+   background-position: bottom right;
+}
+ul.art-vmenu>li>a:hover>span.art-vmenu-l  {
+   background-position: center left;
+}
+ul.art-vmenu>li>a:hover>span.art-vmenu-r {
+   background-position: center right;
+}
+
+ul.art-vmenu .art-vmenu-separator, ul.art-vmenu .art-vmenu-separator-bg
+{
+   display: block;
+   position:absolute;
+   left:0;
+   right:0;
+}
+
+/* end VMenuItem */
+
+/* begin VMenuSubItem */
+ul.art-vmenu ul a{
+   zoom:expression(runtimeStyle.zoom=1,insertBefore(document.createElement('span'),firstChild).className='art-vmenu-icon');
+}
+ul.art-vmenu ul a>span.art-vmenu-icon
+{
+   display: block;
+   position:absolute;
+   top:8px;
+   width: 5px;
+   height: 7px;
+   overflow: visible;
+   background-image: url('images/vsubitemicon.png');
+   background-position: top left;
+   background-repeat: no-repeat;
+   left:  15px;
+}
+
+ul.art-vmenu ul a:hover>span.art-vmenu-icon{
+   background-position: center left;
+}
+ul.art-vmenu ul a.active:hover>span.art-vmenu-icon{
+   background-position: center left;
+}
+ul.art-vmenu ul a.active>span.art-vmenu-icon{
+   background-position: bottom left;
+}
+
+ul.art-vmenu ul ul a>span.art-vmenu-icon{
+   left:30px;
+}
+ul.art-vmenu ul ul ul a>span.art-vmenu-icon{
+   left:45px;
+}
+ul.art-vmenu ul ul ul ul a>span.art-vmenu-icon{
+   left:60px;
+}
+ul.art-vmenu ul ul ul ul ul a>span.art-vmenu-icon{
+   left:75px;
+}
+
+/* end VMenuSubItem */
+
+/* begin PostIcons, PostHeaderIcons */
+.art-postheadericons span{
+   zoom: 1;
+}/* end PostIcons, PostHeaderIcons */
+
+/* begin PostContent */
+.art-postcontent {
+   height: 1%;
+}
+/* end PostContent */
+
+/* begin PostIcons, PostFooterIcons */
+.art-postfootericons span{
+   zoom: 1;
+}/* end PostIcons, PostFooterIcons */
+
+/* begin Footer */
+.art-footer {
+   zoom:expression(runtimeStyle.zoom=1,function(e){for(var i=0;i<e.length;i++)insertBefore(document.createElement('div'),firstChild).className='art-footer-'+e[ i]}('r,l,t'.split(',')));
+}
+.art-footer-body 
+{
+   zoom: 1;
+   padding-right: 0;
+}
+
+.art-footer-t
+{
+   position: absolute;
+   z-index:-1;
+   left:0;
+   right:0;
+   top:0;
+   bottom:50px;
+   background-image: url('images/footer.png');
+   background-position:bottom left;
+}
+
+.art-footer-l, .art-footer-r 
+{
+   position: absolute;
+   content:' ';
+   z-index:-1;
+   bottom:0;
+   height:50px;
+   background-image: url('images/footer_b.png');
+}
+
+.art-footer-l
+{
+   left:0;
+   right:0;
+   background-position: top left;
+}
+
+.art-footer-r
+{
+   right:0;
+   width:0;
+   background-position: top right;
+}
+/* end Footer */
+
+/* begin LayoutCell, content */
+.art-content 
+{
+   width: auto;
+   float:none;
+}
+/* end LayoutCell, content */
+

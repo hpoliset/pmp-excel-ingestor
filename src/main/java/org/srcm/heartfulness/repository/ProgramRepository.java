@@ -1,12 +1,11 @@
 package org.srcm.heartfulness.repository;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.stereotype.Repository;
-import org.srcm.heartfulness.model.Program;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.dao.DataAccessException;
+import org.srcm.heartfulness.model.Program;
 
 /**
  * Repository class for <code>Program</code> domain class.

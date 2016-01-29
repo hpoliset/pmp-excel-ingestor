@@ -2,6 +2,12 @@
 	pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%
+	if (session.getAttribute("AuthenticationResponse") == null) {
+%><jsp:forward page="Home.jsp" />
+<%
+	} else {
+%>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -10,7 +16,8 @@
 <link rel="stylesheet" href="../css/skeleton.css">
 </head>
 <body>
-	<div class="container">
+<div class="row" align="center">
+	<div class="container" align="center">
 
 		<h3>Heartfulness Data Upload Results</h3>
 
@@ -47,7 +54,9 @@
 				</tr>
 			</c:forEach>
 		</table>
-		<a class="button" href="bulkUploadForm">Upload Excels</a>
+		<a class="button-primary" href="bulkUploadForm">Upload Excels</a>
+	</div>
 	</div>
 </body>
 </html>
+<%}%>

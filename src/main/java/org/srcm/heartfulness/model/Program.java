@@ -1,12 +1,11 @@
 package org.srcm.heartfulness.model;
 
-import org.springframework.util.DigestUtils;
-
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.util.DigestUtils;
 
 /**
  * Domain class representing Program.

@@ -1,10 +1,10 @@
 package org.srcm.heartfulness.util;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.text.ParseException;
 import java.util.Date;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * Created by vsonnathi on 11/25/15.

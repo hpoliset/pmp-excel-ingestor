@@ -1,5 +1,10 @@
 package org.srcm.heartfulness.repository.jdbc;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -11,10 +16,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.model.Organisation;
 import org.srcm.heartfulness.repository.OrganisationRepository;
-
-import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  * Organisation Repository JDBC implementation to manage persistence <code>Organisation</code> domain objects.
