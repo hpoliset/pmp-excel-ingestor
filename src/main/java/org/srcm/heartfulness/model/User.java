@@ -3,14 +3,17 @@ package org.srcm.heartfulness.model;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * 
  * @author HimaSree
  *
  */
+@JsonPropertyOrder({"id","name","first_name","last_name","email","user_type"})
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
 
@@ -42,6 +45,7 @@ public class User {
 	@NotEmpty(message = "Please enter the password.")
 	private String password;
 
+	@JsonIgnore
 	private String confirmPassword;
 
 	private String address;

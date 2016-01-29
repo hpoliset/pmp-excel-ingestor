@@ -15,7 +15,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
-import org.srcm.heartfulness.security.JsonWebtTokenUtils;
+import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
 import org.srcm.heartfulness.service.UserProfileService;
 
 /**
@@ -32,8 +32,6 @@ public class AuthenticationController {
 	@Autowired
 	private UserProfileService userProfileService;
 
-	@Autowired
-	private JsonWebtTokenUtils jwtUtils;
 
 	/**
 	 * 
@@ -42,12 +40,11 @@ public class AuthenticationController {
 	 */
 	@RequestMapping(value = "authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) {
-		/*try {
+		try {
 			LOGGER.debug("Trying to Authenticating :  {}", authenticationRequest.getUsername());
 			SrcmAuthenticationResponse authenticationResponse = userProfileService.ValidateLogin(authenticationRequest);
-			String token = jwtUtils.generateToken(authenticationRequest, authenticationResponse);
 			LOGGER.debug("User:{} is validate and token is generated", authenticationRequest.getUsername());
-			return new ResponseEntity<LoginResponse>(new LoginResponse(token), HttpStatus.OK);
+			return new ResponseEntity<SrcmAuthenticationResponse>(authenticationResponse, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
 			LOGGER.error("Error occured while authenticating :{}", authenticationRequest.getUsername(), e);
 			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
@@ -59,9 +56,7 @@ public class AuthenticationController {
 			LOGGER.error("Error occured while authenticating :{}", authenticationRequest.getUsername(), e);
 			ErrorResponse error = new ErrorResponse("Please try after some time.", "Server Connection time out");
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-		}*/
-		ErrorResponse error = new ErrorResponse("Please try after some time.","");
-		return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -78,7 +73,7 @@ public class AuthenticationController {
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
 		} catch (IOException e) {
-			ErrorResponse error = new ErrorResponse("Please try after some time.", "IOException occured.");
+			ErrorResponse error = new ErrorResponse("Please try after some time.",  e.getMessage());
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.REQUEST_TIMEOUT);
 		} catch (Exception e) {
 			ErrorResponse error = new ErrorResponse("Please try after some time.", e.getMessage());
