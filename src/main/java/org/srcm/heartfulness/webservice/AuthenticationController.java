@@ -15,8 +15,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
-import org.srcm.heartfulness.model.json.response.LoginResponse;
-import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
 import org.srcm.heartfulness.security.JsonWebtTokenUtils;
 import org.srcm.heartfulness.service.UserProfileService;
 
@@ -44,7 +42,7 @@ public class AuthenticationController {
 	 */
 	@RequestMapping(value = "authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest) {
-		try {
+		/*try {
 			LOGGER.debug("Trying to Authenticating :  {}", authenticationRequest.getUsername());
 			SrcmAuthenticationResponse authenticationResponse = userProfileService.ValidateLogin(authenticationRequest);
 			String token = jwtUtils.generateToken(authenticationRequest, authenticationResponse);
@@ -61,7 +59,9 @@ public class AuthenticationController {
 			LOGGER.error("Error occured while authenticating :{}", authenticationRequest.getUsername(), e);
 			ErrorResponse error = new ErrorResponse("Please try after some time.", "Server Connection time out");
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		}*/
+		ErrorResponse error = new ErrorResponse("Please try after some time.","");
+		return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	/**

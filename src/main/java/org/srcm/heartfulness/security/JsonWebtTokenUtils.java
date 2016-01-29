@@ -1,16 +1,6 @@
 package org.srcm.heartfulness.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.stereotype.Component;
-import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
-import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
 
 /**
  * 
@@ -32,7 +22,7 @@ public class JsonWebtTokenUtils {
 	 * @param authenticationResponse
 	 * @return
 	 */
-	public String generateToken(AuthenticationRequest authenticationRequest,
+	/*public String generateToken(AuthenticationRequest authenticationRequest,
 			SrcmAuthenticationResponse authenticationResponse) {
 		Map<String, Object> claims = new HashMap<String, Object>();
 		// since email is the username
@@ -42,42 +32,43 @@ public class JsonWebtTokenUtils {
 		return this.generateToken(claims);
 	}
 
-	/**
+	*//**
 	 * 
 	 * @param claims
 	 * @return
-	 */
+	 *//*
 	private String generateToken(Map<String, Object> claims) {
 		return Jwts.builder().setClaims(claims).setExpiration(this.generateExpirationDate())
 				.signWith(SignatureAlgorithm.HS512, this.secret).compact();
+		return null;
 	}
 
-	/**
+	*//**
 	 * 
 	 * @param token
 	 * @return
-	 */
+	 *//*
 	public String getUsernameFromToken(String token) {
 		String username;
 		try {
-			final Claims claims = this.getClaimsFromToken(token);
-			username = claims.getSubject();
+			//final Claims claims = this.getClaimsFromToken(token);
+			username = "";//claims.getSubject();
 		} catch (Exception e) {
 			username = null;
 		}
 		return username;
 	}
 
-	/**
+	*//**
 	 * 
 	 * @param token
 	 * @return
-	 */
+	 *//*
 	public boolean isTokenValid(String token) {
 		String username;
 		try {
-			final Claims claims = this.getClaimsFromToken(token);
-			username = claims.getSubject();
+			//final Claims claims = this.getClaimsFromToken(token);
+			username = ""/claims.getSubject();
 			if (username.length() > 0)
 				return true;
 		} catch (Exception e) {
@@ -86,11 +77,11 @@ public class JsonWebtTokenUtils {
 		return false;
 	}
 
-	/**
+	*//**
 	 * 
 	 * @param token
 	 * @return
-	 */
+	 *//*
 	public String getEmailFromToken(String token) {
 		String email;
 		try {
@@ -102,11 +93,11 @@ public class JsonWebtTokenUtils {
 		return email;
 	}
 
-	/**
+	*//**
 	 * 
 	 * @param token
 	 * @return
-	 */
+	 *//*
 	private Claims getClaimsFromToken(String token) {
 		Claims claims;
 		try {
@@ -117,11 +108,11 @@ public class JsonWebtTokenUtils {
 		return claims;
 	}
 
-	/**
+	*//**
 	 * 
 	 * @param token
 	 * @return
-	 */
+	 *//*
 	public Date getCreatedDateFromToken(String token) {
 		Date created;
 		try {
@@ -133,11 +124,11 @@ public class JsonWebtTokenUtils {
 		return created;
 	}
 
-	/**
+	*//**
 	 * 
 	 * @param token
 	 * @return
-	 */
+	 *//*
 	public Date getExpirationDateFromToken(String token) {
 		Date expiration;
 		try {
@@ -149,30 +140,30 @@ public class JsonWebtTokenUtils {
 		return expiration;
 	}
 
-	/**
+	*//**
 	 * 
 	 * @param token
 	 * @return
-	 */
+	 *//*
 	public Boolean isTokenExpired(String token) {
 		final Date expiration = this.getExpirationDateFromToken(token);
 		return expiration.before(this.generateCurrentDate());
 	}
 
-	/**
+	*//**
 	 * 
 	 * @return
-	 */
+	 *//*
 	private Date generateCurrentDate() {
 		return new Date(System.currentTimeMillis());
 	}
 
-	/**
+	*//**
 	 * 
 	 * @return
-	 */
+	 *//*
 	private Date generateExpirationDate() {
 		return new Date(System.currentTimeMillis() + this.expiration * 1000);
 	}
-
+*/
 }

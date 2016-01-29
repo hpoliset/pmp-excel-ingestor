@@ -2,24 +2,20 @@ package org.srcm.heartfulness;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.srcm.heartfulness.filter.JwtFilter;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
 
 @SpringBootApplication
 //@EnableScheduling
 //@EnableOAuth2Sso
-public class PmpApplication extends WebSecurityConfigurerAdapter {
-//public class PmpApplication extends SpringBootServletInitializer {
+//public class PmpApplication extends WebSecurityConfigurerAdapter {
+public class PmpApplication extends SpringBootServletInitializer {
 
 	/*@Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.antMatcher("/ingest*//**").authorizeRequests().anyRequest().authenticated();
     }*/
 
-	@Bean
+	/*@Bean
 	public FilterRegistrationBean jwtFilter() {
 		final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
 		registrationBean.setFilter(new JwtFilter());
@@ -30,7 +26,7 @@ public class PmpApplication extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity.antMatcher("/api/**").csrf().disable();
-	}
+	}*/
 
 	/*@Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {

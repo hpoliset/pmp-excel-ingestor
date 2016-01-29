@@ -1,9 +1,5 @@
 package org.srcm.heartfulness.webservice;
 
-import io.jsonwebtoken.Claims;
-
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
-import org.srcm.heartfulness.model.json.response.Result;
-import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.service.UserProfileService;
 
 /**
@@ -44,7 +37,7 @@ public class UserController {
 	@RequestMapping(value = "/me", method = RequestMethod.GET)
 	// TODO: @PreAuthorize(("@securityService.isTokenValid())"))
 	public ResponseEntity<?> getUserProfile(HttpServletRequest request) {
-		try {
+		/*try {
 			Claims claims = (Claims) request.getAttribute("claims");
 			User user = userProfileService.loadUserByEmail(claims.getSubject());
 			// user details is not available in pmp database
@@ -68,7 +61,9 @@ public class UserController {
 		} catch (Exception e) {
 			ErrorResponse error = new ErrorResponse("Please try after some time.", e.getMessage());
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		}*/
+		ErrorResponse error = new ErrorResponse("Please try after some time.","");
+		return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	/**
@@ -80,7 +75,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/me/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<?> updateUser(@PathVariable int id, @RequestBody User user, HttpServletRequest request) {
-		Claims claims = (Claims) request.getAttribute("claims");
+		/*Claims claims = (Claims) request.getAttribute("claims");
 		User pmpUser = userProfileService.loadUserByEmail(claims.getSubject());
 		if(pmpUser.getId() == id){
 			//update
@@ -89,7 +84,9 @@ public class UserController {
 		}else{
 			ErrorResponse error = new ErrorResponse("Authentication credentials were not provided.", "Unauthorized");
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
-		}
+		}*/
+		ErrorResponse error = new ErrorResponse("Please try after some time.","");
+		return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		
 	}
 
