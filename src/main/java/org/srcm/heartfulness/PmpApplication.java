@@ -19,7 +19,7 @@ public class PmpApplication extends WebSecurityConfigurerAdapter {
         httpSecurity.antMatcher("/ingest*//**").authorizeRequests().anyRequest().authenticated();
     }*/
 
-		@Bean
+	@Bean
 	public FilterRegistrationBean jwtFilter() {
 		final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
 		registrationBean.setFilter(new JwtFilter());
