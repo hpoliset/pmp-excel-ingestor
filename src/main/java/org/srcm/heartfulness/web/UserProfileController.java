@@ -28,6 +28,7 @@ public class UserProfileController {
 	@RequestMapping(value = "/profile", method = RequestMethod.POST)
 	public String showUserProfile(@Valid @ModelAttribute("user")User user, BindingResult result, ModelMap model) {
 		userProfileService.save(user);
+		model.addAttribute("updateMsg","Profile Updated Successfully");
 		return "profile";
 	}
 	

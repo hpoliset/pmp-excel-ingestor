@@ -7,15 +7,12 @@
 <link rel="stylesheet" href="/pmp/css/jquery-ui.css" />
 <link rel="stylesheet" href="/pmp/css/normalize.css">
 <link rel="stylesheet" href="/pmp/css/skeleton.css">
-<!-- <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600'
-	rel='stylesheet' type='text/css'> -->
 <link rel="stylesheet" href="/pmp/css/normalize.css">
 <link rel="stylesheet" href="/pmp/css/skeleton.css">
+
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script type="text/javascript" src="/pmp/js/jquery-1.11.0.min.js"></script>
 <script type="text/javascript" src="/pmp/js/jquery.leanModal.min.js"></script>
-<!-- <link rel="stylesheet"
-	href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" /> -->
 <link type="text/css" rel="stylesheet" href="/pmp/css/style.css" />
 <style>
 .mandatory{
@@ -28,17 +25,11 @@
 	<div id="main-nav" class="navbar  bs-docs-nav" align="center">
 		<div class="container">
 			<a href="" class="navbar-brand"><img src="/pmp/images/logo.jpg"
-				alt="Heartfulness English"></a>
+				alt=""></a>
 		</div>
 	</div>
 </header>
 <script type="text/javascript">
-	$(document).ready($('#closebtn').click(function() {
-		history.go(0);
-		/* $(".user_register").hide();
-		$(".social_login").show(); */
-		location.reload(true);
-	}));
 	$(document)
 			.ready(
 					function() {
@@ -62,14 +53,17 @@
 														},
 														success : function(
 																response) {
+															//alert(response);
 															if (response == "success") {
-																/* $("#login_form").reset(); */
+																/* $('#login_form')[0].reset(); */
 																window.location.href = "/pmp/index";
 															}
 															if (response == "error") {
-																if ("${error}" != null) {
+															//	alert(response);
+															/* 	$('#login_form')[0].reset(); */
+																/* if ("${error}" != null) { */
 																	$("#error").html("Invalid Username/Password");
-																}
+																//}
 
 															}
 
@@ -84,6 +78,8 @@
 											var confirmPassword= $('#confirmPassword').val();
 											$(confirmPassword)
 											if(password!=confirmPassword){
+												$("#changepassword").html("");
+												$("#regerror").html("");
 												$("#emailerror").html("Password and confirm password doest not match");
 												return false;
 											}
@@ -101,10 +97,11 @@
 																$("#regerror").html("Error While Creating account..! Please Provide all Mandatory Fileds..!");
 															}
 															if (response == "accounterror") {
+																//alert("accounterror");
 																$('#signup_form')[0].reset();
 																$("#changepassword").html("");
 																$("#regerror").html("");
-																$("#emailerror").html("Account already exists for this email");
+																$("#emailerror").html("Email already exists for this email");
 															}
 															if (response == "changepassword") {
 																$('#signup_form')[0].reset();
@@ -124,27 +121,17 @@
 	<div class="container">
 		<div class="container">
 			<!-- <h1>Hear</h1> -->
-			<div style="color: red">${error}</div>
-			<!-- <table style="background: url(images/HFN1.jpg) no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover;">
-				<tr>
-					<td></td>
-				</tr>
-			</table> -->
+			<c:if test="${signout!=null}">
+					<div style="color: red">${signout}</div>
+			</c:if>
 			<div style="padding-top: 150px;">
-							Click <a id="modal_trigger" href="#modal" class=""> here</a> to
-							Login/Register
+				Click <a id="modal_trigger" href="#modal" class=""> here</a> to	Login/Register
 			</div>
-			<!-- <div id="menu-bar" class="container">
-				<div style="padding-top: 150px; " >
-					Click <a id="modal_trigger" href="#modal" class=""> here</a> to
-					Login/Register
-				</div>
-			</div> -->
 
 			<div id="modal" class="popupContainer" style="display: none;">
 				<header class="popupHeader">
 					<span class="header_title">Login</span> <span class="modal_close"><i
-						class="fa fa-times" id="closebtn"></i></span>
+						class="fa fa-times" ></i></span>
 				</header>
 
 				<section class="popupBody">
@@ -159,9 +146,9 @@
 												style="color: red"></div></td>
 									</tr>
 									<tr>
-										<td>User Name<span class="mandatory"> *</span></td>
-										<td><input id="username" name="username" type="text"
-											class="six columns" placeholder="Enter UserName"></td>
+										<td>User name<span class="mandatory"> *</span></td>
+										<td><input id="username" name="username" type="email"
+											class="six columns" placeholder="Enter eMail"></td>
 									</tr>
 									<tr>
 										<td>Password<span class="mandatory"> *</span></td>
@@ -207,6 +194,7 @@
 												<td colspan="2">
 													<div id="regerror" align="center" style="color: red"></div>
 													<div id="emailerror" align="center" style="color: red"></div>
+													<!-- <div id="accounterror" align="center" style="color: red"></div> -->
 												</td>
 											</tr>
 											<tr>
@@ -226,12 +214,6 @@
 												<td><form:input name="eMail" id="email" type="text"
 														class="four columns" placeholder="Enter eMail"
 														path="email" /></td>
-											</tr>
-											<tr valign="top">
-												<td colspan="2">
-													<div id="accounterror" align="center" style="color: red"></div>
-
-												</td>
 											</tr>
 											<tr>
 												<td>Password<span class="mandatory"> *</span></td>

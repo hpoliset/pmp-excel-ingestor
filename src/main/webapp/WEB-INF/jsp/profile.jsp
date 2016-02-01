@@ -14,36 +14,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="">
 <meta name="author" content="">
-<link rel="stylesheet" href="/pmp/css/new/style.css" type="text/css"
-	media="screen, projection, tv" />
-<link rel="stylesheet" href="/pmp/css/new/style-print.css"
-	type="text/css" media="print" />
-<link rel="stylesheet" type="text/css" href="/pmp/css/login_style.css">
-<script type="text/javascript" src="/pmp/js/jquery.js"></script>
-<script type="text/javascript" src="/pmp/js/login_effect.js"></script>
+<link rel="stylesheet" href="/pmp/css/new/style.css" type="text/css" media="screen, projection, tv" />
+<link rel="stylesheet" href="/pmp/css/new/style-print.css" type="text/css" media="print" />
+<link href="/pmp/css/logincss/project.css" rel="stylesheet">
 <link rel="stylesheet" href="/pmp/css/logincss/bootstrap.min.css">
 <link rel="stylesheet" href="/pmp/css/logincss/jquery-ui.css">
-<!-- Optional theme -->
 <link rel="stylesheet" href="/pmp/css/logincss/bootstrap-theme.min.css">
-
-<!-- Your stuff: Third-party css libraries go here -->
-
-<!-- This file store project specific CSS -->
-<link href="/pmp/css/logincss/project.css" rel="stylesheet">
-
-<!-- Le javascript
-    ================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-
-<!-- Latest JQuery -->
-<script src="/pmp/js/jquery/jquery.min.js"></script>
-<script src="/pmp/js/jquery/jquery-ui.js"></script>
-<!-- Latest compiled and minified JavaScript -->
-<script src="/pmp/js/bootstrap/bootstrap.min.js"></script>
-
-<!-- Your stuff: Third-party javascript libraries go here -->
-
-<script src="/pmp/js/angularjs/angular.min.js"></script>
 </head>
 <body>
 	<div class="container" width="100%">
@@ -53,7 +29,7 @@
 					modelAttribute="user">
 					<div class="row"
 						style="padding-top: 10px; font-weight: bold; font-size: 23px">
-						<div align="left" class="four columns">Welcome ${username}..!</div>
+						<div align="left" class="four columns">Welcome ${username} </div>
 					</div>
 					<div id="div_id_firstname" class="form-group" align="left" >
 						<label for="id_firstname" class="control-label  requiredField">
@@ -148,76 +124,12 @@
 								<div align="right" style="font-style: italic; color: green; font-size: large;">${updateMsg}</div>
 							</c:if>
 						</div>
-						<!-- <div class="four columns" align="right"> -->
-							
-					<!-- 	</div> -->
-
 					</div>
-
-
 				</form:form>
-
-
 			</div>
 		</div>
 
 	</div>
-	<%-- <form:form class="login" method="POST" action="profile" modelAttribute="user">
-			<div class="row">
-			<div class="four columns" align="left">
-				<label>First Name</label><form:input class="width:90%" name="firstName"
-					type="text" placeholder="Enter FirstName" path="firstname"/>
-			</div>
-			<div class="four columns">
-				<label>Last Name</label> <form:input class="width:90%" name="lastName"
-					type="text" placeholder="Enter LastName" path="lastname"/>
-			</div>
-			<div class="four columns">
-				<label>Gender</label> <form:input class="width:90%" name="gender"
-					type="text" placeholder="Enter ID" path="gender"/>
-			</div>
-		</div>
-		<div class="row">
-			<div class="four columns" align="left">
-				<label>eMail</label> <form:input class="width:90%" name="eMail"
-					type="text" placeholder="Enter eMail" value="${UserProfile.email}">
-			</div>
-			<div class="four columns">
-				<label>Mobile</label> <form:input class="width:90%" name="mobile"
-					type="text" placeholder="Enter Mobile No." value="${UserProfile.mobile}">
-			</div>
-			<div class="four columns">
-				<label>Address</label> <form:input class="width:90%" name="mobile"
-					type="text" placeholder="Enter Address" value="${UserProfile.address}">
-			</div>
-			
-		</div>
-		<div class="row">
-			<div class="four columns" align="left">
-				<label>City</label> <form:input class="width:90%" name="city" type="text"
-					placeholder="Enter city" >
-			</div>
-			<div class="four columns">
-				<label>State</label> <form:input class="width:90%" name="state"
-					type="text" placeholder="Enter state" value="${UserProfile.state}">
-			</div>
-			<div class="four columns">
-				<label>Country</label> <form:input class="width:90%" name="state"
-					type="text" placeholder="Enter country" >
-			</div>
-		</div>
-		<div class="row" align="left">
-		<!-- 	<div class="four columns">
-				<form:input type="button" value="Edit" class="button-primary">
-			</div> -->
-			<div class="four columns" align="left">
-				<form:input type="submit" value="Update" class="button-primary">
-			</div>
-		</div>
-
-	</form:form>
-	</div> --%>
-
 </body>
 </html>
 

@@ -54,7 +54,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	private ObjectMapper mapper = new ObjectMapper();
 
 	/**
-	 * 
+	 * method to authenticate the user and return authentication response
 	 * @param authenticationRequest
 	 * @return
 	 * @throws HttpClientErrorException
@@ -79,7 +79,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	}
 
 	/**
-	 * 
+	 * method to create the user profile
 	 * @param user
 	 * @return
 	 * @throws HttpClientErrorException
@@ -113,7 +113,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	}
 
 	/**
-	 * 
+	 * method to get the user profile
 	 * @param accessToken
 	 * @return
 	 * @throws HttpClientErrorException
@@ -125,6 +125,8 @@ public class SrcmRestTemplate extends RestTemplate {
 			JsonMappingException, IOException {
 		if (proxy)
 			setProxy();
+		httpHeaders = new HttpHeaders();
+		body = new LinkedMultiValueMap<String, String>();
 		httpHeaders.clear();
 		httpHeaders.add("Authorization", "Bearer " + accessToken);
 		body.clear();
@@ -152,7 +154,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	}
 
 	/**
-	 * 
+	 * Method to set the authorization with client Id and Client secret
 	 * @return
 	 */
 	private String getBase64Credentials(String clientId, String clientSecret) {

@@ -47,7 +47,9 @@ public class AuthenticationController {
 			return new ResponseEntity<SrcmAuthenticationResponse>(authenticationResponse, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
 			LOGGER.error("Error occured while authenticating :{}", authenticationRequest.getUsername(), e);
-			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
+			//return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
+			ErrorResponse error = new ErrorResponse("Invalid credentials.", "");
+			return new ResponseEntity<ErrorResponse>(error, e.getStatusCode());
 		} catch (IOException e) {
 			LOGGER.error("Error occured while authenticating :{}", authenticationRequest.getUsername(), e);
 			ErrorResponse error = new ErrorResponse("Please try after some time.", "");
