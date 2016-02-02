@@ -28,10 +28,10 @@ public class PmpApplication extends SpringBootServletInitializer {
 		httpSecurity.antMatcher("/api/**").csrf().disable();
 	}*/
 
-	/*@Override
+	@Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(PmpApplication.class);
-    }*/
+    }
 	/*  @Override
 	    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 	        return application.sources(PmpApplication.class);
@@ -39,7 +39,7 @@ public class PmpApplication extends SpringBootServletInitializer {
 	  
 	public static void main(String[] args) {
 		new SpringApplicationBuilder(PmpApplication.class)
-		.initializers(new PmpApplicationContextInitializer())
+		/*.initializers(new PmpApplicationContextInitializer())*/
 		.run(args);
 	//ApplicationContext ctx = SpringApplication.run(PmpApplication.class, args);
 		/*System.out.println("Let's inspect the beans provided by Spring Boot:");
