@@ -26,7 +26,7 @@ public class SrcmAuthenticationResponse {
 
 	@JsonProperty("scope")
 	private String scope;
-
+	
 	public SrcmAuthenticationResponse() {
 	}
 
@@ -82,7 +82,10 @@ public class SrcmAuthenticationResponse {
 
 	@Override
 	public String toString() {
-		return "AuthorizationResponse [access_token=" + access_token + ", token_type=" + token_type + ", expires_in="
-				+ expires_in + ", refresh_token=" + refresh_token + ", scope=" + scope + "]";
+		return "SrcmAuthenticationResponse [access_token=" + access_token + ", token_type=" + token_type
+				+ ", expires_in=" + expires_in + ", refresh_token=" + refresh_token + ", scope=" + scope
+				+ "]";
 	}
-}
+	
+	
+	}

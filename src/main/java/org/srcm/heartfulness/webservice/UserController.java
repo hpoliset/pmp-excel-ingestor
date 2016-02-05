@@ -2,9 +2,8 @@ package org.srcm.heartfulness.webservice;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.Result;
@@ -32,6 +32,12 @@ public class UserController {
 	@Autowired
 	private UserProfileService userProfileService;
 
+	@Autowired
+	private AESEncryptDecrypt encryptDecryptAES;
+
+	@Autowired
+	Environment env;
+
 	/**
 	 * This method is used to get userprofile
 	 * 
@@ -39,19 +45,19 @@ public class UserController {
 	 * @param request
 	 * @return
 	 */
-	// T
 	@RequestMapping(value = "/user", method = RequestMethod.GET)
 	// TODO: @PreAuthorize(("@securityService.isTokenValid())"))
 	public ResponseEntity<?> getUserProfile(@RequestHeader(value = "Authorization") String token) {
 		try {
-			Result result = userProfileService.getUserProfile(token);
+			Result result = userProfileService.getUserProfile(encryptDecryptAES.decrypt(token,
+					env.getProperty("security.encrypt.token")));
 			UserProfile srcmProfile = result.getUserProfile()[0];
 			User user = userProfileService.loadUserByEmail(srcmProfile.getEmail());
 			if (null == user) {
 				user = new User();
 				user.setName(srcmProfile.getName());
-				user.setFirstName(srcmProfile.getFirst_name());
-				user.setLastName(srcmProfile.getLast_name());
+				user.setFirst_name(srcmProfile.getFirst_name());
+				user.setLast_name(srcmProfile.getLast_name());
 				user.setEmail(srcmProfile.getEmail());
 				userProfileService.save(user);
 			}
@@ -75,13 +81,15 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
-	public ResponseEntity<?> updateUser(@PathVariable int id, @RequestBody User user, @RequestHeader(value = "Authorization") String token) {
+	public ResponseEntity<?> updateUser(@PathVariable int id, @RequestBody User user,
+			@RequestHeader(value = "Authorization") String token) {
 		try {
-			Result result = userProfileService.getUserProfile(token);
+			Result result = userProfileService.getUserProfile(encryptDecryptAES.decrypt(token,
+					env.getProperty("security.encrypt.token")));
 			UserProfile srcmProfile = result.getUserProfile()[0];
 			User pmpUser = userProfileService.loadUserByEmail(srcmProfile.getEmail());
-			if (pmpUser !=null && id == pmpUser.getId()) {
-				if(id == pmpUser.getId()){
+			if (pmpUser != null && id == pmpUser.getId()) {
+				if (id == pmpUser.getId()) {
 					userProfileService.save(user);
 				}
 			}

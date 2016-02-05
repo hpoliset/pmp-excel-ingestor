@@ -1,16 +1,15 @@
 package org.srcm.heartfulness.web;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.service.UserProfileService;
 
@@ -25,18 +24,26 @@ public class UserProfileController {
 	@Autowired
 	UserProfileService userProfileService;
 	
-	@RequestMapping(value = "/profile", method = RequestMethod.POST)
-	public String showUserProfile(@Valid @ModelAttribute("user")User user, BindingResult result, ModelMap model) {
-		userProfileService.save(user);
-		model.addAttribute("updateMsg","Profile Updated Successfully");
+	@RequestMapping(value = "/profile", method = RequestMethod.GET)
+	public String updateUserProfile(HttpServletRequest request,HttpServletResponse response, @ModelAttribute("user")User user,HttpSession session,ModelMap map) {
+		
+		user=(User) session.getAttribute("user");
+		System.out.println(user);
+		map.addAttribute("user",user);
+		map.addAttribute("username",user.getFirst_name());
+		map.addAttribute("id",user.getId());
 		return "profile";
 	}
 	
-	@RequestMapping(value = "/profile", method = RequestMethod.GET)
-	public ModelAndView updateUserProfile(HttpServletRequest request, @ModelAttribute("user")User user) {
-		String email = (String)request.getSession().getAttribute("email");
-		user = userProfileService.loadUserByEmail(email);
-		return new ModelAndView("profile", "user", user);
+	@RequestMapping(value = "/profile", method = RequestMethod.POST)
+	public String updateUserProfileInSession(HttpServletRequest request,HttpServletResponse response, @ModelAttribute("user")User user,HttpSession session,ModelMap map) {
+		map.addAttribute("username",user.getFirst_name());
+		session.setAttribute("user", user);
+		System.out.println(user);
+		map.addAttribute("user",user);
+		map.addAttribute("id",user.getId());
+		map.addAttribute("updateDiv","Profile Updated successfully");
+		return "profile";
 	}
 	
 }

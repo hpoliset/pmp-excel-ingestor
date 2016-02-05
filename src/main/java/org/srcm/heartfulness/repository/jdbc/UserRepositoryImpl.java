@@ -100,11 +100,11 @@ public class UserRepositoryImpl implements UserRepository {
 		} else {
 			this.namedParameterJdbcTemplate.update("UPDATE user SET " + 
 		                      "name=:name, " + 
-					          "first_name=:firstName, "	+ 
-		                      "last_name=:lastName, " + 
+					          "first_name=:first_name, "	+ 
+		                      "last_name=:last_name, " + 
 					          "gender=:gender, " + 
 		                      "address=:address, " + 
-					          "user_type=:userType, "+
+					          "user_type=:user_type, "+
 		                      "email=:email, " + 
 					          "mobile=:mobile, " + 
 		                      "city=:city, "+ 

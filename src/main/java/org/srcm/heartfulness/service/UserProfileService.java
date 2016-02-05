@@ -72,5 +72,16 @@ public interface UserProfileService {
 	 * @return
 	 */
 	User loadUserByEmail(String email);
+	
+	/**
+	 * 
+	 * @param refreshtoken
+	 * @param authenticationRequest 
+	 * @return
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
+	 */
+	SrcmAuthenticationResponse getRefreshToken(String refreshtoken) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
 
 }

@@ -1,10 +1,4 @@
 <!DOCTYPE html>
-<%
-	if (session.getAttribute("AuthenticationResponse") == null) {
-%><jsp:forward page="Home.jsp" />
-<%
-	} else {
-%>
 <html >
 <head>
 <title>Heartfulness</title>
@@ -63,5 +57,3 @@
   </div>
 </div>
 </html>
-
-<%}%>

@@ -6,9 +6,9 @@ import org.hibernate.validator.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * 
@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonIgnoreProperties(ignoreUnknown = true, allowGetters = false)
 public class User {
 
+	
 	private int id;
 
 	@JsonProperty("name")
@@ -27,11 +28,11 @@ public class User {
 
 	@NotEmpty(message = "Please enter your first name.")
 	@JsonProperty("first_name")
-	private String firstName;
+	private String first_name;
 
 	@NotEmpty(message = "Please enter your last name.")
 	@JsonProperty("last_name")
-	private String lastName;
+	private String last_name;
 
 	private String gender;
 
@@ -43,7 +44,7 @@ public class User {
 	private String mobile;
 
 	@JsonProperty("user_type")
-	private String userType;
+	private String user_type;
 
 	@NotEmpty(message = "Please enter the password.")
 	private String password;
@@ -58,30 +59,35 @@ public class User {
 	private String state;
 
 	private String city;
+	
+	private String access_token;
 
 	public User() {
 		super();
 	}
-
-	public User(int id, String name, String firstName, String lastName, String gender, String email, String mobile,
-			String userType, String password, String confirmPassword, String address, String country, String state,
-			String city) {
+	
+	public User(int id, String name, String first_name, String last_name, String gender, String email, String mobile,
+			String user_type, String password, String confirmPassword, String address, String country, String state,
+			String city, String access_token) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.firstName = firstName;
-		this.lastName = lastName;
+		this.first_name = first_name;
+		this.last_name = last_name;
 		this.gender = gender;
 		this.email = email;
 		this.mobile = mobile;
-		this.userType = userType;
+		this.user_type = user_type;
 		this.password = password;
 		this.confirmPassword = confirmPassword;
 		this.address = address;
 		this.country = country;
 		this.state = state;
 		this.city = city;
+		this.access_token = access_token;
 	}
+
+
 
 	public int getId() {
 		return id;
@@ -99,20 +105,20 @@ public class User {
 		this.name = name;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public String getFirst_name() {
+		return first_name;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public void setFirst_name(String first_name) {
+		this.first_name = first_name;
 	}
 
-	public String getLastName() {
-		return lastName;
+	public String getLast_name() {
+		return last_name;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
+	public void setLast_name(String last_name) {
+		this.last_name = last_name;
 	}
 
 	public String getGender() {
@@ -139,12 +145,12 @@ public class User {
 		this.mobile = mobile;
 	}
 
-	public String getUserType() {
-		return userType;
+	public String getUser_type() {
+		return user_type;
 	}
 
-	public void setUserType(String userType) {
-		this.userType = userType;
+	public void setUser_type(String user_type) {
+		this.user_type = user_type;
 	}
 
 	public String getPassword() {
@@ -195,12 +201,25 @@ public class User {
 		this.city = city;
 	}
 
+	public String getAccess_token() {
+		return access_token;
+	}
+
+	public void setAccess_token(String access_token) {
+		this.access_token = access_token;
+	}
+
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", name=" + name + ", firstName=" + firstName + ", lastName=" + lastName
-				+ ", gender=" + gender + ", email=" + email + ", mobile=" + mobile + ", userType=" + userType
+		return "User [id=" + id + ", name=" + name + ", first_name=" + first_name + ", last_name=" + last_name
+				+ ", gender=" + gender + ", email=" + email + ", mobile=" + mobile + ", user_type=" + user_type
 				+ ", password=" + password + ", confirmPassword=" + confirmPassword + ", address=" + address
-				+ ", country=" + country + ", state=" + state + ", city=" + city + "]";
+				+ ", country=" + country + ", state=" + state + ", city=" + city + ", access_token=" + access_token
+				+ "]";
 	}
+
+	
+	
+	
 
 }

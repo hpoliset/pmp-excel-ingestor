@@ -93,4 +93,13 @@ public class UserProfileServiceImpl implements UserProfileService {
 		// srcmRest.UpdateUserProfile(user,token);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.service.UserProfileService#getRefreshToken(java.lang.String)
+	 */
+	@Override
+	public SrcmAuthenticationResponse getRefreshToken(String refreshtoken) 
+			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
+		return srcmRest.getRefreshTokenDetails(refreshtoken);
+	}
 }
