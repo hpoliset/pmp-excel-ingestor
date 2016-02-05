@@ -32,9 +32,8 @@
 	$(document)
 			.ready(
 					function() {
-						
 						var url = 'http://pmpbeta.heartfulness.org/pmp/api/authenticate';
-						var getuserurl = 'http://pmpbeta.heartfulness.org/pmp/api/v1/user';
+						var getuserurl = 'http://pmpbeta.heartfulness.org/pmp/api/v1/user'; 
 						var id;
 						$("#submit")
 								.click(
@@ -49,8 +48,7 @@
 																.stringify(getFormData($("#loginform"))),
 														success : function(
 																loginresponse) {
-															$
-																	.ajax({
+															$.ajax({
 																		url : getuserurl,
 																		contentType : "application/json",
 																		dataType : "json",

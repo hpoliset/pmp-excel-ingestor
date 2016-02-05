@@ -40,11 +40,11 @@ public class SrcmRestTemplate extends RestTemplate {
 	private String refreshTokenName;
 	private String userInfoUri;
 	private String createUserUri;
-	private boolean proxy = true;
+	private boolean proxy = false;
 	private String proxyHost = "172.16.6.61";
 	private int proxyPort = 8080;
 	private String proxyUser = "gvivek";
-	private String proxyPassword = "123Welcome";
+	private String proxyPassword = "123Welcome1";
 	private String clientIdToCreateProfile;
 	private String clientSecretToCreateProfile;
 	private String tokenNameToCreateProfile;
@@ -163,8 +163,8 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * 
 	 */
 	private void setProxy() {
-		
-		/*  CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		/*
+		  CredentialsProvider credsProvider = new BasicCredentialsProvider();
 		  credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST,
 		  AuthScope.ANY_PORT), new UsernamePasswordCredentials(proxyUser,
 		  proxyPassword)); HttpClientBuilder clientBuilder =

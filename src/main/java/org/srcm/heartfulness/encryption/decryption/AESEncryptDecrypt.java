@@ -47,6 +47,7 @@ public class AESEncryptDecrypt {
 			byte[] encVal = c.doFinal(Data.getBytes());
 			String encryptedValue = new BigInteger(encVal).toString(16);
 			LOGGER.debug("Token encrypted successfully. ");
+			LOGGER.debug("Token {}",encryptedValue);
 			return encryptedValue;
 		} catch (NoSuchAlgorithmException e) {
 			LOGGER.debug("Exception while encrypting the token {} ", e.getMessage());
