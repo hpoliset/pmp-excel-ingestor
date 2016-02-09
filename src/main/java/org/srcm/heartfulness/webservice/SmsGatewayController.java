@@ -28,32 +28,30 @@ public class SmsGatewayController {
 
 	/**
 	 * 
-	 * @param phonecode
-	 * @param keyword
-	 * @param location
+	 * @param who
+	 * @param what
+	 * @param operator
 	 * @param carrier
-	 * @param content
+	 * @param datetime
 	 * @param phoneno
 	 * @param time
 	 * @return
 	 */
 	@RequestMapping(value = "receive", method = { RequestMethod.POST, RequestMethod.GET })
 	@ResponseBody
-	public String receiveSMS(@RequestParam(value = "phonecode", required = false) String phonecode,
-			@RequestParam(value = "keyword", required = false) String keyword,
-			@RequestParam(value = "location", required = false) String location,
+	public String receiveSMS(@RequestParam(value = "who", required = false) String who,
+			@RequestParam(value = "what", required = false) String what,
+			@RequestParam(value = "operator", required = false) String operator,
 			@RequestParam(value = "carrier", required = false) String carrier,
-			@RequestParam(value = "content", required = false) String content,
-			@RequestParam(value = "phoneno", required = false) String phoneno,
-			@RequestParam(value = "time", required = false) String time, HttpServletRequest request) {
+			@RequestParam(value = "datetime", required = false) String datetime,
+			HttpServletRequest request) {
 
-		LOGGER.debug("Request param -> phonecode {}", phonecode);
-		LOGGER.debug("Request param -> keyword {}", keyword);
-		LOGGER.debug("Request param -> location {}", location);
+		LOGGER.debug("Request param -> phone number {}", who);
+		LOGGER.debug("Request param -> content {}", what);
+		LOGGER.debug("Request param -> operator {}", operator);
 		LOGGER.debug("Request param -> carrier {}", carrier);
-		LOGGER.debug("Request param -> content {}", content);
-		LOGGER.debug("Request param -> phoneno {}", phoneno);
-		LOGGER.debug("Request param -> time {}", time);
+		LOGGER.debug("Request param -> datetime {}", datetime);
 		return "success";
 	}
+	
 }
