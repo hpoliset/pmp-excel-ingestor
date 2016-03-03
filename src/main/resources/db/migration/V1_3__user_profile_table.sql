@@ -1,9 +1,7 @@
-ALTER TABLE `user`(
-ADD `ispmpAllowed` varchar(4) DEFAULT 'N',
-ADD `isSahajmargAllowed` varchar(4) DEFAULT 'N',
-ADD `role` varchar(25) DEFAULT 'ROLE_SEEKER',
-ADD `abyasiId` int(25) DEFAULT 0,
-)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ALTER TABLE `user` ADD `ispmpAllowed` varchar(4) DEFAULT 'N';
+ALTER TABLE `user` ADD `isSahajmargAllowed` varchar(4) DEFAULT 'N';
+ALTER TABLE `user` ADD `role` varchar(25) DEFAULT 'ROLE_SEEKER';
+ALTER TABLE `user` ADD `abyasiId` int(25) DEFAULT 0;
 
 CREATE TABLE `introductory_details` (
   `introduction_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
