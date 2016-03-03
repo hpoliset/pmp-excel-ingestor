@@ -3,6 +3,8 @@
  */
 package org.srcm.heartfulness.validator.impl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,6 +113,55 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 				errorList.add(V2ParticipantCols.NAME.getHeader()
 						+ " is a mandatory field and cannot be empty at row number " + rowNumber);
 			}
+
+			String firstSittingStr =  currentRow.getCell(1,
+					Row.CREATE_NULL_AS_BLANK).toString();
+			if(!firstSittingStr.isEmpty()){
+				if (!firstSittingStr.equals("Y")) {
+					if(!firstSittingStr.equals("N")){
+						SimpleDateFormat mmddyy = new SimpleDateFormat("MM/dd/yy");
+						try {
+							mmddyy.parse(firstSittingStr);
+						} catch (ParseException e) {
+							errorList.add(V2ParticipantCols.FIRST_SITTING.getHeader()
+									+ " is invalid at row number " + rowNumber + ", Valid formats are Y,N,MM/dd/yy ");
+						}
+					}
+				}
+			}
+			String secondSittingStr =  currentRow.getCell(2,
+					Row.CREATE_NULL_AS_BLANK).toString();
+			if(!secondSittingStr.isEmpty()){
+				if (!secondSittingStr.equals("Y")) {
+					if(!secondSittingStr.equals("N")){
+						SimpleDateFormat mmddyy = new SimpleDateFormat("MM/dd/yy");
+						try {
+							mmddyy.parse(secondSittingStr);
+						} catch (ParseException e) {
+							errorList.add(V2ParticipantCols.SECONND_SITTING.getHeader()
+									+ " is invalid at row number " + rowNumber + ", Valid formats are Y,N,MM/dd/yy ");
+						}
+					}
+				}
+			}
+
+			String thirdSittingStr =  currentRow.getCell(3,
+					Row.CREATE_NULL_AS_BLANK).toString();
+			if(!thirdSittingStr.isEmpty()){
+				if (!thirdSittingStr.equals("Y")) {
+					if(!thirdSittingStr.equals("N")){
+						SimpleDateFormat mmddyy = new SimpleDateFormat("MM/dd/yy");
+						try {
+							mmddyy.parse(thirdSittingStr);
+						} catch (ParseException e) {
+							errorList.add(V2ParticipantCols.THIRD_SITTING.getHeader()
+									+ " is invalid at row number " + rowNumber + ", Valid formats are Y,N,MM/dd/yy ");
+						}
+					}
+				}
+			}
+
+
 			if (currentRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()) {
 				errorList.add(V2ParticipantCols.COUNTRY.getHeader()
 						+ " is a mandatory field and cannot be empty at row number " + rowNumber);
