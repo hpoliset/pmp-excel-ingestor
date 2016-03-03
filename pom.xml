@@ -129,16 +129,16 @@
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.0.1</version><!--$NO-MVN-MAN-VER$-->
+			<version>4.0.1</version>$NO-MVN-MAN-VER$
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
-			<version>4.0.1</version><!--$NO-MVN-MAN-VER$-->
-		</dependency>
+			<version>4.0.1</version>$NO-MVN-MAN-VER$
+		</dependency> -->
 	</dependencies>
 	
 	<build>
