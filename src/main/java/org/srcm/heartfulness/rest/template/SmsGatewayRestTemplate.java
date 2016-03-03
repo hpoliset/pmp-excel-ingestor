@@ -50,7 +50,7 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 	private String sendSmsUri;
 	private String DCS;
 
-	private boolean proxy = true;
+	private boolean proxy = false;
 	private String proxyHost = "10.1.28.10";
 	private int proxyPort = 8080;
 	private String proxyUser = "rramesh";
