@@ -30,7 +30,7 @@ public class SMSConstants {
 	public static final int SMS_INTRO_ID_LENGTH = 8;
 	
 	/** Holds the Heartfulness home page URL	 */
-	public static final String SMS_HEARTFULNESS_HOMEPAGE_URL="https://pmp.heartfulness.org";
+	public static final String SMS_HEARTFULNESS_HOMEPAGE_URL="http://en.heartfulness.org/";
 	
 	/** Holds the Heartfulness home page URL	 */
 	public static final String SMS_HEARTFULNESS_UPDATEEVENT_URL="https://pmp.heartfulness.org/updateevent";
