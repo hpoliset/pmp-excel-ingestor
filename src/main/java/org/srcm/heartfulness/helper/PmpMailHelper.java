@@ -31,7 +31,6 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.mail.MailSendException;
 import org.springframework.stereotype.Component;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.model.IntroductionDetails;
@@ -227,6 +226,7 @@ public class PmpMailHelper {
 			Transport.send(message);
 			
 			LOGGER.debug("Mail Sent successfully..");
+		}
 	}
 	
 	/**
