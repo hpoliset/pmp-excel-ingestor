@@ -3,8 +3,12 @@ package org.srcm.heartfulness.webservice;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -44,6 +48,8 @@ public class IntroductionController {
 	@Autowired
 	Environment env;
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(IntroductionController.class);
+	
 	/**
 	 * method to store the request details of seeker 
 	 * 	and sends welcome mail to the user & mail with user details to HFN team
@@ -88,6 +94,7 @@ public class IntroductionController {
 				response.setProfileCreatedForUser(PMPConstants.REQUIRED_NO);
 				response.setIntroduced(PMPConstants.REQUIRED_YES);
 				mailservice.sendMail(newUser, introdet);
+				LOGGER.debug("Mail sent successfully..");
 				return new ResponseEntity<Introductionresponse>(response, HttpStatus.OK);
 			}else{
 				ErrorResponse error = new ErrorResponse("Email ID doesnot match with logged in e-mail", "username mismatch.");
@@ -108,18 +115,21 @@ public class IntroductionController {
 		} catch (SQLException e) {
 			ErrorResponse error = new ErrorResponse("Email ID doesnot exist", e.getMessage());
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
-		}catch (MessagingException e) {
-			ErrorResponse error = new ErrorResponse("Email Not Sent", e.getMessage());
-			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
 		} catch (IOException e) {
 			ErrorResponse error = new ErrorResponse("Please try after some time.", e.getMessage());
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.REQUEST_TIMEOUT);
-		}  catch (NullPointerException e) {
-			ErrorResponse error = new ErrorResponse("Error in request", "Access Token is not valid.");
+		}  catch (AddressException e) {
+			ErrorResponse error = new ErrorResponse("Address Exception", e.getMessage());
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
-		} catch (Exception e) {
-			ErrorResponse error = new ErrorResponse("Please try after some time.", e.getMessage());
-			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (AuthenticationFailedException e) {
+			ErrorResponse error = new ErrorResponse("Host - Authentication failed", e.getMessage());
+			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
+		} catch (MessagingException e) {
+			ErrorResponse error = new ErrorResponse("Email Not Sent", e.getMessage());
+			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
+		}catch (Exception e) {
+			ErrorResponse error = new ErrorResponse("Error", e.getMessage());
+			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
 		}
 	}
 
@@ -145,28 +155,25 @@ public class IntroductionController {
 			}
 			return new ResponseEntity<Introductionresponse>(response, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
-			/*ObjectMapper mapper = new ObjectMapper();
-			ErrorResponse error;
-			try {
-				error = mapper.readValue(e.getResponseBodyAsString(), ErrorResponse.class);
-				return new ResponseEntity<ErrorResponse>(error, e.getStatusCode());
-			} catch (IOException e1) {
-				ErrorResponse err = new ErrorResponse("Invalid Request.", e1.getMessage());
-				return new ResponseEntity<ErrorResponse>(err, HttpStatus.NOT_FOUND);
-			}*/
 			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
 		} catch (SQLException e) {
 			ErrorResponse error = new ErrorResponse("Failed Request", e.getMessage());
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
-		}catch (MessagingException e) {
-			ErrorResponse error = new ErrorResponse("Email Not Sent", e.getMessage());
-			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
 		} catch (IOException e) {
 			ErrorResponse error = new ErrorResponse("Please try after some time.", e.getMessage());
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.REQUEST_TIMEOUT);
-		} catch (Exception e) {
-			ErrorResponse error = new ErrorResponse("Please try after some time.", e.getMessage());
-			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (AddressException e) {
+			ErrorResponse error = new ErrorResponse("Address Exception", e.getMessage());
+			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
+		} catch (AuthenticationFailedException e) {
+			ErrorResponse error = new ErrorResponse("Authentication failed while sending mail", e.getMessage());
+			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
+		} catch (MessagingException e) {
+			ErrorResponse error = new ErrorResponse("Email Not Sent", e.getMessage());
+			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
+		}catch (Exception e) {
+			ErrorResponse error = new ErrorResponse("Error", e.getMessage());
+			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
 		}
 	}
 

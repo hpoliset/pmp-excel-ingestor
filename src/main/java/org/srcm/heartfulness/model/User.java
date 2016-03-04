@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * @author HimaSree
  *
  */
-@JsonInclude(value = Include.NON_NULL)
+//@JsonInclude(value = Include.NON_NULL)
 @JsonPropertyOrder({ "id", "name", "first_name", "last_name", "email", "user_type" })
 @JsonIgnoreProperties(ignoreUnknown = true, allowGetters = false)
 public class User {

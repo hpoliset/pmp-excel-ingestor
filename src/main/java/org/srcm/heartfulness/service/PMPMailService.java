@@ -1,6 +1,8 @@
 package org.srcm.heartfulness.service;
 
+import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 
 import org.srcm.heartfulness.model.IntroductionDetails;
 import org.srcm.heartfulness.model.User;
@@ -18,6 +20,6 @@ public interface PMPMailService {
 	 * @param introdet
 	 * @throws MessagingException
 	 */
-	void sendMail(User newUser, IntroductionDetails introdet) throws MessagingException;
+	void sendMail(User newUser, IntroductionDetails introdet) throws MessagingException, AuthenticationFailedException,AddressException;
 
 }

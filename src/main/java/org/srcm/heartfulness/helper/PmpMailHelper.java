@@ -11,13 +11,16 @@ import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
+import javax.mail.AuthenticationFailedException;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MailDateFormat;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
@@ -25,11 +28,15 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.mail.MailSendException;
 import org.springframework.stereotype.Component;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.model.IntroductionDetails;
 import org.srcm.heartfulness.model.User;
+import org.srcm.heartfulness.webservice.IntroductionController;
 
 import com.sun.mail.smtp.SMTPMessage;
 
@@ -72,6 +79,8 @@ public class PmpMailHelper {
 	private String requestmailtemplate;
 	
 	boolean sendWithTemplate=false;
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(PmpMailHelper.class);
 
 	//@Autowired
 	private VelocityEngine velocityEngine=new VelocityEngine();
@@ -87,8 +96,10 @@ public class PmpMailHelper {
 	 * method to send email to HFN team with user details
 	 * @param newUser
 	 * @param introdet
+	 * @throws MessagingException 
+	 * @throws AddressException 
 	 */
-	public void sendEmailtoHfnTeam(User newUser, IntroductionDetails introdet) {
+	public void sendEmailtoHfnTeam(User newUser, IntroductionDetails introdet) throws AddressException, MessagingException {
 		addParameter("NAME", newUser.getName());
 		addParameter("EMAIL", newUser.getEmail());
 		addParameter("MOBILE", newUser.getMobile());
@@ -172,9 +183,13 @@ public class PmpMailHelper {
 	 * @param ccMailIds
 	 * @param newUser
 	 * @param introdet
+	 * @throws MessagingException 
+	 * @throws AddressException 
 	 */
-	private void sendMail(List<String> toMailIds, List<String> ccMailIds) {
-
+	private void sendMail(List<String> toMailIds, List<String> ccMailIds) throws AddressException, MessagingException {
+		
+		LOGGER.debug("Trying to send mail to HFN team.");
+		if(toMailIds.size()>0){
 		Properties props = System.getProperties();
 		setProperties(props);
 		Session session =Session.getDefaultInstance(props,new javax.mail.Authenticator(){
@@ -184,7 +199,6 @@ public class PmpMailHelper {
 				return new PasswordAuthentication(username,password);
 			}
 		});
-		try {
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(username));
 			for (String toMailId : toMailIds) {
@@ -212,13 +226,7 @@ public class PmpMailHelper {
 			//int returnOption = message.getReturnOption();
 			Transport.send(message);
 			
-			System.out.println("sent");
-		}
-		catch (MessagingException e)
-		{
-			throw new RuntimeException(e);
-		}
-
+			LOGGER.debug("Mail Sent successfully..");
 	}
 	
 	/**
@@ -226,18 +234,22 @@ public class PmpMailHelper {
 	 * @param email
 	 * @throws MessagingException 
 	 */
-	public void sendEmailtoSeeker(String email) throws MessagingException{
+	public void sendEmailtoSeeker(String email) throws MessagingException,AuthenticationFailedException,AddressException{
 			sendMailthroughTemplate(email);
 	}
 	
 	/**
 	 * method to send mail to seeker with welcome mail template
 	 * @param email
+	 * @throws MessagingException, AuthenticationFailedException 
+	 * @throws AddressException 
 	 */
-	private void sendMailthroughTemplate(String email) {
+	private void sendMailthroughTemplate(String email) throws AddressException, MessagingException, AuthenticationFailedException {
 
+		LOGGER.debug("Trying to send Mail to seeker..");
 		Properties props = System.getProperties();
 		setProperties(props);
+		LOGGER.debug("Trying to get the session with host details.");
 		Session session =Session.getDefaultInstance(props,new javax.mail.Authenticator(){
 			@Override
 			protected PasswordAuthentication getPasswordAuthentication()
@@ -245,7 +257,6 @@ public class PmpMailHelper {
 				return new PasswordAuthentication(username,password);
 			}
 		});
-		try {
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(username));
 			message.setRecipients(Message.RecipientType.TO,InternetAddress.parse(email));
@@ -273,14 +284,9 @@ public class PmpMailHelper {
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
 			int returnOption = message.getReturnOption();
 			System.out.println(returnOption);   
+			LOGGER.debug("Trying to send mail to seeker");
 			Transport.send(message);
-			System.out.println("sent");
-		}
-		catch (MessagingException e)
-		{
-			throw new RuntimeException(e);
-		}
-
+			LOGGER.debug("Mail sent to seeker.");
 	}
 
 	public void addParameter(String name, String value ){

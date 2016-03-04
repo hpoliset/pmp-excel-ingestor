@@ -1,6 +1,8 @@
 package org.srcm.heartfulness.service;
 
+import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +28,7 @@ public class PMPMailServiceImpl implements PMPMailService {
 	 * @throws MessagingException 
 	 */
 	@Override
-	public void sendMail(User newUser, IntroductionDetails introdet) throws MessagingException {
+	public void sendMail(User newUser, IntroductionDetails introdet) throws MessagingException, AuthenticationFailedException,AddressException {
 		mailHelper.sendEmailtoSeeker(newUser.getEmail());
 		mailHelper.sendEmailtoHfnTeam(newUser,introdet);
 	}
