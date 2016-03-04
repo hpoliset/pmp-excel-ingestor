@@ -95,6 +95,9 @@ public class UserController {
 					user.setAbyasiId(user.getMembershipId() == null ? 0 : Integer.valueOf(user.getMembershipId()) );
 					userProfileService.save(user);
 				}
+			}else if (pmpUser != null && id != pmpUser.getId()){
+				ErrorResponse error = new ErrorResponse("Invalid Request.", "user Id mismatch.");
+				return new ResponseEntity<ErrorResponse>(error, HttpStatus.BAD_REQUEST);
 			}
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
