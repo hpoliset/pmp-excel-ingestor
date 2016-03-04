@@ -1,8 +1,19 @@
 package org.srcm.heartfulness.repository.jdbc;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.*;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -10,15 +21,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.model.Participant;
+import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.repository.ParticipantRepository;
-
-import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -31,6 +35,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	private SimpleJdbcInsert insertParticipant;
+	
 
 	@Autowired
 	public ParticipantRepositoryImpl(DataSource dataSource) {
@@ -41,12 +46,20 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 		.withTableName("participant")
 		.usingGeneratedKeyColumns("id");
 	}
-
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.repository.ParticipantRepository#findByHashCode(java.lang.String)
+	 */
 	@Override
 	public Collection<Participant> findByHashCode(String hashCode) throws DataAccessException {
 		return null;
 	}
-
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.repository.ParticipantRepository#findById(java.lang.Integer)
+	 */
 	@Override
 	public Participant findById(int id) throws DataAccessException {
 		Participant participant;
@@ -58,7 +71,11 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 				);
 		return participant;
 	}
-
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.repository.ParticipantRepository#findByProgramId(java.lang.Integer)
+	 */
 	@Override
 	public List<Participant> findByProgramId(int programId) {
 		Map<String, Object> params = new HashMap<>();
@@ -73,6 +90,10 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 		return participants;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.repository.ParticipantRepository#save(Participant participant)
+	 */
 	@Override
 	public void save(Participant participant) {
 
@@ -138,4 +159,50 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 							"WHERE id=:id", parameterSource);
 		}
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.repository.ParticipantRepository#getParticipantByIntroIdAndMobileNo(java.lang.String,java.lang.String)
+	 */
+	@Override
+	public Participant getParticipantByIntroIdAndMobileNo(String introId, String mobileNumber) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("auto_generated_intro_id", introId);
+		params.put("mobile_phone", mobileNumber);
+		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+		
+		Participant participant = null;
+		
+		Program program = null;
+		List<Participant> participants = this.namedParameterJdbcTemplate.query(
+				"SELECT * FROM participant p INNER JOIN program pr on p.program_id=pr.program_id "
+				+ " WHERE pr.auto_generated_intro_id =:auto_generated_intro_id and p.mobile_phone =:mobile_phone",sqlParameterSource,BeanPropertyRowMapper.newInstance(Participant.class));
+		if(participants.size()>0){
+			participant = participants.get(0);
+		}
+		if(participant!=null && participant.getProgramId()>0){
+			program =  findOnlyProgramById(participant.getProgramId());
+		}else{
+			program = new Program();
+		}
+		participant.setProgram(program);
+		return participant;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.repository.ParticipantRepository#findOnlyProgramById(java.lang.Integer)
+	 */
+	@Override
+	public Program findOnlyProgramById(int id){
+		Program program;
+		Map<String, Object> params = new HashMap<>();
+		params.put("program_id", id);
+		program = this.namedParameterJdbcTemplate.queryForObject(
+				"SELECT * FROM program WHERE program_id=:program_id",
+				params, BeanPropertyRowMapper.newInstance(Program.class)
+				);
+		return program;
+	}
+
 }
