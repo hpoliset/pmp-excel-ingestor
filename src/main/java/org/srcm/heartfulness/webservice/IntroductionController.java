@@ -67,7 +67,6 @@ public class IntroductionController {
 					newUser.setFirst_name(srcmProfile.getFirst_name());
 					newUser.setLast_name(srcmProfile.getLast_name());
 					newUser.setEmail(srcmProfile.getEmail());
-					//newUser.setAbyasiId(srcmProfile.getAbhyasi_id());
 					newUser.setMessage(user.getMessage());
 					newUser.setName(user.getName());
 					newUser.setCity(user.getCity());
@@ -84,7 +83,6 @@ public class IntroductionController {
 					newUser.setMobile(user.getMobile());
 					userProfileService.save(newUser);
 				}
-				System.out.println(user.getAccess_token());
 				newUser.setMessage(user.getMessage());
 				IntroductionDetails introdet = userProfileService.updateIntroductionDetails(newUser);
 				response.setProfileCreatedForUser(PMPConstants.REQUIRED_NO);

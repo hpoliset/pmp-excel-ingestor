@@ -58,8 +58,10 @@ public class UserController {
 				user.setFirst_name(srcmProfile.getFirst_name());
 				user.setLast_name(srcmProfile.getLast_name());
 				user.setEmail(srcmProfile.getEmail());
+				user.setAbyasiId(srcmProfile.getAbhyasi_id());
 				userProfileService.save(user);
 			}
+			user.setMembershipId(String.valueOf(user.getAbyasiId()));
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
@@ -89,6 +91,8 @@ public class UserController {
 			User pmpUser = userProfileService.loadUserByEmail(srcmProfile.getEmail());
 			if (pmpUser != null && id == pmpUser.getId()) {
 				if (id == pmpUser.getId()) {
+					user.setMembershipId(user.getMembershipId() == null ? "0" :user.getMembershipId());
+					user.setAbyasiId(user.getMembershipId() == null ? 0 : Integer.valueOf(user.getMembershipId()) );
 					userProfileService.save(user);
 				}
 			}

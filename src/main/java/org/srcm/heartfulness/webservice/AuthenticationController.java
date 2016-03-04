@@ -138,11 +138,10 @@ public class AuthenticationController {
 	@RequestMapping(value = "users", method = RequestMethod.POST)
 	public ResponseEntity<?> createUsers(@RequestBody User user) {
 		try {
-			user.setUser_type("se");
+			user.setUser_type("se");	
 			user = userProfileService.createUser(user);
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
-			//ErrorResponse error = new ErrorResponse("error",e.getResponseBodyAsString());
 			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
 		} catch (IOException e) {
 			ErrorResponse error = new ErrorResponse("Please try after some time.", e.getMessage());

@@ -78,8 +78,11 @@ public class User {
 	@JsonIgnore
 	private String isSahajmargAllowed;
 	
-	@JsonProperty("abyasi_id")
+	@JsonIgnore
 	private int abyasiId;
+	
+	@JsonProperty("abyasi_id")
+	private String membershipId;
 	
 	public User() {
 		super();
@@ -88,7 +91,7 @@ public class User {
 	public User(int id, String name, String first_name, String last_name, String gender, String email, String mobile,
 			String user_type, String password, String confirmPassword, String address, String country, String state,
 			String city, String access_token, String role, String message, String ispmpAllowed,
-			String isSahajmargAllowed, int abyasiId) {
+			String isSahajmargAllowed, int abyasiId, String membershipId) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -110,8 +113,9 @@ public class User {
 		this.ispmpAllowed = ispmpAllowed;
 		this.isSahajmargAllowed = isSahajmargAllowed;
 		this.abyasiId = abyasiId;
+		this.membershipId = membershipId;
 	}
-
+	
 	public int getId() {
 		return id;
 	}
@@ -272,6 +276,14 @@ public class User {
 		this.abyasiId = abyasiId;
 	}
 
+	public String getMembershipId() {
+		return membershipId;
+	}
+
+	public void setMembershipId(String membershipId) {
+		this.membershipId = membershipId;
+	}
+
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", first_name=" + first_name + ", last_name=" + last_name
@@ -279,8 +291,8 @@ public class User {
 				+ ", password=" + password + ", confirmPassword=" + confirmPassword + ", address=" + address
 				+ ", country=" + country + ", state=" + state + ", city=" + city + ", access_token=" + access_token
 				+ ", role=" + role + ", message=" + message + ", ispmpAllowed=" + ispmpAllowed
-				+ ", isSahajmargAllowed=" + isSahajmargAllowed + ", abyasiId=" + abyasiId + "]";
+				+ ", isSahajmargAllowed=" + isSahajmargAllowed + ", abyasiId=" + abyasiId + ", membershipId="
+				+ membershipId + "]";
 	}
-
 
 }

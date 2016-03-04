@@ -53,7 +53,8 @@ public class UserProfileServiceImpl implements UserProfileService {
 		if (null !=user.getCountry())  newUser.setCountry(user.getCountry());
 		if (null !=user.getState())  newUser.setState(user.getState());
 		if (null !=user.getMobile()) newUser.setMobile(user.getMobile());
-		if ( 0 != user.getAbyasiId()) newUser.setAbyasiId(user.getAbyasiId());
+		newUser.setMembershipId(user.getMembershipId() == null ? "0" :user.getMembershipId());
+		newUser.setAbyasiId(user.getMembershipId() == null ? 0 : Integer.valueOf(user.getMembershipId()) );
 		userRepository.save(newUser);
 		return newUser;
 	}
