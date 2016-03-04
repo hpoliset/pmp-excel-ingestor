@@ -30,8 +30,8 @@
 	$(document)
 			.ready(
 					function() {
-						var url = 'http://10.1.29.23:7080/pmp/api/authenticate';
-						var getuserurl = 'http://10.1.29.23:7080/pmp/api/v1/user';
+						var url = 'http://pmpbeta.heartfulness.org/pmp/api/authenticate';
+						var getuserurl = 'http://pmpbeta.heartfulness.org/pmp/api/v1/user';
 						var id;
 						$("#submit")
 								.click(
@@ -143,7 +143,7 @@
 											}
 											$
 													.ajax({
-														url : "http://10.1.29.23:7080/pmp/api/users",
+														url : "http://pmpbeta.heartfulness.org/pmp/api/users",
 														type : "POST",
 														/* async : false, */
 														contentType : "application/json",
