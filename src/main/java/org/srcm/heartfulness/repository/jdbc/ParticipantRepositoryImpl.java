@@ -35,46 +35,51 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	private SimpleJdbcInsert insertParticipant;
-	
 
 	@Autowired
 	public ParticipantRepositoryImpl(DataSource dataSource) {
 		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 
-		this.insertParticipant = new SimpleJdbcInsert(dataSource)
-		.withTableName("participant")
-		.usingGeneratedKeyColumns("id");
+		this.insertParticipant = new SimpleJdbcInsert(dataSource).withTableName("participant")
+				.usingGeneratedKeyColumns("id");
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.ParticipantRepository#findByHashCode(java.lang.String)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.ParticipantRepository#findByHashCode
+	 * (java.lang.String)
 	 */
 	@Override
 	public Collection<Participant> findByHashCode(String hashCode) throws DataAccessException {
 		return null;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.ParticipantRepository#findById(java.lang.Integer)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.ParticipantRepository#findById(java.
+	 * lang.Integer)
 	 */
 	@Override
 	public Participant findById(int id) throws DataAccessException {
 		Participant participant;
 		Map<String, Object> params = new HashMap<>();
 		params.put("id", id);
-		participant = this.namedParameterJdbcTemplate.queryForObject(
-				"SELECT * FROM participant WHERE id=:id",
-				params, BeanPropertyRowMapper.newInstance(Participant.class)
-				);
+		participant = this.namedParameterJdbcTemplate.queryForObject("SELECT * FROM participant WHERE id=:id", params,
+				BeanPropertyRowMapper.newInstance(Participant.class));
 		return participant;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.ParticipantRepository#findByProgramId(java.lang.Integer)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.ParticipantRepository#findByProgramId
+	 * (java.lang.Integer)
 	 */
 	@Override
 	public List<Participant> findByProgramId(int programId) {
@@ -84,25 +89,27 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 		List<Participant> participants = this.namedParameterJdbcTemplate.query(
 				"SELECT * FROM participant WHERE program_id=:programId", sqlParameterSource,
-				BeanPropertyRowMapper.newInstance(Participant.class)
-				);
+				BeanPropertyRowMapper.newInstance(Participant.class));
 
 		return participants;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.ParticipantRepository#save(Participant participant)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.ParticipantRepository#save(Participant
+	 * participant)
 	 */
 	@Override
 	public void save(Participant participant) {
 
-		//See if this participant already exists or not
+		// See if this participant already exists or not
 		if (participant.getId() == 0) {
 			Integer participantId = this.jdbcTemplate.query(
 					"SELECT id from participant where excel_sheet_sequence_number=? AND print_name=? AND program_id=?",
-					new Object[]{participant.getExcelSheetSequenceNumber(), participant.getPrintName(), participant.getProgramId()},
-					new ResultSetExtractor<Integer>() {
+					new Object[] { participant.getExcelSheetSequenceNumber(), participant.getPrintName(),
+							participant.getProgramId() }, new ResultSetExtractor<Integer>() {
 						@Override
 						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
 							if (resultSet.next()) {
@@ -110,8 +117,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 							}
 							return 0;
 						}
-					}
-					);
+					});
 
 			if (participantId > 0) {
 				participant.setId(participantId);
@@ -124,49 +130,28 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 			participant.setId(newId.intValue());
 		} else {
 			// TODO: Need to deal with Hashcode.
-			this.namedParameterJdbcTemplate.update(
-					"UPDATE participant SET " +
-							"print_name=:printName, " +
-							"first_name=:firstName, " +
-							"last_name=:lastName, " +
-							"middle_name=:middleName, " +
-							"email=:email, " +
-							"mobile_phone=:mobilePhone," +
-							"gender=:gender," +
-							"date_of_birth=:dateOfBirth," +
-							"date_of_registration=:dateOfRegistration," +
-							"abhyasi_id=:abhyasiId," +
-							"status=:status," +
-							"address_line1=:addressLine1," +
-							"address_line2=:addressLine2," +
-							"city=:city," +
-							"state=:state," +
-							"country=:country," +
-							"program_id=:programId," +
-							"profession=:profession," +
-							"remarks=:remarks," +
-							"id_card_number=:idCardNumber," +
-							"language=:language," +
-							"introduction_date=:introductionDate," +
-							"introduced_by=:introducedBy," +
-							"welcome_card_number=:welcomeCardNumber," +
-							"welcome_card_date=:welcomeCardDate," +
-							"age_group=:ageGroup," +
-							"upload_status=:uploadStatus," +
-							"first_sitting=:firstSittingTaken,"+
-							"second_sitting=:secondSittingTaken,"+
-							"third_sitting=:thirdSittingTaken,"+
-							"first_sitting_date=:firstSittingDate, " +
-							"second_sitting_date=:secondSittingDate, " +
-							"third_sitting_date=:thirdSittingDate, " +
-							"batch=:batch " +
-							"WHERE id=:id", parameterSource);
+			this.namedParameterJdbcTemplate.update("UPDATE participant SET " + "print_name=:printName, "
+					+ "first_name=:firstName, " + "last_name=:lastName, " + "middle_name=:middleName, "
+					+ "email=:email, " + "mobile_phone=:mobilePhone," + "gender=:gender,"
+					+ "date_of_birth=:dateOfBirth," + "date_of_registration=:dateOfRegistration,"
+					+ "abhyasi_id=:abhyasiId," + "status=:status," + "address_line1=:addressLine1,"
+					+ "address_line2=:addressLine2," + "city=:city," + "state=:state," + "country=:country,"
+					+ "program_id=:programId," + "profession=:profession," + "remarks=:remarks,"
+					+ "id_card_number=:idCardNumber," + "language=:language," + "introduction_date=:introductionDate,"
+					+ "introduced_by=:introducedBy," + "welcome_card_number=:welcomeCardNumber,"
+					+ "welcome_card_date=:welcomeCardDate," + "age_group=:ageGroup," + "upload_status=:uploadStatus,"
+					+ "first_sitting=:firstSittingTaken," + "second_sitting=:secondSittingTaken,"
+					+ "third_sitting=:thirdSittingTaken," + "first_sitting_date=:firstSittingDate, "
+					+ "second_sitting_date=:secondSittingDate, " + "third_sitting_date=:thirdSittingDate, "
+					+ "batch=:batch " + "WHERE id=:id", parameterSource);
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.ParticipantRepository#getParticipantByIntroIdAndMobileNo(java.lang.String,java.lang.String)
+	 * 
+	 * @see org.srcm.heartfulness.repository.ParticipantRepository#
+	 * getParticipantByIntroIdAndMobileNo(java.lang.String,java.lang.String)
 	 */
 	@Override
 	public Participant getParticipantByIntroIdAndMobileNo(String introId, String mobileNumber) {
@@ -174,38 +159,40 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 		params.put("auto_generated_intro_id", introId);
 		params.put("mobile_phone", mobileNumber);
 		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
-		
+
 		Participant participant = null;
-		
+
 		Program program = null;
-		List<Participant> participants = this.namedParameterJdbcTemplate.query(
-				"SELECT * FROM participant p INNER JOIN program pr on p.program_id=pr.program_id "
-				+ " WHERE pr.auto_generated_intro_id =:auto_generated_intro_id and p.mobile_phone =:mobile_phone",sqlParameterSource,BeanPropertyRowMapper.newInstance(Participant.class));
-		if(participants.size()>0){
+		List<Participant> participants = this.namedParameterJdbcTemplate
+				.query("SELECT * FROM participant p INNER JOIN program pr on p.program_id=pr.program_id "
+						+ " WHERE pr.auto_generated_intro_id =:auto_generated_intro_id and p.mobile_phone =:mobile_phone",
+						sqlParameterSource, BeanPropertyRowMapper.newInstance(Participant.class));
+		if (participants.size() > 0) {
 			participant = participants.get(0);
 		}
-		if(participant!=null && participant.getProgramId()>0){
-			program =  findOnlyProgramById(participant.getProgramId());
-		}else{
+		if (participant != null && participant.getProgramId() > 0) {
+			program = findOnlyProgramById(participant.getProgramId());
+		} else {
 			program = new Program();
 		}
 		participant.setProgram(program);
 		return participant;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.ParticipantRepository#findOnlyProgramById(java.lang.Integer)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.ParticipantRepository#findOnlyProgramById
+	 * (java.lang.Integer)
 	 */
 	@Override
-	public Program findOnlyProgramById(int id){
+	public Program findOnlyProgramById(int id) {
 		Program program;
 		Map<String, Object> params = new HashMap<>();
 		params.put("program_id", id);
-		program = this.namedParameterJdbcTemplate.queryForObject(
-				"SELECT * FROM program WHERE program_id=:program_id",
-				params, BeanPropertyRowMapper.newInstance(Program.class)
-				);
+		program = this.namedParameterJdbcTemplate.queryForObject("SELECT * FROM program WHERE program_id=:program_id",
+				params, BeanPropertyRowMapper.newInstance(Program.class));
 		return program;
 	}
 

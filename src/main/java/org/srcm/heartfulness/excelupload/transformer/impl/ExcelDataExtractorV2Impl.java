@@ -80,7 +80,6 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 	private Participant parseParticipantRow(Row participantRow) throws InvalidExcelFileException {
 		Participant participant = new Participant();
 		SimpleDateFormat mmddyy = new SimpleDateFormat("MM/dd/yy");
-
 		participant.setPrintName(participantRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString());
 
 		String firstSittingStr = participantRow.getCell(1,
@@ -126,7 +125,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		}else{
 			participant.setThirdSittingTaken(0);
 		}
-
+		
 		participant.setCountry(participantRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString());
 		participant.setState(participantRow.getCell(5, Row.CREATE_NULL_AS_BLANK).toString());
 		participant.setCity(participantRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString());

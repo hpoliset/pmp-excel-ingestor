@@ -129,6 +129,7 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 					}
 				}
 			}
+			
 			String secondSittingStr =  currentRow.getCell(2,
 					Row.CREATE_NULL_AS_BLANK).toString();
 			if(!secondSittingStr.isEmpty()){
@@ -160,8 +161,6 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 					}
 				}
 			}
-
-
 			if (currentRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()) {
 				errorList.add(V2ParticipantCols.COUNTRY.getHeader()
 						+ " is a mandatory field and cannot be empty at row number " + rowNumber);
