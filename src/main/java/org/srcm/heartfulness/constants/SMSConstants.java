@@ -1,5 +1,7 @@
 package org.srcm.heartfulness.constants;
 
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
+
 /**
  * Constant class to hold the messages, keywords,sub-keywords for the SMS integration. 
  * 
@@ -33,6 +35,77 @@ public class SMSConstants {
 	public static final String SMS_HEARTFULNESS_HOMEPAGE_URL="http://en.heartfulness.org/";
 	
 	/** Holds the Heartfulness home page URL	 */
-	public static final String SMS_HEARTFULNESS_UPDATEEVENT_URL="https://pmp.heartfulness.org/updateevent";
+	public static final String SMS_HEARTFULNESS_UPDATEEVENT_URL="https://pmp.heartfulness.org/pmp/updateevent";
+	
+	
+	public static final String SMS_CREATE_EVENT_RESPONSE_DUPLICATE_EVENT ="Duplicate Event Creation. Please check";
+	
+	public static final String SMS_CREATE_EVENT_RESPONSE_SUCCESS_1 ="Event creation success: Event ID - ";
+	
+	public static final String SMS_CREATE_EVENT_RESPONSE_SUCCESS_2 =", Intro ID - ";
+	
+	public static final String SMS_CREATE_EVENT_RESPONSE_SUCCESS_3 =". Please click on ";
+	
+	public static final String SMS_CREATE_EVENT_RESPONSE_SUCCESS_4 =" to update the event details.";
+	
+	public static final String SMS_RESPONSE_INVALID_FORMAT_1 = "Invalid request format, please use: ";
+	
+	public static final String SMS_CREATE_EVENT_RESPONSE_INVALID_FORMAT_1 =" <event-name> <abhiId>";
+	
+	public static final String SMS_EMPTY_SPACE =" ";
+	
+	public static final String SMS_UPDATE_EVENT_RESPONSE_NOT_AVAILABLE_1 = "Specified Event ID(";
+	
+	public static final String SMS_UPDATE_EVENT_RESPONSE_NOT_AVAILABLE_2 = ") is not available.";
+	
+	public static final String SMS_UPDATE_EVENT_RESPONSE_ALREADY_EXISTS_1 = "Specified new Event name(";
+	
+	public static final String SMS_UPDATE_EVENT_RESPONSE_ALREADY_EXISTS_2 = ") is already exist. Please use different name.";
+	
+	
+	public static final String SMS_UPDATE_EVENT_RESPONSE_SUCCESS_1 = "Event updated successfully. Please click on ";
+	
+	public static final String SMS_UPDATE_EVENT_RESPONSE_SUCCESS_2 = " to update the event details.";
+	
+	public static final String SMS_UPDATE_EVENT_RESPONSE_INVALID_FORMAT_1 = " <event-ID> <new-event-name> <abhyasi ID>";
+	
+	public static final String SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_1 = "Welcome to Heartfulness. Please click ";
+	
+	public static final String SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_2 = " to visit Heartfulness website.";
+	
+	public static final String SMS_CREATE_EVENT_PARTICIANT_INVALID_RESPONSE_1 = " <event-ID> <participant-name> <email ID>";
+	
+	public static final String SMS_EWELCOME_RESPONSE_SUCCESS_1 = "Your eWelcome ID : ";
+	
+	public static final String SMS_EWELCOME_RESPONSE_SUCCESS_2 =  ", this can be used as reference for further communications.";
+	
+	public static final String SMS_EWELCOME_RESPONSE_INVALID_FORMAT_1 =  "Specified Intro ID ( ";
+	
+	public static final String SMS_EWELCOME_RESPONSE_INVALID_FORMAT_2 =  " ) is not available. Please enter a valid event ID.";
+	
+	public static final String SMS_CREATE_PARTICIPANT_INVALID_FORMAT_1 =  "Invalid request format, please use, To create participant: ";
+	
+	public static final String SMS_CREATE_PARTICIPANT_INVALID_FORMAT_2 = " <event-ID> <participant-name> <email ID>. ";
+	
+	public static final String SMS_CREATE_PARTICIPANT_INVALID_FORMAT_3 = "To Create eWelcome ID: ";
+	
+	public static final String SMS_CREATE_PARTICIPANT_INVALID_FORMAT_4 = " <Intro-ID>";
+	
+	public static final String SMS_CREATE_PARTICIPANT_INVALID_FORMAT_5 = "Specified event ID or Intro ID( ";
+	
+	public static final String SMS_CREATE_PARTICIPANT_INVALID_FORMAT_6 = " ) is not available. Please enter a valid event ID.";
+	
+	public static final String SMS_CREATE_PARTICIPANT_INVALID_FORMAT_7 =  "Specified event ID (";
+	
+	public static final String SMS_REGISTER_PARTICIPANT_COUNT_SUCCESS_1 = "Number of participants registered for the Event ID( ";
+	
+	public static final String SMS_REGISTER_PARTICIPANT_COUNT_SUCCESS_2 = " ) : ";
+	
+	public static final String SMS_REGISTER_PARTICIPANT_INVALID_FORMAT_1 = "Specified event ID ( ";
+	
+	public static final String SMS_REGISTER_PARTICIPANT_INVALID_FORMAT_2 = " ) is not available. Please enter a valid event ID.";
+	
+	public static final String SMS_INTRODUCED_PARTICIPANT_COUNT_SUCCESS_1 = "Number of participants introduced for the Intro ID( ";
 	
 }
+		
