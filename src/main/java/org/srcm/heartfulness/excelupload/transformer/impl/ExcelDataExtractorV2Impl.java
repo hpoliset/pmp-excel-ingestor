@@ -29,11 +29,11 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 	private Program program;*/
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExcelDataExtractorV2Impl.class);
-	
+
 	public ExcelDataExtractorV2Impl() {
 		super();
 	}
-	
+
 	@Override
 	public Program extractExcel(Workbook workbook) throws InvalidExcelFileException {
 		Program program =  new Program();
@@ -44,7 +44,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		return program;
 	}
 
-	
+
 	/*public Program getProgram(Workbook workbook) throws InvalidExcelFileException {
 		this.eventSheet = workbook.getSheet("Event Details");
 		this.participantsSheet = workbook.getSheet("Participants Details");
@@ -79,45 +79,53 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 
 	private Participant parseParticipantRow(Row participantRow) throws InvalidExcelFileException {
 		Participant participant = new Participant();
+		SimpleDateFormat mmddyy = new SimpleDateFormat("MM/dd/yy");
 		participant.setPrintName(participantRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString());
-		String firstSittingStr = participantRow.getCell(1, Row.CREATE_NULL_AS_BLANK).toString();
 
-		SimpleDateFormat mmddyy = new SimpleDateFormat("mm/dd/yy");
-		if (!"Y".equals(firstSittingStr)) {
+		String firstSittingStr = participantRow.getCell(1,
+				Row.CREATE_NULL_AS_BLANK).toString();
+		if (!"Y".equals(firstSittingStr) && !"N".equals(firstSittingStr)) {
 			try {
-				Date firstSittingDate = mmddyy.parse(firstSittingStr);
-				participant.setFirstSittingDate(firstSittingDate);
+				participant.setFirstSittingDate(mmddyy.parse(firstSittingStr));
 			} catch (ParseException e) {
-				// ignore
+				//ignore
 			}
-		} else {
+		}else if("Y".equals(firstSittingStr)){
 			participant.setFirstSittingTaken(1);
+		}else{
+			participant.setFirstSittingTaken(0);
 		}
 
-		String secondSittingStr = participantRow.getCell(2, Row.CREATE_NULL_AS_BLANK).toString();
-		if (!"Y".equals(firstSittingStr)) {
+		String secondSittingStr = participantRow.getCell(2,
+				Row.CREATE_NULL_AS_BLANK).toString();
+		if (!"Y".equals(secondSittingStr) && !"N".equals(secondSittingStr)) {
 			try {
-				Date firstSittingDate = mmddyy.parse(firstSittingStr);
-				participant.setSecondSittingDate(firstSittingDate);
+				Date secondSittingDate = mmddyy.parse(secondSittingStr);
+				participant.setSecondSittingDate(secondSittingDate);
 			} catch (ParseException e) {
 				// ignore
 			}
-		} else {
+		} else if("Y".equals(secondSittingStr)){
 			participant.setSecondSittingTaken(1);
+		}else{
+			participant.setSecondSittingTaken(0);
 		}
 
-		String thirdSittingStr = participantRow.getCell(3, Row.CREATE_NULL_AS_BLANK).toString();
-		if (!"Y".equals(firstSittingStr)) {
+		String thirdSittingStr = participantRow.getCell(3,
+				Row.CREATE_NULL_AS_BLANK).toString();
+		if (!"Y".equals(firstSittingStr) && !"N".equals(thirdSittingStr)) {
 			try {
-				Date sittingDate = mmddyy.parse(thirdSittingStr);
-				participant.setThirdSittingDate(sittingDate);
+				Date thirdSittingDate = mmddyy.parse(thirdSittingStr);
+				participant.setThirdSittingDate(thirdSittingDate);
 			} catch (ParseException e) {
 				// ignore
 			}
-		} else {
+		} else if("Y".equals(thirdSittingStr)){
 			participant.setThirdSittingTaken(1);
+		}else{
+			participant.setThirdSittingTaken(0);
 		}
-
+		
 		participant.setCountry(participantRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString());
 		participant.setState(participantRow.getCell(5, Row.CREATE_NULL_AS_BLANK).toString());
 		participant.setCity(participantRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString());
