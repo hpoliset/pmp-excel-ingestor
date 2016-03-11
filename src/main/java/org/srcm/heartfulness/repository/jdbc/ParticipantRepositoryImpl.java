@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -66,12 +67,16 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	 */
 	@Override
 	public Participant findById(int id) throws DataAccessException {
-		Participant participant;
-		Map<String, Object> params = new HashMap<>();
-		params.put("id", id);
-		participant = this.namedParameterJdbcTemplate.queryForObject("SELECT * FROM participant WHERE id=:id", params,
-				BeanPropertyRowMapper.newInstance(Participant.class));
-		return participant;
+		try{
+			Participant participant;
+			Map<String, Object> params = new HashMap<>();
+			params.put("id", id);
+			participant = this.namedParameterJdbcTemplate.queryForObject("SELECT * FROM participant WHERE id=:id", params,
+					BeanPropertyRowMapper.newInstance(Participant.class));
+			return participant;
+		}catch(EmptyResultDataAccessException ex){
+			return new Participant();
+		}
 	}
 
 	/*
@@ -155,28 +160,32 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	 */
 	@Override
 	public Participant getParticipantByIntroIdAndMobileNo(String introId, String mobileNumber) {
-		Map<String, Object> params = new HashMap<>();
-		params.put("auto_generated_intro_id", introId);
-		params.put("mobile_phone", mobileNumber);
-		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+		try{
+			Map<String, Object> params = new HashMap<>();
+			params.put("auto_generated_intro_id", introId);
+			params.put("mobile_phone", mobileNumber);
+			SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
 
-		Participant participant = null;
+			Participant participant = null;
 
-		Program program = null;
-		List<Participant> participants = this.namedParameterJdbcTemplate
-				.query("SELECT * FROM participant p INNER JOIN program pr on p.program_id=pr.program_id "
-						+ " WHERE pr.auto_generated_intro_id =:auto_generated_intro_id and p.mobile_phone =:mobile_phone",
-						sqlParameterSource, BeanPropertyRowMapper.newInstance(Participant.class));
-		if (participants.size() > 0) {
-			participant = participants.get(0);
+			Program program = null;
+			List<Participant> participants = this.namedParameterJdbcTemplate
+					.query("SELECT * FROM participant p INNER JOIN program pr on p.program_id=pr.program_id "
+							+ " WHERE pr.auto_generated_intro_id =:auto_generated_intro_id and p.mobile_phone =:mobile_phone",
+							sqlParameterSource, BeanPropertyRowMapper.newInstance(Participant.class));
+			if (participants.size() > 0) {
+				participant = participants.get(0);
+			}
+			if (participant != null && participant.getProgramId() > 0) {
+				program = findOnlyProgramById(participant.getProgramId());
+			} else {
+				program = new Program();
+			}
+			participant.setProgram(program);
+			return participant;
+		}catch(EmptyResultDataAccessException ex){
+			return new Participant();
 		}
-		if (participant != null && participant.getProgramId() > 0) {
-			program = findOnlyProgramById(participant.getProgramId());
-		} else {
-			program = new Program();
-		}
-		participant.setProgram(program);
-		return participant;
 	}
 
 	/*
@@ -188,12 +197,16 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	 */
 	@Override
 	public Program findOnlyProgramById(int id) {
-		Program program;
-		Map<String, Object> params = new HashMap<>();
-		params.put("program_id", id);
-		program = this.namedParameterJdbcTemplate.queryForObject("SELECT * FROM program WHERE program_id=:program_id",
-				params, BeanPropertyRowMapper.newInstance(Program.class));
-		return program;
+		try{
+			Program program;
+			Map<String, Object> params = new HashMap<>();
+			params.put("program_id", id);
+			program = this.namedParameterJdbcTemplate.queryForObject("SELECT * FROM program WHERE program_id=:program_id",
+					params, BeanPropertyRowMapper.newInstance(Program.class));
+			return program;
+		}catch(EmptyResultDataAccessException ex){
+			return new Program();
+		}
 	}
 
 }
