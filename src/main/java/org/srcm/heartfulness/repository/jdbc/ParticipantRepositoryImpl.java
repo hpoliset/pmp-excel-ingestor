@@ -175,6 +175,8 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 							sqlParameterSource, BeanPropertyRowMapper.newInstance(Participant.class));
 			if (participants.size() > 0) {
 				participant = participants.get(0);
+			}else{
+				participant = new Participant();
 			}
 			if (participant != null && participant.getProgramId() > 0) {
 				program = findOnlyProgramById(participant.getProgramId());

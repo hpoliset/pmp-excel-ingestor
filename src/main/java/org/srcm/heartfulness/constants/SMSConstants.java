@@ -45,7 +45,7 @@ public class SMSConstants {
 	
 	public static final String SMS_CREATE_EVENT_RESPONSE_SUCCESS_2 =", Intro ID - ";
 	
-	public static final String SMS_CREATE_EVENT_RESPONSE_SUCCESS_3 =" Registration success: Seq ID - ";
+	public static final String SMS_CREATE_EVENT_RESPONSE_SUCCESS_3 =" Your Seq ID - ";
 	
 	public static final String SMS_PLEASE_CLICK=". Please Click ";
 	
@@ -59,7 +59,7 @@ public class SMSConstants {
 
 	public static final String SMS_RESPONSE_INVALID_FORMAT_1 = "Invalid request format, please use: ";
 	
-	public static final String SMS_CREATE_EVENT_RESPONSE_INVALID_FORMAT_1 =" <event-name> <abhiId>";
+	public static final String SMS_CREATE_EVENT_RESPONSE_INVALID_FORMAT_1 =" <event-name> <abhyasi ID>";
 	
 	public static final String SMS_EMPTY_SPACE =" ";
 	
@@ -78,7 +78,7 @@ public class SMSConstants {
 	
 	public static final String SMS_UPDATE_EVENT_RESPONSE_INVALID_FORMAT_1 = " <event-ID> <new-event-name> <abhyasi ID>";
 	
-	public static final String SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_1 = ". Welcome to Heartfulness.";
+	public static final String SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_1 = "Welcome to Heartfulness.";
 	
 	public static final String SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_2 = " to visit Heartfulness website.";
 	
@@ -128,11 +128,20 @@ public class SMSConstants {
 	
 	public static final String SMS_HELP_REGISTER_PARTICIPANT="CREATE PARTICIPANT - ";
 	
-	public static final String SMS_HELP_INTRODUCE_PARTICIPANT="CREATE EWELCOMEID - ";
+	public static final String SMS_HELP_INTRODUCE_PARTICIPANT="INTRODUCTION SITTING CONFIRMATION - ";
 	
 	public static final String SMS_HELP_NO_OF_REGISTERED_PARTICIPANTS="NO OF REGISTERED PARTICIPANTS - ";
 	
 	public static final String SMS_HELP_NO_OF_INTRODUCED_PARTICIPANTS="NO OF INTRODUCED PARTICIPANTS - ";
 	
+	public static final String SMS_HELP_FORMAT=SMS_KEYWORD+SMS_EMPTY_SPACE+SMS_HELP_KEYWORD+" to get SMS formats";
+	
+	public static final String SMS_MISSING_EVENT_ID="EVENT ID is Missing. ";
+	
+	public static final String SMS_MISSING_INTRO_ID="INTRO ID is Missing. ";
+	
+	public static final String SMS_SEQUENCE_NUMBER_RESPONSE_INVALID_FORMAT_1 =  "Specified Seq ID ( ";
+	
+	public static final String SMS_SEQUENCE_NUMBER_RESPONSE_INVALID_FORMAT_2 =  " ) is not available. Please provide a valid Seq ID.";
 }
 		
