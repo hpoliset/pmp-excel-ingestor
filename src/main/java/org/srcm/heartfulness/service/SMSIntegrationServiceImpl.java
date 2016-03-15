@@ -72,6 +72,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 						program.setProgramChannel(eventName);
 						program.setCreatedBy("admin");
 						program.setCreateTime(new Date());
+						program.setCoordinatorMobile(sms.getSenderMobile());
 						if (programRepository.isProgramExist(program)) {
 							response = SMSConstants.SMS_CREATE_EVENT_RESPONSE_DUPLICATE_EVENT;
 						} else {
@@ -93,21 +94,18 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 																						// eventid
 									+ SMSConstants.SMS_CREATE_EVENT_RESPONSE_SUCCESS_5;
 						}
-
 					}
 				} else {
 					LOGGER.debug("Insufficient Content");
-					response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_KEYWORD
-							+ SMSConstants.SMS_EMPTY_SPACE + SMSConstants.SMS_CREATE_EVENT_SUB_KEYWORD
-							+ SMSConstants.SMS_CREATE_EVENT_RESPONSE_INVALID_FORMAT_1;
+					response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
+							+ SMSConstants.SMS_HELP_FORMAT;
 				}
 
 			}
 		} else {
 			LOGGER.debug("Insufficient Content");
-			response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_KEYWORD
-					+ SMSConstants.SMS_EMPTY_SPACE + SMSConstants.SMS_CREATE_EVENT_SUB_KEYWORD
-					+ SMSConstants.SMS_CREATE_EVENT_RESPONSE_INVALID_FORMAT_1;
+			response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
+					+ SMSConstants.SMS_HELP_FORMAT;
 		}
 
 		try {
@@ -163,17 +161,15 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 					}
 				} else {
 					LOGGER.debug("Insufficient Content");
-					response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_KEYWORD
-							+ SMSConstants.SMS_EMPTY_SPACE + SMSConstants.SMS_UPDATE_EVENT_SUB_KEYWORD
-							+ SMSConstants.SMS_UPDATE_EVENT_RESPONSE_INVALID_FORMAT_1;
+					response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
+							+ SMSConstants.SMS_HELP_FORMAT;
 				}
 
 			}
 		} else {
 			LOGGER.debug("Insufficient Content");
-			response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_KEYWORD
-					+ SMSConstants.SMS_EMPTY_SPACE + SMSConstants.SMS_UPDATE_EVENT_SUB_KEYWORD
-					+ SMSConstants.SMS_UPDATE_EVENT_RESPONSE_INVALID_FORMAT_1;
+			response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
+					+ SMSConstants.SMS_HELP_FORMAT;
 		}
 		
 		try {
@@ -310,14 +306,12 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 								+ SMSConstants.SMS_EWELCOME_RESPONSE_INVALID_FORMAT_2;
 					}
 				} else {
-					response = SMSConstants.SMS_CREATE_PARTICIPANT_INVALID_FORMAT_1 + SMSConstants.SMS_KEYWORD
-							+ SMSConstants.SMS_EMPTY_SPACE + SMSConstants.SMS_GET_TOTAL_REGISTERED_USERS_SUB_KEYWORD
-							+ SMSConstants.SMS_CREATE_PARTICIPANT_INVALID_FORMAT_4;
+					response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
+							+ SMSConstants.SMS_HELP_FORMAT;
 				}
 			} else {
-				response = SMSConstants.SMS_CREATE_PARTICIPANT_INVALID_FORMAT_1 + SMSConstants.SMS_KEYWORD
-						+ SMSConstants.SMS_EMPTY_SPACE + SMSConstants.SMS_GET_TOTAL_REGISTERED_USERS_SUB_KEYWORD
-						+ SMSConstants.SMS_CREATE_PARTICIPANT_INVALID_FORMAT_4;
+				response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
+						+ SMSConstants.SMS_HELP_FORMAT;
 			}
 		}
 		try {
@@ -357,8 +351,8 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 								+ SMSConstants.SMS_EWELCOME_RESPONSE_INVALID_FORMAT_2;
 					}
 				} else {
-					response = SMSConstants.SMS_EWELCOME_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_KEYWORD
-							+ SMSConstants.SMS_CREATE_PARTICIPANT_INVALID_FORMAT_4;
+					response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
+							+ SMSConstants.SMS_HELP_FORMAT;
 				}
 			}
 			try {
@@ -388,7 +382,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 						response = SMSConstants.SMS_EWELCOME_RESPONSE_SUCCESS_1 + participant.getWelcomeCardNumber()
 								+ SMSConstants.SMS_EWELCOME_RESPONSE_SUCCESS_2;
 					}else{
-						response = SMSConstants.SMS_SEQUENCE_NUMBER_RESPONSE_INVALID_FORMAT_1 + introId
+						response = SMSConstants.SMS_SEQUENCE_NUMBER_RESPONSE_INVALID_FORMAT_1 + seqNum
 								+ SMSConstants.SMS_SEQUENCE_NUMBER_RESPONSE_INVALID_FORMAT_2;
 					}
 				} else {
@@ -421,17 +415,19 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 				+ SMSConstants.SMS_UPDATE_EVENT_RESPONSE_INVALID_FORMAT_1);
 		helpMessage.append("\n");
 		helpMessage.append(SMSConstants.SMS_HELP_REGISTER_PARTICIPANT + SMSConstants.SMS_KEYWORD
+				+SMSConstants.SMS_EMPTY_SPACE+ SMSConstants.SMS_REGISTER_PARTICIPANT_SUB_KEYWORD
 				+ SMSConstants.SMS_CREATE_EVENT_PARTICIANT_INVALID_RESPONSE_1);
 		helpMessage.append("\n");
 		helpMessage.append(SMSConstants.SMS_HELP_INTRODUCE_PARTICIPANT + SMSConstants.SMS_KEYWORD
-				+ SMSConstants.SMS_EMPTY_SPACE + SMSConstants.SMS_CREATE_PARTICIPANT_INVALID_FORMAT_4);
+				+ SMSConstants.SMS_EMPTY_SPACE + SMSConstants.SMS_INTRODUCE_PARTICIPANT_SUB_KEYWORD
+				+ SMSConstants.SMS_CREATE_PARTICIPANT_INVALID_FORMAT_4);
 		helpMessage.append("\n");
 		helpMessage.append(SMSConstants.SMS_HELP_NO_OF_REGISTERED_PARTICIPANTS + SMSConstants.SMS_KEYWORD
 				+ SMSConstants.SMS_EMPTY_SPACE + SMSConstants.SMS_GET_TOTAL_REGISTERED_USERS_SUB_KEYWORD
-				+ SMSConstants.SMS_CREATE_PARTICIPANT_INVALID_FORMAT_4);
+				+ SMSConstants.SMS_NO_OF_REGISTERED_PARTICIPANT_INVALID_FORMAT_4);
 		helpMessage.append("\n");
 		helpMessage.append(SMSConstants.SMS_HELP_NO_OF_INTRODUCED_PARTICIPANTS + SMSConstants.SMS_KEYWORD
-				+ SMSConstants.SMS_CREATE_PARTICIPANT_INVALID_FORMAT_4);
+				+ SMSConstants.SMS_NO_OF_INTRODUCED_PARTICIPANT_INVALID_FORMAT_4);
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), helpMessage.toString());
 		} catch (HttpClientErrorException | IOException e) {

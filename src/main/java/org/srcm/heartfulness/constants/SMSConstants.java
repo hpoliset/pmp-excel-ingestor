@@ -98,7 +98,7 @@ public class SMSConstants {
 	
 	public static final String SMS_CREATE_PARTICIPANT_INVALID_FORMAT_3 = "To Create eWelcome ID: ";
 	
-	public static final String SMS_CREATE_PARTICIPANT_INVALID_FORMAT_4 = " <Intro-ID>";
+	public static final String SMS_CREATE_PARTICIPANT_INVALID_FORMAT_4 = " <Intro-ID> <seq ID>";
 	
 	public static final String SMS_CREATE_PARTICIPANT_INVALID_FORMAT_5 = "Specified event ID or Intro ID( ";
 	
@@ -143,5 +143,13 @@ public class SMSConstants {
 	public static final String SMS_SEQUENCE_NUMBER_RESPONSE_INVALID_FORMAT_1 =  "Specified Seq ID ( ";
 	
 	public static final String SMS_SEQUENCE_NUMBER_RESPONSE_INVALID_FORMAT_2 =  " ) is not available. Please provide a valid Seq ID.";
+	
+	public static final String SMS_REGISTER_PARTICIPANT_SUB_KEYWORD = "RP";
+	
+	public static final String SMS_INTRODUCE_PARTICIPANT_SUB_KEYWORD = "IN";
+	
+	public static final String SMS_NO_OF_REGISTERED_PARTICIPANT_INVALID_FORMAT_4 = " <Event-ID>";
+	
+	public static final String SMS_NO_OF_INTRODUCED_PARTICIPANT_INVALID_FORMAT_4 = " <Intro-ID>";
 }
 		
