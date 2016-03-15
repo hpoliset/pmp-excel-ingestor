@@ -65,7 +65,7 @@ public class SMSConstants {
 	
 	public static final String SMS_UPDATE_EVENT_RESPONSE_NOT_AVAILABLE_1 = "Specified Event ID(";
 	
-	public static final String SMS_UPDATE_EVENT_RESPONSE_NOT_AVAILABLE_2 = ") is not available.";
+	public static final String SMS_UPDATE_EVENT_RESPONSE_NOT_AVAILABLE_2 = ") is not available. Please enter a valid event ID.";
 	
 	public static final String SMS_UPDATE_EVENT_RESPONSE_ALREADY_EXISTS_1 = "Specified new Event name(";
 	
@@ -151,5 +151,11 @@ public class SMSConstants {
 	public static final String SMS_NO_OF_REGISTERED_PARTICIPANT_INVALID_FORMAT_4 = " <Event-ID>";
 	
 	public static final String SMS_NO_OF_INTRODUCED_PARTICIPANT_INVALID_FORMAT_4 = " <Intro-ID>";
+	
+	public static final String SMS_INTRODUCE_PARTICIPANT_RESPONSE_INVALID_FORMAT_2 =  " ) is not available. Please check.";
+	
+	public static final String SMS_INTRODUCE_PARTICIPANT_INVALID_FORMAT_1 =  "Specified Intro ID/Seq ID ( ";
+	
+	public static final String SMS_INTRODUCE_PARTICIPANT_RESPONSE_INVALID_FORMAT_3 =  " ) is not available. Please enter a valid Intro ID.";
 }
 		

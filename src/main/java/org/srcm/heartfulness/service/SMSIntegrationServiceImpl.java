@@ -56,7 +56,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 	public String createEvent(SMS sms) {
 		String response = "";
 		String contents[] = SmsUtil.parseSmsContent(sms.getMessageConetent());
-		if (contents.length > 0) {
+		if (contents.length > 0 && contents.length==4) {
 			String subKeyword = contents.length >= 2 ? contents[1] : null;// Subkeyword
 			if (subKeyword != null && !subKeyword.isEmpty()
 					&& subKeyword.equals(SMSConstants.SMS_CREATE_EVENT_SUB_KEYWORD)) {
@@ -128,7 +128,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 	public String updateEvent(SMS sms) {
 		String response = "";
 		String contents[] = SmsUtil.parseSmsContent(sms.getMessageConetent());
-		if (contents.length > 0) {
+		if (contents.length > 0 && contents.length==4) {
 			String subKeyword = contents.length >= 2 ? contents[1] : null;// Subkeyword
 			if (subKeyword != null && !subKeyword.isEmpty()
 					&& subKeyword.equals(SMSConstants.SMS_UPDATE_EVENT_SUB_KEYWORD)) {
@@ -192,8 +192,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 	public String createParticipant(SMS sms) {
 		String response = "";
 		String contents[] = SmsUtil.parseSmsContent(sms.getMessageConetent());
-		System.out.println(sms.getMessageConetent() + contents.length);
-		if (contents.length > 0 && contents.length <= 7) {
+		if (contents.length > 0 && contents.length>=4 && contents.length <= 7) {
 			String participantName = null;
 			String mailId = null;
 			String firstName = null;
@@ -268,6 +267,10 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 				response = SMSConstants.SMS_MISSING_EVENT_ID + SMSConstants.SMS_EMPTY_SPACE
 						+ SMSConstants.SMS_HELP_FORMAT;
 			}
+		}else {
+			LOGGER.debug("Insufficient Content");
+			response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
+					+ SMSConstants.SMS_HELP_FORMAT;
 		}
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
@@ -288,7 +291,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 	public String getCountOfRegisteredParticipants(SMS sms) {
 		String response = "";
 		String contents[] = SmsUtil.parseSmsContent(sms.getMessageConetent());
-		if (contents.length > 0) {
+		if (contents.length > 0 && contents.length == 3 ) {
 			String subKeyword = contents.length >= 2 ? contents[1] : null;// Subkeyword
 			if (subKeyword != null && !subKeyword.isEmpty()
 					&& subKeyword.equals(SMSConstants.SMS_GET_TOTAL_REGISTERED_USERS_SUB_KEYWORD)) {
@@ -313,6 +316,10 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 				response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
 						+ SMSConstants.SMS_HELP_FORMAT;
 			}
+		}else {
+			LOGGER.debug("Insufficient Content");
+			response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
+					+ SMSConstants.SMS_HELP_FORMAT;
 		}
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
@@ -333,7 +340,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 	public String getCountOfIntroducedParticipants(SMS sms) {
 		String response = "";
 		String contents[] = SmsUtil.parseSmsContent(sms.getMessageConetent());
-		if (contents.length > 0) {
+		if (contents.length > 0 && contents.length == 3) {
 			String subKeyword = contents.length >= 2 ? contents[1] : null;// Subkeyword
 
 			if (subKeyword != null && !subKeyword.isEmpty()
@@ -348,18 +355,22 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 								+ String.valueOf(smsIntegrationRepository.getIntroducedParticipantsCount(eventId));
 					} else {
 						response = SMSConstants.SMS_EWELCOME_RESPONSE_INVALID_FORMAT_1 + eventId
-								+ SMSConstants.SMS_EWELCOME_RESPONSE_INVALID_FORMAT_2;
+								+ SMSConstants.SMS_INTRODUCE_PARTICIPANT_RESPONSE_INVALID_FORMAT_3;
 					}
 				} else {
 					response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
 							+ SMSConstants.SMS_HELP_FORMAT;
 				}
 			}
-			try {
-				smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
-			} catch (HttpClientErrorException | IOException e) {
-				e.printStackTrace();
-			}
+		}else {
+			LOGGER.debug("Insufficient Content");
+			response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
+					+ SMSConstants.SMS_HELP_FORMAT;
+		}
+		try {
+			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
+		} catch (HttpClientErrorException | IOException e) {
+			e.printStackTrace();
 		}
 		return response;
 	}
@@ -368,7 +379,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 	public String updateParticipant(SMS sms) {
 		String response = "";
 		String contents[] = SmsUtil.parseSmsContent(sms.getMessageConetent());
-		if (contents.length > 0) {
+		if (contents.length > 0 && contents.length==4) {
 			String introId = contents.length >= 3 ? contents[2] : null;// event
 			String seqNum = contents.length >= 4 ? contents[3] : null;
 			if (introId != null && !introId.isEmpty()) {
@@ -386,14 +397,19 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 								+ SMSConstants.SMS_SEQUENCE_NUMBER_RESPONSE_INVALID_FORMAT_2;
 					}
 				} else {
-					response = SMSConstants.SMS_EWELCOME_RESPONSE_INVALID_FORMAT_1 + introId
-							+ SMSConstants.SMS_EWELCOME_RESPONSE_INVALID_FORMAT_2;
+					response = SMSConstants.SMS_INTRODUCE_PARTICIPANT_INVALID_FORMAT_1 + introId 
+							+ "/" + seqNum  
+							+ SMSConstants.SMS_INTRODUCE_PARTICIPANT_RESPONSE_INVALID_FORMAT_2;
 				}
 			}else{
 				LOGGER.debug("Insufficient Content");
 				response = SMSConstants.SMS_MISSING_INTRO_ID + SMSConstants.SMS_EMPTY_SPACE
 						+ SMSConstants.SMS_HELP_FORMAT;
 			} 
+		}else {
+			LOGGER.debug("Insufficient Content");
+			response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
+					+ SMSConstants.SMS_HELP_FORMAT;
 		}
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
