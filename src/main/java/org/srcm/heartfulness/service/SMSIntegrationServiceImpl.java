@@ -432,6 +432,11 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		helpMessage.append("\n");
 		helpMessage.append(SMSConstants.SMS_HELP_NO_OF_INTRODUCED_PARTICIPANTS + SMSConstants.SMS_KEYWORD
 				+ SMSConstants.SMS_CREATE_PARTICIPANT_INVALID_FORMAT_4);
+		try {
+			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), helpMessage.toString());
+		} catch (HttpClientErrorException | IOException e) {
+			e.printStackTrace();
+		}
 		return helpMessage.toString();
 	}
 	
