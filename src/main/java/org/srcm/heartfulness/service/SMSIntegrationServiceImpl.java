@@ -427,6 +427,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 				+ SMSConstants.SMS_NO_OF_REGISTERED_PARTICIPANT_INVALID_FORMAT_4);
 		helpMessage.append("\n");
 		helpMessage.append(SMSConstants.SMS_HELP_NO_OF_INTRODUCED_PARTICIPANTS + SMSConstants.SMS_KEYWORD
+				+ SMSConstants.SMS_EMPTY_SPACE + SMSConstants.SMS_GET_TOTAL_REGISTERED_USERS_BY_INTRO_ID_SUB_KEYWORD
 				+ SMSConstants.SMS_NO_OF_INTRODUCED_PARTICIPANT_INVALID_FORMAT_4);
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), helpMessage.toString());

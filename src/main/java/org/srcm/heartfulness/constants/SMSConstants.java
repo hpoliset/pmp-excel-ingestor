@@ -76,7 +76,7 @@ public class SMSConstants {
 	
 	public static final String SMS_UPDATE_EVENT_RESPONSE_SUCCESS_2 = " to update the event details.";
 	
-	public static final String SMS_UPDATE_EVENT_RESPONSE_INVALID_FORMAT_1 = " <event-ID> <new-event-name> <abhyasi ID>";
+	public static final String SMS_UPDATE_EVENT_RESPONSE_INVALID_FORMAT_1 = " <event-ID> <new-event-name>";
 	
 	public static final String SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_1 = "Welcome to Heartfulness.";
 	
