@@ -35,19 +35,28 @@ public class SMSConstants {
 	public static final String SMS_HEARTFULNESS_HOMEPAGE_URL="http://en.heartfulness.org/";
 	
 	/** Holds the Heartfulness home page URL	 */
-	public static final String SMS_HEARTFULNESS_UPDATEEVENT_URL="https://pmp.heartfulness.org/pmp/updateevent";
+	public static final String SMS_HEARTFULNESS_UPDATEEVENT_URL="https://pmpbeta.heartfulness.org/pmp/updateevent";
 	
 	
 	public static final String SMS_CREATE_EVENT_RESPONSE_DUPLICATE_EVENT ="Duplicate Event Creation. Please check";
+	
 	
 	public static final String SMS_CREATE_EVENT_RESPONSE_SUCCESS_1 ="Event creation success: Event ID - ";
 	
 	public static final String SMS_CREATE_EVENT_RESPONSE_SUCCESS_2 =", Intro ID - ";
 	
-	public static final String SMS_CREATE_EVENT_RESPONSE_SUCCESS_3 =". Please click on ";
+	public static final String SMS_CREATE_EVENT_RESPONSE_SUCCESS_3 =" Registration success: Seq ID - ";
 	
-	public static final String SMS_CREATE_EVENT_RESPONSE_SUCCESS_4 =" to update the event details.";
+	public static final String SMS_PLEASE_CLICK=". Please Click ";
 	
+	public static final String SMS_CREATE_EVENT_RESPONSE_SUCCESS_4 =". Please click on ";
+	
+	public static final String SMS_CREATE_EVENT_RESPONSE_SUCCESS_5 =" to update the event details.";
+	
+	public static final String SMS_EWELCOME_RESPONSE_INVALID_SEQ_FORMAT_1 =  "Specified Seq ID ( ";
+
+    public static final String SMS_EWELCOME_RESPONSE_INVALID_SEQ_FORMAT_2 =  " ) is not available. Please enter a valid Seq ID.";
+
 	public static final String SMS_RESPONSE_INVALID_FORMAT_1 = "Invalid request format, please use: ";
 	
 	public static final String SMS_CREATE_EVENT_RESPONSE_INVALID_FORMAT_1 =" <event-name> <abhiId>";
@@ -63,13 +72,13 @@ public class SMSConstants {
 	public static final String SMS_UPDATE_EVENT_RESPONSE_ALREADY_EXISTS_2 = ") is already exist. Please use different name.";
 	
 	
-	public static final String SMS_UPDATE_EVENT_RESPONSE_SUCCESS_1 = "Event updated successfully. Please click on ";
+	public static final String SMS_UPDATE_EVENT_RESPONSE_SUCCESS_1 = "Event updated successfully";
 	
 	public static final String SMS_UPDATE_EVENT_RESPONSE_SUCCESS_2 = " to update the event details.";
 	
 	public static final String SMS_UPDATE_EVENT_RESPONSE_INVALID_FORMAT_1 = " <event-ID> <new-event-name> <abhyasi ID>";
 	
-	public static final String SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_1 = "Welcome to Heartfulness. Please click ";
+	public static final String SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_1 = ". Welcome to Heartfulness.";
 	
 	public static final String SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_2 = " to visit Heartfulness website.";
 	
@@ -106,6 +115,24 @@ public class SMSConstants {
 	public static final String SMS_REGISTER_PARTICIPANT_INVALID_FORMAT_2 = " ) is not available. Please enter a valid event ID.";
 	
 	public static final String SMS_INTRODUCED_PARTICIPANT_COUNT_SUCCESS_1 = "Number of participants introduced for the Intro ID( ";
+	
+	public static final String SMS_EVENT_ID_PREFIX="E";
+	
+	public static final String SMS_INTRO_ID_PREFIX="I";
+	
+	public static final String SMS_HELP_KEYWORD="HELP";
+	
+	public static final String SMS_HELP_CREATE_EVENT="CREATE EVENT - ";
+	
+	public static final String SMS_HELP_UPDATE_EVENT="UPDATE EVENT - ";
+	
+	public static final String SMS_HELP_REGISTER_PARTICIPANT="CREATE PARTICIPANT - ";
+	
+	public static final String SMS_HELP_INTRODUCE_PARTICIPANT="CREATE EWELCOMEID - ";
+	
+	public static final String SMS_HELP_NO_OF_REGISTERED_PARTICIPANTS="NO OF REGISTERED PARTICIPANTS - ";
+	
+	public static final String SMS_HELP_NO_OF_INTRODUCED_PARTICIPANTS="NO OF INTRODUCED PARTICIPANTS - ";
 	
 }
 		

@@ -1,22 +1,29 @@
 package org.srcm.heartfulness.util;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.srcm.heartfulness.service.SMSIntegrationServiceImpl;
 
 /**
  * 
  * @author rramesh
  * 
- * SMS Integration utilities
+ *         SMS Integration utilities
  */
 public class SmsUtil {
-	
+
+	private static Logger LOGGER = LoggerFactory.getLogger(SmsUtil.class);
+
 	/**
 	 * To Parse the sms content and get the values
 	 * 
 	 * @param smsContent - sms content
 	 * @return the response
 	 */
-	public static String[] parseSmsContent(String smsContent){
+	public static String[] parseSmsContent(String smsContent) {
 		String[] response = smsContent.split("\\s+");
 		return response;
 	}
@@ -27,33 +34,38 @@ public class SmsUtil {
 	 * @param digit - number of digits
 	 * @return the generated random number
 	 */
-	public static String generateRandomNumber(int digit){
-	/**	long timeSeed = System.nanoTime(); // to get the current date time value
-		double randSeed = Math.random() * 1000; // random number generation
-		long midSeed = (long) (timeSeed * randSeed); // mixing up the time and rand number.
-		String s = midSeed + "";
-		String generatedNumber = s.substring(0, digit);
-		//int finalSeed = Integer.parseInt(subStr); // integer value
-		return generatedNumber;*/
+	public static String generateRandomNumber(int digit) {
 		String generatedNumber = new String();
 		SecureRandom secureRandomGenerator;
 		try {
 			secureRandomGenerator = SecureRandom.getInstance("SHA1PRNG");
 			byte[] randomBytes = new byte[128];
 			secureRandomGenerator.nextBytes(randomBytes);
-			//long randSeed = (long) Math.random() * 1000;
-			//secureRandomGenerator.setSeed(seed);
-			//System.out.println("secure secureRandomGenerator : " + secureRandomGenerator.nextInt());
-			//System.out.println("secure secureRandomGenerator long : " + secureRandomGenerator.nextLong());
 			int generatedInt = secureRandomGenerator.nextInt();
-			System.out.println("secure secureRandomGenerator : " + generatedInt);
-			System.out.println("Converted from negative to positive :"+Math.abs(generatedInt));
 			generatedNumber = Integer.valueOf(Math.abs(generatedInt)).toString();
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.debug("Exception while generating random number {}", e.getMessage());
 		}
 		return generatedNumber.substring(0, digit);
 	}
-	
+
+	/**
+	 * To generate four digit sequence number
+	 * 
+	 * @return the 4 digit sequence number
+	 */
+	public static String generateFourDigitPIN() {
+		SecureRandom secureRandomGenerator;
+		int generatedInt = 0;
+		try {
+			secureRandomGenerator = SecureRandom.getInstance("SHA1PRNG");
+			byte[] randomBytes = new byte[128];
+			secureRandomGenerator.nextBytes(randomBytes);
+			generatedInt = secureRandomGenerator.nextInt(9999);
+		} catch (NoSuchAlgorithmException e) {
+			LOGGER.debug("Exception while generating sequence number {}", e.getMessage());
+		}
+		return String.format("%04d", generatedInt);
+	}
+
 }

@@ -4,7 +4,7 @@ $(document).ready(function() {
 		changeMonth: true,
 		changeYear:true,
 		showOn:"both",
-		buttonImage: "../images/calendar.png",
+		buttonImage: "/pmp/images/calendar.png",
 		buttonImageOnly: true,
 		buttonText: "Event From Date"
 	});
@@ -13,7 +13,7 @@ $(document).ready(function() {
 		changeMonth: true,
 		changeYear:true,
 		showOn:"both",
-		buttonImage: "../images/calendar.png",
+		buttonImage: "/pmp/images/calendar.png",
 		buttonImageOnly: true,
 		buttonText: "Event Till Date"
 	});

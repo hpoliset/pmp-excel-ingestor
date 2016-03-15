@@ -87,15 +87,15 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 	/*public static void main(String[] args){
 		SmsGatewayRestTemplate template = new SmsGatewayRestTemplate();
 		try {
-			template.username = "SHORTCODE";
-			template.password = "HTCINDIA";
+			template.username = "LOVHFN";
+			template.password = "325344";
 			//template.apiKey = "790f5fcd-4211-4574-a7c4-c06e6d8d6661";
 			template.username = "SHORTCODE";
-			template.senderid = "WEBSMS";
-			template.channel = "1";
+			template.senderid = "LOVHFN";
+			template.channel = "2";
 			template.DCS = "0";
 			template.sendSmsUri="http://login.smsgatewayhub.com/RestAPI/MT.svc/mt";
-			SMSResponse response = template.sendSMS("919790078454","https post method");
+			SMSResponse response = template.sendSMS("9790078454","https post method");
 			System.out.println("Final Response : "+response);
 		} catch (HttpClientErrorException e) {
 			// TODO Auto-generated catch block

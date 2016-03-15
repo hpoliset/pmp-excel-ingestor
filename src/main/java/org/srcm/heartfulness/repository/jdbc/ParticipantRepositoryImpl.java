@@ -148,7 +148,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 					+ "first_sitting=:firstSittingTaken," + "second_sitting=:secondSittingTaken,"
 					+ "third_sitting=:thirdSittingTaken," + "first_sitting_date=:firstSittingDate, "
 					+ "second_sitting_date=:secondSittingDate, " + "third_sitting_date=:thirdSittingDate, "
-					+ "batch=:batch " + "WHERE id=:id", parameterSource);
+					+ "batch=:batch, "+"seqId=:seqId " + "WHERE id=:id", parameterSource);
 		}
 	}
 
@@ -159,11 +159,11 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	 * getParticipantByIntroIdAndMobileNo(java.lang.String,java.lang.String)
 	 */
 	@Override
-	public Participant getParticipantByIntroIdAndMobileNo(String introId, String mobileNumber) {
+	public Participant getParticipantByIntroIdAndMobileNo(String introId, String seqNumber) {
 		try{
 			Map<String, Object> params = new HashMap<>();
 			params.put("auto_generated_intro_id", introId);
-			params.put("mobile_phone", mobileNumber);
+			params.put("seqId", seqNumber);
 			SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
 
 			Participant participant = null;
@@ -171,7 +171,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 			Program program = null;
 			List<Participant> participants = this.namedParameterJdbcTemplate
 					.query("SELECT * FROM participant p INNER JOIN program pr on p.program_id=pr.program_id "
-							+ " WHERE pr.auto_generated_intro_id =:auto_generated_intro_id and p.mobile_phone =:mobile_phone",
+							+ " WHERE pr.auto_generated_intro_id =:auto_generated_intro_id and p.seqId =:seqId",
 							sqlParameterSource, BeanPropertyRowMapper.newInstance(Participant.class));
 			if (participants.size() > 0) {
 				participant = participants.get(0);
