@@ -13,6 +13,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.srcm.heartfulness.model.json.googleapi.response.GoogleResponse;
 import org.srcm.heartfulness.model.json.sms.request.Account;
 import org.srcm.heartfulness.model.json.sms.request.Messages;
 import org.srcm.heartfulness.model.json.sms.request.SMSRequest;
@@ -82,6 +83,17 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 		httpEntity = new HttpEntity<Object>(mapper.writeValueAsString(smsRequestParams),httpHeaders);
 		ResponseEntity<String> response = this.exchange(sendSmsUri, HttpMethod.POST, httpEntity, String.class);
 		return mapper.readValue(response.getBody(), SMSResponse.class);
+	}
+	
+	public GoogleResponse getLocationdetails(String address, String pincode)
+			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
+			setProxy();
+		httpHeaders = new HttpHeaders();
+		httpHeaders.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+		httpEntity = new HttpEntity<Object>(body, httpHeaders);
+		ResponseEntity<String> response = this.exchange("http://maps.google.com/maps/api/geocode/json?address="+address+""
+				+ "&components=postal_code:"+pincode+"&sensor=false", HttpMethod.GET, httpEntity, String.class);
+		return mapper.readValue(response.getBody(), GoogleResponse.class);
 	}
 	
 	/*public static void main(String[] args){

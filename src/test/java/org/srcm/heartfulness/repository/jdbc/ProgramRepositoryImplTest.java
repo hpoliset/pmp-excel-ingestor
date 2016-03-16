@@ -42,7 +42,7 @@ public class ProgramRepositoryImplTest {
         Assert.assertNotEquals("Incorrect Id => Not able save?", 0, program.getProgramId());
 
 //         delete the new created row from the database
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "program", "program_id=?", program.getProgramId());
+       // JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "program", "program_id=?", program.getProgramId());
     }
 
     @Test
@@ -87,7 +87,7 @@ public class ProgramRepositoryImplTest {
                 updatedProgram.getCoordinatorMobile());
 
         // Clean up the new created/updated row.
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "program", "program_id=?", program.getProgramId());
+       // JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "program", "program_id=?", program.getProgramId());
     }
 
     @Test
@@ -128,8 +128,8 @@ public class ProgramRepositoryImplTest {
         Assert.assertNotNull("Address1 is null", updatedParticipant.getAddressLine1());
 
         // Clean up the new created/updated row.
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "program", "program_id=?", program.getProgramId());
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "participant", "id=?", newParticipant.getId());
+        //JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "program", "program_id=?", program.getProgramId());
+        //JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "participant", "id=?", newParticipant.getId());
     }
 
     private Program createProgram() {

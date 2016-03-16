@@ -42,7 +42,7 @@ public class PmpApplicationTests {
 	public void parseAndPersistValidV21ExcelFile() throws IOException, InvalidExcelFileException {
 
         // start with clean slate.
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant");
+       // JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant");
 
         String fileName = "v21ValidEventDate.xlsm";
         Resource v2ValidResource = resourceLoader.getResource("classpath:" + fileName);
@@ -67,14 +67,14 @@ public class PmpApplicationTests {
                 validV21Program.getProgramId());
 
         // delete it ...
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant");
+        //JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant");
 
     }
 
     @Test
     public void parseAndPersistDay1AndDay3() throws IOException, InvalidExcelFileException {
         // delete it ... start with a clean slate
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant");
+        //JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant");
 
         String fileName = "HFN-DATA-MH-PUNE-INPSAD332-20151016.xlsx";
         Resource v2ValidResource = resourceLoader.getResource("classpath:" + fileName);
@@ -111,7 +111,7 @@ public class PmpApplicationTests {
         System.out.println("participant.getWelcomeCardDate() = " + participant.getWelcomeCardDate());
 
         // delete it ...
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant");
+        //JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant");
     }
 
 }
