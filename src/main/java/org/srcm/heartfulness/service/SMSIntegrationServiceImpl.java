@@ -145,7 +145,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
 		} catch (HttpClientErrorException | IOException e) {
-			e.printStackTrace();
+			LOGGER.debug("Exception while sending SMS {} ", e.getMessage());
 		}
 		return response;
 	}
@@ -209,7 +209,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
 		} catch (HttpClientErrorException | IOException e) {
-			e.printStackTrace();
+			LOGGER.debug("Exception while sending SMS {} ", e.getMessage());
 		}
 		return response;
 	}
@@ -309,7 +309,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
 		} catch (HttpClientErrorException | IOException e) {
-			e.printStackTrace();
+			LOGGER.debug("Exception while sending SMS {} ", e.getMessage());
 		}
 		return response;
 	}
@@ -358,7 +358,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
 		} catch (HttpClientErrorException | IOException e) {
-			e.printStackTrace();
+			LOGGER.debug("Exception while sending SMS {} ", e.getMessage());
 		}
 		return response;
 	}
@@ -404,7 +404,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
 		} catch (HttpClientErrorException | IOException e) {
-			e.printStackTrace();
+			LOGGER.debug("Exception while sending SMS {} ", e.getMessage());
 		}
 		return response;
 	}
@@ -448,7 +448,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
 		} catch (HttpClientErrorException | IOException e) {
-			e.printStackTrace();
+			LOGGER.debug("Exception while sending SMS {} ", e.getMessage());
 		}
 		return response;
 	}
@@ -482,7 +482,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), helpMessage.toString());
 		} catch (HttpClientErrorException | IOException e) {
-			e.printStackTrace();
+			LOGGER.debug("Exception while sending SMS {} ", e.getMessage());
 		}
 		return helpMessage.toString();
 	}
@@ -494,7 +494,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
 		} catch (HttpClientErrorException | IOException e) {
-			e.printStackTrace();
+			LOGGER.debug("Exception while sending SMS {} ", e.getMessage());
 		}
 		return response;
 	}

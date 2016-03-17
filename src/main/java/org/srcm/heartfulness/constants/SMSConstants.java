@@ -59,7 +59,7 @@ public class SMSConstants {
 
 	public static final String SMS_RESPONSE_INVALID_FORMAT_1 = "Invalid request format, please use: ";
 	
-	public static final String SMS_CREATE_EVENT_RESPONSE_INVALID_FORMAT_1 =" <event-name> <abhyasi ID>";
+	public static final String SMS_CREATE_EVENT_RESPONSE_INVALID_FORMAT_1 =" <event-name> <abhyasi ID> <event-zipcode>";
 	
 	public static final String SMS_EMPTY_SPACE =" ";
 	
