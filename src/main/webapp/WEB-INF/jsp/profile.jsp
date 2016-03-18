@@ -27,8 +27,8 @@
 </head>
 <script type="text/javascript">
 	 $(document).ready(function() {
-		var url = 'http://10.1.29.23:7080/pmp/api/v1/user/${user.id}';
-		var getuserurl = 'http://10.1.29.23:7080/pmp/api/v1/user';
+		var url = 'https://pmpbeta.heartfulness.org/pmp/api/v1/user/${user.id}';
+		var getuserurl = 'https://pmpbeta.heartfulness.org/pmp/api/v1/user';
 		var access_token='${user.access_token}';
 		$("#update").click(function() {
 			$.ajax({
