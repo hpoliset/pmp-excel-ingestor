@@ -10,12 +10,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.srcm.heartfulness.authorizationservice.PmpAuthorizationService;
+import org.srcm.heartfulness.helper.AuthorizationHelper;
 import org.srcm.heartfulness.model.ParticipantFullDetails;
 import org.srcm.heartfulness.service.ReportService;
 import org.srcm.heartfulness.vo.ReportVO;
@@ -31,6 +34,12 @@ public class ReportsController {
     @Autowired
     private ReportService reportService;
     
+    @Autowired
+	AuthorizationHelper authHelper;
+
+	@Autowired
+	private PmpAuthorizationService pmpAuthService;
+    
 
     /**
      * To populate the reportsForm view with event country, state , types 
@@ -40,13 +49,28 @@ public class ReportsController {
      * @return The reports form
      */
     @RequestMapping(value = "/reports/reportsForm", method = RequestMethod.GET)
-    public String showReportsForm(HttpServletRequest request,ModelMap modelMap) {
-    	List<String> eventCountries = reportService.getCountries();
+    public String showReportsForm(HttpServletRequest request,ModelMap model,HttpServletResponse response) {
+    	/*List<String> eventCountries = reportService.getCountries();
     	List<String> eventTypes = reportService.getEventTypes();
     	modelMap.addAttribute("eventCountries", eventCountries);
     	modelMap.addAttribute("eventTypes", eventTypes);
-        return "reportsForm";
+        return "reportsForm";*/
+    	  try{
+          	authHelper.setcurrentUsertoContext(request.getSession());
+  			return pmpAuthService.showReportsForm(model);
+  		}catch(AccessDeniedException e){
+  			return "accessdenied";
+  		}catch (NullPointerException e) {
+			return "redirect:/home";
+		}
     }
+    
+   /* @RequestMapping(value = "/login", method = RequestMethod.GET)
+	public String showForm(HttpServletRequest request, Model model) {
+		model.addAttribute("user", new User());
+		model.addAttribute("newUser", new User());
+		return "home";
+	}*/
 
     
     @RequestMapping("/reports")
@@ -74,7 +98,7 @@ public class ReportsController {
             @RequestParam(required=false) String tillDate,@RequestParam(required=false) String city,
             @RequestParam(required=false) String state,@RequestParam(required=false) String country) throws IOException
             {
-
+    	authHelper.setcurrentUsertoContext(request.getSession());
     	ReportVO reportVO = new ReportVO();
     	reportVO.setChannel(channel);
     	reportVO.setFromDate(fromDate);

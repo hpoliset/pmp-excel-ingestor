@@ -9,11 +9,11 @@
     <title>Heartfulness Reports</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="../css/normalize.css">    <link rel="stylesheet" href="../css/skeleton.css"> 
-    <script type="text/javascript" src="../js/jquery.js"></script>
-	<script type="text/javascript" src="../js/jquery-ui.js"></script>
-	<script type="text/javascript" src="../js/reports-form-script.js"></script>
-	<link rel="stylesheet" href="../css/jquery-ui.css"/>
+    <link rel="stylesheet" href="/pmp/css/normalize.css">    <link rel="stylesheet" href="/pmp/css/skeleton.css"> 
+    <script type="text/javascript" src="/pmp/js/jquery.js"></script>
+	<script type="text/javascript" src="/pmp/js/jquery-ui.js"></script>
+	<script type="text/javascript" src="/pmp/js/reports-form-script.js"></script>
+	<link rel="stylesheet" href="/pmp/css/jquery-ui.css"/>
 	<style>
 		div.ui-datepicker {
 			font-size: 10px;
@@ -28,12 +28,14 @@
 		}
 	</style>   
 </head>
-<body>
-	<div class="container">
+<body style="background-color: #dee6ed; overflow: hidden;">
+	<!-- <div class="container"  align="center" style="padding-top: 20px">
   
       <div class="row">    
-        <h3>Heartfulness Reports Form</h3>
-      </div>
+       <b><h3>Heartfulness Reports Form</h3></b> 
+      </div> -->
+      <div class="container" align="center" style="padding-top: 20px; margin: 0 auto;">
+			<h3 align="center">Heartfulness Reports Form</h3>
       
       <form method="POST" action="generate">
           <div class="row">

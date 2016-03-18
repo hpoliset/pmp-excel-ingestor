@@ -1,6 +1,5 @@
 package org.srcm.heartfulness.constants;
 
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 
 /**
  * Constant class to hold the messages, keywords,sub-keywords for the SMS integration. 

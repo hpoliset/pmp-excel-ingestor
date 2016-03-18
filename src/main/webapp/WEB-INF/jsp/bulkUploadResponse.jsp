@@ -6,11 +6,11 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Upload Done</title>
-<link rel="stylesheet" href="../css/normalize.css">
-<link rel="stylesheet" href="../css/skeleton.css">
+<link rel="stylesheet" href="/pmp/css/normalize.css">
+<link rel="stylesheet" href="/pmp/css/skeleton.css">
 </head>
-<body>
-	<div class="container">
+<body style="background-color: #dee6ed; overflow: hidden;">
+	<div class="container" align="center" style=" margin: 0 auto;">
 
 		<h3>Heartfulness Data Upload Results</h3>
 
@@ -47,7 +47,7 @@
 				</tr>
 			</c:forEach>
 		</table>
-		<a class="button" href="bulkUploadForm">Upload Excels</a>
+		<a class="button-primary" type="submit" href="bulkUploadForm">Upload Excels</a>
 	</div>
 </body>
 </html>

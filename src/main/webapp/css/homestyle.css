@@ -1,0 +1,109 @@
+.main {
+	MIN-WIDTH: 780px;
+	MAX-WIDTH: 900px;
+	height: 300px;
+}
+
+.product-info {
+	MARGIN: 0px 385px 0px 0px
+}
+
+.product-info H3 {
+	FONT-SIZE: 1.23em;
+	FONT-WEIGHT: normal
+}
+
+.product-info A:visited {
+	COLOR: #61c
+}
+
+.product-info .g-button:visited {
+	COLOR: #666
+}
+
+.sign-in {
+	WIDTH: 335px;
+	FLOAT: right;
+	PADDING-TOP: 50px;
+}
+
+.signin-box {
+	BORDER-BOTTOM: #d5d5d5 1px solid;
+	BORDER-LEFT: #d5d5d5 1px solid;
+	PADDING-BOTTOM: 15px;
+	MARGIN: 12px 0px 0px;
+	PADDING-LEFT: 25px;
+	PADDING-RIGHT: 25px;
+	BACKGROUND: #e5e5e5;
+	BORDER-TOP: #d5d5d5 1px solid;
+	BORDER-RIGHT: #d5d5d5 1px solid;
+	PADDING-TOP: 20px
+}
+
+.accountchooser-box {
+	BORDER-BOTTOM: #e5e5e5 1px solid;
+	BORDER-LEFT: #e5e5e5 1px solid;
+	PADDING-BOTTOM: 15px;
+	MARGIN: 12px 0px 0px;
+	PADDING-LEFT: 25px;
+	PADDING-RIGHT: 25px;
+	BACKGROUND: #f5f5f5;
+	BORDER-TOP: #e5e5e5 1px solid;
+	BORDER-RIGHT: #e5e5e5 1px solid;
+	PADDING-TOP: 20px
+}
+
+.product-headers {
+	MARGIN: 0px 0px 1.5em;
+	PADDING-TOP: 60px
+}
+
+.product-headers H1 {
+	MARGIN: 0px;
+	FONT-SIZE: 25px
+}
+
+.product-headers H2 {
+	MARGIN: 0.4em 0px 0px;
+	FONT-SIZE: 16px
+}
+
+.features {
+	MARGIN: 2em 0px 0px;
+	OVERFLOW: hidden
+}
+
+.features LI {
+	MARGIN: 3px 0px 2em
+}
+
+.features IMG {
+	MARGIN: -3px 0px 0px;
+	FLOAT: left
+}
+
+.features P {
+	MARGIN: 0px 0px 0px 68px
+}
+
+.features .title {
+	MARGIN-BOTTOM: 0.3em;
+	FONT-SIZE: 16px
+}
+
+.no-icon.features P {
+	MARGIN: 0px
+}
+
+.features .small-title {
+	FONT-SIZE: 1em;
+	FONT-WEIGHT: bold
+}
+
+.notification-bar {
+	PADDING-BOTTOM: 8px;
+	PADDING-LEFT: 8px;
+	PADDING-RIGHT: 8px;
+	BACKGROUND: #f9edbe;
+	PADDING-TOP: 8px
+}

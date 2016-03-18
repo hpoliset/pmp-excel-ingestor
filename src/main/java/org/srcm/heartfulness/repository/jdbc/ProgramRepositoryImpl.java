@@ -18,7 +18,9 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.model.Participant;
@@ -278,5 +280,67 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		program.setParticipantList(participants);
 		return program;
 	}
+	
+	
+	@Override
+	public List<Program> getEventByEmail(String email,boolean isAdmin) {
+		List<Program> program = null;
+		StringBuilder whereCondition = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		params.put("coordinator_email", email);
+		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+		
+		if(!isAdmin){
+			whereCondition.append("coordinator_email=:coordinator_email");
+		}
+		program = this.namedParameterJdbcTemplate.query(
+				"SELECT program_id,program_channel,program_start_date,program_end_date,"
+				+ "coordinator_name,coordinator_email,coordinator_mobile,event_place,"
+				+ "event_city,event_state,event_country,organization_department,"
+				+ "organization_name,organization_web_site,organization_contact_name,"
+				+ "organization_contact_email,organization_contact_mobile,preceptor_name,"
+				+ "preceptor_id_card_number,welcome_card_signed_by_name,welcome_card_signer_Id_card_number,"
+				+ "remarks,auto_generated_event_id,auto_generated_intro_id"
+				+ " FROM program"+(whereCondition.length()>0 ? " WHERE "+whereCondition : ""), sqlParameterSource,
+				BeanPropertyRowMapper.newInstance(Program.class)
+				);
+		return program;
+	}
+
+	@Override
+	public Program getEventById(int id) {
+		Program program;
+		Map<String, Object> params = new HashMap<>();
+		params.put("id", id );
+		program = this.namedParameterJdbcTemplate.queryForObject(
+				"SELECT program_id,program_channel,program_start_date,program_end_date,"
+						+ "coordinator_name,coordinator_email,coordinator_mobile,event_place,"
+						+ "event_city,event_state,event_country,organization_department,"
+						+ "organization_name,organization_web_site,organization_contact_name,"
+						+ "organization_contact_email,organization_contact_mobile,preceptor_name,"
+						+ "preceptor_id_card_number,welcome_card_signed_by_name,welcome_card_signer_Id_card_number,"
+						+ "remarks,auto_generated_event_id,auto_generated_intro_id"
+						+ " FROM program WHERE program_id=:id"
+						+ " OR auto_generated_event_id=:id",
+				params, BeanPropertyRowMapper.newInstance(Program.class)
+				);
+		List<Participant> participants = null;
+		// get the participantList
+		if(program!=null && program.getProgramId()>0){
+			participants =  this.participantRepository.findByProgramId(id);
+		}else{
+			participants = new ArrayList<Participant>();
+		}
+		program.setParticipantList(participants);
+		return program;
+	}
+
+	@Override
+	public List<Participant> getParticipantList(int decryptedProgramId) {
+		List<Participant> participants = new ArrayList<Participant>();
+		participants =  this.participantRepository.findByProgramId(decryptedProgramId);
+		return participants;
+	}
+
 
 }
