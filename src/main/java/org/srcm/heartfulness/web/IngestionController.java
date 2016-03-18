@@ -14,6 +14,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.srcm.heartfulness.authorizationservice.PmpAuthorizationService;
 import org.srcm.heartfulness.helper.AuthorizationHelper;
@@ -48,6 +49,7 @@ public class IngestionController {
 			return "redirect:/home";
 		}
 	}
+	
 
 	@RequestMapping(value = "/ingest/processUpload", method = RequestMethod.POST)
 	public String processFileUpload(HttpServletRequest request, @RequestParam MultipartFile excelDataFile, ModelMap modelMap)
@@ -95,6 +97,12 @@ public class IngestionController {
 		modelMap.addAttribute("uploadReponse", responseList);
 		return "bulkUploadResponse";
 
+	}
+	
+	@RequestMapping("/")
+	@ResponseBody
+	public String index() {
+		return "Greetings from Ingestion Controller";
 	}
 
 }
