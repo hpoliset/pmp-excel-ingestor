@@ -93,7 +93,7 @@ public class EventController {
 
 
 	@RequestMapping(value="/programForm",method = RequestMethod.GET)
-	public String showProgramForm(Model model,@RequestParam(required=false,name="id") String encryptedProgramId,HttpServletRequest request ){
+	public String showProgramForm(Model model,@RequestParam(required=false,name="programId") String encryptedProgramId,HttpServletRequest request ){
 		try{
 			authHelper.setcurrentUsertoContext(request.getSession());
 			return pmpAuthService.showProgramForm(encryptedProgramId,model);
