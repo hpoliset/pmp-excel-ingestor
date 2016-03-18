@@ -112,7 +112,6 @@
 
 		function getSelectedRow() {
 				var encryptedProgramId = $("#EncryptedProgramId").val();
-	          
 			if (encryptedProgramId) {
 				//window.location.href = "http://10.1.29.80:7080/pmp/programForm?programId="+ rowKey;
 				window.open("/pmp/programForm?programId="+ encryptedProgramId,"_self","",false);

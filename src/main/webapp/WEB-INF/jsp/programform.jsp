@@ -139,8 +139,7 @@ textarea {
 		$(document).ready(
 				function() {
 					var encryptedProgramId = '${encryptedProgramId}';
-					var url = "/pmp/getParticipantList?programId="
-							+ encryptedProgramId;
+					var url = "/pmp/getParticipantList?programId="+ encryptedProgramId;
 					var source = {
 						type : "POST",
 						datatype : "json",
