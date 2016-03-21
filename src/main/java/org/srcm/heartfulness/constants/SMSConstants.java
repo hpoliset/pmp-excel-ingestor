@@ -80,7 +80,7 @@ public class SMSConstants {
 	
 	public static final String SMS_UPDATE_EVENT_RESPONSE_INVALID_FORMAT_1 = " <EVENT_ID> <NEW_EVENT_NAME>";
 	
-	public static final String SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_1 = "Welcome to Heartfulness.";
+	public static final String SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_1 = "Welcome to Heartfulness. ";
 	
 	public static final String SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_2 = " to visit Heartfulness website.";
 	
