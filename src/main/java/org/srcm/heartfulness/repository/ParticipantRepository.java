@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 
@@ -51,7 +52,7 @@ public interface ParticipantRepository {
      * @param mobileNumber - Mobile number to search for
      * @return the <code>Participant</code> if found
      */
-    Participant getParticipantByIntroIdAndMobileNo(String introId,String mobileNumber);
+    Participant getParticipantByIntroIdAndMobileNo(String introId,String seqNum) ;
 
     /**
      * Retrieve a <code>Program</code> from the data store by id.

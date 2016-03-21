@@ -43,5 +43,29 @@ public interface SMSIntegrationService {
 	 * @return the response
 	 */
 	public String getCountOfIntroducedParticipants(SMS sms);
+	
+	/**
+	 * To update the participants welcome id.
+	 * 
+	 * @param sms - SMS details
+	 * @return the response
+	 */
+	public String updateParticipant(SMS sms);
+	
+	/**
+	 * To handle the invalid subkeyword.
+	 * 
+	 * @param sms - SMS details
+	 * @return the response
+	 */
+	public String handleInvalidSubkeyword(SMS sms);
+
+	/**
+	 * To get the Valid SMS Formats
+	 * 
+	 * @param sms
+	 * @return the response
+	 */
+	public String getHelpContent(SMS sms);
 
 }

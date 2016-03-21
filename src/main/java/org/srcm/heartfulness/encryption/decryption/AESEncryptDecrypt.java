@@ -49,19 +49,14 @@ public class AESEncryptDecrypt {
 			return encryptedValue;
 		} catch (NoSuchAlgorithmException e) {
 			LOGGER.debug("Exception while encrypting the token {} ", e.getMessage());
-			e.printStackTrace();
 		} catch (NoSuchPaddingException e) {
 			LOGGER.debug("Exception while encrypting the token {} ", e.getMessage());
-			e.printStackTrace();
 		} catch (InvalidKeyException e) {
 			LOGGER.debug("Exception while encrypting the token {} ", e.getMessage());
-			e.printStackTrace();
 		} catch (IllegalBlockSizeException e) {
 			LOGGER.debug("Exception while encrypting the token {} ", e.getMessage());
-			e.printStackTrace();
 		} catch (BadPaddingException e) {
 			LOGGER.debug("Exception while encrypting the token {} ", e.getMessage());
-			e.printStackTrace();
 		}
 		return null;
 	}
@@ -84,19 +79,14 @@ public class AESEncryptDecrypt {
 			return decryptedValue;
 		} catch (NoSuchAlgorithmException e) {
 			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
-			e.printStackTrace();
 		} catch (NoSuchPaddingException e) {
 			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
-			e.printStackTrace();
 		} catch (InvalidKeyException e) {
 			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
-			e.printStackTrace();
 		} catch (IllegalBlockSizeException e) {
 			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
-			e.printStackTrace();
 		} catch (BadPaddingException e) {
 			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
-			e.printStackTrace();
 		}
 		return null;
 

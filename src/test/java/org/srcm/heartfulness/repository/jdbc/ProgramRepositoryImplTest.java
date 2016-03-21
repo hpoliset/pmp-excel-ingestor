@@ -52,7 +52,7 @@ public class ProgramRepositoryImplTest {
         participantRepository.save(participant);
         Assert.assertNotEquals("Incorrect Id => Not able save?", 0, participant.getId());
 
-//        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "participant", "id=?", participant.getId());
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "participant", "id=?", participant.getId());
     }
 
     @Test

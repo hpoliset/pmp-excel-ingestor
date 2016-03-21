@@ -13,6 +13,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.srcm.heartfulness.model.json.googleapi.response.GoogleResponse;
 import org.srcm.heartfulness.model.json.sms.request.Account;
 import org.srcm.heartfulness.model.json.sms.request.Messages;
 import org.srcm.heartfulness.model.json.sms.request.SMSRequest;
@@ -84,18 +85,29 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 		return mapper.readValue(response.getBody(), SMSResponse.class);
 	}
 	
+	public GoogleResponse getLocationdetails(String address, String pincode)
+			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
+			setProxy();
+		httpHeaders = new HttpHeaders();
+		httpHeaders.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+		httpEntity = new HttpEntity<Object>(body, httpHeaders);
+		ResponseEntity<String> response = this.exchange("http://maps.google.com/maps/api/geocode/json?address="+address+""
+				+ "&components=postal_code:"+pincode+"&sensor=false", HttpMethod.GET, httpEntity, String.class);
+		return mapper.readValue(response.getBody(), GoogleResponse.class);
+	}
+	
 	/*public static void main(String[] args){
 		SmsGatewayRestTemplate template = new SmsGatewayRestTemplate();
 		try {
-			template.username = "SHORTCODE";
-			template.password = "HTCINDIA";
+			template.username = "LOVHFN";
+			template.password = "325344";
 			//template.apiKey = "790f5fcd-4211-4574-a7c4-c06e6d8d6661";
 			template.username = "SHORTCODE";
-			template.senderid = "WEBSMS";
-			template.channel = "1";
+			template.senderid = "LOVHFN";
+			template.channel = "2";
 			template.DCS = "0";
 			template.sendSmsUri="http://login.smsgatewayhub.com/RestAPI/MT.svc/mt";
-			SMSResponse response = template.sendSMS("919790078454","https post method");
+			SMSResponse response = template.sendSMS("9790078454","https post method");
 			System.out.println("Final Response : "+response);
 		} catch (HttpClientErrorException e) {
 			// TODO Auto-generated catch block

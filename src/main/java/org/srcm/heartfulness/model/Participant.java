@@ -50,9 +50,17 @@ public class Participant {
 
     private Program program;
     private int excelSheetSequenceNumber;
+    private String seqId;
+    
+    public String getSeqId() {
+		return seqId;
+	}
 
+	public void setSeqId(String seqId) {
+		this.seqId = seqId;
+	}
 
-    public int getId() {
+	public int getId() {
         return id;
     }
 
@@ -388,4 +396,5 @@ public class Participant {
     public int getExcelSheetSequenceNumber() {
         return excelSheetSequenceNumber;
     }
+
 }
