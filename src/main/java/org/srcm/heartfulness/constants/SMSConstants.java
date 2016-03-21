@@ -38,7 +38,9 @@ public class SMSConstants {
 	public static final String SMS_HEARTFULNESS_UPDATEEVENT_URL="https://pmpbeta.heartfulness.org/pmp/updateevent";
 	
 	
-	public static final String SMS_CREATE_EVENT_RESPONSE_DUPLICATE_EVENT ="Duplicate Event Creation. Please check";
+	public static final String SMS_CREATE_EVENT_RESPONSE_DUPLICATE_EVENT1 ="Specified Event with the name( ";
+	
+	public static final String SMS_CREATE_EVENT_RESPONSE_DUPLICATE_EVENT2 = " ) is already available. Please check";
 	
 	
 	public static final String SMS_CREATE_EVENT_RESPONSE_SUCCESS_1 ="Event creation success: Event ID - ";
@@ -59,7 +61,7 @@ public class SMSConstants {
 
 	public static final String SMS_RESPONSE_INVALID_FORMAT_1 = "Invalid request format, please use: ";
 	
-	public static final String SMS_CREATE_EVENT_RESPONSE_INVALID_FORMAT_1 =" <event-name> <abhyasi ID> <event-zipcode>";
+	public static final String SMS_CREATE_EVENT_RESPONSE_INVALID_FORMAT_1 =" <EVENT_NAME> <ABHYASI_ID> <EVENT_ZIPCODE>";
 	
 	public static final String SMS_EMPTY_SPACE =" ";
 	
@@ -76,13 +78,13 @@ public class SMSConstants {
 	
 	public static final String SMS_UPDATE_EVENT_RESPONSE_SUCCESS_2 = " to update the event details.";
 	
-	public static final String SMS_UPDATE_EVENT_RESPONSE_INVALID_FORMAT_1 = " <event-ID> <new-event-name>";
+	public static final String SMS_UPDATE_EVENT_RESPONSE_INVALID_FORMAT_1 = " <EVENT_ID> <NEW_EVENT_NAME>";
 	
 	public static final String SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_1 = "Welcome to Heartfulness.";
 	
 	public static final String SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_2 = " to visit Heartfulness website.";
 	
-	public static final String SMS_CREATE_EVENT_PARTICIANT_INVALID_RESPONSE_1 = " <event-ID> <participant-name> <email ID>";
+	public static final String SMS_CREATE_EVENT_PARTICIANT_INVALID_RESPONSE_1 = " <EVENT_ID> <PARTICIPANT_NAME> <EMAIL_ID>";
 	
 	public static final String SMS_EWELCOME_RESPONSE_SUCCESS_1 = "Your eWelcome ID : ";
 	
@@ -126,7 +128,7 @@ public class SMSConstants {
 	
 	public static final String SMS_HELP_UPDATE_EVENT="UPDATE EVENT - ";
 	
-	public static final String SMS_HELP_REGISTER_PARTICIPANT="CREATE PARTICIPANT - ";
+	public static final String SMS_HELP_REGISTER_PARTICIPANT="REGISTER PARTICIPANT - ";
 	
 	public static final String SMS_HELP_INTRODUCE_PARTICIPANT="INTRODUCTION SITTING CONFIRMATION - ";
 	
@@ -160,6 +162,10 @@ public class SMSConstants {
 	
 	public static final String SMS_CREATE_EVENT_INVALID_ZIPCODE_RESPONSE_1="Specified zipcode( ";
 	
-	public static final String SMS_CREATE_EVENT_INVALID_ZIPCODE_RESPONSE_2=" ) is not valid. Please enter valid zipcode.";
+	public static final String SMS_CREATE_EVENT_INVALID_ZIPCODE_RESPONSE_2=" ) is not valid. Please enter a valid zipcode.";
+
+	public static final String SMS_CREATE_EVENT_INVALID_MOBILE_RESPONSE_1 = "Specified Mobile number ( ";
+
+	public static final String SMS_CREATE_EVENT_INVALID_MOBILE_RESPONSE_2 = " ) is not valid. Please provide a valid mobile number.";
 }
 		
