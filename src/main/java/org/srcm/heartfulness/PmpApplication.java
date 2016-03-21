@@ -54,5 +54,6 @@ public class PmpApplication extends SpringBootServletInitializer {
             System.out.println(beanName);
         }*/
         System.out.println("Spring boot is up");
+        System.out.println("-------");
     }
 }

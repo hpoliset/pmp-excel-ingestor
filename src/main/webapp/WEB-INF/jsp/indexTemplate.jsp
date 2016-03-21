@@ -37,9 +37,9 @@
 	 			if (object.id === "home") {
 	 				$("#indexmenu").attr("action", "/pmp/hfn");
 	 			}
-	 			if (object.id === "eventsform") {
+	 			/* if (object.id === "eventsform") {
 	 				$("#indexmenu").attr("action", "/pmp/eventForm");
-	 			}
+	 			} */
 	 			document.forms['indexmenu'].submit();
 	    	 }else if(response=="sessionexpired"){
 	         	 window.location.href = "/pmp/signout"; 
@@ -70,8 +70,8 @@
 				id="bulkUploadForm"  onmouseover="" style="cursor: pointer;">Bulk Uploader</a></li>
 			<li class=""><a onclick="javascript:callIngestionForm(this);"
 				id="reportsForm"  onmouseover="" style="cursor: pointer;">Reports</a></li>
-			<li class=""><a onclick="javascript:callIngestionForm(this);"
-				id="eventsform"  onmouseover="" style="cursor: pointer;">Events</a></li>
+			<!-- <li class=""><a onclick="javascript:callIngestionForm(this);"
+				id="eventsform"  onmouseover="" style="cursor: pointer;">Events</a></li> -->
 			<li class="last"><a href="/pmp/signout">Signout</a></li>
 		</ul>
 		<form action="" id="indexmenu"></form>
