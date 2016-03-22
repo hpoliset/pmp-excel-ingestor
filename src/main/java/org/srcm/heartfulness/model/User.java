@@ -5,8 +5,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -48,7 +46,6 @@ public class User {
 	private String user_type;
 
 	@NotEmpty(message = "Please enter the password.")
-	@JsonIgnore
 	private String password;
 
 	@JsonIgnore
