@@ -131,6 +131,7 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 		program.setCoordinatorName(sheet.getRow(4).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
 		program.setCoordinatorEmail(sheet.getRow(5).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
 		program.setEventPlace(sheet.getRow(6).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
+		program.setProgramName(sheet.getRow(6).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
 		program.setEventState(sheet.getRow(7).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
 		program.setEventCountry(sheet.getRow(8).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
 		program.setOrganizationName(sheet.getRow(9).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());

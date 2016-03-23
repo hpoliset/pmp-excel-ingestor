@@ -14,6 +14,26 @@
 	<script type="text/javascript" src="../js/jquery-ui.js"></script>
 	<script type="text/javascript" src="../js/reports-form-script.js"></script>
 	<link rel="stylesheet" href="../css/jquery-ui.css"/>
+		<script>
+	function validateForm(){
+		if(!document.getElementById('tillDate').value.trim().length && !document.getElementById('fromDate').value.trim().length){
+			 alert("Please enter the From Date and Till Date");
+		     return false;
+		}
+		if(!document.getElementById('fromDate').value.trim().length){
+	        alert("Please enter the From Date");
+	        return false;
+	    }
+		if(!document.getElementById('tillDate').value.trim().length){
+	        alert("Please enter the Till Date");
+	        return false;
+	    }
+		if(!isValidDate()){
+			return false;
+		}
+		return true;
+	}
+	</script>
 	<style>
 		div.ui-datepicker {
 			font-size: 10px;
@@ -35,7 +55,7 @@
         <h3>Heartfulness Reports Form</h3>
       </div>
       
-      <form method="POST" action="generate">
+       <form method="POST" action="generate"  onsubmit="return validateForm()">
           <div class="row">
             <div class="four columns">
               <label for="channel">Enter Channel</label>
@@ -51,12 +71,12 @@
                 <option value="V-Connect">V-Connect</option>
               </select>
             </div>
-            <div class="four columns">
-              <label for="fromDate">From Date</label>
+           <div class="four columns">
+              <label for="fromDate">From Date<font color="red">*</font></label>
               <input class="width:90%" type="text" placeholder="Enter From Date" id="fromDate" name="fromDate">
             </div>
             <div class="four columns">
-              <label for="fromDate">Till Date</label>
+              <label for="fromDate">Till Date<font color="red">*</font></label>
               <input class="width:90%" type="text" placeholder="Enter Till Date" id="tillDate" name="tillDate">
             </div>
           </div>
@@ -90,9 +110,14 @@
             </div>
           </div>
           <div class="row">
-            <div class="six columns">
-				<p><i>(Report is downloaded into the downloads folder with name starting as Report_.The report file is a Tab separated file, can be opened in MS Excel )</i></p>
-            </div>
+            <div class="ten columns">
+					<p>
+						<i>(Report is downloaded into the downloads folder as a zip
+							file with name starting with Report_. Zip file will contains the
+							report file ,which is a Tab separated file for the selected date
+							range, can be opened in MS Excel )</i>
+					</p>
+				</div>
           </div>
       </form>
    </div>

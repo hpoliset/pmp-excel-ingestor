@@ -60,6 +60,7 @@ public class ParticipantFullDetails {
     private String programHashCode;
     private int programChannelId;
     private String programChannel;
+    private String programName;
     private Date programStartDate;
     private Date programEndDate;
 
@@ -702,6 +703,14 @@ public class ParticipantFullDetails {
 	public void setPgmUpdatedBy(String pgmUpdatedBy) {
 		this.pgmUpdatedBy = pgmUpdatedBy;
 	}
+	
+	public String getProgramName() {
+		return programName;
+	}
+
+	public void setProgramName(String programName) {
+		this.programName = programName;
+	}
 
 	public String toString(){
 		return 
@@ -712,7 +721,7 @@ public class ParticipantFullDetails {
 				introduced+"\"\t\""+introducedBy+"\"\t\""+introductionDate+"\"\t\""+welcomeCardNumber+"\"\t\""+welcomeCardDate+"\"\t\""+ageGroup+"\"\t\""+
 				firstSittingTaken+"\"\t\""+firstSittingDate+"\"\t\""+secondSittingTaken+"\"\t\""+secondSittingDate+"\"\t\""+thirdSittingTaken+"\"\t\""+
 				thirdSittingDate+"\"\t\""+batch+"\"\t\""+receiveUpdates+"\"\t\""+syncStatus+"\"\t\""+aimsSyncTime+"\"\t\""+uploadStatus+"\"\t\""+
-				programId+"\"\t\""+programChannel+"\"\t\""+programStartDate+"\"\t\""+programEndDate+"\"\t\""+
+				programId+"\"\t\""+programChannel+"\"\t\""+programName+"\"\t\""+programStartDate+"\"\t\""+programEndDate+"\"\t\""+
 				eventPlace+"\"\t\""+eventState+"\"\t\""+eventCity+"\"\t\""+eventCountry+"\"\t\""+
 				organizationId+"\"\t\""+organizationName+"\"\t\""+organizationDepartment+"\"\t\""+organizationWebSite+"\"\t\""+
 				organizationContactName+"\"\t\""+organizationContactEmail+"\"\t\""+organizationContactMobile+"\"\t\""+

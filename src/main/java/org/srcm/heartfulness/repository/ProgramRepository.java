@@ -77,4 +77,8 @@ public interface ProgramRepository {
      */
 	Program findByEventName(String eventName);
 
+	boolean isProgramExistByProgramName(Program program);
+
+	void saveWithProgramName(Program program);
+
 }
