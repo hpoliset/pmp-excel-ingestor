@@ -93,9 +93,9 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 		jdbcTemplate.query("select "
 				+ "pg.program_id,"
 				+ "pg.program_channel, "
-				+
+				+"pg.program_name, "
 				// "pg.program_channel_id, " +
-				"pg.program_start_date, " + "pg.program_end_date," +
+				+"pg.program_start_date, " + "pg.program_end_date," +
 
 				"pg.event_id, " + "pg.event_place, " + "pg.event_city, " + "pg.event_state, " + "pg.event_country, " +
 

@@ -178,9 +178,9 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 	private Program parseProgram(Sheet eventSheet) throws InvalidExcelFileException {
 
 		Program program = new Program();
-
 		program.setProgramChannel(eventSheet.getRow(2).getCell(1, Row.CREATE_NULL_AS_BLANK).toString());
 		program.setEventPlace(eventSheet.getRow(3).getCell(1, Row.CREATE_NULL_AS_BLANK).toString());
+		program.setProgramName(eventSheet.getRow(3).getCell(1, Row.CREATE_NULL_AS_BLANK).toString());
 		program.setEventCountry(eventSheet.getRow(4).getCell(1, Row.CREATE_NULL_AS_BLANK).toString());
 		program.setEventCity(eventSheet.getRow(5).getCell(1, Row.CREATE_NULL_AS_BLANK).toString());
 		program.setCoordinatorName(eventSheet.getRow(6).getCell(1, Row.CREATE_NULL_AS_BLANK).toString());

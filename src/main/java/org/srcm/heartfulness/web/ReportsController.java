@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.srcm.heartfulness.model.ParticipantFullDetails;
 import org.srcm.heartfulness.service.ReportService;
+import org.srcm.heartfulness.util.ZipUtils;
 import org.srcm.heartfulness.vo.ReportVO;
 
 
@@ -76,6 +77,7 @@ public class ReportsController {
             {
 
     	ReportVO reportVO = new ReportVO();
+    	ZipUtils zipUtils = new ZipUtils();
     	reportVO.setChannel(channel);
     	reportVO.setFromDate(fromDate);
     	reportVO.setTillDate(tillDate);
@@ -93,7 +95,7 @@ public class ReportsController {
           .append("introduced\tintroducedBy\tintroductionDate\twelcomeCardNumber\twelcomeCardDate\tageGroup\t")
           .append("firstSittingTaken\tfirstSittingDate\tsecondSittingTaken\tsecondSittingDate\tthirdSittingTaken\tthirdSittingDate\t")
           .append("batch\treceiveUpdates\tsyncStatus\taimsSyncTime\tuploadStatus\t")
-          .append("programId\tprogramChannel\tprogramStartDate\tprogramEndDate\t")
+          .append("programId\tprogramChannel\tprogramName.\tprogramStartDate\tprogramEndDate\t")
           .append("eventPlace\teventState\teventCity\teventCountry\t")
           .append("organizationId\torganizationName\torganizationDepartment\torganizationWebSite\torganizationContactName\t")
           .append("organizationContactEmail\torganizationContactMobile\t")
@@ -101,13 +103,17 @@ public class ReportsController {
           .append("\n");
         
         response.reset();
-        response.setContentType("text/plain; charset=utf-8");
+        /*response.setContentType("text/plain; charset=utf-8");
         response.setHeader("Content-disposition", "attachment; filename=Report_"+
                         new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss").format(new Date()) +".txt");
         response.getWriter().print(sb.toString());
         for (ParticipantFullDetails participant: participants ){
         	response.getWriter().println(participant.toString());
-        }
+        }*/
+        response.setContentType("application/zip");
+        response.setHeader("Content-Disposition","attachment;filename=Report_"+
+                        new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss").format(new Date()) +".zip");
+        response.getOutputStream().write(zipUtils.getByteArray(participants, sb));
     }
 
     /**

@@ -25,6 +25,7 @@ class FullParticipantRowCallbackHandler implements RowCallbackHandler {
 
        int programId = rs.getInt("pg.program_id");
        String programChannel = rs.getString("pg.program_channel");
+       String programName = rs.getString("pg.program_name");
    	   Date programStartDate = rs.getDate("pg.program_start_date");   
        Date programEndDate = rs.getDate("pg.program_end_date");
 
@@ -105,6 +106,7 @@ class FullParticipantRowCallbackHandler implements RowCallbackHandler {
        
        participant.setProgramId(programId);
        //participant.setProgramChannelId(programChannelId);
+       participant.setProgramName(programName);
        participant.setProgramChannel(programChannel);
        participant.setProgramStartDate(programStartDate);
        participant.setProgramEndDate(programEndDate);

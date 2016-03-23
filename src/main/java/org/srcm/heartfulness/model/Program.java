@@ -17,6 +17,7 @@ public class Program {
     private int programId;
     private String programHashCode;
     private int programChannelId;
+    private String programName;
     private String programChannel;
     @DateTimeFormat(pattern="dd-MM-yyyy")
     private Date programStartDate;
@@ -63,8 +64,16 @@ public class Program {
     public void setProgramId(int programId) {
         this.programId = programId;
     }
+    
+    public String getProgramName() {
+		return programName;
+	}
 
-    public int getProgramChannelId() {
+	public void setProgramName(String programName) {
+		this.programName = programName;
+	}
+
+	public int getProgramChannelId() {
         return programChannelId;
     }
 
