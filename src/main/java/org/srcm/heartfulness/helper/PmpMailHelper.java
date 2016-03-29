@@ -247,7 +247,7 @@ public class PmpMailHelper {
 	public void sendEmailtoSeeker(String email) throws MessagingException,AuthenticationFailedException,AddressException{
 		List<String> toMailIds=new ArrayList<String>();
 		toMailIds.add(email);
-		sendMail(toMailIds,null,PMPConstants.SEEKER);
+		sendMail(toMailIds,new ArrayList<String>(),PMPConstants.SEEKER);
 	}
 	
 	public void addParameter(String name, String value ){
