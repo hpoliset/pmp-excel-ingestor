@@ -236,10 +236,10 @@ public class PmpMailHelper {
 					}
 				}
 				LOGGER.debug("After setting mail contents");
-				//message.setAllow8bitMIME(true);
-				//message.setSentDate(new Date());
-				//message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-				//message.getReturnOption();
+				message.setAllow8bitMIME(true);
+				message.setSentDate(new Date());
+				message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+				message.getReturnOption();
 				//int returnOption = message.getReturnOption();
 				Transport.send(message);
 				LOGGER.debug("Mail Sent successfully to {} ",recieverType);
