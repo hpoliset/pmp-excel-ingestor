@@ -217,7 +217,7 @@ public class PmpMailHelper {
 				LOGGER.debug("Before setting mail subjects: ");
 				message.setSubject(PMPConstants.SEEKER.equalsIgnoreCase(recieverType)?welcomemailsubject:requestmailsubject);
 				LOGGER.debug("After setting mail subjects: ");
-				URL url = this.getClass().getResource("/org/srcm/heartfulness/resource/mail");
+				URL url = this.getClass().getResource("/org/srcm/heartfulness/mail/templates");
 				File file=new File(url.getFile());
 				LOGGER.debug("Reading the mail files");
 				velocityEngine = new VelocityEngine();
