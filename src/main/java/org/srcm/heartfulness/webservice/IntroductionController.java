@@ -173,6 +173,8 @@ public class IntroductionController {
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
 		}catch (Exception e) {
 			ErrorResponse error = new ErrorResponse("Error", e.getMessage());
+			e.printStackTrace();
+			LOGGER.error("error", e.fillInStackTrace());
 			LOGGER.debug("Exception black of createprofile and introduce {}",e.getMessage());
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
 		}
