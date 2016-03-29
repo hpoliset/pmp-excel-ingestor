@@ -29,8 +29,8 @@ public class PMPMailServiceImpl implements PMPMailService {
 	 */
 	@Override
 	public void sendMail(User newUser, IntroductionDetails introdet) throws MessagingException, AuthenticationFailedException,AddressException {
-		//mailHelper.sendEmailtoSeeker(newUser.getEmail());
-		//mailHelper.sendEmailtoHfnTeam(newUser,introdet);
+		mailHelper.sendEmailtoSeeker(newUser.getEmail());
+		mailHelper.sendEmailtoHfnTeam(newUser,introdet);
 	}
 
 }

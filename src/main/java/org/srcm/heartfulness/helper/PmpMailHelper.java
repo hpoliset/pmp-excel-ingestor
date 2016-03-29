@@ -189,15 +189,19 @@ public class PmpMailHelper {
 		
 		LOGGER.debug("Trying to send mail to {} ",recieverType);
 		if(toMailIds.size()>0){
+			
+			//  String from = "heartfulness.org";
+			  
 			Properties props = System.getProperties();
 			setProperties(props);
-			Session session =Session.getDefaultInstance(props,new javax.mail.Authenticator(){
+			/*Session session =Session.getDefaultInstance(props,new javax.mail.Authenticator(){
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication()
 				{				
 					return new PasswordAuthentication(username,password);
 				}
-			});
+			});*/
+			Session session=Session.getDefaultInstance(props);
 				SMTPMessage message = new SMTPMessage(session);
 				message.setFrom(new InternetAddress(username));
 				for (String toMailId : toMailIds) {
@@ -302,8 +306,8 @@ public class PmpMailHelper {
 	private void setProperties(Properties props) {
 		props.put("mail.debug", "true");
 		props.put("mail.smtp.host", host);
-		props.put("mail.smtp.ssl.enable", "true");
-		props.put("mail.smtp.auth", "true");
+		//props.put("mail.smtp.ssl.enable", "true");
+		//props.put("mail.smtp.auth", "false");
 	}
 
 	/**
