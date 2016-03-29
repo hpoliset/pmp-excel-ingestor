@@ -153,7 +153,8 @@ public class IntroductionController {
 				mailservice.sendMail(newUser, introdet);
 			}
 			return new ResponseEntity<Introductionresponse>(response, HttpStatus.OK);
-		} catch (HttpClientErrorException e) {
+		}  catch (HttpClientErrorException e) {
+			LOGGER.debug("Exception client exception: "+e.getMessage());
 			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
 		} catch (SQLException e) {
 			ErrorResponse error = new ErrorResponse("Failed Request", e.getMessage());
@@ -172,6 +173,7 @@ public class IntroductionController {
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
 		}catch (Exception e) {
 			ErrorResponse error = new ErrorResponse("Error", e.getMessage());
+			LOGGER.debug("Exception black of createprofile and introduce {}",e.getMessage());
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
 		}
 	}

@@ -193,7 +193,9 @@ public class PmpMailHelper {
 			//  String from = "heartfulness.org";
 			  
 			Properties props = System.getProperties();
-			setProperties(props);
+			//setProperties(props);
+			props.setProperty("mail.smtp.host", host);
+			props.setProperty("mail.debug", "true");
 			/*Session session =Session.getDefaultInstance(props,new javax.mail.Authenticator(){
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication()
