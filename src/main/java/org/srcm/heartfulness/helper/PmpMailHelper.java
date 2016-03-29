@@ -191,11 +191,12 @@ public class PmpMailHelper {
 		if(toMailIds.size()>0){
 			
 			//  String from = "heartfulness.org";
-			  
+			LOGGER.debug("Before Setting properties ");  
 			Properties props = System.getProperties();
 			//setProperties(props);
 			props.setProperty("mail.smtp.host", host);
 			props.setProperty("mail.debug", "true");
+			LOGGER.debug("After Setting properties ");  
 			/*Session session =Session.getDefaultInstance(props,new javax.mail.Authenticator(){
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication()
@@ -205,6 +206,7 @@ public class PmpMailHelper {
 			});*/
 			Session session=Session.getDefaultInstance(props);
 				SMTPMessage message = new SMTPMessage(session);
+				LOGGER.debug("After setting the session"+username);
 				message.setFrom(new InternetAddress(username));
 				for (String toMailId : toMailIds) {
 					message.addRecipients(Message.RecipientType.TO,InternetAddress.parse(toMailId));
@@ -212,14 +214,18 @@ public class PmpMailHelper {
 				for (String ccMailId : ccMailIds) {
 					message.addRecipients(Message.RecipientType.CC,InternetAddress.parse(ccMailId));
 				}
+				LOGGER.debug("Before setting mail subjects: ");
 				message.setSubject(PMPConstants.SEEKER.equalsIgnoreCase(recieverType)?welcomemailsubject:requestmailsubject);
+				LOGGER.debug("After setting mail subjects: ");
 				URL url = this.getClass().getResource("/org/srcm/heartfulness/resource/mail");
 				File file=new File(url.getFile());
+				LOGGER.debug("Reading the mail files");
 				velocityEngine = new VelocityEngine();
 				velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "file");
 				velocityEngine.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, file.getAbsolutePath());
 				velocityEngine.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_CACHE, "true");
 				velocityEngine.init();
+				LOGGER.debug("Reading the mail files");
 				if ("seeker".equalsIgnoreCase(recieverType)) {
 					message.setContent(getWelcomeMailContent(requestmailtemplate),"text/html");
 				}else{
@@ -229,6 +235,7 @@ public class PmpMailHelper {
 						message.setContent(getWelcomeMailtemplate(welcomemailtemplate));
 					}
 				}
+				LOGGER.debug("After setting mail contents");
 				message.setAllow8bitMIME(true);
 				message.setSentDate(new Date());
 				message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
