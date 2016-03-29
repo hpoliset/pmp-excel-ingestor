@@ -14,10 +14,7 @@
 <body>
 	<div class="row" align="center">
 	<br>
-		 ${eventmsg} <br></br>
-		 Please click on <a
-			href="http://en.staging.heartfulness.org/" class="">
-			http://en.staging.heartfulness.org/</a>  to visit heartfulness website.
+		 <h4 style="padding-top: 3%;"><b>${message}</b></h4> 
 
 	</div>
 </body>

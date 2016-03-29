@@ -33,6 +33,7 @@ public class AESEncryptDecrypt {
 
 	/**
 	 * method to encrypt plain data to encrypted one
+	 * 
 	 * @param Data
 	 * @return encrypted data
 	 */
@@ -63,6 +64,7 @@ public class AESEncryptDecrypt {
 
 	/**
 	 * method to decrypt encrypted data to plain text
+	 * 
 	 * @param Data
 	 * @return plain data
 	 */
@@ -94,6 +96,7 @@ public class AESEncryptDecrypt {
 
 	/**
 	 * method to convert key value to Secret key
+	 * 
 	 * @param skey
 	 * @return
 	 */
