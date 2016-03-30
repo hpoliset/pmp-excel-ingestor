@@ -30,9 +30,15 @@ public class PMPConstants {
 	
 	public static final String STATE_UP="UP";
 	
+	public static final String STATE_UTTARPRADESH="UTTARPRADESH";
+	
 	public static final String STATE_UK="UK";
 	
+	public static final String STATE_UTTARAKHAND="UTTARAKHAND";
+	
 	public static final String STATE_MP="MP";
+	
+	public static final String STATE_MADHYAPRADESH="MADHYAPRADESH";
 	
 	public static final String STATE_CHATTISGHAR="CHATTISGHAR";
 	
