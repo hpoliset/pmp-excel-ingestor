@@ -132,6 +132,15 @@ public class PmpMailHelper {
 			case PMPConstants.STATE_MP:
 				toMailIds.add(mp);
 				break;
+			case PMPConstants.STATE_UTTARPRADESH:
+				toMailIds.add(up);
+				break;
+			case PMPConstants.STATE_UTTARAKHAND:
+				toMailIds.add(uk);
+				break;
+			case PMPConstants.STATE_MADHYAPRADESH:
+				toMailIds.add(mp);
+				break;
 			case PMPConstants.STATE_CHATTISGHAR:
 				toMailIds.add(chattisghar);
 				break;
@@ -190,7 +199,6 @@ public class PmpMailHelper {
 		LOGGER.debug("Trying to send mail to {} ",recieverType);
 		if(toMailIds.size()>0){
 			
-			//  String from = "heartfulness.org";
 			Properties props = System.getProperties();
 			//setProperties(props);
 			props.setProperty("mail.smtp.host", host);
@@ -301,15 +309,15 @@ public class PmpMailHelper {
 	}
 
 	/**
-	 * method to set the mail properties
+	 * method to set the mail properties (development purpose)
 	 * @param props
 	 */
-	private void setProperties(Properties props) {
+	/*private void setProperties(Properties props) {
 		props.put("mail.debug", "true");
 		props.put("mail.smtp.host", host);
-		//props.put("mail.smtp.ssl.enable", "true");
-		//props.put("mail.smtp.auth", "false");
-	}
+		props.put("mail.smtp.ssl.enable", "true");
+		props.put("mail.smtp.auth", "false");
+	}*/
 
 	/**
 	 * method to set the images in the html content of welcome mail

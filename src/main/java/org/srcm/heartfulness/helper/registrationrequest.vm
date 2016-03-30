@@ -1,13 +1,43 @@
-Registration request for Practicing Heartfulness with a Guide
-
-	Name: ${NAME}
-	Email: ${EMAIL}
-	Phone: ${MOBILE}
-	City: ${CITY}
-	State: ${STATE}
-	Country: ${COUNTRY}
-	Message: ${MESSAGE}
+<html>
+<head>
+<title></title>
 
 
+</head>
+
+<body>
+
+<h3>Registration request for Practicing Heartfulness with a Guide</h3>
+
+<table>
+<tr>
+<td>Name: ${NAME}</td>
+</tr>
+<tr>
+<td>Email: ${EMAIL}</td>
+</tr>
+<tr>
+<td>Phone: ${MOBILE}</td>
+</tr>
+<tr>
+<td>City: ${CITY}</td>
+</tr>
+<tr>
+<td>State: ${STATE}</td>
+</tr>
+<tr>
+<td>Country: ${COUNTRY}</td>
+</tr>
+<tr>
+<td>	Message: ${MESSAGE}</td>
+</tr>
+</table>
+<br/>
+<br/>
+<div style="font-style: italic; font-weight: bold;">
 With regards
+<br/>
 Heartfulness Webmaster
+</div>
+</body>
+</html>
