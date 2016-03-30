@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.srcm.heartfulness.model.Channel;
 import org.srcm.heartfulness.model.ParticipantFullDetails;
+import org.srcm.heartfulness.service.ChannelService;
 import org.srcm.heartfulness.service.ReportService;
 import org.srcm.heartfulness.util.ZipUtils;
 import org.srcm.heartfulness.vo.ReportVO;
@@ -32,7 +34,9 @@ public class ReportsController {
     @Autowired
     private ReportService reportService;
     
-
+    @Autowired
+	ChannelService channelService;
+    
     /**
      * To populate the reportsForm view with event country, state , types 
      * 
@@ -43,13 +47,12 @@ public class ReportsController {
     @RequestMapping(value = "/reports/reportsForm", method = RequestMethod.GET)
     public String showReportsForm(HttpServletRequest request,ModelMap modelMap) {
     	List<String> eventCountries = reportService.getCountries();
-    	List<String> eventTypes = reportService.getEventTypes();
     	modelMap.addAttribute("eventCountries", eventCountries);
-    	modelMap.addAttribute("eventTypes", eventTypes);
+    	modelMap.addAttribute("programChannels", getProgramChannels());
         return "reportsForm";
     }
 
-    
+        
     @RequestMapping("/reports")
     @ResponseBody
     public String index() {
@@ -130,4 +133,16 @@ public class ReportsController {
     	return eventStates;
     }
     
+    /**
+     * Fetches the list of active channel, to be used in the
+	 * Report parameter screen.
+	 * 
+     * @return the list of state
+     */
+    @RequestMapping(value = "/reports/getProgramChannels", method = RequestMethod.POST)
+    @ResponseBody
+    public List<Channel> getProgramChannels(){
+    	List<Channel> programChannels = channelService.findAllActiveChannels();
+    	return programChannels;
+    }
 }
