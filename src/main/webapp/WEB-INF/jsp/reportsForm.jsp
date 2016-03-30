@@ -60,15 +60,16 @@
             <div class="four columns">
               <label for="channel">Enter Channel</label>
               <select class="u-full-width" id="channel" name="channel">
-                <%-- <c:forEach items="${eventTypes}" var="eventType"> 
-				  	<option value="${eventType}">${eventType}</option>
-				</c:forEach> --%>
-				<option value="ALL">All Channels</option>
+              	<option value="ALL">All Channels</option>
+                <c:forEach items="${programChannels}" var="programChannel"> 
+				  	<option value="${programChannel.name}">${programChannel.name}</option>
+				</c:forEach>
+				<!-- <option value="ALL">All Channels</option>
                 <option value="Heartfulness">Heartfulness</option>
                 <option value="U-Connect">U-Connect</option>
                 <option value="C-Connect">C-Connect</option>
                 <option value="G-Connect">G-Connect</option>
-                <option value="V-Connect">V-Connect</option>
+                <option value="V-Connect">V-Connect</option> -->
               </select>
             </div>
            <div class="four columns">
