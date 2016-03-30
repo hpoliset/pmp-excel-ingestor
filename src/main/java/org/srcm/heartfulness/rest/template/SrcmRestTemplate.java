@@ -151,6 +151,8 @@ public class SrcmRestTemplate extends RestTemplate {
 			JsonMappingException, IOException {
 		if (proxy)
 			setProxy();
+		body = new LinkedMultiValueMap<String, String>();
+		httpHeaders = new HttpHeaders();
 		httpHeaders.clear();
 		httpHeaders.add("Authorization", "Bearer " + accessToken);
 		body.clear();
