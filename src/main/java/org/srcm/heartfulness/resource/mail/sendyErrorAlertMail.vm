@@ -1,0 +1,15 @@
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<table style="border:none;"><tbody>
+		<table style="width:100%;border:none;"><tbody><tr>
+		<td style="font-family: Helvetica, arial, sans-serif; font-size: 16px; color: #666666;  line-height: 30px; text-align: left;border:none;">Dear team,</td>
+		</tr></tbody></table>
+		<div style="font-family: Helvetica, arial, sans-serif; font-size: 16px; color: #666666; text-align: left; line-height: 30px;">
+		<p>Error while sending Welcome mail to the participants. Please look into the issue.</p>
+		<p>Respectfully,</p>
+		<p>Sendy Development Team</p>
+</body>
+</html>

@@ -19,8 +19,14 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -32,6 +38,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -126,7 +133,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		if (proxy)
 			setProxy();
 		StringBuffer content = new StringBuffer("");
-		URL url = this.getClass().getResource("/org/srcm/heartfulness/resource/mail/SendyWelcomeMail.html");
+		URL url = this.getClass().getResource("/org/srcm/heartfulness/helper/SendyWelcomeMail.html");
 		BufferedReader br = null;
 		try {
 			String sCurrentLine;
@@ -237,7 +244,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 					message.addRecipients(Message.RecipientType.CC,InternetAddress.parse(ccMailId));
 				}
 				message.setSubject(errorAlertMailSubject);
-				URL url = this.getClass().getResource("/org/srcm/heartfulness/resource/mail");
+				URL url = this.getClass().getResource("/org/srcm/heartfulness/helper");
 				File file=new File(url.getFile());
 				velocityEngine = new VelocityEngine();
 				velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "file");
@@ -433,10 +440,9 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		this.ccMailIds = ccMailIds;
 	}
 
-	CredentialsProvider credsProvider = new BasicCredentialsProvider();
-
 	public void setProxy() {
-		/*credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
+		CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 				new UsernamePasswordCredentials(proxyUser, proxyPassword));
 		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
 		clientBuilder.useSystemProperties();
@@ -446,7 +452,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		CloseableHttpClient client = clientBuilder.build();
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
 		factory.setHttpClient(client);
-		this.setRequestFactory(factory);*/
+		this.setRequestFactory(factory);
 	}
 
 	
