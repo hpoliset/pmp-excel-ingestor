@@ -59,7 +59,7 @@ import com.sun.mail.smtp.SMTPMessage;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:sendy.api.properties", ignoreUnknownFields = false, prefix = "sendy")
+@ConfigurationProperties(locations = "classpath:dev.sendy.api.properties", ignoreUnknownFields = false, prefix = "sendy")
 public class SendyAPIRestTemplate extends RestTemplate {
 	
 	private VelocityEngine velocityEngine=new VelocityEngine();
