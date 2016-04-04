@@ -69,6 +69,10 @@ function isValidDate() {
     	alert("Please select valid Date range.Report can be generated for a maximum of 30 days.");
     	return false;
     }
+    if(calculateDayRange(parseDate(fromDate), parseDate(tillDate))<0){
+    	alert("Please select valid Date range.");
+    	return false;
+    }
     return true;
 }
 function parseDate(str) {
