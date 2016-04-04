@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
+import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 
 /**
@@ -80,5 +81,11 @@ public interface ProgramRepository {
 	boolean isProgramExistByProgramName(Program program);
 
 	void saveWithProgramName(Program program);
+
+	Program getEventById(int id);
+
+	List<Program> getEventByEmail(String email, boolean isAdmin);
+
+	List<Participant> getParticipantList(int decryptedProgramId);
 
 }
