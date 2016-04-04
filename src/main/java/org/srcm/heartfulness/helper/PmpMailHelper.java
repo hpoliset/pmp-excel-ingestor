@@ -43,7 +43,7 @@ import com.sun.mail.smtp.SMTPMessage;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:mail.properties", ignoreUnknownFields = false, prefix = "pmp.mail")
+@ConfigurationProperties(locations = "classpath:prod.mail.properties", ignoreUnknownFields = false, prefix = "pmp.mail")
 public class PmpMailHelper {
 
 	private String host;
