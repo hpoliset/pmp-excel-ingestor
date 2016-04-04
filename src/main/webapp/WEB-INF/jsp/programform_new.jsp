@@ -12,29 +12,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600'
 	rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="/pmp/css/jqgridcss/jqx.base.css"
-	type="text/css" />
-<link rel="stylesheet" href="/pmp/css/jquery-ui.css" />
+
+<link rel="stylesheet" href="/pmp/css/jquery-ui.css" /> 
+<script type="text/javascript" src="/pmp/js/jquery.js"></script>
 <script type="text/javascript"
 	src="/pmp/js/jqgridjs/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="/pmp/js/jqgridjs/jqxcore.js"></script>
-<script type="text/javascript" src="/pmp/js/jqgridjs/jqxdata.js"></script>
-<script type="text/javascript" src="/pmp/js/jqgridjs/jqxbuttons.js"></script>
-<script type="text/javascript" src="/pmp/js/jqgridjs/jqxscrollbar.js"></script>
-<script type="text/javascript" src="/pmp/js/jqgridjs/jqxmenu.js"></script>
-<script type="text/javascript" src="/pmp/js/jqgridjs/jqxcheckbox.js"></script>
-<script type="text/javascript" src="/pmp/js/jqgridjs/jqxlistbox.js"></script>
-<script type="text/javascript" src="/pmp/js/jqgridjs/jqxdropdownlist.js"></script>
-<script type="text/javascript" src="/pmp/js/jqgridjs/jqxgrid.js"></script>
-<script type="text/javascript" src="/pmp/js/jqgridjs/jqxgrid.pager.js"></script>
-<script type="text/javascript" src="/pmp/js/jqgridjs/jqxgrid.sort.js"></script>
-<script type="text/javascript" src="/pmp/js/jqgridjs/jqxgrid.filter.js"></script>
-<script type="text/javascript"
-	src="/pmp/js/jqgridjs/jqxgrid.columnsresize.js"></script>
-<script type="text/javascript"
-	src="/pmp/js/jqgridjs/jqxgrid.selection.js"></script>
-<script type="text/javascript" src="/pmp/js/jqgridjs/demos.js"></script>
-<script type="text/javascript" src="/pmp/js/jqgridjs/generatedata.js"></script>
 <script type="text/javascript" src="/pmp/js/reports-form-script.js"></script>
 <script type="text/javascript" src="/pmp/js/jquery-ui.js"></script>
 <style>
@@ -138,187 +120,12 @@ textarea {
 	<script type="text/javascript">
 		$(document).ready(
 				function() {
-					var encryptedProgramId = '${encryptedProgramId}';
-					var url = "/pmp/getParticipantList?programId="+ encryptedProgramId;
-					var source = {
-						type : "POST",
-						datatype : "json",
-						datafields : [ {
-							name : 'printName',
-							type : 'string'
-						}, {
-							name : 'firstName',
-							type : 'string'
-						}, {
-							name : 'middleName',
-							type : 'string'
-						}, {
-							name : 'lastName',
-							type : 'string'
-						}, {
-							name : 'email',
-							type : 'string'
-						}, {
-							name : 'mobilePhone',
-							type : 'string'
-						}, {
-							name : 'gender',
-							type : 'string'
-						}, {
-							name : 'dateOfBirth',
-							type : 'date'
-						}, {
-							name : 'city',
-							type : 'string'
-						}, {
-							name : 'state',
-							type : 'string'
-						}, {
-							name : 'country',
-							type : 'string'
-						}, {
-							name : 'introductionDate',
-							type : 'string'
-						}, {
-							name : 'introducedBy',
-							type : 'string'
-						}, {
-							name : 'welcomeCardNumber',
-							type : 'string'
-						}, {
-							name : 'welcomeCardDate',
-							type : 'date'
-						}, {
-							name : 'firstSittingDate',
-							type : 'date'
-						}, {
-							name : 'secondSittingDate',
-							type : 'date'
-						}, {
-							name : 'thirdSittingDate',
-							type : 'date'
-						}, {
-							name : 'remarks',
-							type : 'string'
-						} ],
-						id : 'printName',
-						url : url
-					};
-					var dataAdapter = new $.jqx.dataAdapter(source);
-					// initialize jqxGrid
-					$("#jqxgrid").jqxGrid({
-						width : 1050,
-						height : 400,
-						//  sortable: true,
-						pageable : true,
-						columnsresize : true,
-						source : dataAdapter,
-						columns : [ {
-							text : 'Paricipant Name',
-							datafield : 'printName',
-							width : 200
-						}, {
-							text : 'First Name',
-							datafield : 'firstName',
-							width : 200
-						}, {
-							text : 'Middle Name',
-							datafield : 'middleName',
-							width : 200
-						}, {
-							text : 'Last Name',
-							datafield : 'lastName',
-							width : 200,
-							cellsalign : 'left'
-						}, {
-							text : 'Email',
-							datafield : 'email',
-							width : 200,
-							cellsalign : 'left',
-							cellsformat : 'c2'
-						}, {
-							text : 'Mobile No.',
-							datafield : 'mobilePhone',
-							width : 200,
-							cellsalign : 'left',
-							cellsformat : 'c2'
-						}, {
-							text : 'Gender',
-							datafield : 'gender',
-							width : 200,
-							cellsalign : 'left',
-							cellsformat : 'c2'
-						}, {
-							text : 'Date of Birth',
-							datafield : 'dateOfBirth',
-							width : 200,
-							cellsalign : 'left',
-						}, {
-							text : 'City',
-							datafield : 'city',
-							width : 200,
-							cellsalign : 'left',
-							cellsformat : 'c2'
-						}, {
-							text : 'State',
-							datafield : 'state',
-							width : 200,
-							cellsalign : 'left',
-							cellsformat : 'c2'
-						}, {
-							text : 'Country',
-							datafield : 'country',
-							width : 200,
-							cellsalign : 'left',
-							cellsformat : 'c2'
-						}, {
-							text : 'Introduction Date',
-							datafield : 'introductionDate',
-							width : 200,
-							cellsalign : 'left',
-							cellsformat : 'c2'
-						}, {
-							text : 'Introduced By',
-							datafield : 'introducedBy',
-							width : 200,
-							cellsalign : 'left',
-							cellsformat : 'c2'
-						}, {
-							text : 'Welcome Card No',
-							datafield : 'welcomeCardNumber',
-							width : 200,
-							cellsalign : 'left',
-							cellsformat : 'c2'
-						}, {
-							text : 'Welcome Card Date',
-							datafield : 'welcomeCardDate',
-							width : 200,
-							cellsalign : 'left'
-						}, {
-							text : 'First Sitting Date',
-							datafield : 'firstSittingDate',
-							width : 200,
-							cellsalign : 'left'
-						}, {
-							text : 'Second Sitting Date',
-							datafield : 'secondSittingDate',
-							width : 200,
-							cellsalign : 'left'
-						}, {
-							text : 'Third Sitting Date ',
-							datafield : 'thirdSittingDate',
-							width : 200,
-							cellsalign : 'left'
-						}, {
-							text : 'Remarks',
-							datafield : 'remarks',
-							width : 200,
-							cellsalign : 'left',
-							cellsformat : 'c2'
-						}, ]
-					});
-
-				});
+					var message = '${message}';
+					if(message){
+						alert(message);
+					}	
+		});
+		
 	</script>
 
 	<div class="container" align="center">
@@ -327,16 +134,20 @@ textarea {
 		<div class="row" style="">
 			<h1 class="row">Heartfulness Event</h1>
 		</div>
-		<form:form method="POST" action="createEvent" modelAttribute="program"
+		<form:form method="POST" action="/pmp/saveevent" modelAttribute="program"
 			id="programForm">
-			<table >
+			<table>
 				<tr>
-					<td align="right" colspan="2" style="margin: 0 auto; float: right; padding-left: 75%"><input class="button-primary"
-						type="submit" value="Save changes" /> <form:input
-							path="encryptedId" type="hidden" id="encryptedId"
-							name="encryptedId" value="${encryptedProgramId}" /> <form:hidden
-							path="autoGeneratedEventId" /> <form:hidden
-							path="autoGeneratedIntroId" /></td>
+					 <td colspan="2" style="margin: 0 auto; padding-left: 80%"><input
+						class="button-primary" type="submit" value="Save changes" /> 
+					</td>
+					
+					 <td colspan="8" style="margin: 0 auto; padding-left: 85%;">
+					 	<a href="/pmp/logout"><input class="button-primary" type="button" value="Signout" /></a>
+					 </td> 
+					<form:hidden path="autoGeneratedEventId" id="autoGeneratedEventId" />
+					<form:hidden path="autoGeneratedIntroId" />
+					<form:hidden path="programId" />
 				</tr>
 			</table>
 			<table>
@@ -347,23 +158,37 @@ textarea {
 								Details</legend>
 							<table id="programtab" width="100%">
 								<tr>
-									<td width="15%;"><label for="channel">Name</label></td>
-									<td colspan="3"><form:input style="width: 100%"
-											type="text" placeholder="Program Name" id="programChannel"
+									<%-- <td width="16%;">
+									<label for="channel">Event Channel</label></td>
+									<td colspan=0"><form:input style="width: 100%"
+											type="text" placeholder="Program Channel" id="programChannel"
 											path="programChannel" name="programChannel" /></td>
+									<td width="16%;"><label for="channel">Event Name</label></td>
+									<td colspan="0"><form:input style="width: 100%"
+											type="text" placeholder="Program Name" id="programName"
+											path="programName" name="programName" /></td> --%>
+									<td><label for="channel">Event Channel</label></td>
+									<td><form:input style="width:93%;"
+											type="text" placeholder="Program Channel"
+											path="programChannel" name="programChannel" />
+									</td>
+									<td width="15%"><label for="programName">Event Name</label></td>
+									<td><form:input style="width:100%;"
+											type="text" placeholder="Program Name"
+											path="programName" name="programName" />
+									</td>
 								</tr>
 								<tr>
 									<td colspan="4"><form:errors cssStyle="color: red;"
 											path="programChannel" /></td>
 								</tr>
 								<tr>
-									<td><label for="fromDate">Start Date</label><span
-										style="color: #ff6666">*</span></td>
-									<td><form:input style="min-width:55%;max-width:85%;"
+									<td><label for="fromDate">Start Date</label></td>
+									<td><form:input style="min-width:55%;max-width:80%;"
 											type="text" placeholder="Program Start Date" id="fromDate"
 											path="programStartDate" name="fromDate" /></td>
 									<td width="15%"><label for="tillDate">End Date</label></td>
-									<td><form:input style="min-width:55%;max-width:85%;"
+									<td><form:input style="min-width:55%;max-width:80%;"
 											type="text" placeholder=" Program End Date" id="tillDate"
 											path="programEndDate" name="tillDate" /></td>
 								</tr>
@@ -383,8 +208,7 @@ textarea {
 							<legend align="left" style="font-weight: bold;">Venue</legend>
 							<table id="venuetab" width="100%">
 								<tr>
-									<td width="32%"><label for="eventPlace">Place</label><span
-										style="color: #ff6666">*</span></td>
+									<td width="32%"><label for="eventPlace">Place</label></td>
 									<td><form:input style="width:100%" type="text"
 											placeholder=" Event Place" id="eventPlace" path="eventPlace" /></td>
 								</tr>
@@ -393,29 +217,18 @@ textarea {
 											path="eventPlace" /></td>
 								</tr>
 								<tr>
-									<td><label for="eventCountry">Country</label><span
-										style="color: #ff6666">*</span></td>
+									<td><label for="eventCountry">Country</label></td>
 									<td><form:input style="width:100%" type="text"
 											placeholder=" Event Country" id="eventCountry"
 											path="eventCountry" /></td>
-										<%-- 	<td><label for="eventCountry">Country</label><span
-										style="color: #ff6666">*</span></td>
-										<td><form:select style="width:100%"  placeholder=" Event Country" id="eventCountry"
-											path="eventCountry">
-											  <option value="ALL">All Countries</option>
-	               								 <c:forEach items="${eventCountries}" var="countryElement"> 
-					  							<option value="${countryElement}">${countryElement}</option>
-											</c:forEach>
-											</form:select></td> --%>
-	            
+
 								</tr>
 								<tr>
 									<td colspan="2"><form:errors cssStyle="color: red;"
 											path="eventCountry" /></td>
 								</tr>
 								<tr>
-									<td><label for="eventState">State</label><span
-										style="color: #ff6666">*</span></td>
+									<td><label for="eventState">State</label></td>
 									<td><form:input style="width:100%" type="text"
 											placeholder=" Event State" id="eventState" path="eventState" /></td>
 								</tr>
@@ -424,8 +237,7 @@ textarea {
 											path="eventState" /></td>
 								</tr>
 								<tr>
-									<td><label for="eventCity">City</label><span
-										style="color: #ff6666">*</span></td>
+									<td><label for="eventCity">City</label></td>
 									<td><form:input style="width:100%" type="text"
 											placeholder=" Event City" id="eventCity" path="eventCity" /></td>
 								</tr>
@@ -441,8 +253,7 @@ textarea {
 							<legend align="top" style="font-weight: bold;">Co-ordinator</legend>
 							<table id="co-ordinatortab" width="100%">
 								<tr>
-									<td width="27%"><label for="coordinatorName">Name</label>
-										<span style="color: #ff6666">*</span></td>
+									<td width="27%"><label for="coordinatorName">Name</label></td>
 									<td><form:input style="width:100%" type="text"
 											placeholder=" Coordinator Name" id="coordinatorName"
 											path="coordinatorName" /></td>
@@ -452,8 +263,7 @@ textarea {
 											path="coordinatorName" /></td>
 								</tr>
 								<tr>
-									<td><label for="coordinatorEmail">Email</label> <span
-										style="color: #ff6666">*</span></td>
+									<td><label for="coordinatorEmail">Email</label></td>
 									<td><form:input style="width:100%" type="text"
 											placeholder=" Coordinator Email" id="coordinatorEmail"
 											path="coordinatorEmail" /></td>
@@ -463,8 +273,7 @@ textarea {
 											path="coordinatorEmail" /></td>
 								</tr>
 								<tr>
-									<td><label for="coordinatorMobile">Mobile</label> <span
-										style="color: #ff6666">*</span></td>
+									<td><label for="coordinatorMobile">Mobile</label></td>
 									<td><form:input style="width:100%" type="text"
 											placeholder=" Coordinator Mobile" id="coordinatorMobile"
 											path="coordinatorMobile" /></td>
@@ -486,8 +295,7 @@ textarea {
 									<td>
 										<table width="100%">
 											<tr>
-												<td width="31%"><label for="organizationName">Name</label>
-													<span style="color: #ff6666">*</span></td>
+												<td width="31%"><label for="organizationName">Name</label></td>
 												<td><form:input style="width:100%" type="text"
 														placeholder=" Organization Name" id="organizationName"
 														path="organizationName" /></td>
@@ -508,7 +316,7 @@ textarea {
 											</tr>
 											<tr>
 												<td><label for="organizationContactName">
-														Contact Name</label> <span style="color: #ff6666">*</span></td>
+														Contact Name</label></td>
 												<td><form:input style="width:100%" type="text"
 														placeholder=" Organization Contact Name"
 														id="organizationContactName"
@@ -534,7 +342,7 @@ textarea {
 											</tr>
 											<tr>
 												<td><label for="organizationContactMobile">Contact
-														Mobile</label><span style="color: #ff6666">*</span></td>
+														Mobile</label></td>
 												<td><form:input style="width:100%" type="text"
 														placeholder=" Organization Contact Mobile"
 														id="organizationContactMobile"
@@ -546,7 +354,7 @@ textarea {
 											</tr>
 											<tr>
 												<td><label for="organizationContactEmail">Contact
-														Email</label> <span style="color: #ff6666">*</span></td>
+														Email</label></td>
 												<td><form:input style="width:100%" type="text"
 														placeholder="Organization Contact Email"
 														id="organizationContactEmail"
@@ -569,8 +377,7 @@ textarea {
 							<legend align="left" style="font-weight: bold;">Preceptor</legend>
 							<table id="preceptortab" width="100%">
 								<tr>
-									<td width="32%"><label for="preceptorName">Name</label><span
-										style="color: #ff6666">*</span></td>
+									<td width="32%"><label for="preceptorName">Name</label></td>
 									<td><form:input style="width:100%" type="text"
 											placeholder=" Preceptor Name" id="preceptorName"
 											path="preceptorName" /></td>
@@ -580,8 +387,7 @@ textarea {
 											path="preceptorName" /></td>
 								</tr>
 								<tr>
-									<td><label for="preceptorIdCardNumber">ID Card No</label><span
-										style="color: #ff6666">*</span></td>
+									<td><label for="preceptorIdCardNumber">ID Card No</label></td>
 									<td><form:input style="width:100%" type="text"
 											placeholder=" Preceptor Id Card Number"
 											id="preceptorIdCardNumber" path="preceptorIdCardNumber" /></td>
@@ -635,7 +441,7 @@ textarea {
 								</tr>
 								<tr>
 									<td colspan="2"><form:errors cssStyle="color: red;"
-											path="remarks" /></td>
+											path="remarks" style="resize:none;" /></td>
 								</tr>
 							</table>
 						</div>
@@ -643,11 +449,6 @@ textarea {
 				</tr>
 			</table>
 		</form:form>
-		<c:if test="${not empty participantList}">
-			<!-- <div id='jqxWidget' style="padding-top: 1.5%;"> -->
-			<div id="jqxgrid"></div>
-			<!--  </div> -->
-		</c:if>
 	</div>
 </body>
 </html>
