@@ -77,8 +77,8 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 						whereCondition.append("and CASE WHEN pg.program_end_date IS NOT NULL THEN program_end_date BETWEEN ? AND ? ELSE TRUE END ");
 						parameters.add(DateUtils.parseToSqlDate(reportVO.getFromDate()));
 						parameters.add(DateUtils.parseToSqlDate(reportVO.getTillDate()));
-					/*	parameters.add(DateUtils.parseToSqlDate(reportVO.getFromDate()));
-						parameters.add(DateUtils.parseToSqlDate(reportVO.getTillDate()));*/
+						parameters.add(DateUtils.parseToSqlDate(reportVO.getFromDate()));
+						parameters.add(DateUtils.parseToSqlDate(reportVO.getTillDate()));
 					} catch (ParseException e) {
 						LOGGER.error("Error While converting date", e);
 					}
