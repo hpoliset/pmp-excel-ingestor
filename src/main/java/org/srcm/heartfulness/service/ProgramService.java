@@ -3,6 +3,7 @@ package org.srcm.heartfulness.service;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
+import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.Event;
@@ -89,5 +90,9 @@ public interface ProgramService {
 	public void updateEventAdmin(EventAdminChangeRequest eventAdminChangeRequest);
 	
 	public void updateCoOrdinatorStatistics(EventAdminChangeRequest eventAdminChangeRequest);
+	
+	public List<Coordinator> getAllCoOrdinatorsList();
+
+	public List<String> getUncategorizedEvents(String email, boolean b);
 
 }

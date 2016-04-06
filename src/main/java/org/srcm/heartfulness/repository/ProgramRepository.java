@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
+import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
@@ -123,5 +124,9 @@ public interface ProgramRepository {
 	int getMiscellaneousEventsByEmail(String email, boolean isAdmin, List<String> eventcategories);
 	
 	void updateCoOrdinatorStatistics(EventAdminChangeRequest eventAdminChangeRequest);
+
+	List<String> getNonCategorizedEventListByEmail(String username, boolean isAdmin);
+
+	List<Coordinator> getAllCoOrdinatorsList();
 
 }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.srcm.heartfulness.helper.CreateEventHelper;
+import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.Event;
@@ -314,6 +315,16 @@ public class ProgramServiceImpl implements ProgramService{
 	@Override
 	public void updateCoOrdinatorStatistics(EventAdminChangeRequest eventAdminChangeRequest) {
 		programRepository.updateCoOrdinatorStatistics(eventAdminChangeRequest);
+	}
+	
+	@Override
+	public List<Coordinator> getAllCoOrdinatorsList() {
+		return programRepository.getAllCoOrdinatorsList();
+	}
+	
+	@Override
+	public List<String> getUncategorizedEvents(String username, boolean isAdmin) {
+		return programRepository.getNonCategorizedEventListByEmail(username, isAdmin);
 	}
 
 }

@@ -1,0 +1,41 @@
+<html>
+<head>
+<title></title>
+</head>
+<style>
+table {
+	border-collapse: collapse;
+}
+
+table, td, th {
+	border: 1px solid black;
+}
+</style>
+<body>
+	<div style="margin: 0 auto;">
+		<div>Dear ${PRECEPTORNAME},</div>
+
+		<div style="padding-top: 0.7em; padding-left: 45px; padding-bottom: 1em">
+			Please check the Un-categorized Event information provided below:
+			<div></div>
+			<div style=" padding-top:1.5em; padding-left: 15px;">
+				<table style="width: 300px; height: 80px;">
+					<tr>
+						<th colspan="2">Event Name</th>
+					</tr>
+					#foreach( $NAME in $PRECEPTORNAME )
+    				<tr><td>$NAME</td></tr>
+					#end
+					</tr>
+				</table>
+
+
+			</div>
+
+		</div>
+		<div style="font-style: italic; font-weight: bold; padding-top: 1em">
+			With regards <br /> Heartfulness Webmaster
+		</div>
+	</div>
+</body>
+</html>

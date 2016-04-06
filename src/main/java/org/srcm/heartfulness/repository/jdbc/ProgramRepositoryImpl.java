@@ -25,6 +25,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.constants.EventConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
+import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
@@ -874,6 +875,30 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		this.namedParameterJdbcTemplate.update(
 				"UPDATE participant SET introduced=:introduced WHERE program_id=:programId AND seqId=:seqId ", params);
 
+	}
+	
+	@Override
+	public List<String> getNonCategorizedEventListByEmail(String username, boolean isAdmin) {
+		StringBuilder whereCondition = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		params.put("coordinator_email", username);
+		if (!isAdmin) {
+			whereCondition.append("AND coordinator_email=:coordinator_email");
+		}
+		List<String> UncategorizedEvents = this.namedParameterJdbcTemplate.queryForList("SELECT distinct program_name"
+				+ " FROM program"
+				+ (whereCondition.length() > 0 ? " WHERE (program_channel IS NULL OR program_channel='') "
+						+ whereCondition : ""), params, String.class);
+		return UncategorizedEvents;
+	}
+	
+	@Override
+	public List<Coordinator> getAllCoOrdinatorsList() {
+		List<Coordinator> coOrdinators = this.jdbcTemplate
+				.queryForList(
+						"SELECT name,email from program WHERE coordinator_email IS NOT NULL AND coordinator_email != '' order by coordinator_email asc",
+						null, Coordinator.class);
+		return coOrdinators;
 	}
 
 }
