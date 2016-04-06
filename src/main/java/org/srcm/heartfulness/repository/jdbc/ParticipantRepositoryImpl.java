@@ -145,7 +145,11 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 							}
 						}
 						);
-				participant.setSeqId(seqId);
+				if(null != seqId){
+					participant.setSeqId(seqId);	
+				}else{
+					participant.setSeqId(SmsUtil.generateFourDigitPIN());
+				}
 			}else{
 				participant.setSeqId(SmsUtil.generateFourDigitPIN());
 			}

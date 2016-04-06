@@ -3,7 +3,6 @@ package org.srcm.heartfulness.service;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
-import org.srcm.heartfulness.exception.InvalidDateException;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.Event;
@@ -69,7 +68,7 @@ public interface ProgramService {
 	 * @return List<Event>
 	 * @throws InvalidDateException if the program_start_date is in invalid format.
 	 */
-	public List<Event> createOrUpdateEvent(List<Event> events) throws InvalidDateException;
+	public List<Event> createOrUpdateEvent(List<Event> events);
 	
 	public int getEventCountByEmail(String username, boolean isAdmin);
 

@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
-import org.srcm.heartfulness.exception.InvalidDateException;
 import org.srcm.heartfulness.helper.CreateEventHelper;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.Event;
@@ -170,10 +169,6 @@ public class EventsController {
 			programService.createOrUpdateEvent(eventList);
 			return new ResponseEntity<Event>(event, HttpStatus.OK);
 
-		} catch (InvalidDateException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
-			ErrorResponse eResponse = new ErrorResponse("Failed", e.getMessage());
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse("Failed", "Invalid authorization token");
@@ -253,11 +248,7 @@ public class EventsController {
 			}
 			return new ResponseEntity<Event>(event, HttpStatus.OK);
 
-		} catch (InvalidDateException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
-			ErrorResponse eResponse = new ErrorResponse("Failed", e.getMessage());
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		} catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
+		}catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse("Failed", "Invalid authorization token");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.UNAUTHORIZED);
@@ -340,10 +331,6 @@ public class EventsController {
 
 			return new ResponseEntity<List<Event>>(eventList, HttpStatus.OK);
 
-		} catch (InvalidDateException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
-			ErrorResponse eResponse = new ErrorResponse("Failed", e.getMessage());
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse("Failed", "Invalid authorization token");
