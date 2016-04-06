@@ -42,12 +42,8 @@
 	$(document)
 			.ready(
 					function() {
-						var redirectUrl = '${redirecturl}';
-						if(redirectUrl != null){
-							$('#modal_trigger')[0].click();
-						}
-						var url = 'https://pmp.heartfulness.org/pmp/api/authenticate';
-						var getuserurl = 'https://pmp.heartfulness.org/pmp/api/v1/user';
+						var url = 'http://10.1.29.23:7080/pmp/api/authenticate';
+						var getuserurl = 'http://10.1.29.23:7080/pmp/api/v1/user';
 						var id;
 						$("#submit")
 								.click(
@@ -74,11 +70,7 @@
 																		},
 																		success : function(
 																				response) {
-																			if(redirectUrl != null){
-																				window.location.href = "/pmp" + redirectUrl;
-																			}else{
 																				window.location.href = "/pmp/index";
-																			}
 																		},
 																		error : function(
 																				loginresponse) {
@@ -97,6 +89,49 @@
 																			"Invalid Username/Password");
 														}
 													});
+										});
+						$("#register")
+								.click(
+										function() {
+											var password = $('#password1')
+													.val();
+											var confirmPassword = $(
+													'#password1').val();
+											if (password != confirmPassword) {
+												$("#changepassword").html("");
+												$("#regerror").html("");
+												$("#emailerror")
+														.html(
+																"Password and confirm password doest not match");
+												$('#signup_form')[0].reset();
+												return false;
+											}
+											$
+													.ajax({
+														url : "http://10.1.29.23:7080/pmp/api/users",
+														type : "POST",
+														/* async : false, */
+														contentType : "application/json",
+														dataType : "json",
+														data : JSON
+																.stringify(getFormData($("#signup_form"))),
+														success : function(
+																response) {
+															$("#changepassword")
+																	.html(
+																			"Registered successfully.! Login to continue.!");
+															$('#signup_form')[0]
+																	.reset();
+														},
+														error : function(
+																response) {
+															$("#changepassword")
+																	.html(
+																			"Email Id is not vaild & should be unique set.");
+														}
+
+													});
+
 										});
 					});
 	function getFormData($form) {
@@ -129,6 +164,9 @@
 											<!-- <input type="button" id="modal_trigger" class="button-primary" value="Login/Register" /> -->
 											Click <a id="modal_trigger" href="#modal" class="" > here</a> to Login/Register
 											</td>
+											<c:if test="${redirecturl!=null}">
+												<input id="url" type="hidden" value="<%=session.getAttribute("redirecturl")%>" />
+											</c:if>
 										</tr>
 									</table>
 								</td>
@@ -156,7 +194,7 @@
 												style="color: red"></div></td>
 									</tr>
 									<tr>
-										<td>User Name<span class="mandatory"> *</span></td>
+										<td>User name<span class="mandatory"> *</span></td>
 										<td><input id="username" name="username" type="email"
 											class="six columns" placeholder="Enter eMail"></td>
 									</tr>
@@ -172,7 +210,73 @@
 								</table>
 							</form:form>
 						</div>
+						<div id="menu-bar" class="container">
+							<div>
+								New User? <a href="#" id="register_form"> Register</a> here
+							</div>
 						</div>
+					</div>
+
+
+					<!-- Register Form -->
+					<div class="user_register" align="center">
+						<div class="container" align="center">
+							<div class="container2">
+								<h3 class="text-center">Register</h3>
+								<div id="menu-bar" class="container" align="left">
+									<div>
+										Already Registered User? <a href="#" id="login_form">
+											Login</a> here
+									</div>
+									<div>
+										<c:if test="${changepassword!=null}">
+									Click <a href="#" id="login_form">here</a>to Login </c:if>
+									</div>
+
+									<div id="changepassword" align="center" style="color: green"></div>
+									<form:form class="signup" id="signup_form" method="post"
+										action="/pmp/signup" modelAttribute="newUser">
+										<table>
+											<tr>
+												<td>First Name<span class="mandatory"> *</span></td>
+												<td><form:input name="firstName" id="firstname"
+														type="text" class="four columns"
+														placeholder="Enter FirstName" path="first_name" /></td>
+											</tr>
+											<tr>
+												<td>Last Name<span class="mandatory"> *</span></td>
+												<td><form:input name="lastName" id="lastname"
+														type="text" class="four columns"
+														placeholder="Enter LastName" path="last_name" /></td>
+											</tr>
+											<tr>
+												<td>eMail<span class="mandatory"> *</span></td>
+												<td><form:input name="eMail" id="email" type="text"
+														class="four columns" placeholder="Enter eMail"
+														path="email" /></td>
+											</tr>
+											<tr>
+												<td>Password<span class="mandatory"> *</span></td>
+												<td><form:password name="password" id="password1"
+														class="four-columns" placeholder="Enter Password"
+														path="password" /></td>
+											</tr>
+											<tr>
+												<td>Confirm Password<span class="mandatory"> *</span></td>
+												<td><form:password class="four-columns"
+														placeholder="Enter Confirm Password"
+														path="confirmPassword" /></td>
+											</tr>
+											<tr>
+												<td colspan="2" align="right"><input type="button"
+													value="Register" id="register" class="button-primary"></td>
+											</tr>
+										</table>
+									</form:form>
+								</div>
+							</div>
+						</div>
+					</div>
 				</section>
 			</div>
 		</div>

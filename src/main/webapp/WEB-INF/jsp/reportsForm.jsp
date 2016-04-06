@@ -48,8 +48,8 @@
 		}
 	</style>   
 </head>
-<body>
-	<div class="container">
+<body style="background-color: #dee6ed; overflow: hidden;">
+	<div class="container" align="center" style="padding-top: 20px; margin: 0 auto;">
   
       <div class="row">    
         <h3>Heartfulness Reports Form</h3>

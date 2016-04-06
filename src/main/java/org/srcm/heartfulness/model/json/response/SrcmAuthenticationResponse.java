@@ -26,13 +26,14 @@ public class SrcmAuthenticationResponse {
 
 	@JsonProperty("scope")
 	private String scope;
-
+	
 	@JsonProperty("is_pmp_allowed")
 	private String ispmpAllowed;
-
+	
 	@JsonProperty("is_sahajmarg_allowed")
 	private String isSahajmargAllowed;
 
+	
 	public SrcmAuthenticationResponse() {
 	}
 

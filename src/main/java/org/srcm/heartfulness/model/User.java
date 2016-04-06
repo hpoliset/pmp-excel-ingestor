@@ -10,14 +10,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * This class is to hold the user details and response user Profile by srcm
- * 
  * @author HimaSree
  *
  */
-// @JsonInclude(value = Include.NON_NULL)
+//@JsonInclude(value = Include.NON_NULL)
 @JsonPropertyOrder({ "id", "name", "first_name", "last_name", "email", "user_type" })
 @JsonIgnoreProperties(ignoreUnknown = true, allowGetters = false)
 public class User {
+
 
 	private int id;
 
@@ -70,17 +70,17 @@ public class User {
 
 	@JsonProperty("message")
 	private String message;
-
+	
 	private String ispmpAllowed;
-
+	
 	private String isSahajmargAllowed;
-
+	
 	@JsonIgnore
 	private int abyasiId;
-
+	
 	@JsonProperty("abyasi_id")
 	private String membershipId;
-
+	
 	public User() {
 		super();
 	}
@@ -112,7 +112,7 @@ public class User {
 		this.abyasiId = abyasiId;
 		this.membershipId = membershipId;
 	}
-
+	
 	public int getId() {
 		return id;
 	}

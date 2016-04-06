@@ -7,6 +7,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 
 /**
  * Created by vsonnathi on 11/23/15.
@@ -61,5 +62,8 @@ public interface ParticipantRepository {
      * @return the <code>Program</code> if found
      */
 	Program findOnlyProgramById(int id);
+	
+	
+	Participant findBySeqId(ParticipantRequest participantRequest);
 
 }

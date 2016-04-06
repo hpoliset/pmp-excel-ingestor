@@ -15,30 +15,27 @@ import org.srcm.heartfulness.authorization.CustomAuthenticationProvider;
 
 /**
  * This class is the helper class for authorization
- * 
  * @author HimaSree
  *
  */
 @Component
 public class AuthorizationHelper {
-
+	
 	@Autowired
 	private CustomAuthenticationProvider authenticationProvider;
-
+	
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizationHelper.class);
-
+	
 	/**
-	 * method to auto login with username and password through spring API
-	 * 
+	 * method to auto login with username and password through spring API 
 	 * @param username
 	 * @param password
 	 */
 	public void doAutoLogin(String username, String password) {
 		try {
-			LOGGER.debug("Trying to autoLogin with {}", username);
+			LOGGER.debug("AutoLogin with {}",username);
 			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
 			Authentication authentication = this.authenticationProvider.authenticate(token);
-			LOGGER.debug("Logging in with [{}]", authentication.getPrincipal());
 			SecurityContext ctx = SecurityContextHolder.createEmptyContext();
 			SecurityContextHolder.setContext(ctx);
 			ctx.setAuthentication(authentication);
@@ -47,22 +44,17 @@ public class AuthorizationHelper {
 			LOGGER.error("Failure in autoLogin", e);
 		}
 	}
-
+	
 	/**
 	 * method to set the authentication object to the security context holder
-	 * 
 	 * @param session
 	 */
-	public void setcurrentUsertoContext(HttpSession session) throws NullPointerException {
-		LOGGER.debug("Trying to set Principle");
-		UserDetails currentUser = (UserDetails) session.getAttribute("Authentication");
-		Authentication auth = new UsernamePasswordAuthenticationToken(currentUser, currentUser.getPassword(),
-				currentUser.getAuthorities());
+	public void setcurrentUsertoContext(HttpSession session) throws NullPointerException{
+		UserDetails currentUser=(UserDetails) session.getAttribute("Authentication");
+		Authentication auth=new UsernamePasswordAuthenticationToken(currentUser, currentUser.getPassword(), currentUser.getAuthorities());
 		SecurityContext ctx = SecurityContextHolder.createEmptyContext();
 		SecurityContextHolder.setContext(ctx);
 		ctx.setAuthentication(auth);
-		LOGGER.debug("Principle set for the user: {}", currentUser.getUsername());
-
 	}
 
 }

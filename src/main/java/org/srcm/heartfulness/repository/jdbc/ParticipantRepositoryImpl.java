@@ -23,7 +23,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.repository.ParticipantRepository;
+import org.srcm.heartfulness.service.ProgramService;
+import org.srcm.heartfulness.util.SmsUtil;
 
 /**
  *
@@ -36,9 +39,12 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	private SimpleJdbcInsert insertParticipant;
+	
+	private ProgramService programService;
 
 	@Autowired
-	public ParticipantRepositoryImpl(DataSource dataSource) {
+	public ParticipantRepositoryImpl(DataSource dataSource, ProgramService programService) {
+		this.programService = programService;
 		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 
@@ -126,6 +132,22 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 			if (participantId > 0) {
 				participant.setId(participantId);
+				String seqId = this.jdbcTemplate.query(
+						"SELECT seqId from participant where id=?",
+						new Object[]{participantId},
+						new ResultSetExtractor<String>() {
+							@Override
+							public String extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+								if (resultSet.next()) {
+									return resultSet.getString(1);
+								}
+								return "";
+							}
+						}
+						);
+				participant.setSeqId(seqId);
+			}else{
+				participant.setSeqId(SmsUtil.generateFourDigitPIN());
 			}
 		}
 
@@ -148,9 +170,10 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 					+ "first_sitting=:firstSittingTaken," + "second_sitting=:secondSittingTaken,"
 					+ "third_sitting=:thirdSittingTaken," + "first_sitting_date=:firstSittingDate, "
 					+ "second_sitting_date=:secondSittingDate, " + "third_sitting_date=:thirdSittingDate, "
-					+ "batch=:batch, "+"seqId=:seqId " + "WHERE id=:id", parameterSource);
+					+ "batch=:batch, "+ "introduced=:introduced, "+"seqId=:seqId " + "WHERE id=:id", parameterSource);
 		}
 	}
+
 
 	/*
 	 * (non-Javadoc)
@@ -208,6 +231,18 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 			return program;
 		}catch(EmptyResultDataAccessException ex){
 			return new Program();
+		}
+	}
+
+	@Override
+	public Participant findBySeqId(ParticipantRequest participantRequest) {
+		if (0 != programService.getProgramIdByEventId(participantRequest.getEventId())) {
+			participantRequest.setProgramId(programService.getProgramIdByEventId(participantRequest.getEventId()));
+			Participant newParticipant = programService.findParticipantBySeqId(participantRequest.getSeqId(),
+					participantRequest.getProgramId());
+			return newParticipant;
+		} else {
+			return new Participant();
 		}
 	}
 

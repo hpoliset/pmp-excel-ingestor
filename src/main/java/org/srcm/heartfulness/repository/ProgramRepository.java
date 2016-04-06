@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.dao.DataAccessException;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 
 /**
  * Repository class for <code>Program</code> domain class.
@@ -77,15 +78,50 @@ public interface ProgramRepository {
      * @return the <code>Program</code> if found
      */
 	Program findByEventName(String eventName);
-
+	
+	List<Program> getEventByEmail(String email,boolean isAdmin);
+	
 	boolean isProgramExistByProgramName(Program program);
 
 	void saveWithProgramName(Program program);
+	
 
 	Program getEventById(int id);
 
-	List<Program> getEventByEmail(String email, boolean isAdmin);
-
 	List<Participant> getParticipantList(int decryptedProgramId);
+	
+	/**
+	 * Get the list of programs depending on the coordinator email and 
+	 * whether he is admin or not.
+	 * @param email
+	 * @param isAdmin
+	 * @return 
+	 */
+	List<Program> getEventsByEmail(String email,boolean isAdmin);
+	
+	/**
+	 * Repository method to create a new record or update an existing event record. 
+	 * @param event to persist into the database.
+	 * @return Program
+	 */
+	Program saveProgram(Program program);
+	
+	int getProgramIdByEventId(String eventID);
+	
+	int getEventCountByEmail(String email, boolean isAdmin);
+
+	int getNonCategorizedEventsByEmail(String email, boolean isAdmin);
+
+	Participant findParticipantBySeqId(String seqId, int programId);
+	
+	void UpdateParticipantsStatus(String participantIds, String eventId ,String introduced);
+	
+	List<String> getAllEventCategories();
+	
+	int getEventCountByCategory(String email, boolean isAdmin, String eventCategory);
+
+	int getMiscellaneousEventsByEmail(String email, boolean isAdmin, List<String> eventcategories);
+	
+	void updateCoOrdinatorStatistics(EventAdminChangeRequest eventAdminChangeRequest);
 
 }

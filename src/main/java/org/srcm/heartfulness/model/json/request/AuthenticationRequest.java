@@ -1,8 +1,8 @@
 package org.srcm.heartfulness.model.json.request;
 
+
 /**
- * This class is the request for the login through MYSRCM
- * 
+ *  This class is the request for the login through MYSRCM
  * @author HimaSree
  *
  */
@@ -11,7 +11,7 @@ public class AuthenticationRequest {
 	private String username;
 	private String password;
 	private String refreshToken;
-
+	
 	public AuthenticationRequest() {
 		super();
 	}
@@ -36,7 +36,7 @@ public class AuthenticationRequest {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
+	
 	public String getRefreshToken() {
 		return refreshToken;
 	}

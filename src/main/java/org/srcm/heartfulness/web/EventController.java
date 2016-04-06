@@ -1,18 +1,11 @@
 package org.srcm.heartfulness.web;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,12 +15,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.srcm.heartfulness.authorizationservice.PmpAuthorizationService;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.helper.AuthorizationHelper;
-import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.service.ProgramService;
@@ -49,7 +40,7 @@ public class EventController {
 
 	@Autowired
 	Environment env;
-	
+
 	private static Logger LOGGER = LoggerFactory.getLogger(EventController.class);
 
 	@RequestMapping(value = "/updateevent", method = RequestMethod.GET)
@@ -93,9 +84,6 @@ public class EventController {
 		return "programform_new";
 	}
 	
-
-   
-	
 	@RequestMapping(value="/eventForm",method= RequestMethod.GET)
 	public String showEventForm(Model model,HttpServletRequest request){
 		try{
@@ -122,8 +110,7 @@ public class EventController {
 	}
 
 
-	//@ResponseBody
-	@RequestMapping(value="/createEvent", method=RequestMethod.POST)
+	/*@RequestMapping(value="/createprogram", method=RequestMethod.POST)
 	public String createProgram(@Valid @ModelAttribute("program") Program program, BindingResult result,Model model){
 
 		if(result.hasErrors()){
@@ -174,9 +161,9 @@ public class EventController {
 			String decryptedProgramId = aesEncryptDecrypt.decrypt(encryptedProgramId, env.getProperty("security.encrypt.token"));
 			participantList = programService.getParticipantByProgramId(Integer.valueOf(decryptedProgramId));
 		}
-		//model.addAttribute("participantListSize",participantList);
+		model.addAttribute("participantListSize",participantList);
 		return new ResponseEntity<List<Participant>>(participantList,HttpStatus.OK);
-	}
+	}*/
 	
 	/**
 	 * 
@@ -206,4 +193,6 @@ public class EventController {
 		model.addAttribute("signout", "You have signed out successfully.");
 		return "redirect:login";
 	}
+	
+	
 }

@@ -4,17 +4,27 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
@@ -25,12 +35,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class is template class and communicates with srcm by calling srcm api
- * 
  * @author HimaSree
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:prod.srcm.api.properties", ignoreUnknownFields = false, prefix = "srcm.oauth2")
+@ConfigurationProperties(locations = "classpath:dev.srcm.api.properties", ignoreUnknownFields = false, prefix = "srcm.oauth2")
 public class SrcmRestTemplate extends RestTemplate {
 
 	private String clientId;
@@ -40,7 +49,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	private String refreshTokenName;
 	private String userInfoUri;
 	private String createUserUri;
-	private boolean proxy = false;
+	private boolean proxy = true;
 	private String proxyHost = "10.1.28.10";
 	private int proxyPort = 8080;
 	private String proxyUser = "gvivek";
@@ -55,9 +64,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	private ObjectMapper mapper = new ObjectMapper();
 
 	/**
-	 * method to authenticate the user with srcm and return the response with
-	 * token details
-	 * 
+	 * method to authenticate the user with srcm and return the response with token details
 	 * @param authenticationRequest
 	 * @return
 	 * @throws HttpClientErrorException
@@ -82,8 +89,66 @@ public class SrcmRestTemplate extends RestTemplate {
 	}
 
 	/**
+	 * method to get the refresh token details from srcm by calling srcm api
+	 * @param refreshtoken
+	 * @return
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	public SrcmAuthenticationResponse getRefreshTokenDetails(String refreshtoken) throws HttpClientErrorException,
+			JsonParseException, JsonMappingException, IOException {
+		if (proxy)
+			setProxy();
+		body = new LinkedMultiValueMap<String, String>();
+		body.add("refresh_token", refreshtoken.toString());
+		body.add("grant_type", refreshTokenName);
+		httpHeaders = new HttpHeaders();
+		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		httpHeaders.set("Authorization", "Basic " + getBase64Credentials(clientId, clientSecret));
+		httpEntity = new HttpEntity<Object>(body, httpHeaders);
+		ResponseEntity<String> response = this.exchange(accessTokenUri, HttpMethod.POST, httpEntity, String.class);
+		return mapper.readValue(response.getBody(), SrcmAuthenticationResponse.class);
+	}
+
+	/**
+	 * method to create the user profile in srcm and pmp by calling srcm api
+	 * @param user
+	 * @return
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	public User createUserProfile(User user) throws HttpClientErrorException, JsonParseException, JsonMappingException,
+			IOException {
+		if (proxy)
+			setProxy();
+		body = new LinkedMultiValueMap<String, String>();
+		body.add("grant_type", tokenNameToCreateProfile);
+		httpHeaders = new HttpHeaders();
+		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		httpHeaders.set("Authorization",
+				"Basic " + getBase64Credentials(clientIdToCreateProfile, clientSecretToCreateProfile));
+		httpEntity = new HttpEntity<Object>(body, httpHeaders);
+		ResponseEntity<String> response = this.exchange(accessTokenUri, HttpMethod.POST, httpEntity, String.class);
+		SrcmAuthenticationResponse tokenResponse = mapper.readValue(response.getBody(),
+				SrcmAuthenticationResponse.class);
+
+		httpHeaders.clear();
+		body.clear();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		httpHeaders.add("Authorization", "Bearer " + tokenResponse.getAccess_token());
+		httpEntity = new HttpEntity<Object>(mapper.writeValueAsString(user), httpHeaders);
+		ResponseEntity<String> createUserResponse = this.exchange(createUserUri, HttpMethod.POST, httpEntity,
+				String.class);
+		user = mapper.readValue(createUserResponse.getBody(), User.class);
+		return user;
+	}
+
+	/**
 	 * method to get the user profile with token details by calling srcm api
-	 * 
 	 * @param accessToken
 	 * @return
 	 * @throws HttpClientErrorException
@@ -95,6 +160,8 @@ public class SrcmRestTemplate extends RestTemplate {
 			JsonMappingException, IOException {
 		if (proxy)
 			setProxy();
+		body = new LinkedMultiValueMap<String, String>();
+		httpHeaders = new HttpHeaders();
 		httpHeaders.clear();
 		httpHeaders.add("Authorization", "Bearer " + accessToken);
 		body.clear();
@@ -107,27 +174,22 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * method to set the proxy (development use only)
 	 */
 	private void setProxy() {
-		/*
-		 * CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		 * credsProvider.setCredentials(new
-		 * AuthScope(AuthScope.ANY_HOST,AuthScope.ANY_PORT), new
-		 * UsernamePasswordCredentials(proxyUser, proxyPassword));
-		 * HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-		 * clientBuilder.useSystemProperties(); clientBuilder.setProxy(new
-		 * HttpHost(proxyHost, proxyPort));
-		 * clientBuilder.setDefaultCredentialsProvider(credsProvider);
-		 * clientBuilder.setProxyAuthenticationStrategy(new
-		 * ProxyAuthenticationStrategy()); CloseableHttpClient client =
-		 * clientBuilder.build(); HttpComponentsClientHttpRequestFactory factory
-		 * = new HttpComponentsClientHttpRequestFactory();
-		 * factory.setHttpClient(client); this.setRequestFactory(factory);
-		 */
+		  CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		  credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST,AuthScope.ANY_PORT), 
+				  new UsernamePasswordCredentials(proxyUser, proxyPassword)); 
+		  HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+		  clientBuilder.useSystemProperties();
+		  clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
+		  clientBuilder.setDefaultCredentialsProvider(credsProvider);
+		  clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
+		  CloseableHttpClient client =  clientBuilder.build();
+		  HttpComponentsClientHttpRequestFactory factory
+		  = new HttpComponentsClientHttpRequestFactory();
+		  factory.setHttpClient(client); this.setRequestFactory(factory);
 	}
 
 	/**
-	 * method to get the client id and client secret in the form of base64
-	 * credentials
-	 * 
+	 * method to get the client id and client secret in the form of base64 credentials
 	 * @return base64CredsBytes
 	 */
 	private String getBase64Credentials(String clientId, String clientSecret) {

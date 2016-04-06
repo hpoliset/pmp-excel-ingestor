@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This class to store the result of srcm getprofile api
- * 
  * @author HimaSree
  *
  */

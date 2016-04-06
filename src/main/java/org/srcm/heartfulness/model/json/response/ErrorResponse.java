@@ -17,7 +17,7 @@ public class ErrorResponse {
 
 	@JsonProperty("error")
 	private String error;
-
+	
 	public ErrorResponse() {
 		super();
 	}

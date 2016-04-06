@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.srcm.heartfulness.constants.PMPConstants;
 
 /**
  * 
@@ -33,7 +34,6 @@ public class AESEncryptDecrypt {
 
 	/**
 	 * method to encrypt plain data to encrypted one
-	 * 
 	 * @param Data
 	 * @return encrypted data
 	 */
@@ -41,30 +41,27 @@ public class AESEncryptDecrypt {
 		Cipher c;
 		SecretKey skey = convertStringToSecretKey(key);
 		try {
-			LOGGER.debug("Trying to Encrypt. ");
-			c = Cipher.getInstance("AES");
+			c = Cipher.getInstance(PMPConstants.ENCRYPTION_KEYWORD);
 			c.init(Cipher.ENCRYPT_MODE, skey);
 			byte[] encVal = c.doFinal(Data.getBytes());
 			String encryptedValue = new BigInteger(encVal).toString(16);
-			LOGGER.debug("Token encrypted successfully. ");
 			return encryptedValue;
 		} catch (NoSuchAlgorithmException e) {
-			LOGGER.debug("Exception while encrypting the token {} ", e.getMessage());
+			LOGGER.debug("Exception while doing encryption {} ", e.getMessage());
 		} catch (NoSuchPaddingException e) {
-			LOGGER.debug("Exception while encrypting the token {} ", e.getMessage());
+			LOGGER.debug("Exception while doing encryption {} ", e.getMessage());
 		} catch (InvalidKeyException e) {
-			LOGGER.debug("Exception while encrypting the token {} ", e.getMessage());
+			LOGGER.debug("Exception while doing encryption {} ", e.getMessage());
 		} catch (IllegalBlockSizeException e) {
-			LOGGER.debug("Exception while encrypting the token {} ", e.getMessage());
+			LOGGER.debug("Exception while doing encryption {} ", e.getMessage());
 		} catch (BadPaddingException e) {
-			LOGGER.debug("Exception while encrypting the token {} ", e.getMessage());
+			LOGGER.debug("Exception while doing encryption {} ", e.getMessage());
 		}
 		return null;
 	}
 
 	/**
 	 * method to decrypt encrypted data to plain text
-	 * 
 	 * @param Data
 	 * @return plain data
 	 */
@@ -72,23 +69,22 @@ public class AESEncryptDecrypt {
 		Cipher c;
 		SecretKey skey = convertStringToSecretKey(key);
 		try {
-			LOGGER.debug("Trying to Encrypt. ");
-			c = Cipher.getInstance("AES");
+			c = Cipher.getInstance(PMPConstants.ENCRYPTION_KEYWORD);
 			c.init(Cipher.DECRYPT_MODE, skey);
 			byte[] decordedValue = new BigInteger(encryptedData, 16).toByteArray();
 			byte[] decValue = c.doFinal(decordedValue);
 			String decryptedValue = new String(decValue);
 			return decryptedValue;
 		} catch (NoSuchAlgorithmException e) {
-			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
+			LOGGER.debug("Exception while doing decryption {} ", e.getMessage());
 		} catch (NoSuchPaddingException e) {
-			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
+			LOGGER.debug("Exception while doing decryption {} ", e.getMessage());
 		} catch (InvalidKeyException e) {
-			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
+			LOGGER.debug("Exception while doing decryption {} ", e.getMessage());
 		} catch (IllegalBlockSizeException e) {
-			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
+			LOGGER.debug("Exception while doing decryption {} ", e.getMessage());
 		} catch (BadPaddingException e) {
-			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
+			LOGGER.debug("Exception while doing decryption {} ", e.getMessage());
 		}
 		return null;
 
@@ -96,7 +92,6 @@ public class AESEncryptDecrypt {
 
 	/**
 	 * method to convert key value to Secret key
-	 * 
 	 * @param skey
 	 * @return
 	 */

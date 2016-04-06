@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:prod.sms.gateway.properties", ignoreUnknownFields = false, prefix = "gateway")
+@ConfigurationProperties(locations = "classpath:dev.sms.gateway.properties", ignoreUnknownFields = false, prefix = "gateway")
 public class SmsGatewayRestTemplate extends RestTemplate {
 
 	
@@ -83,7 +83,6 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 		httpEntity = new HttpEntity<Object>(mapper.writeValueAsString(smsRequestParams),httpHeaders);
 		ResponseEntity<String> response = this.exchange(sendSmsUri, HttpMethod.POST, httpEntity, String.class);
 		return mapper.readValue(response.getBody(), SMSResponse.class);
-		//return new SMSResponse();
 	}
 	
 	public GoogleResponse getLocationdetails(String address, String pincode)

@@ -10,12 +10,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.srcm.heartfulness.authorizationservice.PmpAuthorizationService;
+import org.srcm.heartfulness.helper.AuthorizationHelper;
 import org.srcm.heartfulness.model.Channel;
 import org.srcm.heartfulness.model.ParticipantFullDetails;
 import org.srcm.heartfulness.service.ChannelService;
@@ -35,8 +38,14 @@ public class ReportsController {
     private ReportService reportService;
     
     @Autowired
-	ChannelService channelService;
+	AuthorizationHelper authHelper;
+
+	@Autowired
+	private PmpAuthorizationService pmpAuthService;
     
+	 @Autowired
+	ChannelService channelService;
+
     /**
      * To populate the reportsForm view with event country, state , types 
      * 
@@ -45,14 +54,18 @@ public class ReportsController {
      * @return The reports form
      */
     @RequestMapping(value = "/reports/reportsForm", method = RequestMethod.GET)
-    public String showReportsForm(HttpServletRequest request,ModelMap modelMap) {
-    	List<String> eventCountries = reportService.getCountries();
-    	modelMap.addAttribute("eventCountries", eventCountries);
-    	modelMap.addAttribute("programChannels", getProgramChannels());
-        return "reportsForm";
+    public String showReportsForm(HttpServletRequest request,ModelMap model,HttpServletResponse response) {
+    	  try{
+          	authHelper.setcurrentUsertoContext(request.getSession());
+  			return pmpAuthService.showReportsForm(model);
+  		}catch(AccessDeniedException e){
+  			return "accessdenied";
+  		}catch (NullPointerException e) {
+			return "redirect:/home";
+		}
     }
 
-        
+    
     @RequestMapping("/reports")
     @ResponseBody
     public String index() {
@@ -78,7 +91,7 @@ public class ReportsController {
             @RequestParam(required=false) String tillDate,@RequestParam(required=false) String city,
             @RequestParam(required=false) String state,@RequestParam(required=false) String country) throws IOException
             {
-
+    	authHelper.setcurrentUsertoContext(request.getSession());
     	ReportVO reportVO = new ReportVO();
     	ZipUtils zipUtils = new ZipUtils();
     	reportVO.setChannel(channel);

@@ -327,7 +327,7 @@ textarea {
 		<div class="row" style="">
 			<h1 class="row">Heartfulness Event</h1>
 		</div>
-		<form:form method="POST" action="createEvent" modelAttribute="program"
+		<form:form method="POST" action="createprogram" modelAttribute="program"
 			id="programForm">
 			<table >
 				<tr>

@@ -6,26 +6,25 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Heartfulness Data Upload</title>
-<script src="../js/jquery.js"></script>
-<link rel="stylesheet" href="../css/normalize.css">
-<link rel="stylesheet" href="../css/skeleton.css">
+<script src="/pmp/js/jquery.js"></script>
+<link rel="stylesheet" href="/pmp/css/normalize.css">
+<link rel="stylesheet" href="/pmp/css/skeleton.css">
 </head>
-<body>
+<body style="background-color: #dee6ed; overflow: hidden;">
 	<form method="POST" action="processBulkUpload"
 		enctype="multipart/form-data">
 
-		<div class="container">
-			<h3>Heartfulness Event Data Upload Screen</h3>
+		<div class="container" align="center" style="padding-top: 20px ; margin: 0 auto;">
+			<h3 >Heartfulness Event Data Upload Screen</h3>
 			<div class="six columns">
-				<input id="fileupload" type="file" name="uploadedExcelFiles" multiple>
+				<input class="button-primary" style="padding-left: 50px" id="fileupload" type="file" name="uploadedExcelFiles" multiple>
 			</div>
 			<div class="six columns">
-				<input type="submit" id="process" value="Start uploading excels"  />
+				<input type="submit" id="process" class="button-primary" value="Start uploading excels"  />
 			</div>
 			<br>
 			<div id="table-view" style="display: none;">
 			<br>
-			
 				<table class="u-full-width" id="uploaded-files">
 				</table>
 			</div>

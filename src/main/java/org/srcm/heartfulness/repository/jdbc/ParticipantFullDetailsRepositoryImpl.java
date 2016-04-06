@@ -51,7 +51,7 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 			parameters.add(reportVO.getChannel());
 		}
 
-	/*	if ((reportVO.getFromDate() != null && !reportVO.getFromDate().isEmpty())) {
+		if ((reportVO.getFromDate() != null && !reportVO.getFromDate().isEmpty())) {
 			try {
 				whereCondition.append(whereCondition.length() > 0 ? " and pg.program_start_date >= ? " : " pg.program_start_date >= ? ");
 				parameters.add(DateUtils.parseToSqlDate(reportVO.getFromDate()));
@@ -68,22 +68,7 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 			} catch (ParseException e) {
 				LOGGER.error("Error While converting date", e);
 			}
-		}*/
-		
-		if ((reportVO.getFromDate() != null && !reportVO.getFromDate().isEmpty()) &&
-				reportVO.getTillDate() != null && !reportVO.getTillDate().isEmpty()) {
-			try {
-						whereCondition.append(whereCondition.length() > 0 ? " and pg.program_start_date BETWEEN ? AND ? " : " pg.program_start_date BETWEEN ? AND ? ");
-						whereCondition.append("and CASE WHEN pg.program_end_date IS NOT NULL THEN program_end_date BETWEEN ? AND ? ELSE TRUE END ");
-						parameters.add(DateUtils.parseToSqlDate(reportVO.getFromDate()));
-						parameters.add(DateUtils.parseToSqlDate(reportVO.getTillDate()));
-						parameters.add(DateUtils.parseToSqlDate(reportVO.getFromDate()));
-						parameters.add(DateUtils.parseToSqlDate(reportVO.getTillDate()));
-					} catch (ParseException e) {
-						LOGGER.error("Error While converting date", e);
-					}
 		}
-
 
 		if (!("ALL".equals(reportVO.getCountry()))) {
 			whereCondition.append(whereCondition.length() > 0 ? " and pg.event_country = ? "
@@ -108,9 +93,9 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 		jdbcTemplate.query("select "
 				+ "pg.program_id,"
 				+ "pg.program_channel, "
-				+"pg.program_name, "
+				+
 				// "pg.program_channel_id, " +
-				+"pg.program_start_date, " + "pg.program_end_date," +
+				"pg.program_start_date, " + "pg.program_end_date," +
 
 				"pg.event_id, " + "pg.event_place, " + "pg.event_city, " + "pg.event_state, " + "pg.event_country, " +
 
