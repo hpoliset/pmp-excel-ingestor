@@ -432,7 +432,7 @@ public class EventsController {
 				if (null != user && PMPConstants.LOGIN_ROLE_ADMIN.equalsIgnoreCase(user.getRole())) {
 					isAdmin = true;
 				}
-				Map<String, Integer> resultMap = new HashMap();
+				Map<String, Integer> resultMap = new HashMap<String,Integer>();
 				List<String> Eventcategories = programService.getAllEventCategories();
 				resultMap.put("Total Events", programService.getEventCountByEmail(userprofile.getEmail(), isAdmin));
 				resultMap.put("Un-Categorized",
