@@ -20,6 +20,8 @@ import javax.mail.internet.MimeMultipart;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -294,7 +296,10 @@ public class PmpMailHelper {
 	 * @return
 	 */
 	private String getWelcomeMailContent(String welcomemail){
-		Template template = velocityEngine.getTemplate("./src/main/resources/templates/"+welcomemail+".vm");
+		VelocityEngine ve = new VelocityEngine();
+		ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath"); 
+		ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+		Template template = ve.getTemplate("templates"+"/"+welcomemail+".vm");
 		StringWriter stringWriter = new StringWriter();
 		template.merge(getParameter(), stringWriter);
 		return stringWriter.toString();
@@ -354,7 +359,10 @@ public class PmpMailHelper {
 		message.setFrom(new InternetAddress(username));
 		message.addRecipients(Message.RecipientType.TO,InternetAddress.parse(coOrdinator.getCoordinatorEmail()));
 		message.setSubject("Heartfulness UnCategorized Events Information");
-		Template template = velocityEngine.getTemplate("./src/main/resources/templates/preceptorAlertTemplate.vm");
+		VelocityEngine ve = new VelocityEngine();
+		ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath"); 
+		ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+		Template template = ve.getTemplate("templates"+"/"+"preceptorAlertTemplate.vm");
 		StringWriter stringWriter = new StringWriter();
 		template.merge(getParameter(), stringWriter);
 		message.setContent(stringWriter.toString(),"text/html");
