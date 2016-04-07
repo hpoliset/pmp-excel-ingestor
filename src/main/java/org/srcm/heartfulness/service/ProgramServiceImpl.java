@@ -167,9 +167,9 @@ public class ProgramServiceImpl implements ProgramService{
 				participantReq.setState(participant.getState());
 				participantReq.setCountry(participant.getCountry());
 				
-				if("1".equals(participant.getIntroduced())){
+				if(1 == participant.getIntroduced()){
 					participantReq.setIntroducedStatus("Y");
-				}else if("0".equals(participant.getIntroduced())){
+				}else if(0 == participant.getIntroduced()){
 					participantReq.setIntroducedStatus("N");
 				}else{
 					participantReq.setIntroducedStatus("");

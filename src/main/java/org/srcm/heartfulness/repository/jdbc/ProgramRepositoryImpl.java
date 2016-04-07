@@ -754,13 +754,12 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		Map<String, Object> params = new HashMap<>();
 		params.put("coordinator_email", email);
 		if (!isAdmin) {
-			whereCondition.append("AND coordinator_email=:coordinator_email");
+			whereCondition.append("coordinator_email=:coordinator_email");
 		}
 		int count = this.namedParameterJdbcTemplate
-				.queryForObject(
-						"SELECT COUNT(program_channel)"
-								+ " FROM program"
-								+ (whereCondition.length() > 0 ? " WHERE (program_channel IS NULL OR program_channel IS NOT NULL OR program_channel='') "
+				.queryForObject(				
+						"SELECT count(program_channel ) + count( CASE WHEN program_channel IS NULL THEN 1 END )	FROM program"
+								+ (whereCondition.length() > 0 ? " WHERE "
 										+ whereCondition
 										: ""), params, Integer.class);
 
@@ -773,11 +772,12 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		Map<String, Object> params = new HashMap<>();
 		params.put("coordinator_email", email);
 		if (!isAdmin) {
-			whereCondition.append("AND coordinator_email=:coordinator_email");
+			whereCondition.append(" coordinator_email=:coordinator_email");
 		}
-		int count = this.namedParameterJdbcTemplate.queryForObject("SELECT COUNT(program_channel)"
-				+ " FROM program"
-				+ (whereCondition.length() > 0 ? " WHERE (program_channel IS NULL OR program_channel='') "
+		int count = this.namedParameterJdbcTemplate.queryForObject("SELECT COUNT(CASE WHEN program_channel='' THEN 1 END)"
+				+" + COUNT (CASE WHEN program_channel IS NULL THEN 1 END) "
+				+" FROM program "
+				+ (whereCondition.length() > 0 ? " WHERE "
 						+ whereCondition : ""), params, Integer.class);
 		return count;
 	}
@@ -785,7 +785,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	@Override
 	public List<String> getAllEventCategories() {
 		try {
-			List<String> events = this.jdbcTemplate.queryForList("SELECT distinct name" + " FROM channel", null,
+			List<String> events = this.jdbcTemplate.queryForList("SELECT distinct name FROM channel", null,
 					String.class);
 			return events;
 		} catch (EmptyResultDataAccessException ex) {

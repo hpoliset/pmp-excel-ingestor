@@ -66,6 +66,12 @@ public class CreateEventHelper {
 			if (0 == programService.getProgramIdByEventId(participant.getEventId()))
 				errors.put("eventId", "No event is available for the provided event ID");
 		}
+		if(null != participant.getGender() && !participant.getGender().isEmpty() && 
+				!(participant.getGender().equalsIgnoreCase("M") || participant.getGender().equalsIgnoreCase("F") 
+						|| participant.getGender().equalsIgnoreCase("Male") || participant.getGender().equalsIgnoreCase("Female"))){
+			errors.put("gender", "gender is not valid.");
+		}
+		
 		if (null == participant.getPrintName() || participant.getPrintName().isEmpty()) {
 			errors.put("printName", "name is required");
 		}

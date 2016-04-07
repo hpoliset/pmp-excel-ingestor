@@ -59,7 +59,7 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 				LOGGER.error("Error While converting date", e);
 			}
 		}
-		 
+
 		if (reportVO.getTillDate() != null && !reportVO.getTillDate().isEmpty()) {
 			try {
 				whereCondition.append(whereCondition.length() > 0 ? " and CASE WHEN pg.program_end_date IS NOT NULL THEN program_end_date <=? ELSE TRUE END "
@@ -93,9 +93,9 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 		jdbcTemplate.query("select "
 				+ "pg.program_id,"
 				+ "pg.program_channel, "
-				+
+				+ "pg.program_name, "
 				// "pg.program_channel_id, " +
-				"pg.program_start_date, " + "pg.program_end_date," +
+				+"pg.program_start_date, " + "pg.program_end_date," +
 
 				"pg.event_id, " + "pg.event_place, " + "pg.event_city, " + "pg.event_state, " + "pg.event_country, " +
 
@@ -128,18 +128,18 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 				+ "left outer join program pg on pr.program_id = pg.program_id " + (whereCondition.length()>0 ? " Where "+whereCondition : "")
 				+ " order by pg.program_channel, pg.program_start_date, pg.organization_name,  pr.first_name",
 
-		(PreparedStatement preparedStatement) -> {
-			for (int i = 0; i < parameters.size(); i++) {
-				Object param = parameters.get(i);
-				if (param instanceof Date) {
-					preparedStatement.setDate(i + 1, (Date) param);
-				} else if (param instanceof String) {
-					preparedStatement.setString(i + 1, (String) param);
-				}
-			}
-		},
+				(PreparedStatement preparedStatement) -> {
+					for (int i = 0; i < parameters.size(); i++) {
+						Object param = parameters.get(i);
+						if (param instanceof Date) {
+							preparedStatement.setDate(i + 1, (Date) param);
+						} else if (param instanceof String) {
+							preparedStatement.setString(i + 1, (String) param);
+						}
+					}
+				},
 
-		rowCallbackHandler);
+				rowCallbackHandler);
 
 		Collection<ParticipantFullDetails> participantDetails = rowCallbackHandler.getParticipantDetails();
 

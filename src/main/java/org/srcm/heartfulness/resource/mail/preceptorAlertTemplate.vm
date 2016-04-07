@@ -17,9 +17,8 @@ table, td, th {
 
 		<div style="padding-top: 0.7em; padding-left: 45px; padding-bottom: 1em">
 			Please check the Un-categorized Event information provided below:
-			<div></div>
 			<div style=" padding-top:1.5em; padding-left: 15px;">
-				<table style="width: 300px; height: 80px;">
+			<--	<table style="width: 300px; height: 80px;">
 					<tr>
 						<th colspan="2">Event Name</th>
 					</tr>
@@ -27,8 +26,8 @@ table, td, th {
     				<tr><td>$NAME</td></tr>
 					#end
 					</tr>
-				</table>
-
+				</table> -->
+				<div>No. Categorized Events: ${COUNT}</div>
 
 			</div>
 
