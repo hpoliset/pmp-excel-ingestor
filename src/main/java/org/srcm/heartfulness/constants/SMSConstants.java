@@ -35,7 +35,7 @@ public class SMSConstants {
 	public static final String SMS_HEARTFULNESS_HOMEPAGE_URL="http://en.heartfulness.org/";
 	
 	/** Holds the Heartfulness home page URL	 */
-	public static final String SMS_HEARTFULNESS_UPDATEEVENT_URL="https://pmp.heartfulness.org/pmp/updateevent";
+	public static final String SMS_HEARTFULNESS_UPDATEEVENT_URL="https://pmpbeta.heartfulness.org/pmp/updateevent";
 	
 	
 	public static final String SMS_CREATE_EVENT_RESPONSE_DUPLICATE_EVENT1 ="Specified Event with the name( ";
