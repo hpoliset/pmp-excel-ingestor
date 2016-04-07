@@ -84,7 +84,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 						&& (pincode != null && !pincode.isEmpty())) {
 					Program program = new Program();
 					GoogleResponse googleResponse = new GoogleResponse();
-					if (eventName != null && !eventName.isEmpty()) {
+					if (eventName != null && !eventName.isEmpty() && pincode.length()==6) {
 						program.setProgramName(eventName);
 						try {
 							googleResponse = smsGatewayRestTemplate.getLocationdetails("India", pincode);
@@ -136,7 +136,9 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 
 							}
 						}
-					}
+					}response = SMSConstants.SMS_CREATE_EVENT_INVALID_ZIPCODE_RESPONSE_1 + pincode
+							+ SMSConstants.SMS_CREATE_EVENT_INVALID_ZIPCODE_RESPONSE_2;
+
 				} else {
 					LOGGER.debug("Insufficient Content");
 					response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
