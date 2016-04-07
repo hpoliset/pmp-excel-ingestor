@@ -1,7 +1,6 @@
 package org.srcm.heartfulness.rest.template;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -22,7 +21,6 @@ import javax.mail.internet.InternetAddress;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -124,7 +122,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		if (proxy)
 			setProxy();
 		StringBuffer content = new StringBuffer("");
-		URL url = this.getClass().getResource("/org/srcm/heartfulness/helper/SendyWelcomeMail.html");
+		URL url = this.getClass().getResource("./src/main/resources/templates/SendyWelcomeMail.html");
 		BufferedReader br = null;
 		try {
 			String sCurrentLine;
@@ -235,13 +233,13 @@ public class SendyAPIRestTemplate extends RestTemplate {
 					message.addRecipients(Message.RecipientType.CC,InternetAddress.parse(ccMailId));
 				}
 				message.setSubject(errorAlertMailSubject);
-				URL url = this.getClass().getResource("/org/srcm/heartfulness/helper");
+				/*URL url = this.getClass().getResource("/org/srcm/heartfulness/helper");
 				File file=new File(url.getFile());
 				velocityEngine = new VelocityEngine();
 				velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "file");
 				velocityEngine.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, file.getAbsolutePath());
 				velocityEngine.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_CACHE, "true");
-				velocityEngine.init();
+				velocityEngine.init();*/
 				message.setContent(getWelcomeMailContent(errorMailTemplate),"text/html");
 				message.setAllow8bitMIME(true);
 				message.setSentDate(new Date());
@@ -253,7 +251,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 	}
 
 	private String getWelcomeMailContent(String errormail){
-		Template template = velocityEngine.getTemplate("/"+errormail+".vm");
+		Template template = velocityEngine.getTemplate("./src/main/resources/templates/"+errormail+".vm");
 		StringWriter stringWriter = new StringWriter();
 		template.merge(getParameter(), stringWriter);
 		return stringWriter.toString();
