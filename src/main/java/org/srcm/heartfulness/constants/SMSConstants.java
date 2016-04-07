@@ -1,5 +1,6 @@
 package org.srcm.heartfulness.constants;
 
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 
 /**
  * Constant class to hold the messages, keywords,sub-keywords for the SMS integration. 
@@ -34,7 +35,7 @@ public class SMSConstants {
 	public static final String SMS_HEARTFULNESS_HOMEPAGE_URL="http://en.heartfulness.org/";
 	
 	/** Holds the Heartfulness home page URL	 */
-	public static final String SMS_HEARTFULNESS_UPDATEEVENT_URL="https://pmp.heartfulness.org/pmp/updateevent";
+	public static final String SMS_HEARTFULNESS_UPDATEEVENT_URL="https://pmpbeta.heartfulness.org/pmp/updateevent";
 	
 	
 	public static final String SMS_CREATE_EVENT_RESPONSE_DUPLICATE_EVENT1 ="Specified Event with the name( ";
@@ -149,9 +150,9 @@ public class SMSConstants {
 	
 	public static final String SMS_INTRODUCE_PARTICIPANT_SUB_KEYWORD = "IN";
 	
-	public static final String SMS_NO_OF_REGISTERED_PARTICIPANT_INVALID_FORMAT_4 = " <Event-ID>";
+	public static final String SMS_NO_OF_REGISTERED_PARTICIPANT_INVALID_FORMAT_4 = " <EVENT_ID>";
 	
-	public static final String SMS_NO_OF_INTRODUCED_PARTICIPANT_INVALID_FORMAT_4 = " <Intro-ID>";
+	public static final String SMS_NO_OF_INTRODUCED_PARTICIPANT_INVALID_FORMAT_4 = " <INTRO_ID>";
 	
 	public static final String SMS_INTRODUCE_PARTICIPANT_RESPONSE_INVALID_FORMAT_2 =  " ) is not available. Please check.";
 	
