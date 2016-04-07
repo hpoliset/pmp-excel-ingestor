@@ -150,9 +150,9 @@ public class SMSConstants {
 	
 	public static final String SMS_INTRODUCE_PARTICIPANT_SUB_KEYWORD = "IN";
 	
-	public static final String SMS_NO_OF_REGISTERED_PARTICIPANT_INVALID_FORMAT_4 = " <Event-ID>";
+	public static final String SMS_NO_OF_REGISTERED_PARTICIPANT_INVALID_FORMAT_4 = " <EVENT_ID>";
 	
-	public static final String SMS_NO_OF_INTRODUCED_PARTICIPANT_INVALID_FORMAT_4 = " <Intro-ID>";
+	public static final String SMS_NO_OF_INTRODUCED_PARTICIPANT_INVALID_FORMAT_4 = " <INTRO_ID>";
 	
 	public static final String SMS_INTRODUCE_PARTICIPANT_RESPONSE_INVALID_FORMAT_2 =  " ) is not available. Please check.";
 	
