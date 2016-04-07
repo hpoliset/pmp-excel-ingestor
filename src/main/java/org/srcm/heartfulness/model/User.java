@@ -10,14 +10,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * This class is to hold the user details and response user Profile by srcm
- * 
  * @author HimaSree
  *
  */
-// @JsonInclude(value = Include.NON_NULL)
+//@JsonInclude(value = Include.NON_NULL)
 @JsonPropertyOrder({ "id", "name", "first_name", "last_name", "email", "user_type" })
 @JsonIgnoreProperties(ignoreUnknown = true, allowGetters = false)
 public class User {
+
 
 	private int id;
 
@@ -66,29 +66,34 @@ public class User {
 	@JsonIgnore
 	private String access_token;
 
+	@JsonIgnore
 	private String role;
 
+	
 	@JsonProperty("message")
 	private String message;
-
-	private String ispmpAllowed;
-
+	
+	@JsonIgnore
 	private String isSahajmargAllowed;
-
+	
+	@JsonIgnore
+	private String isPmpAllowed;
+	
 	@JsonIgnore
 	private int abyasiId;
-
+	
 	@JsonProperty("abyasi_id")
 	private String membershipId;
-
+	
 	public User() {
 		super();
 	}
 
+	
 	public User(int id, String name, String first_name, String last_name, String gender, String email, String mobile,
 			String user_type, String password, String confirmPassword, String address, String country, String state,
-			String city, String access_token, String role, String message, String ispmpAllowed,
-			String isSahajmargAllowed, int abyasiId, String membershipId) {
+			String city, String access_token, String role, String message, String isSahajmargAllowed,
+			String isPmpAllowed, int abyasiId, String membershipId) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -107,11 +112,12 @@ public class User {
 		this.access_token = access_token;
 		this.role = role;
 		this.message = message;
-		this.ispmpAllowed = ispmpAllowed;
 		this.isSahajmargAllowed = isSahajmargAllowed;
+		this.isPmpAllowed = isPmpAllowed;
 		this.abyasiId = abyasiId;
 		this.membershipId = membershipId;
 	}
+
 
 	public int getId() {
 		return id;
@@ -249,14 +255,6 @@ public class User {
 		this.message = message;
 	}
 
-	public String getIspmpAllowed() {
-		return ispmpAllowed;
-	}
-
-	public void setIspmpAllowed(String ispmpAllowed) {
-		this.ispmpAllowed = ispmpAllowed;
-	}
-
 	public String getIsSahajmargAllowed() {
 		return isSahajmargAllowed;
 	}
@@ -264,6 +262,16 @@ public class User {
 	public void setIsSahajmargAllowed(String isSahajmargAllowed) {
 		this.isSahajmargAllowed = isSahajmargAllowed;
 	}
+
+	public String getIsPmpAllowed() {
+		return isPmpAllowed;
+	}
+
+
+	public void setIsPmpAllowed(String isPmpAllowed) {
+		this.isPmpAllowed = isPmpAllowed;
+	}
+
 
 	public int getAbyasiId() {
 		return abyasiId;
@@ -281,15 +289,15 @@ public class User {
 		this.membershipId = membershipId;
 	}
 
+
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", first_name=" + first_name + ", last_name=" + last_name
 				+ ", gender=" + gender + ", email=" + email + ", mobile=" + mobile + ", user_type=" + user_type
 				+ ", password=" + password + ", confirmPassword=" + confirmPassword + ", address=" + address
 				+ ", country=" + country + ", state=" + state + ", city=" + city + ", access_token=" + access_token
-				+ ", role=" + role + ", message=" + message + ", ispmpAllowed=" + ispmpAllowed
-				+ ", isSahajmargAllowed=" + isSahajmargAllowed + ", abyasiId=" + abyasiId + ", membershipId="
-				+ membershipId + "]";
+				+ ", role=" + role + ", message=" + message + ", isSahajmargAllowed=" + isSahajmargAllowed
+				+ ", isPmpAllowed=" + isPmpAllowed + ", abyasiId=" + abyasiId + ", membershipId=" + membershipId + "]";
 	}
 
 }

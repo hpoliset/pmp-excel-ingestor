@@ -39,14 +39,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 			user.setRole(PMPConstants.LOGIN_ROLE_SEEKER);
 			user.setEmail(username);
 			user.setPassword(password);
-			user.setIspmpAllowed(PMPConstants.REQUIRED_NO);
+			user.setIsPmpAllowed(PMPConstants.REQUIRED_NO);
 			user.setIsSahajmargAllowed(PMPConstants.REQUIRED_NO);
 		} else {
-			if (user.getIspmpAllowed().equalsIgnoreCase(PMPConstants.REQUIRED_YES)) {
+			if (null !=user.getIsPmpAllowed() && user.getIsPmpAllowed().equalsIgnoreCase(PMPConstants.REQUIRED_YES)) {
 				user.setRole(PMPConstants.LOGIN_ROLE_ADMIN);
 			}
 		}
-		CurrentUser currentUser = new CurrentUser(user.getEmail(), password, user.getRole(), user.getIspmpAllowed(),
+		CurrentUser currentUser = new CurrentUser(user.getEmail(), password, user.getRole(), user.getIsPmpAllowed(),
 				user.getIsSahajmargAllowed());
 		Collection<? extends GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(user.getRole()
 				.toString());
