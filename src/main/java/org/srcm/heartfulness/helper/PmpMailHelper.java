@@ -1,21 +1,15 @@
 package org.srcm.heartfulness.helper;
 
-import java.io.File;
 import java.io.StringWriter;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.mail.AuthenticationFailedException;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
@@ -26,7 +20,6 @@ import javax.mail.internet.MimeMultipart;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.runtime.RuntimeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +39,7 @@ import com.sun.mail.smtp.SMTPMessage;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:dev.mail.properties", ignoreUnknownFields = false, prefix = "pmp.mail")
+@ConfigurationProperties(locations = "classpath:prod.mail.properties", ignoreUnknownFields = false, prefix = "pmp.mail")
 public class PmpMailHelper {
 
 	private String host;
@@ -206,16 +199,16 @@ public class PmpMailHelper {
 		if(toMailIds.size()>0){
 
 			Properties props = System.getProperties();
-			props.setProperty("mail.smtp.host", host);
-			props.setProperty("mail.debug", "true");
-			//setProperties(props);
-			/*Session session =Session.getDefaultInstance(props,new javax.mail.Authenticator(){
+			/*setProperties(props);
+			Session session =Session.getDefaultInstance(props,new javax.mail.Authenticator(){
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication()
 				{				
 					return new PasswordAuthentication(username,password);
 				}
 			});*/
+			props.setProperty("mail.smtp.host", host);
+			props.setProperty("mail.debug", "true");
 			Session session=Session.getDefaultInstance(props);
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(username));
@@ -226,13 +219,6 @@ public class PmpMailHelper {
 				message.addRecipients(Message.RecipientType.CC,InternetAddress.parse(ccMailId));
 			}
 			message.setSubject(PMPConstants.SEEKER.equalsIgnoreCase(recieverType)?welcomemailsubject:requestmailsubject);
-			URL url = this.getClass().getResource("/org/srcm/heartfulness/helper");
-			File file=new File(url.getFile());
-			velocityEngine = new VelocityEngine();
-			velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "file");
-			velocityEngine.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, file.getAbsolutePath());
-			velocityEngine.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_CACHE, "true");
-			velocityEngine.init();
 			if (PMPConstants.REGISTRATION.equalsIgnoreCase(recieverType)) {
 				message.setContent(getWelcomeMailContent(requestmailtemplate),"text/html");
 			}else{
@@ -267,10 +253,6 @@ public class PmpMailHelper {
 		this.context.put(name, value);
 	}
 
-	private void addListParameter(String name, List<String> uncategorizedEvents) {
-		this.context.put(name, uncategorizedEvents);
-	}
-
 	public VelocityContext getParameter() {
 		return this.context;
 	}
@@ -283,6 +265,7 @@ public class PmpMailHelper {
 	 */
 	private MimeMultipart getWelcomeMailtemplate(String welcomemail) throws MessagingException {
 		MimeMultipart multipart = new MimeMultipart("related");
+
 		//(the html)
 		BodyPart messageBodyPart = new MimeBodyPart();
 		String htmlText=getWelcomeMailContent(welcomemail);
@@ -290,8 +273,7 @@ public class PmpMailHelper {
 		messageBodyPart.setContent(htmlText, "text/html");
 		multipart.addBodyPart(messageBodyPart);
 
-		//(images)
-		//setImages(messageBodyPart,multipart,"http://10.1.29.23:7080/pmp/images/banner.jpg","<logo>");
+		//(images) // development use
 		setImages(messageBodyPart,multipart,"D:\\Workspace\\PMP\\pmp-security-impl-svn\\src\\main\\webapp\\images\\mail_logo.jpg","<logo>");
 		setImages(messageBodyPart,multipart,"D:\\Workspace\\PMP\\pmp-security-impl-svn\\src\\main\\webapp\\images\\banner.jpg","<banner>");
 		setImages(messageBodyPart,multipart,"D:\\Workspace\\PMP\\pmp-security-impl-svn\\src\\main\\webapp\\images\\instagram.jpg","<instagram>");
@@ -312,7 +294,7 @@ public class PmpMailHelper {
 	 * @return
 	 */
 	private String getWelcomeMailContent(String welcomemail){
-		Template template = velocityEngine.getTemplate("/"+welcomemail+".vm");
+		Template template = velocityEngine.getTemplate("./src/main/resources/templates/"+welcomemail+".vm");
 		StringWriter stringWriter = new StringWriter();
 		template.merge(getParameter(), stringWriter);
 		return stringWriter.toString();
@@ -322,22 +304,23 @@ public class PmpMailHelper {
 	 * method to set the mail properties (development purpose)
 	 * @param props
 	 */
-	/*private void setProperties(Properties props) {
+	@SuppressWarnings("unused")
+	private void setProperties(Properties props) {
 		props.put("mail.debug", "true");
 		props.put("mail.smtp.host", host);
 		props.put("mail.smtp.ssl.enable", "true");
 		props.put("mail.smtp.auth", "false");
-	}*/
+	}
 
 	/**
-	 * method to set the images in the html content of welcome mail
+	 * method to set the images in the html content of welcome mail (development use)
 	 * @param messageBodyPart
 	 * @param multipart
 	 * @param filePath
 	 * @param contentId
 	 */
 	private static void setImages(BodyPart messageBodyPart, MimeMultipart multipart, String filePath, String contentId){
-		messageBodyPart = new MimeBodyPart();
+		/*messageBodyPart = new MimeBodyPart();
 		try {
 			DataSource banner = new FileDataSource(filePath);
 			messageBodyPart.setDataHandler(new DataHandler(banner));
@@ -345,17 +328,16 @@ public class PmpMailHelper {
 			multipart.addBodyPart(messageBodyPart);
 		} catch (MessagingException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 
 	public void sendMail(Coordinator coOrdinator, int nonCategorizedEventCount) throws AddressException, MessagingException {
-		System.out.println("trying to send mail to : "+coOrdinator);
-		addParameter("PRECEPTORNAME", coOrdinator.getName());
+		LOGGER.debug("trying to send mail to : {} ",coOrdinator);
+		addParameter("PRECEPTORNAME", coOrdinator.getCoordinatorName());
 		addParameter("COUNT", String.valueOf(nonCategorizedEventCount));
-		
-		addListParameter("EventList", programService.getUncategorizedEvents(coOrdinator.getEmail(),false));
-		/*	Properties props = System.getProperties();
+
+		/*Properties props = System.getProperties();
 		setProperties(props);
 		Session session =Session.getDefaultInstance(props,new javax.mail.Authenticator(){
 			@Override
@@ -370,16 +352,9 @@ public class PmpMailHelper {
 		Session session=Session.getDefaultInstance(props);
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(username));
-		message.addRecipients(Message.RecipientType.TO,InternetAddress.parse(coOrdinator.getEmail()));
+		message.addRecipients(Message.RecipientType.TO,InternetAddress.parse(coOrdinator.getCoordinatorEmail()));
 		message.setSubject("Heartfulness UnCategorized Events Information");
-		URL url = this.getClass().getResource("/org/srcm/heartfulness/resource/helper");
-		File file=new File(url.getFile());
-		velocityEngine = new VelocityEngine();
-		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "file");
-		velocityEngine.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, file.getAbsolutePath());
-		velocityEngine.setProperty(RuntimeConstants.FILE_RESOURCE_LOADER_CACHE, "true");
-		velocityEngine.init();
-		Template template = velocityEngine.getTemplate("/"+"preceptorAlertTemplate"+".vm");
+		Template template = velocityEngine.getTemplate("./src/main/resources/templates/preceptorAlertTemplate.vm");
 		StringWriter stringWriter = new StringWriter();
 		template.merge(getParameter(), stringWriter);
 		message.setContent(stringWriter.toString(),"text/html");

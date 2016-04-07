@@ -8,7 +8,6 @@ import javax.mail.internet.AddressException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.service.ProgramService;
@@ -25,17 +24,18 @@ public class Scheduler {
 	PmpMailHelper mailHelper;
 	
 	
-	/*@Scheduled(cron = "0 30 18 * * *")*/
+	/*@Scheduled(cron = "0 03 15 * * *")*/
+	@SuppressWarnings("unused")
 	private void sendMailToCoOrdinatorsOnDailyBasis(){
+		System.out.println("cron job running...");
 		List<Coordinator> coOrdinatorList= programService.getAllCoOrdinatorsList();
 		for (Coordinator coOrdinator : coOrdinatorList) {
-			if(null != coOrdinator.getEmail()){
-				int NonCategorizedEventCount= programService.getNonCategorizedEventsByEmail(coOrdinator.getEmail(),false);
+			if(null != coOrdinator.getCoordinatorEmail()){
+				int NonCategorizedEventCount= programService.getNonCategorizedEventsByEmail(coOrdinator.getCoordinatorEmail(),false);
 				try {
 					if(NonCategorizedEventCount > 0){
 						mailHelper.sendMail( coOrdinator,NonCategorizedEventCount);
 					}
-					
 				} catch (AddressException e) {
 					LOGGER.error("Mail Sending Failed due to Invalid Address");
 				} catch (MessagingException e) {

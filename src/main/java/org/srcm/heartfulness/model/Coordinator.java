@@ -8,8 +8,8 @@ import java.util.Date;
 public class Coordinator {
 
     private int id;
-    private String name;
-    private String email;
+    private String coordinatorName;
+    private String coordinatorEmail;
     private String mobile;
     private String phone;
     private String other;
@@ -25,23 +25,23 @@ public class Coordinator {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
+	public String getCoordinatorName() {
+		return coordinatorName;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setCoordinatorName(String coordinatorName) {
+		this.coordinatorName = coordinatorName;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public String getCoordinatorEmail() {
+		return coordinatorEmail;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setCoordinatorEmail(String coordinatorEmail) {
+		this.coordinatorEmail = coordinatorEmail;
+	}
 
-    public String getMobile() {
+	public String getMobile() {
         return mobile;
     }
 
