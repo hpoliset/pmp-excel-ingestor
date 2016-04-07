@@ -775,7 +775,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			whereCondition.append(" coordinator_email=:coordinator_email");
 		}
 		int count = this.namedParameterJdbcTemplate.queryForObject("SELECT COUNT(CASE WHEN program_channel='' THEN 1 END)"
-				+" + COUNT (CASE WHEN program_channel IS NULL THEN 1 END) "
+				+" + COUNT(CASE WHEN program_channel IS NULL THEN 1 END) "
 				+" FROM program "
 				+ (whereCondition.length() > 0 ? " WHERE "
 						+ whereCondition : ""), params, Integer.class);
@@ -894,11 +894,22 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	
 	@Override
 	public List<Coordinator> getAllCoOrdinatorsList() {
-		List<Coordinator> coOrdinators = this.jdbcTemplate
-				.queryForList(
-						"SELECT name,email from program WHERE coordinator_email IS NOT NULL AND coordinator_email != '' order by coordinator_email asc",
-						null, Coordinator.class);
+		
+		List<Coordinator> coOrdinators = null;
+		Map<String, Object> params = new HashMap<>();
+		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+
+		coOrdinators = this.namedParameterJdbcTemplate.query(
+				"SELECT DISTINCT * from program WHERE coordinator_email IS NOT NULL AND coordinator_email != '' order by coordinator_email asc", sqlParameterSource,
+						BeanPropertyRowMapper.newInstance(Coordinator.class)
+				);
 		return coOrdinators;
+		
+		/*List<Coordinator> coOrdinators = null;
+		coOrdinators= this.namedParameterJdbcTemplate.query(
+						"SELECT DISTINCT * from program WHERE coordinator_email IS NOT NULL AND coordinator_email != '' order by coordinator_email asc",
+						null, BeanPropertyRowMapper.newInstance( Coordinator.class));
+		return coOrdinators;*/
 	}
 
 }
