@@ -104,8 +104,8 @@ public class UserRepositoryImpl implements UserRepository {
 		}
 		if (null == user.getRole() && user.getId() == 0)
 			user.setRole(PMPConstants.LOGIN_ROLE_SEEKER);
-		if (null == user.getIspmpAllowed() && user.getId() == 0)
-			user.setIspmpAllowed("N");
+		if (null == user.getIsPmpAllowed() && user.getId() == 0)
+			user.setIsPmpAllowed("N");
 		if (null == user.getIsSahajmargAllowed() && user.getId() == 0)
 			user.setIsSahajmargAllowed("N");
 		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
@@ -114,7 +114,7 @@ public class UserRepositoryImpl implements UserRepository {
 			user.setId(newId.intValue());
 		} else {
 			this.namedParameterJdbcTemplate.update("UPDATE user SET " + "name=:name, " + "first_name=:first_name, "
-					+ "last_name=:last_name, " + "gender=:gender, " + "abyasiId=:abyasiId," + "address=:address, "
+					+ "last_name=:last_name, " + "gender=:gender, " + "abyasi_id=:abyasiId," + "address=:address, "
 					+ "user_type=:user_type, " + "email=:email, " + "mobile=:mobile, " + "city=:city, "
 					+ "state=:state, " + "country=:country " + "WHERE id=:id", parameterSource);
 		}
