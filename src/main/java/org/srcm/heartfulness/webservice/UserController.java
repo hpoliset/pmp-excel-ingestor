@@ -65,6 +65,7 @@ public class UserController {
 		} catch (HttpClientErrorException e) {
 			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
 		} catch (IOException e) {
+			e.printStackTrace();
 			ErrorResponse error = new ErrorResponse("Please try after some time.", "IOException occured.");
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.REQUEST_TIMEOUT);
 		} catch (Exception e) {
