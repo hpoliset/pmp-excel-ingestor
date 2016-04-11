@@ -45,4 +45,9 @@ public class AuthenticationRequest {
 		this.refreshToken = refreshToken;
 	}
 
+	@Override
+	public String toString() {
+		return "AuthenticationRequest [username=" + username + "]";
+	}
+	
 }
