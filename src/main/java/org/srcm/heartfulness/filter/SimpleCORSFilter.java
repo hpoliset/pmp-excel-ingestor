@@ -24,7 +24,7 @@ public class SimpleCORSFilter implements Filter {
 		response.addHeader("Access-Control-Allow-Origin", "*");
 		if (request.getHeader("Access-Control-Request-Method") != null && "OPTIONS".equals(request.getMethod())) {
 			response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-			response.addHeader("Access-Control-Allow-Headers", "Content-Type");
+			response.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 			response.addHeader("Access-Control-Max-Age", "1");// 30 min
 		}
 			chain.doFilter(request, response);
