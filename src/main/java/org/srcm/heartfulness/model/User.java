@@ -10,14 +10,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * This class is to hold the user details and response user Profile by srcm
+ * 
  * @author HimaSree
  *
  */
-//@JsonInclude(value = Include.NON_NULL)
+// @JsonInclude(value = Include.NON_NULL)
 @JsonPropertyOrder({ "id", "name", "first_name", "last_name", "email", "user_type" })
 @JsonIgnoreProperties(ignoreUnknown = true, allowGetters = false)
 public class User {
-
 
 	private int id;
 
@@ -70,24 +70,24 @@ public class User {
 
 	@JsonProperty("message")
 	private String message;
-	
-	private String ispmpAllowed;
-	
+
+	private String isPmpAllowed;
+
 	private String isSahajmargAllowed;
-	
+
 	@JsonIgnore
 	private int abyasiId;
-	
+
 	@JsonProperty("abyasi_id")
 	private String membershipId;
-	
+
 	public User() {
 		super();
 	}
 
 	public User(int id, String name, String first_name, String last_name, String gender, String email, String mobile,
 			String user_type, String password, String confirmPassword, String address, String country, String state,
-			String city, String access_token, String role, String message, String ispmpAllowed,
+			String city, String access_token, String role, String message, String isPmpAllowed,
 			String isSahajmargAllowed, int abyasiId, String membershipId) {
 		super();
 		this.id = id;
@@ -107,12 +107,12 @@ public class User {
 		this.access_token = access_token;
 		this.role = role;
 		this.message = message;
-		this.ispmpAllowed = ispmpAllowed;
+		this.isPmpAllowed = isPmpAllowed;
 		this.isSahajmargAllowed = isSahajmargAllowed;
 		this.abyasiId = abyasiId;
 		this.membershipId = membershipId;
 	}
-	
+
 	public int getId() {
 		return id;
 	}
@@ -249,12 +249,12 @@ public class User {
 		this.message = message;
 	}
 
-	public String getIspmpAllowed() {
-		return ispmpAllowed;
+	public String getIsPmpAllowed() {
+		return isPmpAllowed;
 	}
 
-	public void setIspmpAllowed(String ispmpAllowed) {
-		this.ispmpAllowed = ispmpAllowed;
+	public void setIsPmpAllowed(String isPmpAllowed) {
+		this.isPmpAllowed = isPmpAllowed;
 	}
 
 	public String getIsSahajmargAllowed() {
@@ -287,7 +287,7 @@ public class User {
 				+ ", gender=" + gender + ", email=" + email + ", mobile=" + mobile + ", user_type=" + user_type
 				+ ", password=" + password + ", confirmPassword=" + confirmPassword + ", address=" + address
 				+ ", country=" + country + ", state=" + state + ", city=" + city + ", access_token=" + access_token
-				+ ", role=" + role + ", message=" + message + ", ispmpAllowed=" + ispmpAllowed
+				+ ", role=" + role + ", message=" + message + ", ispmpAllowed=" + isPmpAllowed
 				+ ", isSahajmargAllowed=" + isSahajmargAllowed + ", abyasiId=" + abyasiId + ", membershipId="
 				+ membershipId + "]";
 	}
