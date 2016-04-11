@@ -27,12 +27,12 @@ public class LoginController {
 	@Autowired
 	AuthorizationHelper authHelper;
 
-	@RequestMapping(value = "/home", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String showForm(HttpServletRequest request, Model model) {
 		model.addAttribute("user", new User());
 		model.addAttribute("newUser", new User());
 		return "home";
-	}
+	}*/
 
 	/**
 	 * To signout the current logged in user
