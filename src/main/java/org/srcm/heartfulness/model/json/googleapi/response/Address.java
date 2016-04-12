@@ -1,5 +1,10 @@
 package org.srcm.heartfulness.model.json.googleapi.response;
 
+/**
+ * This class is to hold the address details of the user, which is fetched from the given pincode
+ * @author himasreev
+ *
+ */
 public class Address {
 	
 	private String city;

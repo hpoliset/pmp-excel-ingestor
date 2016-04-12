@@ -1,10 +1,7 @@
 package org.srcm.heartfulness.rest.template;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,10 +14,13 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.validation.constraints.NotNull;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -42,9 +42,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.sun.mail.smtp.SMTPMessage;
 
 /**
- * This class is template class and communicates with srcm by calling srcm api
+ * This is  a template class, communicates with sendy by calling sendy api
  * 
- * @author HimaSree
+ * @author rramesh
  *
  */
 @Component
@@ -56,11 +56,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 	private String subscribeUri;
 	private String sendMailUri;
 	private String apiKey;
-	private String subscriberListID;
-	private String fromName;
-	private String fromMailID;
-	private String replyToMailID;
-	private String subject;
+	
 	private String sendCampaign;
 	private String sendFlag;
 
@@ -81,15 +77,104 @@ public class SendyAPIRestTemplate extends RestTemplate {
 	private String errorAlertMailSubject;
 	private String errorMailTemplate;
 	private String host;
-	private String toMailIds;
-	private String ccMailIds;
 	
 	private VelocityContext context;
+	
+	public static class WelcomeMail{
+		private String subscriberListID;
+		private String fromName;
+		private String fromMailID;
+		private String replyToMailID;
+		private String subject;
+		public String getSubscriberListID() {
+			return subscriberListID;
+		}
+		public void setSubscriberListID(String subscriberListID) {
+			this.subscriberListID = subscriberListID;
+		}
+		public String getFromName() {
+			return fromName;
+		}
+		public void setFromName(String fromName) {
+			this.fromName = fromName;
+		}
+		public String getFromMailID() {
+			return fromMailID;
+		}
+		public void setFromMailID(String fromMailID) {
+			this.fromMailID = fromMailID;
+		}
+		public String getReplyToMailID() {
+			return replyToMailID;
+		}
+		public void setReplyToMailID(String replyToMailID) {
+			this.replyToMailID = replyToMailID;
+		}
+		public String getSubject() {
+			return subject;
+		}
+		public void setSubject(String subject) {
+			this.subject = subject;
+		}
+		
+	}
+	
+	public static class MonthlyNewsletter{
+		
+		private String subscriberListID;
+		private String toMailIds;
+		private String ccMailIds;
+
+		public String getToMailIds() {
+			return toMailIds;
+		}
+		public void setToMailIds(String toMailIds) {
+			this.toMailIds = toMailIds;
+		}
+
+		public String getCcMailIds() {
+			return ccMailIds;
+		}
+
+		public void setCcMailIds(String ccMailIds) {
+			this.ccMailIds = ccMailIds;
+		}
+
+		public String getSubscriberListID() {
+			return subscriberListID;
+		}
+
+		public void setSubscriberListID(String subscriberListID) {
+			this.subscriberListID = subscriberListID;
+		}
+	}
+	
+	@NotNull
+	private WelcomeMail welcomeMail;
+	@NotNull
+	private MonthlyNewsletter monthlyNewsletter;
+	
+	public WelcomeMail getWelcomeMail() {
+		return welcomeMail;
+	}
+
+	public void setWelcomeMail(WelcomeMail welcomeMail) {
+		this.welcomeMail = welcomeMail;
+	}
+	public MonthlyNewsletter getMonthlyNewsletter() {
+		return monthlyNewsletter;
+	}
+
+	public void setMonthlyNewsletter(MonthlyNewsletter monthlyNewsletter) {
+		this.monthlyNewsletter = monthlyNewsletter;
+	}
 
 	/**
+	 * To add a new subscriber to sendy list through subscribe url  
 	 * 
-	 * @param sendySubscriberDetails
-	 * @return
+	 * @param sendySubscriberDetails - (SendySubscriber sendySubscriberDetails)
+	 * 
+	 * @return the response
 	 * @throws HttpClientErrorException
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
@@ -101,11 +186,10 @@ public class SendyAPIRestTemplate extends RestTemplate {
 			setProxy();
 		body = new LinkedMultiValueMap<String, String>();
 
-		body.add("name", sendySubscriberDetails.getUserName());
+		body.add("name", sendySubscriberDetails.getNameToSendMail());
 		body.add("email", sendySubscriberDetails.getEmail());
 		body.add("boolean", sendFlag);
-		body.add("list", subscriberListID);
-
+		body.add("list", welcomeMail.subscriberListID);
 		for (Entry<String, String> entry : sendySubscriberDetails.getfields().entrySet()) {
 			body.add(entry.getKey(), entry.getValue());
 		}
@@ -117,12 +201,49 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		return response.getBody();
 		//return "ok";
 	}
+	
+	public String addSubscriberToMonthlyNewsletterList(SendySubscriber sendySubscriberDetails) throws HttpClientErrorException,
+			JsonParseException, JsonMappingException, IOException {
+		if (proxy)
+			setProxy();
+		body = new LinkedMultiValueMap<String, String>();
 
+		body.add("name", sendySubscriberDetails.getNameToSendMail());
+		body.add("email", sendySubscriberDetails.getEmail());
+		body.add("boolean", sendFlag);
+		body.add("list", monthlyNewsletter.subscriberListID);
+		for (Entry<String, String> entry : sendySubscriberDetails.getfields().entrySet()) {
+			body.add(entry.getKey(), entry.getValue());
+		}
+		httpHeaders = new HttpHeaders();
+		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		httpEntity = new HttpEntity<Object>(body, httpHeaders);
+		//System.out.println("HTTP response " + httpEntity.toString());
+		ResponseEntity<String> response = this.exchange(subscribeUri,HttpMethod.POST, httpEntity,String.class);
+		return response.getBody();
+	}
+
+	/**
+	 * To send mail to the list in sendy through send mail url
+	 * 
+	 * @return the response
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
 	public String sendMail() throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
 		if (proxy)
 			setProxy();
 		StringBuffer content = new StringBuffer("");
-		URL url = this.getClass().getResource("./src/main/resources/templates/SendyWelcomeMail.html");
+		VelocityEngine ve = new VelocityEngine();
+		ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath"); 
+		ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+		Template template = ve.getTemplate("templates"+"/SendyWelcomeMail.html");
+		StringWriter stringWriter = new StringWriter();
+		template.merge(getParameter(), stringWriter);
+		/*URL url = this.getClass().getResource("/src/main/resources/templates/SendyWelcomeMail.html");
+		System.out.println("URL "+url);
 		BufferedReader br = null;
 		try {
 			String sCurrentLine;
@@ -139,25 +260,16 @@ public class SendyAPIRestTemplate extends RestTemplate {
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
-		}
+		}*/
 		body = new LinkedMultiValueMap<String, String>();
 		body.add("api_key", apiKey);
-		body.add("from_name", fromName);
-		body.add("from_email", fromMailID);
-		body.add("reply_to", replyToMailID);
-		body.add("subject", subject);
+		body.add("from_name", welcomeMail.fromName);
+		body.add("from_email", welcomeMail.fromMailID);
+		body.add("reply_to", welcomeMail.replyToMailID);
+		body.add("subject", welcomeMail.subject);
 		body.add("plain_text", "");
-		body.add("html_text", content.toString());
-
-		/*
-		 * List<SubcriberListID> listIDs = new ArrayList<SubcriberListID>();
-		 * listIDs = sendMail.getSubscribersList(); StringBuffer
-		 * subscriberListID = new StringBuffer(""); for (SubcriberListID listID
-		 * : listIDs) {
-		 * subscriberListID.append(subscriberListID.length()>1?","+listID
-		 * :listID); }
-		 */
-		body.add("list_ids", subscriberListID);
+		body.add("html_text",stringWriter.toString());
+		body.add("list_ids", welcomeMail.subscriberListID);
 		body.add("send_campaign", sendCampaign);
 
 		httpHeaders = new HttpHeaders();
@@ -169,6 +281,15 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		//return "ok";
 	}
 
+	/**
+	 * To execute the sendy cron job to send mail
+	 * 
+	 * @return the response
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
 	public String executeCronJob() throws HttpClientErrorException,
 			JsonParseException, JsonMappingException, IOException {
 		if (proxy)
@@ -177,36 +298,63 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		httpHeaders = new HttpHeaders();
 		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
-		//System.out.println("HTTP response " + httpEntity.toString());
 		ResponseEntity<String> response = this.exchange(scheduledCronJobUri, HttpMethod.GET, httpEntity, String.class);
-		
 		return response.getBody();
 		//return "";
 	}
 	
+	/**
+	 * To unsubscribe the users from the sendy list
+	 * 
+	 * @param welcomeMailDetails -(WelcomeMailDetails welcomeMailDetails)
+	 * @return the response
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
 	public String unsubscribeUser(WelcomeMailDetails welcomeMailDetails) throws HttpClientErrorException,
 			JsonParseException, JsonMappingException, IOException {
 		if (proxy)
 			setProxy();
 		body = new LinkedMultiValueMap<String, String>();
-
 		body.add("email", welcomeMailDetails.getEmail());
 		body.add("boolean", sendFlag);
-		body.add("list", subscriberListID);
+		body.add("list", welcomeMail.subscriberListID);
 		httpHeaders = new HttpHeaders();
 		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
-		System.out.println("HTTP response " + httpEntity.toString());
 		ResponseEntity<String> response = this.exchange(unsubscribeUri, HttpMethod.POST, httpEntity, String.class);
 		return response.getBody();
 	}
 	
+	public String unsubscribeUserFromMonthlyNewsletterList(WelcomeMailDetails welcomeMailDetails) throws HttpClientErrorException,
+			JsonParseException, JsonMappingException, IOException {
+		if (proxy)
+			setProxy();
+		body = new LinkedMultiValueMap<String, String>();
+		body.add("email", welcomeMailDetails.getEmail());
+		body.add("boolean", sendFlag);
+		body.add("list", monthlyNewsletter.subscriberListID);
+		httpHeaders = new HttpHeaders();
+		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		httpEntity = new HttpEntity<Object>(body, httpHeaders);
+		//System.out.println("HTTP response " + httpEntity.toString());
+		ResponseEntity<String> response = this.exchange(unsubscribeUri, HttpMethod.POST, httpEntity, String.class);
+		return response.getBody();
+	}
+	
+	/**
+	 * To send error alert email when sendy fails
+	 * 
+	 * @throws MessagingException
+	 */
 	public void sendErrorAlertMail() throws MessagingException {
 		List<String> toMailIdList = new ArrayList<String>();
 		List<String> ccMailIdList = new ArrayList<String>();
 		
-		String[] toMail = toMailIds.split(",");
-		String[] ccMail = ccMailIds.split(",");
+		String[] toMail = monthlyNewsletter.toMailIds.split(",");
+		String[] ccMail = monthlyNewsletter.ccMailIds.split(",");
 		for(String toMailID : toMail){
 			toMailIdList.add(toMailID);
 		}
@@ -250,8 +398,17 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		}
 	}
 
+	/**
+	 * To get the content from the template
+	 * 
+	 * @param errormail-template name
+	 * @return the content as java.String
+	 */
 	private String getWelcomeMailContent(String errormail){
-		Template template = velocityEngine.getTemplate("./src/main/resources/templates/"+errormail+".vm");
+		VelocityEngine ve = new VelocityEngine();
+		ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath"); 
+		ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+		Template template = ve.getTemplate("templates"+"/"+errormail+".vm");
 		StringWriter stringWriter = new StringWriter();
 		template.merge(getParameter(), stringWriter);
 		return stringWriter.toString();
@@ -301,46 +458,6 @@ public class SendyAPIRestTemplate extends RestTemplate {
 
 	public void setApiKey(String apiKey) {
 		this.apiKey = apiKey;
-	}
-
-	public String getSubscriberListID() {
-		return subscriberListID;
-	}
-
-	public void setSubscriberListID(String subscriberListID) {
-		this.subscriberListID = subscriberListID;
-	}
-
-	public String getFromName() {
-		return fromName;
-	}
-
-	public void setFromName(String fromName) {
-		this.fromName = fromName;
-	}
-
-	public String getFromMailID() {
-		return fromMailID;
-	}
-
-	public void setFromMailID(String fromMailID) {
-		this.fromMailID = fromMailID;
-	}
-
-	public String getReplyToMailID() {
-		return replyToMailID;
-	}
-
-	public void setReplyToMailID(String replyToMailID) {
-		this.replyToMailID = replyToMailID;
-	}
-
-	public String getSubject() {
-		return subject;
-	}
-
-	public void setSubject(String subject) {
-		this.subject = subject;
 	}
 
 	public String getSendCampaign() {
@@ -413,25 +530,9 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		this.host = host;
 	}
 
-	public String getToMailIds() {
-		return toMailIds;
-	}
-
-	public void setToMailIds(String toMailIds) {
-		this.toMailIds = toMailIds;
-	}
-
-	public String getCcMailIds() {
-		return ccMailIds;
-	}
-
-	public void setCcMailIds(String ccMailIds) {
-		this.ccMailIds = ccMailIds;
-	}
-
 	public void setProxy() {
-		/*CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
+		//CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		/*credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 				new UsernamePasswordCredentials(proxyUser, proxyPassword));
 		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
 		clientBuilder.useSystemProperties();
@@ -447,4 +548,3 @@ public class SendyAPIRestTemplate extends RestTemplate {
 	
 
 }
-

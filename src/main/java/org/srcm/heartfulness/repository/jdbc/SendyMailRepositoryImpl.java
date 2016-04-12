@@ -33,20 +33,26 @@ public class SendyMailRepositoryImpl implements SendyMailRepository {
 				.usingGeneratedKeyColumns("id");
 	}
 
-	
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.repository.SendyMailRepository#getParticipantsToSendWelcomeMail()
+	 */
 	@Override
 	public List<Participant> getParticipantsToSendWelcomeMail() {
 		/*Map<String, Object> params = new HashMap<>();
 		params.put("createDate", date);
 		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);*/
-
 		List<Participant> participants = this.namedParameterJdbcTemplate.query(
-				"SELECT print_name,email,language FROM participant WHERE create_time < CURDATE() AND welcome_mail_sent=0",
+				"SELECT print_name,email,language FROM participant WHERE create_time < CURDATE() AND welcome_mail_sent=0 OR welcome_mail_sent IS NULL",
 				BeanPropertyRowMapper.newInstance(Participant.class));
 
 		return participants;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.repository.SendyMailRepository#getIntroducedParticipantCount(java.lang.String,java.lang.String)
+	 */
 	@Override
 	public int getIntroducedParticipantCount(String printName, String email) {
 		int introducedParticipantsCount = this.jdbcTemplate.queryForObject(
@@ -54,7 +60,10 @@ public class SendyMailRepositoryImpl implements SendyMailRepository {
 		return introducedParticipantsCount;
 	}
 
-
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.repository.SendyMailRepository#save(WelcomeMailDetails welcomeMailDetails)
+	 */
 	@Override
 	public void save(WelcomeMailDetails welcomeMailDetails) {
 		System.out.println(welcomeMailDetails);
@@ -70,6 +79,10 @@ public class SendyMailRepositoryImpl implements SendyMailRepository {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.repository.SendyMailRepository#getSubscribersToUnsubscribe()
+	 */
 	@Override
 	public List<WelcomeMailDetails> getSubscribersToUnsubscribe() {
 		List<WelcomeMailDetails> subscribers = this.namedParameterJdbcTemplate.query(
@@ -79,9 +92,24 @@ public class SendyMailRepositoryImpl implements SendyMailRepository {
 		return subscribers;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.repository.SendyMailRepository#updateParticipant()
+	 */
 	@Override
 	public void updateParticipant() {
 		this.jdbcTemplate.update("UPDATE participant set welcome_mail_sent=1 WHERE create_time < CURDATE()-1");
 		
+	}
+
+	@Override
+	public void updateUserUnsubscribed(String mailID) {
+		this.jdbcTemplate.update("UPDATE welcome_mail_subscribers set unsubscribed=1 WHERE email=? ",new Object[] {mailID});
+	}
+	
+	@Override
+	public String updateUserSubscribed(String name,String mailID) {
+		this.jdbcTemplate.update("UPDATE welcome_mail_subscribers set unsubscribed=0 WHERE email=? AND print_name=?",new Object[] {mailID,name});
+		return "Subscribed.";
 	}
 }

@@ -3,6 +3,11 @@ package org.srcm.heartfulness.model.json.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+/**
+ * This class is the request for changing the admin for the event
+ * @author himasreev
+ *
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EventAdminChangeRequest {
 	

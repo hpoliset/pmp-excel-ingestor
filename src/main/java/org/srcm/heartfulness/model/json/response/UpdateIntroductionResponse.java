@@ -1,5 +1,10 @@
 package org.srcm.heartfulness.model.json.response;
 
+/**
+ *  This class is the response for the updating introduced status for the participants
+ * @author himasreev
+ *
+ */
 public class UpdateIntroductionResponse {
 	
 	private String seqId;

@@ -4,6 +4,11 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * This class hold the results of the google api
+ * @author himasreev
+ *
+ */
 public class GoogleResponse {
 	 
 	 @JsonProperty(value="results")

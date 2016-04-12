@@ -18,6 +18,8 @@ public class SendySubscriber {
 	@JsonProperty("list")
 	private String listID;
 	
+	private String nameToSendMail;
+	
 	@JsonProperty("fields")
 	private Map<String, String> fields = new HashMap<String, String>();
 	
@@ -77,13 +79,18 @@ public class SendySubscriber {
 		this.fields = fields;
 	}
 
+	public String getNameToSendMail() {
+		return nameToSendMail;
+	}
+
+	public void setNameToSendMail(String nameToSendMail) {
+		this.nameToSendMail = nameToSendMail;
+	}
+
 	@Override
 	public String toString() {
-		return "SendySubscriberDetails [userName=" + userName + ", email=" + email + ", listID=" + listID + ", Event="
-				+", sendFlag=" + sendFlag + "]";
+		return "SendySubscriber [userName=" + userName + ", email=" + email + ", listID=" + listID
+				+ ", nameToSendMail=" + nameToSendMail + ", fields=" + fields + ", sendFlag=" + sendFlag + "]";
 	}
-	
-	
-	
-	
+
 }

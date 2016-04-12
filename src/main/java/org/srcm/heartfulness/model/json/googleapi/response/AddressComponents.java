@@ -4,6 +4,11 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+/**
+ * 
+ * @author himasreev
+ *
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AddressComponents {
 	

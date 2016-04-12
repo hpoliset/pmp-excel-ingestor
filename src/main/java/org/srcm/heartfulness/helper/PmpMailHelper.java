@@ -36,7 +36,7 @@ import org.srcm.heartfulness.service.ProgramService;
 import com.sun.mail.smtp.SMTPMessage;
 
 /**
- * 
+ * This is a helper class to send the emails
  * @author himasreev
  *
  */

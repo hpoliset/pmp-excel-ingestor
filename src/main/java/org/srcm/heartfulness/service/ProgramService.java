@@ -46,12 +46,17 @@ public interface ProgramService {
 	public List<Program> getProgramByEmail(String email,boolean isAdmin);
 
 	/**
-	 * get the
+	 * get the program details based on programID
 	 * @param id
 	 * @return
 	 */
 	public Program getProgramById(int id);
 
+	/**
+	 * Returns the list of Participant details for the given program ID
+	 * @param decryptedProgramId
+	 * @return List<Participant>
+	 */
 	public List<Participant> getParticipantByProgramId(int decryptedProgramId);
 	
 	
@@ -82,34 +87,119 @@ public interface ProgramService {
 	 */
 	public List<Event> createOrUpdateEvent(List<Event> events);
 	
+	/**
+	 * service to get the total number of available events count based on the user email and the user role
+	 * @param username
+	 * @param isAdmin
+	 * @return count(int)
+	 */
 	public int getEventCountByEmail(String username, boolean isAdmin);
 
+	/**
+	 * service to get the non categorized events count based on the user email and the user role
+	 * @param coOrdinator
+	 * @param isAdmin
+	 * @return count(int)
+	 */
 	public int getNonCategorizedEventsByEmail(String coOrdinator, boolean isAdmin);
 
+	/**
+	 * service to get the participant for the given programID and seq ID
+	 * @param seqId
+	 * @param programId
+	 * @return Participant
+	 */
 	public Participant findParticipantBySeqId(String seqId, int programId);
 	
+	/**
+	 * service to the programId for the given auto generated eventID
+	 * @param eventId
+	 * @return programId
+	 */
 	public int getProgramIdByEventId(String eventId);
 	
+	/**
+	 * service to update the participant introduced status for the given participant Ids of an given eventID
+	 * @param participantIds
+	 * @param eventId
+	 * @param introduced
+	 */
 	public void UpdateParticipantsStatus(String participantIds, String eventId , String introduced);
 	
+	
+	/**
+	 * service to get the all available event categories from the database
+	 * @return
+	 */
 	public List<String> getAllEventCategories();
 	
+	/**
+	 * service to get the event count based on the user email and the user role and event category
+	 * @param email
+	 * @param isAdmin
+	 * @param eventCategory
+	 * @return count of events
+	 */
 	public int getEventCountByCategory(String email, boolean isAdmin, String eventCategory);
 	
+	/**
+	 *  service to get the miscillaneous event count based on the user email and the user role and event eventcategories
+	 * @param email
+	 * @param isAdmin
+	 * @param eventcategories
+	 * @return
+	 */
 	public int getMiscellaneousEventsByEmail(String email, boolean isAdmin, List<String> eventcategories);
 	
+	
+	/**
+	 * service to update the admin for the event 
+	 * @param eventAdminChangeRequest
+	 */
 	public void updateEventAdmin(EventAdminChangeRequest eventAdminChangeRequest);
 	
+	
+	/**
+	 * service to update the co-ordinator details in the database after changing admin for the event
+	 * @param eventAdminChangeRequest
+	 */
 	public void updateCoOrdinatorStatistics(EventAdminChangeRequest eventAdminChangeRequest);
 	
+	/**
+	 * service to get all the available co-ordinators list from the database
+	 * @return List<Coordinator>
+	 */
 	public List<Coordinator> getAllCoOrdinatorsList();
 
-	public List<String> getUncategorizedEvents(String email, boolean b);
+	/**
+	 * service to get the uncategorized event list for the given email and user role
+	 * @param email
+	 * @param isAdmin
+	 * @return List<String>
+	 */
+	public List<String> getUncategorizedEvents(String email, boolean isAdmin);
 
+	
+	/**
+	 * service to delete the participant for the given eventId and seqId
+	 * @param seqId
+	 * @param eventId
+	 * @return
+	 */
 	public Participant deleteParticipant(String seqId, String eventId);
 
+	/**
+	 * service to update the deleted participant details to the database
+	 * @param deletedParticipant
+	 * @param deletedBy
+	 */
 	public void updateDeletedParticipant(Participant deletedParticipant, String deletedBy);
 	
-	public Event getEventDetails(String agEventId);
+	/**
+	 * service to get the event details for the given eventID
+	 * @param EventId
+	 * @return Event
+	 */
+	public Event getEventDetails(String EventId);
 
 }

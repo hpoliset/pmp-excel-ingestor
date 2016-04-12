@@ -12,6 +12,11 @@ import org.springframework.stereotype.Component;
 import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.service.ProgramService;
 
+/**
+ * this class contains scheduler to send the mails
+ * @author himasreev
+ *
+ */
 @Component
 public class Scheduler {
 	
@@ -23,7 +28,9 @@ public class Scheduler {
 	@Autowired
 	PmpMailHelper mailHelper;
 	
-	
+	/**
+	 * cron job to send the emails to the co-ordinator about the non categorized programs on daily basis
+	 */
 	/*@Scheduled(cron = "0 03 15 * * *")*/
 	@SuppressWarnings("unused")
 	private void sendMailToCoOrdinatorsOnDailyBasis(){

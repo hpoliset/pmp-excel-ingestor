@@ -77,7 +77,6 @@ public class AuthenticationController {
 			LOGGER.error("Error occured while authenticating :{}", authenticationRequest.getUsername(), e);
 			ErrorResponse error = new ErrorResponse("Invalid Credentials.", "");
 			return ResponseEntity.ok().body(error);
-			//return new ResponseEntity<ErrorResponse>(error, e.getStatusCode());
 		} catch (IOException e) {
 			LOGGER.error("Error occured while authenticating :{}", authenticationRequest.getUsername(), e);
 			ErrorResponse error = new ErrorResponse("Please try after some time.", "");

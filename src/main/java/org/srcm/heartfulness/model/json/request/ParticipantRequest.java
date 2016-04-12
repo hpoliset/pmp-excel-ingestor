@@ -3,7 +3,11 @@ package org.srcm.heartfulness.model.json.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-
+/**
+ * this class is the request to create or update the paricipant for the event
+ * @author himasreev
+ *
+ */
 @JsonIgnoreProperties(ignoreUnknown = true,allowGetters = false)
 public class ParticipantRequest {
 

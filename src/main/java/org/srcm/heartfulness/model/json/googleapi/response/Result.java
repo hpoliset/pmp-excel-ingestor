@@ -6,6 +6,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * This class is to response of the google api to fetch the address details for the given pincode
+ * @author himasreev
+ *
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Result {
 
