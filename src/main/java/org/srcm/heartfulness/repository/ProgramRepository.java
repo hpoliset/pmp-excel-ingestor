@@ -129,4 +129,8 @@ public interface ProgramRepository {
 
 	List<Coordinator> getAllCoOrdinatorsList();
 
+	Participant deleteParticipant(String seqId, String eventId);
+
+	void updateDeletedParticipant(Participant deletedParticipant, String deletedBy);
+
 }

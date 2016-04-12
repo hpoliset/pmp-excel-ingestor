@@ -232,6 +232,21 @@ public class CreateEventHelper {
 		Result result = userProfileService.getUserProfile(encryptDecryptAES.decrypt(token,env.getProperty("security.encrypt.token")));
 		return result.getUserProfile()[0];
 	}
+
+	public Map<String, String> checkDeleteRequestMandatoryFields(ParticipantIntroductionRequest participantRequest) {
+		Map<String, String> errors = new HashMap<>();
+		if(null == participantRequest.getEventId() || participantRequest.getEventId().isEmpty()){
+			errors.put("eventId", "event Id is required");
+		}else if(null != participantRequest.getEventId() &&  !participantRequest.getEventId().matches("^E[0-9]{6}$")){
+			errors.put("eventId", "event Id invalid");
+		}else if(0 == programService.getProgramIdByEventId(participantRequest.getEventId())){
+			errors.put("eventId", "Invalid EventId - No event exists for the given event Id");
+		}
+		if(0 == participantRequest.getParticipantIds().size()){
+			errors.put("partcipantIds", "No participant Ids are available to delete");
+		}
+		return errors;
+	}
 	
 
 

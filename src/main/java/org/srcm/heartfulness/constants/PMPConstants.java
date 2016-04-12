@@ -1,5 +1,10 @@
 package org.srcm.heartfulness.constants;
 
+/**
+ * 
+ * @author himasreev
+ *
+ */
 public class PMPConstants {
 	
 	public static final String LOGIN_ROLE_SEEKER="ROLE_SEEKER";
@@ -59,5 +64,15 @@ public class PMPConstants {
 	public static final String STATE_SEEMANDHRA="SEEMANDHRA";
 	
 	public static final String STATE_WESTBENGAL="WESTBENGAL";
+	
+	
+	
+	//EVENT DASHBOARD SERVICES
+	
+	public static final String TOTAL_EVENTS="Total Events";
+	
+	public static final String UN_CATEGORIZED="Un-Categorized";
+	
+	public static final String MISCELLANEOUS="Miscellaneous";
 
 }

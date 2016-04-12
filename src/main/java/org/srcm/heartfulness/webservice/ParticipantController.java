@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.helper.CreateEventHelper;
+import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
@@ -39,25 +40,21 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 @RestController
 @RequestMapping("/api/participant")
 public class ParticipantController {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ParticipantController.class);
-	
+
 	@Autowired
 	private ProgramService programService;
-	
+
 	@Autowired
 	private PmpParticipantService participantService;
-	
-	
+
 	@Autowired
 	CreateEventHelper ceh;
-	
-	
+
 	@Autowired
 	private UserProfileService userProfileService;
 
-	
-	
 	/**
 	 * Web service endpoint to fetch list of participants.
 	 * 
@@ -74,7 +71,7 @@ public class ParticipantController {
 	 *            to check whether the program already exists or not.
 	 * @param token
 	 *            Token to be validated against mysrcm endpoint.
-	 * @return A ResponseEntity containing program details if found, and a HTTP
+	 * @return A ResponseEntity containing participant details if found, and a HTTP
 	 *         status code as described in the method comment.
 	 */
 	@RequestMapping(value = "/getparticipantlist", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -126,8 +123,15 @@ public class ParticipantController {
 		}
 
 	}
-	
-	
+
+	/**
+	 * Web service endpoint to fetch participant details.
+	 * 
+	 * @param request contains seqId and eventId to get the participant details
+	 * @param token is for the authorizing the user
+	 * @return ResponseEntity containing participant details if found, and a HTTP
+	 *         status code as described in the method comment.
+	 */
 	@RequestMapping(value = "/getparticipantdetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getPaticipantDetails(@RequestBody ParticipantRequest request,
 			@RequestHeader(value = "Authorization") String token) {
@@ -169,9 +173,15 @@ public class ParticipantController {
 		}
 
 	}
-	
 
-
+	/**
+	 * Web service endpoint to create new participant.
+	 * 
+	 * @param request contains eventId and participant information to create new participant
+	 * @param token is for the authorizing the user
+	 * @return ResponseEntity containing participant details after creating participant, and a HTTP
+	 *         status code as described in the method comment.
+	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createParticipant(@RequestBody ParticipantRequest participant,
 			@RequestHeader(value = "Authorization") String token) {
@@ -221,6 +231,14 @@ public class ParticipantController {
 		}
 	}
 
+	/**
+	 * Web service endpoint to update participant details.
+	 * 
+	 * @param request contains seqId, eventId and other participant details which need to be updated
+	 * @param token is for the authorizing the user
+	 * @return ResponseEntity containing participant details after updating participant details, and a HTTP
+	 *         status code as described in the method comment.
+	 */
 	@RequestMapping(value = "/update", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> updateParticipant(@RequestBody ParticipantRequest participant,
 			@RequestHeader(value = "Authorization") String token) {
@@ -263,9 +281,92 @@ public class ParticipantController {
 		}
 
 	}
-	
-	
 
+	/**
+	 * Web service endpoint to delete participant from participant details and logs the deleted participant information in the deleted_participants table.
+	 * 
+	 * @param request contains eventId and its list of seqIds to delete the participant from participant table
+	 * @param token is for the authorizing the user
+	 * @return ResponseEntity containing status and its description based on deletion, and a HTTP
+	 *         status code as described in the method comment.
+	 */
+	@RequestMapping(value = "/delete", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> deleteParticipant(@RequestBody ParticipantIntroductionRequest participantRequest,
+			@RequestHeader(value = "Authorization") String token) {
+		try {
+			UserProfile userprofile = ceh.validateToken(token);
+			if (null == userprofile) {
+				ErrorResponse error = new ErrorResponse("Failed", "Invalid Auth token");
+				return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
+			} else {
+				Map<String, String> map = ceh.checkDeleteRequestMandatoryFields(participantRequest);
+				if (!map.isEmpty()) {
+					return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
+				} else {
+					List<UpdateIntroductionResponse> result = new ArrayList<UpdateIntroductionResponse>();
+					for (ParticipantRequest participant : participantRequest.getParticipantIds()) {
+						if (null == participant.getSeqId() || participant.getSeqId().isEmpty()) {
+							UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+									participant.getSeqId(), "Failed", "Seq Id is required.");
+							result.add(response);
+						} else if (0 == programService.getProgramIdByEventId(participantRequest.getEventId())) {
+							UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+									participantRequest.getEventId(), "Failed", "Invalid eventID");
+							result.add(response);
+						} else if (0 != programService.getProgramIdByEventId(participantRequest.getEventId())
+								&& null == programService.findParticipantBySeqId(participant.getSeqId(),
+										programService.getProgramIdByEventId(participantRequest.getEventId()))) {
+							UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+									participant.getSeqId(), "Failed", "Invalid seqId");
+							result.add(response);
+						} else {
+							Participant deletedParticipant = programService.deleteParticipant(participant.getSeqId(),
+									participantRequest.getEventId());
+							programService.updateDeletedParticipant(deletedParticipant, userprofile.getEmail());
+							UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+									participant.getSeqId(), "Success", "Participant deleted successfully");
+							result.add(response);
+						}
+					}
+					return new ResponseEntity<List<UpdateIntroductionResponse>>(result, HttpStatus.OK);
+				}
+			}
+		} catch (HttpClientErrorException e) {
+			LOGGER.error("Exception    :" + e.getMessage());
+			ErrorResponse eResponse = new ErrorResponse("Failed", "client-error : Invalid auth token");
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.REQUEST_TIMEOUT);
+		} catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
+			ErrorResponse error = new ErrorResponse("Failed", "Invalid Auth token");
+			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
+		} catch (JsonParseException e) {
+			LOGGER.error("Exception    :" + e.getMessage());
+			ErrorResponse eResponse = new ErrorResponse("Failed", "parse-error : error while parsing json data");
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		} catch (JsonMappingException e) {
+			LOGGER.error("Exception    :" + e.getMessage());
+			ErrorResponse eResponse = new ErrorResponse("Failed",
+					"json mapping-error : json data is not mapped properly");
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		} catch (IOException e) {
+			LOGGER.error("Exception    :" + e.getMessage());
+			ErrorResponse eResponse = new ErrorResponse("Failed", "input/output-error ; Please try after sometime");
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			e.printStackTrace();
+			LOGGER.error("Exception    :" + e.getMessage());
+			ErrorResponse eResponse = new ErrorResponse("Failed", "Please try after sometime.");
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Web service endpoint to update participant introduction status for the list of participants.
+	 * 
+	 * @param request contains eventId and its list of seqIds to update the participant from participant table
+	 * @param token is for the authorizing the user
+	 * @return ResponseEntity containing status and its description based on updation, and a HTTP
+	 *         status code as described in the method comment.
+	 */
 	@RequestMapping(value = "/updateintroductionstatus", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> UpdateParticipantIntoroducedStatus(
 			@RequestBody ParticipantIntroductionRequest participantRequest,
@@ -334,5 +435,5 @@ public class ParticipantController {
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 }
