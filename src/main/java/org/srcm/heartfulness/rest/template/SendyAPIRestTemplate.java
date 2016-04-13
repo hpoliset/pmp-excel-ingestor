@@ -199,7 +199,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 			body.add(entry.getKey(), entry.getValue());
 		}
 		httpHeaders = new HttpHeaders();
-		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		//httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
 		//System.out.println("HTTP response " + httpEntity.toString());
 		ResponseEntity<String> response = this.exchange(subscribeUri,HttpMethod.POST, httpEntity, String.class);
@@ -222,7 +222,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 			body.add(entry.getKey(), entry.getValue());
 		}
 		httpHeaders = new HttpHeaders();
-		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		//httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
 		//System.out.println("HTTP response " + httpEntity.toString());
 		ResponseEntity<String> response = this.exchange(subscribeUri,HttpMethod.POST, httpEntity,String.class);
@@ -281,7 +281,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		body.add("send_campaign", sendCampaign);
 
 		httpHeaders = new HttpHeaders();
-		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		//httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
 		//System.out.println("http " + content.toString());
 		ResponseEntity<String> response = this.exchange(sendMailUri,HttpMethod.POST, httpEntity, String.class);
@@ -305,7 +305,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 			setProxy();
 		body = new LinkedMultiValueMap<String, String>();
 		httpHeaders = new HttpHeaders();
-		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		//httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
 		ResponseEntity<String> response = this.exchange(scheduledCronJobUri, HttpMethod.GET, httpEntity, String.class);
 		return response.getBody();
@@ -331,7 +331,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		body.add("boolean", sendFlag);
 		body.add("list", welcomeMail.subscriberListID);
 		httpHeaders = new HttpHeaders();
-		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		//httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
 		ResponseEntity<String> response = this.exchange(unsubscribeUri, HttpMethod.POST, httpEntity, String.class);
 		return response.getBody();
@@ -346,7 +346,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		body.add("boolean", sendFlag);
 		body.add("list", monthlyNewsletter.subscriberListID);
 		httpHeaders = new HttpHeaders();
-		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		//httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
 		//System.out.println("HTTP response " + httpEntity.toString());
 		ResponseEntity<String> response = this.exchange(unsubscribeUri, HttpMethod.POST, httpEntity, String.class);
