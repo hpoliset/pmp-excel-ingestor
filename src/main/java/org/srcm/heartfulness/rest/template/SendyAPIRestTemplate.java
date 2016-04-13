@@ -21,6 +21,8 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -36,6 +38,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
+import org.srcm.heartfulness.repository.jdbc.ProgramRepositoryImpl;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -50,6 +53,8 @@ import com.sun.mail.smtp.SMTPMessage;
 @Component
 @ConfigurationProperties(locations = "classpath:dev.sendy.api.properties", ignoreUnknownFields = false, prefix = "sendy")
 public class SendyAPIRestTemplate extends RestTemplate {
+	
+	private static Logger LOGGER = LoggerFactory.getLogger(SendyAPIRestTemplate.class);
 	
 	private VelocityEngine velocityEngine=new VelocityEngine();
 
@@ -182,6 +187,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 	 */
 	public String addNewSubscriber(SendySubscriber sendySubscriberDetails) throws HttpClientErrorException,
 			JsonParseException, JsonMappingException, IOException {
+		LOGGER.debug("Welcome mail.");
 		if (proxy)
 			setProxy();
 		body = new LinkedMultiValueMap<String, String>();
@@ -198,16 +204,17 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
 		//System.out.println("HTTP response " + httpEntity.toString());
 		ResponseEntity<String> response = this.exchange(subscribeUri,HttpMethod.POST, httpEntity, String.class);
+		LOGGER.debug("response: {} ",response.getBody());
 		return response.getBody();
 		//return "ok";
 	}
 	
 	public String addSubscriberToMonthlyNewsletterList(SendySubscriber sendySubscriberDetails) throws HttpClientErrorException,
 			JsonParseException, JsonMappingException, IOException {
+		LOGGER.debug("Monthly news letter.");
 		if (proxy)
 			setProxy();
 		body = new LinkedMultiValueMap<String, String>();
-
 		body.add("name", sendySubscriberDetails.getNameToSendMail());
 		body.add("email", sendySubscriberDetails.getEmail());
 		body.add("boolean", sendFlag);
@@ -220,6 +227,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
 		//System.out.println("HTTP response " + httpEntity.toString());
 		ResponseEntity<String> response = this.exchange(subscribeUri,HttpMethod.POST, httpEntity,String.class);
+		LOGGER.debug("response: {} ",response.getBody());
 		return response.getBody();
 	}
 
@@ -233,6 +241,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 	 * @throws IOException
 	 */
 	public String sendMail() throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
+		LOGGER.debug("sending mail. ");
 		if (proxy)
 			setProxy();
 		StringBuffer content = new StringBuffer("");
@@ -277,6 +286,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
 		//System.out.println("http " + content.toString());
 		ResponseEntity<String> response = this.exchange(sendMailUri,HttpMethod.POST, httpEntity, String.class);
+		LOGGER.debug("response: {} ",response.getBody());
 		return response.getBody();
 		//return "ok";
 	}
