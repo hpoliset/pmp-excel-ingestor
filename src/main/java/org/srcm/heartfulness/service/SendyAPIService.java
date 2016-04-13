@@ -18,4 +18,8 @@ public interface SendyAPIService {
 	 */
 	public String unsubscribe(String mailID);
 
+	void addNewSubscriber();
+
+	void unsubscribeUsers();
+
 }

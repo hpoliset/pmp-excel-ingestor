@@ -40,6 +40,7 @@ public class SendyAPIServiceImpl implements SendyAPIService {
 	@Autowired
 	private SendyMailRepository sendyMailRepository;
 
+	@Override
 	/* @Scheduled(cron = "0 17 14 * * *") */
 	public void addNewSubscriber() {
 
@@ -133,6 +134,8 @@ public class SendyAPIServiceImpl implements SendyAPIService {
 	 * 
 	 * @see org.srcm.heartfulness.service.SendyAPIService#unsubscribeUsers()
 	 */
+
+	@Override
 	/*@Scheduled(cron = "0 18 14 * * *")*/
 	public void unsubscribeUsers() {
 		List<WelcomeMailDetails> subscribers = new ArrayList<WelcomeMailDetails>();
