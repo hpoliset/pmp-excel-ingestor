@@ -88,6 +88,7 @@ public class SendyAPIServiceImpl implements SendyAPIService {
 		if (subscriberSet.size() >= 1) {
 			try {
 				response=sendyAPIRestTemplate.sendMail();
+				LOGGER.debug("Response: "+response);
 			} catch (HttpClientErrorException | IOException e) {
 				LOGGER.debug("Error while sending Mail - " + e.getMessage());
 				try {
@@ -96,7 +97,7 @@ public class SendyAPIServiceImpl implements SendyAPIService {
 					LOGGER.debug("Error while sending SMTP Mail - " + ex.getMessage());
 				}
 			}
-			if (response.equals("Campaign created and now sending")) {
+			if (null != response && response.equals("Campaign created and now sending")) {
 				for (SendySubscriber subscriber : subscriberSet) {
 					WelcomeMailDetails welcomeMailDetails = new WelcomeMailDetails();
 					welcomeMailDetails.setPrintName(subscriber.getUserName());
