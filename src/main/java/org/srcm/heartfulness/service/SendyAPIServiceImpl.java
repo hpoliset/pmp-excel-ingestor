@@ -163,8 +163,8 @@ public class SendyAPIServiceImpl implements SendyAPIService {
 		subscriberCount = sendyMailRepository.getIntroducedParticipantCount(printName, mailID);
 		if (subscriberCount < 1) {
 			try {
-				sendyMailRepository.save(welcomeMailDetails);
 				response = sendyAPIRestTemplate.addSubscriberToMonthlyNewsletterList(sendySubscriber);
+				sendyMailRepository.save(welcomeMailDetails);
 			} catch (HttpClientErrorException | IOException e) {
 				e.printStackTrace();
 			}
@@ -179,13 +179,12 @@ public class SendyAPIServiceImpl implements SendyAPIService {
 		String response = null;
 		WelcomeMailDetails sendySubscriber = new WelcomeMailDetails();
 		sendySubscriber.setEmail(mailID);
-		System.out.println("unsubs service " + mailID);
-		sendyMailRepository.updateUserUnsubscribed(mailID);
 		try {
 			response = sendyAPIRestTemplate.unsubscribeUserFromMonthlyNewsletterList(sendySubscriber);
 		} catch (HttpClientErrorException | IOException e) {
 			e.printStackTrace();
 		}
+		sendyMailRepository.updateUserUnsubscribed(mailID);
 		return response;
 	}
 }
