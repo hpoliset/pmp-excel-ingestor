@@ -43,7 +43,7 @@ public class SendyMailRepositoryImpl implements SendyMailRepository {
 		params.put("createDate", date);
 		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);*/
 		List<Participant> participants = this.namedParameterJdbcTemplate.query(
-				"SELECT print_name,email,language FROM participant WHERE create_time < CURDATE() AND welcome_mail_sent=0 OR welcome_mail_sent IS NULL",
+				"SELECT print_name,email,language FROM participant WHERE create_time < CURDATE() AND welcome_mail_sent=0",
 				BeanPropertyRowMapper.newInstance(Participant.class));
 
 		return participants;
