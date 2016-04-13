@@ -40,6 +40,8 @@ public class SendyAPIServiceImpl implements SendyAPIService {
 	@Autowired
 	private SendyMailRepository sendyMailRepository;
 
+	private Object response;
+
 	@Override
 	/* @Scheduled(cron = "0 17 14 * * *") */
 	public void addNewSubscriber() {
@@ -85,7 +87,7 @@ public class SendyAPIServiceImpl implements SendyAPIService {
 		// System.out.println("SET SIZE "+subscriberSet.size());
 		if (subscriberSet.size() >= 1) {
 			try {
-				sendyAPIRestTemplate.sendMail();
+				response=sendyAPIRestTemplate.sendMail();
 			} catch (HttpClientErrorException | IOException e) {
 				LOGGER.debug("Error while sending Mail - " + e.getMessage());
 				try {
@@ -94,19 +96,23 @@ public class SendyAPIServiceImpl implements SendyAPIService {
 					LOGGER.debug("Error while sending SMTP Mail - " + ex.getMessage());
 				}
 			}
-			for (SendySubscriber subscriber : subscriberSet) {
-				WelcomeMailDetails welcomeMailDetails = new WelcomeMailDetails();
-				welcomeMailDetails.setPrintName(subscriber.getUserName());
-				welcomeMailDetails.setEmail(subscriber.getEmail());
-				welcomeMailDetails.setCreateTime(new Date());
-				sendyMailRepository.save(welcomeMailDetails);
+			if (response.equals("Campaign created and now sending")) {
+				for (SendySubscriber subscriber : subscriberSet) {
+					WelcomeMailDetails welcomeMailDetails = new WelcomeMailDetails();
+					welcomeMailDetails.setPrintName(subscriber.getUserName());
+					welcomeMailDetails.setEmail(subscriber.getEmail());
+					welcomeMailDetails.setCreateTime(new Date());
+					sendyMailRepository.save(welcomeMailDetails);
+				}
+				try {
+					sendyAPIRestTemplate.executeCronJob();
+				} catch (HttpClientErrorException | IOException e) {
+					LOGGER.debug("Error while executing cron job - " + e.getMessage());
+				}
+				sendyMailRepository.updateParticipant();
+			} else {
+				LOGGER.debug("Error while sending Mail" + response);
 			}
-			try {
-				sendyAPIRestTemplate.executeCronJob();
-			} catch (HttpClientErrorException | IOException e) {
-				LOGGER.debug("Error while executing cron job - " + e.getMessage());
-			}
-			sendyMailRepository.updateParticipant();
 		}
 	}
 
