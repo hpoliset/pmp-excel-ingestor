@@ -38,7 +38,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
-import org.srcm.heartfulness.repository.jdbc.ProgramRepositoryImpl;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -204,7 +203,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
 		//System.out.println("HTTP response " + httpEntity.toString());
 		ResponseEntity<String> response = this.exchange(subscribeUri,HttpMethod.POST, httpEntity, String.class);
-		LOGGER.debug("response: {} ",response.getBody());
+		LOGGER.debug("response: "+response.getBody());
 		return response.getBody();
 		//return "ok";
 	}
@@ -227,7 +226,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
 		//System.out.println("HTTP response " + httpEntity.toString());
 		ResponseEntity<String> response = this.exchange(subscribeUri,HttpMethod.POST, httpEntity,String.class);
-		LOGGER.debug("response: {} ",response.getBody());
+		LOGGER.debug("response: "+response.getBody());
 		return response.getBody();
 	}
 
@@ -286,7 +285,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
 		//System.out.println("http " + content.toString());
 		ResponseEntity<String> response = this.exchange(sendMailUri,HttpMethod.POST, httpEntity, String.class);
-		LOGGER.debug("response: {} ",response.getBody());
+		LOGGER.debug("response: "+response.getBody());
 		return response.getBody();
 		//return "ok";
 	}
