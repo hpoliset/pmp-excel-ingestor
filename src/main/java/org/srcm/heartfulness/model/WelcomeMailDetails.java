@@ -8,6 +8,7 @@ public class WelcomeMailDetails {
 	private String printName;
     private Date createTime;
     private String email;
+    private int unsubscribed;
     
 	public int getId() {
 		return id;
@@ -34,11 +35,18 @@ public class WelcomeMailDetails {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
+	
+	public int getUnsubscribed() {
+		return unsubscribed;
+	}
+	public void setUnsubscribed(int unsubscribed) {
+		this.unsubscribed = unsubscribed;
+	}
+	
 	@Override
 	public String toString() {
-		return "WelcomeMailDetails [id=" + id + ", printName=" + printName + ", createTime="
-				+ createTime + ", email=" + email + "]";
+		return "WelcomeMailDetails [id=" + id + ", printName=" + printName + ", createTime=" + createTime + ", email="
+				+ email + ", unsubscribed=" + unsubscribed + "]";
 	}
-    
+	
 }
