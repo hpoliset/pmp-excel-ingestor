@@ -34,7 +34,7 @@ public class SendyAPIController {
 		response = sendyAPIService.unsubscribe(sendySubcriber.getEmail());
 		return response;
 	}
-	
+/*	
 	@RequestMapping(value = "subscribescheduler", method ={ RequestMethod.POST, RequestMethod.GET })
 	public void addSubscriber() {
 		sendyAPIService.addNewSubscriber();
@@ -43,6 +43,6 @@ public class SendyAPIController {
 	@RequestMapping(value = "unsubscribescheduler", method ={ RequestMethod.POST, RequestMethod.GET })
 	public void unsubscribe(){
 		sendyAPIService.unsubscribeUsers();
-	}
+	}*/
 	
 }
