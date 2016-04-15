@@ -151,7 +151,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		}
 	}
 	
-	public static class InviteMail{
+/*	public static class InviteMail{
 		
 		private String subscriberListID;
 		
@@ -162,7 +162,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		public void setSubscriberListID(String subscriberListID) {
 			this.subscriberListID = subscriberListID;
 		}
-	}
+	}*/
 	
 	@NotNull
 	private WelcomeMail welcomeMail;
@@ -170,8 +170,8 @@ public class SendyAPIRestTemplate extends RestTemplate {
 	@NotNull
 	private MonthlyNewsletter monthlyNewsletter;
 	
-	@NotNull
-	private InviteMail inviteMail;
+	/*@NotNull
+	private InviteMail inviteMail;*/
 	
 	public WelcomeMail getWelcomeMail() {
 		return welcomeMail;
@@ -354,7 +354,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		return response.getBody();
 	}
 	
-	public String addSubcribertoInviteMail(SendySubscriber sendySubscriberDetails) {
+/*	public String addSubcribertoInviteMail(SendySubscriber sendySubscriberDetails) {
 		if (proxy)
 			setProxy();
 		body = new LinkedMultiValueMap<String, String>();
@@ -370,7 +370,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
 		ResponseEntity<String> response = this.exchange(subscribeUri,HttpMethod.POST, httpEntity, String.class);
 		return response.getBody();
-	}
+	}*/
 
 	
 	/**
