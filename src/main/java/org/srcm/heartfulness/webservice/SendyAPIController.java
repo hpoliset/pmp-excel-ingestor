@@ -60,7 +60,7 @@ public class SendyAPIController {
 	}
 	
 	
-	@RequestMapping(value = "invitemail", method ={ RequestMethod.POST, RequestMethod.GET })
+	/*@RequestMapping(value = "invitemail", method ={ RequestMethod.POST, RequestMethod.GET })
 	public ResponseEntity<?> addSubcribertoInviteMail() {
 		try {
 			sendyAPIService.addSubcribertoInviteMail();
@@ -86,6 +86,6 @@ public class SendyAPIController {
 			LOGGER.debug("Error while adding subscriber - " + e.getMessage());
 			return new ResponseEntity<String> ("Internal server error",HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	}
+	}*/
 
 }
