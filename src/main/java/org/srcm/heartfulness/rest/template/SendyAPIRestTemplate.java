@@ -153,10 +153,27 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		}
 	}
 	
+	public static class InviteMail{
+		
+		private String subscriberListID;
+		
+		public String getSubscriberListID() {
+			return subscriberListID;
+		}
+
+		public void setSubscriberListID(String subscriberListID) {
+			this.subscriberListID = subscriberListID;
+		}
+	}
+	
 	@NotNull
 	private WelcomeMail welcomeMail;
+	
 	@NotNull
 	private MonthlyNewsletter monthlyNewsletter;
+	
+	@NotNull
+	private InviteMail inviteMail;
 	
 	public WelcomeMail getWelcomeMail() {
 		return welcomeMail;
@@ -186,7 +203,6 @@ public class SendyAPIRestTemplate extends RestTemplate {
 	 */
 	public String addNewSubscriber(SendySubscriber sendySubscriberDetails) throws HttpClientErrorException,
 			JsonParseException, JsonMappingException, IOException {
-		//LOGGER.debug("Welcome mail.");
 		if (proxy)
 			setProxy();
 		body = new LinkedMultiValueMap<String, String>();
@@ -199,18 +215,14 @@ public class SendyAPIRestTemplate extends RestTemplate {
 			body.add(entry.getKey(), entry.getValue());
 		}
 		httpHeaders = new HttpHeaders();
-		//httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
-		//System.out.println("HTTP response " + httpEntity.toString());
 		ResponseEntity<String> response = this.exchange(subscribeUri,HttpMethod.POST, httpEntity, String.class);
-		//LOGGER.debug("response: "+response.getBody());
 		return response.getBody();
-		//return "ok";
 	}
 	
 	public String addSubscriberToMonthlyNewsletterList(SendySubscriber sendySubscriberDetails) throws HttpClientErrorException,
 			JsonParseException, JsonMappingException, IOException {
-		//LOGGER.debug("Monthly news letter.");
 		if (proxy)
 			setProxy();
 		body = new LinkedMultiValueMap<String, String>();
@@ -222,11 +234,9 @@ public class SendyAPIRestTemplate extends RestTemplate {
 			body.add(entry.getKey(), entry.getValue());
 		}
 		httpHeaders = new HttpHeaders();
-		//httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
-		//System.out.println("HTTP response " + httpEntity.toString());
 		ResponseEntity<String> response = this.exchange(subscribeUri,HttpMethod.POST, httpEntity,String.class);
-		//LOGGER.debug("response: "+response.getBody());
 		return response.getBody();
 	}
 
@@ -240,10 +250,8 @@ public class SendyAPIRestTemplate extends RestTemplate {
 	 * @throws IOException
 	 */
 	public String sendMail() throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
-		//LOGGER.debug("sending mail. ");
 		if (proxy)
 			setProxy();
-		StringBuffer content = new StringBuffer("");
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath"); 
 		ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
@@ -281,13 +289,10 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		body.add("send_campaign", sendCampaign);
 
 		httpHeaders = new HttpHeaders();
-		//httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
-		//System.out.println("http " + content.toString());
 		ResponseEntity<String> response = this.exchange(sendMailUri,HttpMethod.POST, httpEntity, String.class);
-		//LOGGER.debug("response: "+response.getBody());
 		return response.getBody();
-		//return "ok";
 	}
 
 	/**
@@ -305,11 +310,10 @@ public class SendyAPIRestTemplate extends RestTemplate {
 			setProxy();
 		body = new LinkedMultiValueMap<String, String>();
 		httpHeaders = new HttpHeaders();
-		//httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
 		ResponseEntity<String> response = this.exchange(scheduledCronJobUri, HttpMethod.GET, httpEntity, String.class);
 		return response.getBody();
-		//return "";
 	}
 	
 	/**
@@ -331,7 +335,7 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		body.add("boolean", sendFlag);
 		body.add("list", welcomeMail.subscriberListID);
 		httpHeaders = new HttpHeaders();
-		//httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
 		ResponseEntity<String> response = this.exchange(unsubscribeUri, HttpMethod.POST, httpEntity, String.class);
 		return response.getBody();
@@ -346,12 +350,30 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		body.add("boolean", sendFlag);
 		body.add("list", monthlyNewsletter.subscriberListID);
 		httpHeaders = new HttpHeaders();
-		//httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
-		//System.out.println("HTTP response " + httpEntity.toString());
 		ResponseEntity<String> response = this.exchange(unsubscribeUri, HttpMethod.POST, httpEntity, String.class);
 		return response.getBody();
 	}
+	
+	public String addSubcribertoInviteMail(SendySubscriber sendySubscriberDetails) {
+		if (proxy)
+			setProxy();
+		body = new LinkedMultiValueMap<String, String>();
+		body.add("name", sendySubscriberDetails.getNameToSendMail());
+		body.add("email", sendySubscriberDetails.getEmail());
+		body.add("boolean", sendFlag);
+		body.add("list", inviteMail.subscriberListID);
+		for (Entry<String, String> entry : sendySubscriberDetails.getfields().entrySet()) {
+			body.add(entry.getKey(), entry.getValue());
+		}
+		httpHeaders = new HttpHeaders();
+		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		httpEntity = new HttpEntity<Object>(body, httpHeaders);
+		ResponseEntity<String> response = this.exchange(subscribeUri,HttpMethod.POST, httpEntity, String.class);
+		return response.getBody();
+	}
+
 	
 	/**
 	 * To send error alert email when sendy fails
@@ -553,7 +575,5 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		factory.setHttpClient(client);
 		this.setRequestFactory(factory);*/
 	}
-
-	
 
 }
