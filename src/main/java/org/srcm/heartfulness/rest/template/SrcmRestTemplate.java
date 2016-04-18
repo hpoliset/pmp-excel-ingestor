@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:prod.srcm.api.properties", ignoreUnknownFields = false, prefix = "srcm.oauth2")
+@ConfigurationProperties(locations = "classpath:dev.srcm.api.properties", ignoreUnknownFields = false, prefix = "srcm.oauth2")
 public class SrcmRestTemplate extends RestTemplate {
 
 	private String clientId;
@@ -107,21 +107,21 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * method to set the proxy (development use only)
 	 */
 	private void setProxy() {
-		/*
-		 * CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		 * credsProvider.setCredentials(new
-		 * AuthScope(AuthScope.ANY_HOST,AuthScope.ANY_PORT), new
-		 * UsernamePasswordCredentials(proxyUser, proxyPassword));
-		 * HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-		 * clientBuilder.useSystemProperties(); clientBuilder.setProxy(new
-		 * HttpHost(proxyHost, proxyPort));
-		 * clientBuilder.setDefaultCredentialsProvider(credsProvider);
-		 * clientBuilder.setProxyAuthenticationStrategy(new
-		 * ProxyAuthenticationStrategy()); CloseableHttpClient client =
-		 * clientBuilder.build(); HttpComponentsClientHttpRequestFactory factory
-		 * = new HttpComponentsClientHttpRequestFactory();
-		 * factory.setHttpClient(client); this.setRequestFactory(factory);
-		 */
+	
+		 /* CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		  credsProvider.setCredentials(new
+		  AuthScope(AuthScope.ANY_HOST,AuthScope.ANY_PORT), new
+		  UsernamePasswordCredentials(proxyUser, proxyPassword));
+		  HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+		  clientBuilder.useSystemProperties(); clientBuilder.setProxy(new
+		  HttpHost(proxyHost, proxyPort));
+		  clientBuilder.setDefaultCredentialsProvider(credsProvider);
+		  clientBuilder.setProxyAuthenticationStrategy(new
+		  ProxyAuthenticationStrategy()); CloseableHttpClient client =
+		  clientBuilder.build(); HttpComponentsClientHttpRequestFactory factory
+		  = new HttpComponentsClientHttpRequestFactory();
+		  factory.setHttpClient(client); this.setRequestFactory(factory);*/
+		 
 	}
 
 	/**
