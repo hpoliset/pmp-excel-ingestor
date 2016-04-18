@@ -46,8 +46,8 @@
 						if(redirectUrl != null){
 							$('#modal_trigger')[0].click();
 						}
-						var url = 'https://pmpbeta.heartfulness.org/pmp/api/authenticate';
-						var getuserurl = 'https://pmpbeta.heartfulness.org/pmp/api/v1/user';
+						var url = 'https://pmp.heartfulness.org/pmp/api/authenticate';
+						var getuserurl = 'https://pmp.heartfulness.org/pmp/api/v1/user';
 						var id;
 						$("#submit")
 								.click(
