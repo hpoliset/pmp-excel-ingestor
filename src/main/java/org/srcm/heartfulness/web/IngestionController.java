@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.srcm.heartfulness.authorizationservice.PmpAuthorizationService;
+import org.srcm.heartfulness.helper.AuthorizationHelper;
 import org.srcm.heartfulness.service.PmpIngestionService;
 import org.srcm.heartfulness.service.response.ExcelUploadResponse;
 import org.srcm.heartfulness.util.InvalidExcelFileException;
@@ -25,11 +29,25 @@ import org.srcm.heartfulness.util.InvalidExcelFileException;
 public class IngestionController {
 
 	@Autowired
+	AuthorizationHelper authHelper;
+
+	@Autowired
+	private PmpAuthorizationService pmpAuthService;
+
+	@Autowired
 	private PmpIngestionService pmpIngestionService;
 
 	@RequestMapping(value = "/ingest/inputForm", method = RequestMethod.GET)
-	public String showUploadForm(HttpServletRequest request) {
-		return "ingestionForm";
+	public String showUploadForm(HttpServletRequest request,RedirectAttributes redirectAttributes) {
+		try{
+			authHelper.setcurrentUsertoContext(request.getSession());
+			return pmpAuthService.showInputForm();
+		}catch(AccessDeniedException e){
+			return "accessdenied";
+		}catch (NullPointerException e) {
+			redirectAttributes.addFlashAttribute("redirecturl", "/ingest/inputForm");
+			return "redirect:/login";
+		}
 	}
 
 	@RequestMapping("/")
@@ -56,8 +74,16 @@ public class IngestionController {
 	 * @return The bulk upload form.
 	 */
 	@RequestMapping(value = "/ingest/bulkUploadForm", method = RequestMethod.GET)
-	public String showBulkUploadForm(HttpServletRequest request) {
-		return "bulkUploadIngestionForm";
+	public String showBulkUploadForm(HttpServletRequest request,RedirectAttributes redirectAttributes) {
+		try{
+			authHelper.setcurrentUsertoContext(request.getSession());
+			return pmpAuthService.showBulkUploadForm();
+		}catch(AccessDeniedException e){
+			return "accessdenied";
+		}catch (NullPointerException e) {
+			redirectAttributes.addFlashAttribute("redirecturl", "/ingest/bulkUploadForm");
+			return "redirect:/login";
+		}
 	}
 
 	/**
