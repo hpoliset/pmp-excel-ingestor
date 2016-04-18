@@ -14,7 +14,7 @@
 	<form method="POST" action="processBulkUpload"
 		enctype="multipart/form-data">
 
-		<div class="container">
+		<div class="container" align="center" style="width: 100%; height: 100%; margin: 0 auto;">
 			<h3>Heartfulness Event Data Upload Screen</h3>
 			<div class="six columns">
 				<input id="fileupload" type="file" name="uploadedExcelFiles" multiple>

@@ -17,6 +17,7 @@ import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.helper.AuthorizationHelper;
 import org.srcm.heartfulness.model.ParticipantFullDetails;
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.service.ChannelService;
 import org.srcm.heartfulness.service.ProgramService;
 import org.srcm.heartfulness.service.ReportService;
 import org.srcm.heartfulness.vo.ReportVO;
@@ -45,9 +46,11 @@ public class PmpAuthorizationServiceImpl implements PmpAuthorizationService {
 	@Autowired
 	Environment env;
 
-
 	@Autowired
 	private ReportService reportService;
+
+	@Autowired
+	ChannelService channelService;
 
 	/**
 	 * method to show reports form
@@ -65,6 +68,7 @@ public class PmpAuthorizationServiceImpl implements PmpAuthorizationService {
 		List<String> eventTypes = reportService.getEventTypes();
 		modelMap.addAttribute("eventCountries", eventCountries);
 		modelMap.addAttribute("eventTypes", eventTypes);
+		modelMap.addAttribute("programChannels",channelService.findAllActiveChannels());
 		//	}
 		return "reportsForm";
 	}
