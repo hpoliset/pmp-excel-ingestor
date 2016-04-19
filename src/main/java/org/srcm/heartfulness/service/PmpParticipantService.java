@@ -1,8 +1,10 @@
 package org.srcm.heartfulness.service;
 
 import java.text.ParseException;
+import java.util.List;
 
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
+import org.srcm.heartfulness.model.json.request.SearchRequest;
 
 /**
  * This class contains participant related services
@@ -26,5 +28,8 @@ public interface PmpParticipantService {
 	 * @return  participant details
 	 */
 	public ParticipantRequest getParticipantBySeqId(ParticipantRequest participantRequest);
+
+
+	public List<ParticipantRequest> searchParticipants(SearchRequest searchRequest);
 
 }

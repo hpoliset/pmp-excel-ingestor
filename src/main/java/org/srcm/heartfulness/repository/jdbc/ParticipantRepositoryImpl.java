@@ -2,6 +2,7 @@ package org.srcm.heartfulness.repository.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -24,8 +25,10 @@ import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
+import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.service.ProgramService;
+import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.SmsUtil;
 
 /**
@@ -248,6 +251,33 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 		} else {
 			return new Participant();
 		}
+	}
+
+	@Override
+	public List<Participant> getParticipantList(SearchRequest searchRequest) {
+		List<Participant> participants = null;
+		StringBuilder whereCondition = new StringBuilder("");
+		StringBuilder orderBy = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		if(!("ALL".equals(searchRequest.getSearchField())) && null != searchRequest.getSearchField() && !searchRequest.getSearchField().isEmpty()){
+			if(null != searchRequest.getSearchText() && !searchRequest.getSearchText().isEmpty()){
+				whereCondition.append(whereCondition.length() > 0 ? " and "+searchRequest.getSearchField()+" LIKE '%"+ searchRequest.getSearchText()+"%'" : searchRequest.getSearchField()+" LIKE '%"+ searchRequest.getSearchText()+"%'" );
+			}
+		}
+		
+		if(null != searchRequest.getSortBy() && !searchRequest.getSortBy().isEmpty()){
+			orderBy.append(orderBy.length() > 0 ? ", "+searchRequest.getSortBy() : searchRequest.getSortBy());
+			if(null != searchRequest.getSortDirection() && !searchRequest.getSortDirection().isEmpty()){
+				orderBy.append(searchRequest.getSortDirection().equalsIgnoreCase("0") ? " asc" :" desc" );
+			}
+		}
+		
+		participants = this.namedParameterJdbcTemplate.query(
+				"SELECT * FROM participant" + (whereCondition.length() > 0 ? " WHERE " + whereCondition : "") + (orderBy.length() > 0 ? " ORDER BY "+ orderBy : ""),
+				params, BeanPropertyRowMapper.newInstance(Participant.class));
+		
+		return participants;
+
 	}
 
 }

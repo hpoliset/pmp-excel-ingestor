@@ -29,6 +29,7 @@ import org.srcm.heartfulness.helper.CreateEventHelper;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
+import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.service.PmpParticipantService;
@@ -543,6 +544,46 @@ public class EventsController {
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "input/output-error ; Please try after sometime");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
+			LOGGER.error("Exception    :" + e.getMessage());
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Please try after sometime.");
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
+	@RequestMapping(value = "/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> searchEvents(@RequestHeader(value = "Authorization") String token,@RequestBody SearchRequest searchRequest) {
+		try{
+			List<Event> eventList = new ArrayList<>();
+			if (null == ceh.validateToken(token)) {
+				ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
+				return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
+			} else {
+				eventList = programService.searchEvents(searchRequest);
+				return new ResponseEntity<List<Event>>(eventList,HttpStatus.OK);
+			}
+		} catch (HttpClientErrorException e) {
+			LOGGER.error("Exception    :" + e.getMessage());
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "client-error : Invalid auth token");
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.REQUEST_TIMEOUT);
+		} catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
+			ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
+			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
+		} catch (JsonParseException e) {
+			LOGGER.error("Exception    :" + e.getMessage());
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "parse-error : error while parsing json data");
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		} catch (JsonMappingException e) {
+			LOGGER.error("Exception    :" + e.getMessage());
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
+					"json mapping-error : json data is not mapped properly");
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		} catch (IOException e) {
+			LOGGER.error("Exception    :" + e.getMessage());
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "input/output-error ; Please try after sometime");
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			e.printStackTrace();
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Please try after sometime.");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);

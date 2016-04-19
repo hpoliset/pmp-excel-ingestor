@@ -8,7 +8,9 @@ import org.springframework.dao.DataAccessException;
 import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
+import org.srcm.heartfulness.model.json.request.SearchRequest;
 
 /**
  * Repository class for <code>Program</code> domain class.
@@ -228,5 +230,9 @@ public interface ProgramRepository {
 	 * @param deletedBy
 	 */
 	void updateDeletedParticipant(Participant deletedParticipant, String deletedBy);
+
+	List<Program> searchEvents(SearchRequest searchRequest);
+
+	String getEventIdByProgramID(int programId);
 
 }

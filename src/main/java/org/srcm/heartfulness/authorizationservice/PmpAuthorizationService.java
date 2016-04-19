@@ -21,21 +21,21 @@ public interface PmpAuthorizationService {
 	 * @param modelMap 
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN')")
 	String showReportsForm(ModelMap modelMap);
 
 	/**
 	 * method which authorizes based on role and shows ingestion form
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')")
+	@PreAuthorize("hasAnyRole('ROLE_REGIONAL_ADMIN','ROLE_PRECEPTOR','ROLE_SYSTEM_ADMIN')")
 	String showInputForm();
 
 	/**
 	 * method which authorizes based on role and shows bulk upload form
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')")
+	@PreAuthorize("hasAnyRole('ROLE_REGIONAL_ADMIN','ROLE_PRECEPTOR','ROLE_SYSTEM_ADMIN')")
 	String showBulkUploadForm();
 
 	/**
@@ -50,23 +50,23 @@ public interface PmpAuthorizationService {
 	 * @param reportVO
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_PRECEPTOR')")
 	public Collection<ParticipantFullDetails> getParticipants(ReportVO reportVO);
 
 	/**
 	 *  method which authorizes based on role and shows index form
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR','ROLE_SEEKER')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_PRECEPTOR','ROLE_SEEKER')")
 	String showIndexForm();
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_PRECEPTOR')")
 	String showEventsForm();
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_PRECEPTOR')")
 	String showProgramForm(String encryptedProgramId, Model model);
 	
-	/*@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')")*/
+	/*@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_PRECEPTOR')")*/
 	ResponseEntity<?> getEventList();
 
 	}

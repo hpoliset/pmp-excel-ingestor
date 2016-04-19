@@ -9,6 +9,7 @@ import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
+import org.srcm.heartfulness.model.json.request.SearchRequest;
 
 public interface ProgramService {
 	
@@ -201,5 +202,9 @@ public interface ProgramService {
 	 * @return Event
 	 */
 	public Event getEventDetails(String EventId);
+
+	public List<Event> searchEvents(SearchRequest searchRequest);
+
+	public String getEventIdByProgramID(int programId);
 
 }

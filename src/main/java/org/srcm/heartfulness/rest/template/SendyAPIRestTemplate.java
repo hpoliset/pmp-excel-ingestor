@@ -151,27 +151,11 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		}
 	}
 	
-/*	public static class InviteMail{
-		
-		private String subscriberListID;
-		
-		public String getSubscriberListID() {
-			return subscriberListID;
-		}
-
-		public void setSubscriberListID(String subscriberListID) {
-			this.subscriberListID = subscriberListID;
-		}
-	}*/
-	
 	@NotNull
 	private WelcomeMail welcomeMail;
 	
 	@NotNull
 	private MonthlyNewsletter monthlyNewsletter;
-	
-	/*@NotNull
-	private InviteMail inviteMail;*/
 	
 	public WelcomeMail getWelcomeMail() {
 		return welcomeMail;
@@ -353,25 +337,6 @@ public class SendyAPIRestTemplate extends RestTemplate {
 		ResponseEntity<String> response = this.exchange(unsubscribeUri, HttpMethod.POST, httpEntity, String.class);
 		return response.getBody();
 	}
-	
-/*	public String addSubcribertoInviteMail(SendySubscriber sendySubscriberDetails) {
-		if (proxy)
-			setProxy();
-		body = new LinkedMultiValueMap<String, String>();
-		body.add("name", sendySubscriberDetails.getNameToSendMail());
-		body.add("email", sendySubscriberDetails.getEmail());
-		body.add("boolean", sendFlag);
-		body.add("list", inviteMail.subscriberListID);
-		for (Entry<String, String> entry : sendySubscriberDetails.getfields().entrySet()) {
-			body.add(entry.getKey(), entry.getValue());
-		}
-		httpHeaders = new HttpHeaders();
-		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
-		httpEntity = new HttpEntity<Object>(body, httpHeaders);
-		ResponseEntity<String> response = this.exchange(subscribeUri,HttpMethod.POST, httpEntity, String.class);
-		return response.getBody();
-	}*/
-
 	
 	/**
 	 * To send error alert email when sendy fails

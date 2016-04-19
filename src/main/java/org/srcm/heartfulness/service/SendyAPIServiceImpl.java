@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.SendyConstants;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
@@ -57,64 +58,69 @@ public class SendyAPIServiceImpl implements SendyAPIService {
 		Set<SendySubscriber> subscriberSet = new HashSet<SendySubscriber>();
 		int participantCount = 0;
 
-		if (participants.size() >= 1) {
-			for (Participant participant : participants) {
-				Map<String, String> fields = new HashMap<String, String>();
-				sendySubscriber = new SendySubscriber();
-				participantCount = sendyMailRepository.getIntroducedParticipantCount(participant.getPrintName(),
-						participant.getEmail());
-				System.out.println("participant count " + participantCount);
-				if (participantCount < 1) {
-					fields.put("Date", currentDateTime);
-					sendySubscriber.setNameToSendMail(getName(participant.getPrintName()));
-					sendySubscriber.setUserName(participant.getPrintName());
-					sendySubscriber.setEmail(participant.getEmail());
-					sendySubscriber.setfields(fields);
-					// subscribersList.put(participant.getPrintName(),
-					// participant.getEmail());
-					subscriberSet.add(sendySubscriber);
-					try {
-						sendyAPIRestTemplate.addNewSubscriber(sendySubscriber);
-						sendyAPIRestTemplate.addSubscriberToMonthlyNewsletterList(sendySubscriber);
-					} catch (HttpClientErrorException | IOException e) {
-						LOGGER.debug("Error while adding subscriber - " + e.getMessage());
+			if (participants.size() >= 1) {
+				for (Participant participant : participants) {
+					Map<String, String> fields = new HashMap<String, String>();
+					sendySubscriber = new SendySubscriber();
+					participantCount = sendyMailRepository.getIntroducedParticipantCount(participant.getPrintName(),
+							participant.getEmail());
+					System.out.println("participant count " + participantCount);
+					if (participantCount < 1) {
+						fields.put("Date", currentDateTime);
+						sendySubscriber.setNameToSendMail(getName(participant.getPrintName()));
+						sendySubscriber.setUserName(participant.getPrintName());
+						sendySubscriber.setEmail(participant.getEmail());
+						sendySubscriber.setfields(fields);
+						// subscribersList.put(participant.getPrintName(),
+						// participant.getEmail());
+						subscriberSet.add(sendySubscriber);
+						try {
+							sendyAPIRestTemplate.addNewSubscriber(sendySubscriber);
+							sendyAPIRestTemplate.addSubscriberToMonthlyNewsletterList(sendySubscriber);
+						} catch (HttpClientErrorException | IOException e) {
+							LOGGER.debug("Error while adding subscriber - " + e.getMessage());
+							try {
+								sendyAPIRestTemplate.sendErrorAlertMail();
+							} catch (MessagingException ex) {
+								LOGGER.debug("Error while sending SMTP Mail - " + ex.getMessage());
+							}
+						}
 					}
 				}
-			}
-		} else {
-			LOGGER.debug("No participant found.");
-		}
-		// System.out.println("SET SIZE "+subscriberSet.size());
-		if (subscriberSet.size() >= 1) {
-			try {
-				response=sendyAPIRestTemplate.sendMail();
-				LOGGER.debug("Response: "+response);
-			} catch (HttpClientErrorException | IOException e) {
-				LOGGER.debug("Error while sending Mail - " + e.getMessage());
-				try {
-					sendyAPIRestTemplate.sendErrorAlertMail();
-				} catch (MessagingException ex) {
-					LOGGER.debug("Error while sending SMTP Mail - " + ex.getMessage());
-				}
-			}
-			if (null != response && response.equals("Campaign created and now sending")) {
-				for (SendySubscriber subscriber : subscriberSet) {
-					WelcomeMailDetails welcomeMailDetails = new WelcomeMailDetails();
-					welcomeMailDetails.setPrintName(subscriber.getUserName());
-					welcomeMailDetails.setEmail(subscriber.getEmail());
-					welcomeMailDetails.setCreateTime(new Date());
-					sendyMailRepository.save(welcomeMailDetails);
-				}
-				try {
-					sendyAPIRestTemplate.executeCronJob();
-				} catch (HttpClientErrorException | IOException e) {
-					LOGGER.debug("Error while executing cron job - " + e.getMessage());
-				}
-				sendyMailRepository.updateParticipant();
 			} else {
-				LOGGER.debug("Error while sending Mail" + response);
+				LOGGER.debug("No participant found.");
 			}
-		}
+			// System.out.println("SET SIZE "+subscriberSet.size());
+			if (subscriberSet.size() >= 1) {
+				try {
+					response = sendyAPIRestTemplate.sendMail(SendyConstants.WELCOME_MAIL);
+				} catch (Exception e) {
+					LOGGER.debug("Error while sending Mail - " + e.getMessage());
+					try {
+						sendyAPIRestTemplate.sendErrorAlertMail();
+					} catch (MessagingException ex) {
+						LOGGER.debug("Error while sending SMTP Mail - " + ex.getMessage());
+					}
+				}
+				LOGGER.debug("Response: " + response);
+				if (null != response && response.equals("Campaign created and now sending")) {
+					for (SendySubscriber subscriber : subscriberSet) {
+						WelcomeMailDetails welcomeMailDetails = new WelcomeMailDetails();
+						welcomeMailDetails.setPrintName(subscriber.getUserName());
+						welcomeMailDetails.setEmail(subscriber.getEmail());
+						welcomeMailDetails.setCreateTime(new Date());
+						sendyMailRepository.save(welcomeMailDetails);
+					}
+					try {
+						sendyAPIRestTemplate.executeCronJob();
+					} catch (HttpClientErrorException | IOException e) {
+						LOGGER.debug("Error while executing cron job - " + e.getMessage());
+					}
+					sendyMailRepository.updateParticipant();
+				} else {
+					LOGGER.debug("Error while sending Mail" + response);
+				}
+			}
 	}
 
 	/**
@@ -143,7 +149,7 @@ public class SendyAPIServiceImpl implements SendyAPIService {
 	 */
 
 	@Override
-	/*@Scheduled(cron = "0 18 14 * * *")*/
+	/* @Scheduled(cron = "0 18 14 * * *") */
 	public void unsubscribeUsers() {
 		List<WelcomeMailDetails> subscribers = new ArrayList<WelcomeMailDetails>();
 		subscribers = sendyMailRepository.getSubscribersToUnsubscribe();
@@ -197,4 +203,5 @@ public class SendyAPIServiceImpl implements SendyAPIService {
 		sendyMailRepository.updateUserUnsubscribed(mailID);
 		return response;
 	}
+
 }

@@ -2,6 +2,7 @@ package org.srcm.heartfulness.repository.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -11,6 +12,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -29,8 +32,10 @@ import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
+import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
+import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.SmsUtil;
 
 /**
@@ -38,6 +43,8 @@ import org.srcm.heartfulness.util.SmsUtil;
  */
 @Repository
 public class ProgramRepositoryImpl implements ProgramRepository {
+	
+	private static Logger LOGGER = LoggerFactory.getLogger(ProgramRepositoryImpl.class);
 
 	private final JdbcTemplate jdbcTemplate;
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -983,6 +990,67 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			e.printStackTrace();
 		}
 		
+	}
+
+	@Override
+	public List<Program> searchEvents(SearchRequest searchRequest) {
+		List<Program> program = null;
+		StringBuilder whereCondition = new StringBuilder("");
+		StringBuilder orderBy = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		if(!("ALL".equals(searchRequest.getSearchField()))  && null != searchRequest.getSearchField() && !searchRequest.getSearchField().isEmpty() ){
+			if(null != searchRequest.getSearchText() && !searchRequest.getSearchText().isEmpty()){
+				whereCondition.append(whereCondition.length() > 0 ? " and "+searchRequest.getSearchField()+" LIKE '%"+ searchRequest.getSearchText()+"%'" : searchRequest.getSearchField()+" LIKE '%"+ searchRequest.getSearchText()+"%'" );
+			}
+		}
+		if ((searchRequest.getDateFrom() != null && !searchRequest.getDateFrom().isEmpty())) {
+			try {
+				whereCondition.append(whereCondition.length() > 0 ? " and program_start_date >=:program_start_date " : " program_start_date >=:program_start_date ");
+				params.put("program_start_date",DateUtils.parseToSqlDate( searchRequest.getDateFrom()));
+			} catch (ParseException e) {
+				LOGGER.error("Error While converting date", e);
+			}
+		}
+
+		if (searchRequest.getDateTo() != null && !searchRequest.getDateTo().isEmpty()) {
+			try {
+				whereCondition.append(whereCondition.length() > 0 ? " and CASE WHEN program_end_date IS NOT NULL THEN program_end_date <=:program_end_date ELSE TRUE END "
+						:" CASE WHEN program_end_date IS NOT NULL THEN program_end_date <=:program_end_date ELSE TRUE END ");
+				params.put("program_end_date",DateUtils.parseToSqlDate(searchRequest.getDateTo()));
+			} catch (ParseException e) {
+				LOGGER.error("Error While converting date", e);
+			}
+		}
+		if(null != searchRequest.getSortBy() && !searchRequest.getSortBy().isEmpty()){
+			orderBy.append(orderBy.length() > 0 ? ", "+searchRequest.getSortBy() : searchRequest.getSortBy());
+			if(null != searchRequest.getSortDirection() && !searchRequest.getSortDirection().isEmpty()){
+				orderBy.append(searchRequest.getSortDirection().equalsIgnoreCase("0") ? " asc" :" desc" );
+			}
+		}
+		
+		program = this.namedParameterJdbcTemplate.query(
+				"SELECT auto_generated_event_id,program_channel,program_name,program_start_date,program_end_date,"
+						+ "coordinator_name,coordinator_email,coordinator_mobile,event_place,"
+						+ "event_city,event_state,event_country,preceptor_name," + "preceptor_id_card_number"
+						+ " FROM program" + (whereCondition.length() > 0 ? " WHERE " + whereCondition : "") + (orderBy.length() > 0 ? " ORDER BY "+ orderBy : ""),
+				params, BeanPropertyRowMapper.newInstance(Program.class));
+		
+		return program;
+
+	}
+
+	@Override
+	public String getEventIdByProgramID(int programId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("program_id", programId);
+		try{
+		String eventId= this.namedParameterJdbcTemplate.queryForObject(
+				"SELECT auto_generated_event_id from program where program_id=:program_id", params,
+				BeanPropertyRowMapper.newInstance(String.class));
+		return eventId;
+		}catch(EmptyResultDataAccessException e){
+			return "";
+		}
 	}
 
 }
