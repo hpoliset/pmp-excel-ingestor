@@ -21,21 +21,21 @@ public interface PmpAuthorizationService {
 	 * @param modelMap 
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN')")
 	String showReportsForm(ModelMap modelMap);
 
 	/**
 	 * method which authorizes based on role and shows ingestion form
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')")
+	@PreAuthorize("hasAnyRole('ROLE_REGIONAL_ADMIN','ROLE_PRECEPTOR','ROLE_SYSTEM_ADMIN')")
 	String showInputForm();
 
 	/**
 	 * method which authorizes based on role and shows bulk upload form
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')")
+	@PreAuthorize("hasAnyRole('ROLE_REGIONAL_ADMIN','ROLE_PRECEPTOR','ROLE_SYSTEM_ADMIN')")
 	String showBulkUploadForm();
 
 	/**

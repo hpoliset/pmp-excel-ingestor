@@ -38,6 +38,16 @@
 	width: 800px;
 }
 </style>
+<script>
+$(document).ready(function(){
+    $(document).ajaxStart(function(){
+        $("#wait").css("display", "block");
+    });
+    $(document).ajaxComplete(function(){
+        $("#wait").css("display", "none");
+    });
+});
+</script>
 <script type="text/javascript" language="javascript">
 	$(document)
 			.ready(
@@ -46,8 +56,8 @@
 						if(redirectUrl != null){
 							$('#modal_trigger')[0].click();
 						}
-						var url = 'https://pmp.heartfulness.org/pmp/api/authenticate';
-						var getuserurl = 'https://pmp.heartfulness.org/pmp/api/v1/user';
+						var url = 'https://pmpbeta.heartfulness.org/pmp/api/authenticate';
+						var getuserurl = 'https://pmpbeta.heartfulness.org/pmp/api/v1/user';
 						var id;
 						$("#submit")
 								.click(
@@ -172,6 +182,10 @@
 								</table>
 							</form:form>
 						</div>
+						
+						<div id="wait" style="display:none;width:69px;height:89px;position:absolute;top:50%;left:50%;padding:2px;">
+						<img src='/pmp/images/wait.gif' width="64" height="64" /><br>Loading..</div>
+						
 						</div>
 				</section>
 			</div>

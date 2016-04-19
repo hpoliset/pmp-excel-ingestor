@@ -1,16 +1,20 @@
 package org.srcm.heartfulness.constants;
 
 public class PMPConstants {
+	
+	public static final String ROLE_PREFIX = "ROLE_";
 
-	public static final String LOGIN_ROLE_SEEKER = "ROLE_SEEKER";
+	public static final String LOGIN_ROLE_SEEKER = "SEEKER";
 
-	public static final String LOGIN_ROLE_PRECEPTOR = "ROLE_PRECEPTOR";
+	public static final String LOGIN_ROLE_PRECEPTOR = "PRECEPTOR";
 
 	public static final String SEEKER = "seeker";
 
 	public static final String REGISTRATION = "Registration";
 
-	public static final String LOGIN_ROLE_ADMIN = "ROLE_ADMIN";
+	public static final String LOGIN_ROLE_ADMIN = "SYSTEM_ADMIN";
+	
+	public static final String LOGIN_ACCESS_DENIED = "ACCESS_DENIED";
 
 	public static final String STATUS_NEW = "New";
 
