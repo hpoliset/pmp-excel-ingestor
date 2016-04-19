@@ -80,7 +80,6 @@ $(document).ready(function(){
 																		},
 																		success : function(
 																				response) {
-																			alert(response);
 																				window.location.href = "/pmp/index";
 																		},
 																		error : function(
@@ -230,7 +229,7 @@ $(document).ready(function(){
 						
 						
 						<div id="wait" style="display:none;width:69px;height:89px;position:absolute;top:50%;left:50%;padding:2px;">
-						<img src='/pmp/images/demo_wait.gif' width="64" height="64" /><br>Loading..</div>
+						<img src='/pmp/images/wait.gif' width="64" height="64" /><br>Loading..</div>
 						
 					</div>
 
@@ -293,7 +292,7 @@ $(document).ready(function(){
 								</div>
 								
 								<div id="wait" style="display:none;width:69px;height:89px;position:absolute;top:50%;left:50%;padding:2px;">
-								<img src='/pmp/images/demo_wait.gif' width="64" height="64" /><br>Loading..</div>
+								<img src='/pmp/images/wait.gif' width="64" height="64" /><br>Loading..</div>
 						
 							</div>
 						</div>
