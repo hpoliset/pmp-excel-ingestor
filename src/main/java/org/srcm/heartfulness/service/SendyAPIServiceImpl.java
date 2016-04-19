@@ -93,7 +93,7 @@ public class SendyAPIServiceImpl implements SendyAPIService {
 			// System.out.println("SET SIZE "+subscriberSet.size());
 			if (subscriberSet.size() >= 1) {
 				try {
-					response = sendyAPIRestTemplate.sendMail(SendyConstants.WELCOME_MAIL);
+					response = sendyAPIRestTemplate.sendMail();
 				} catch (Exception e) {
 					LOGGER.debug("Error while sending Mail - " + e.getMessage());
 					try {
