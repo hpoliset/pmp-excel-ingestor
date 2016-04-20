@@ -9,8 +9,8 @@
 <link rel="stylesheet" href="../css/normalize.css">
 <link rel="stylesheet" href="../css/skeleton.css">
 </head>
-<body>
-<div class="container">
+<body >
+<div class="container" align="center" style="width: 100%; height:100%; margin: 0 auto; padding-left: 10%">
 
 		<h3>Heartfulness Data Upload Results</h3>
 
