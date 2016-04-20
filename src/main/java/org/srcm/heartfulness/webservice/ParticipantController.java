@@ -39,6 +39,11 @@ import org.srcm.heartfulness.service.UserProfileService;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+/**
+ * 
+ * @author himasreev
+ *
+ */
 @RestController
 @RequestMapping("/api/participant")
 public class ParticipantController {
@@ -439,6 +444,12 @@ public class ParticipantController {
 		}
 	}
 	
+	/**
+	 * webservice end point to search the participants based on the given search field and search text and based on program start date 
+	 * @param token
+	 * @param searchRequest
+	 * @return
+	 */
 	@RequestMapping(value = "/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> searchEvents(@RequestHeader(value = "Authorization") String token,@RequestBody SearchRequest searchRequest) {
 		try{

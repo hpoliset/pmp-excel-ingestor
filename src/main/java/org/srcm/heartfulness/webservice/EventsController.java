@@ -550,7 +550,12 @@ public class EventsController {
 		}
 	}
 	
-	
+	/**
+	 * web service endpoint to search the events based on search field and text given.
+	 * @param token
+	 * @param searchRequest
+	 * @return
+	 */
 	@RequestMapping(value = "/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> searchEvents(@RequestHeader(value = "Authorization") String token,@RequestBody SearchRequest searchRequest) {
 		try{
