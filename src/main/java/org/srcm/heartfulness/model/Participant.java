@@ -52,7 +52,17 @@ public class Participant {
     private int excelSheetSequenceNumber;
     private String seqId;
     
-    public String getSeqId() {
+    private int welcomeMailSent;
+    
+    public int getWelcomeMailSent() {
+		return welcomeMailSent;
+	}
+
+	public void setWelcomeMailSent(int welcomeMailSent) {
+		this.welcomeMailSent = welcomeMailSent;
+	}
+
+	public String getSeqId() {
 		return seqId;
 	}
 
