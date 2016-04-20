@@ -97,13 +97,13 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 		participantRequest.setPrintName(participant.getPrintName());
 		participantRequest.setEmail(participant.getEmail());
 		participantRequest.setMobilePhone(participant.getMobilePhone());
-		if ((participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_FEMALE) || participant.getGender()
-				.equalsIgnoreCase(PMPConstants.GENDER_MALE))
-				&& participant.getGender() != null
-				&& !participant.getGender().isEmpty())
-			participant.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE)
-					? PMPConstants.MALE	: PMPConstants.FEMALE);
-		participantRequest.setGender(participant.getGender());
+		if(participant.getGender() != null && !participant.getGender().isEmpty()){
+			if ((participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_FEMALE) || participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE)))
+				participant.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE)
+						? PMPConstants.MALE	: PMPConstants.FEMALE);
+			participantRequest.setGender(participant.getGender());
+		}
+		
 		participantRequest.setDateOfBirth(null != participant.getDateOfBirth() 
 				? sdf.format(participant.getDateOfBirth()) : null);
 		participantRequest.setAddressLine1(participant.getAddressLine1());
@@ -129,11 +129,11 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participantRequest.setPrintName(participant.getPrintName());
 			participantRequest.setEmail(participant.getEmail());
 			participantRequest.setMobilePhone(participant.getMobilePhone());
-			if ((participant.getGender().equalsIgnoreCase("F") 
-					|| participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE))
-					&& participant.getGender() != null && !participant.getGender().isEmpty())
-				participant.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) 
-						? PMPConstants.MALE	: PMPConstants.FEMALE);
+			if(participant.getGender() != null && !participant.getGender().isEmpty()){
+				if ((participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_FEMALE)|| participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE)))
+					participant.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) ? PMPConstants.MALE : PMPConstants.FEMALE);
+			}
+		
 			participantRequest.setGender(participant.getGender());
 			participantRequest.setDateOfBirth(null != participant.getDateOfBirth() 
 					? sdf.format(participant.getDateOfBirth()) : null);
