@@ -125,26 +125,30 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	public ParticipantRequest getParticipantBySeqId(ParticipantRequest participantRequest) {
 		SimpleDateFormat sdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
 		Participant participant = participantRepository.findBySeqId(participantRequest);
-		participantRequest.setPrintName(participant.getPrintName());
-		participantRequest.setEmail(participant.getEmail());
-		participantRequest.setMobilePhone(participant.getMobilePhone());
-		if ((participant.getGender().equalsIgnoreCase("F") 
-				|| participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE))
-				&& participant.getGender() != null && !participant.getGender().isEmpty())
-			participant.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) 
-					? PMPConstants.MALE	: PMPConstants.FEMALE);
-		participantRequest.setGender(participant.getGender());
-		participantRequest.setDateOfBirth(null != participant.getDateOfBirth() 
-				? sdf.format(participant.getDateOfBirth()) : null);
-		participantRequest.setAddressLine1(participant.getAddressLine1());
-		participantRequest.setAddressLine2(participant.getAddressLine2());
-		participantRequest.setCity(participant.getCity());
-		participantRequest.setState(participant.getState());
-		participantRequest.setCountry(participant.getCountry());
-		participantRequest.setIntroducedStatus(0 != participant.getIntroduced()
-				? PMPConstants.REQUIRED_YES	: PMPConstants.REQUIRED_NO);
-		participantRequest.setIntroductionDate(null != participantRequest.getIntroductionDate()
-				? sdf.format(participant.getIntroductionDate()) : null);
+		if(null != participant){
+			participantRequest.setPrintName(participant.getPrintName());
+			participantRequest.setEmail(participant.getEmail());
+			participantRequest.setMobilePhone(participant.getMobilePhone());
+			if ((participant.getGender().equalsIgnoreCase("F") 
+					|| participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE))
+					&& participant.getGender() != null && !participant.getGender().isEmpty())
+				participant.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) 
+						? PMPConstants.MALE	: PMPConstants.FEMALE);
+			participantRequest.setGender(participant.getGender());
+			participantRequest.setDateOfBirth(null != participant.getDateOfBirth() 
+					? sdf.format(participant.getDateOfBirth()) : null);
+			participantRequest.setAddressLine1(participant.getAddressLine1());
+			participantRequest.setAddressLine2(participant.getAddressLine2());
+			participantRequest.setCity(participant.getCity());
+			participantRequest.setState(participant.getState());
+			participantRequest.setCountry(participant.getCountry());
+			participantRequest.setIntroducedStatus(0 != participant.getIntroduced()
+					? PMPConstants.REQUIRED_YES	: PMPConstants.REQUIRED_NO);
+			participantRequest.setIntroductionDate(null != participantRequest.getIntroductionDate()
+					? sdf.format(participant.getIntroductionDate()) : null);
+		}else{
+			participantRequest = new ParticipantRequest();
+		}
 		return participantRequest;
 	}
 
