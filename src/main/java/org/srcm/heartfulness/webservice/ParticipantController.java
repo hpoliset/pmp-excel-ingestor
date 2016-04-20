@@ -141,12 +141,12 @@ public class ParticipantController {
 			if (null == ceh.validateToken(token)) {
 				ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
 				return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
-			} else if (null != request.getSeqId() && null != request.getEventId()) {
-				ParticipantRequest participant = participantService.getParticipantBySeqId(request);
-				return new ResponseEntity<ParticipantRequest>(participant, HttpStatus.OK);
-			} else {
+			} else if (null == request.getSeqId() && null == request.getEventId()) {
 				ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, "event ID and Seq Id is required");
 				return new ResponseEntity<ErrorResponse>(error, HttpStatus.PRECONDITION_FAILED);
+			} else {
+				ParticipantRequest participant = participantService.getParticipantBySeqId(request);
+				return new ResponseEntity<ParticipantRequest>(participant, HttpStatus.OK);
 			}
 		} catch (HttpClientErrorException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
@@ -169,6 +169,7 @@ public class ParticipantController {
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "input/output-error ; Please try after sometime");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
+			e.printStackTrace();
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Please try after sometime.");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
