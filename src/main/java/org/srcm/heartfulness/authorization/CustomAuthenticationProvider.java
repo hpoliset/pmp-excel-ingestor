@@ -36,14 +36,16 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		org.srcm.heartfulness.model.User user = userProfileService.loadUserByEmail(username);
 		if (null == user) {
 			user = new org.srcm.heartfulness.model.User();
-			user.setRole(PMPConstants.LOGIN_ROLE_SEEKER);
+			user.setRole(PMPConstants.ROLE_PREFIX+PMPConstants.LOGIN_ROLE_SEEKER);
 			user.setEmail(username);
 			user.setPassword(password);
 			user.setIsPmpAllowed(PMPConstants.REQUIRED_NO);
 			user.setIsSahajmargAllowed(PMPConstants.REQUIRED_NO);
 		} else {
-			if (user.getIsPmpAllowed().equalsIgnoreCase(PMPConstants.REQUIRED_YES)) {
-				user.setRole(PMPConstants.LOGIN_ROLE_ADMIN);
+			if (user.getIsPmpAllowed().equalsIgnoreCase(PMPConstants.REQUIRED_NO)) {
+				user.setRole(PMPConstants.ROLE_PREFIX+PMPConstants.LOGIN_ACCESS_DENIED);
+			}else{
+				user.setRole(PMPConstants.ROLE_PREFIX+user.getRole());
 			}
 		}
 		CurrentUser currentUser = new CurrentUser(user.getEmail(), password, user.getRole(), user.getIsPmpAllowed(),
