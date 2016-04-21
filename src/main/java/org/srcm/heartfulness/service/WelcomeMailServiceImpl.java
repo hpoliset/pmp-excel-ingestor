@@ -93,13 +93,13 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 				} catch (HttpClientErrorException | IOException e) {
 					LOGGER.debug("Error while executing cron job - " + e.getMessage());
 				}
-				for (SendySubscriber subscriber : subscriberSet) {
-					welcomeMailRepository.updateParticipantMailSentById(subscriber.getParticipantId());
-				}
 			} else {
 				LOGGER.debug("Error while sending Mail - " + response);
 				sendyRestTemplate.sendErrorAlertMail();
 			}
+		}
+		for (Participant participant : participants) {
+			welcomeMailRepository.updateParticipantMailSentById(participant.getId());
 		}
 	}
 
