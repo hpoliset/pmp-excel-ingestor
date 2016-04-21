@@ -8,7 +8,7 @@ public class WelcomeMailDetails {
 	private String printName;
     private Date createTime;
     private String email;
-    private String unsubscribed;
+    private int unsubscribed;
     
 	public int getId() {
 		return id;
@@ -34,10 +34,11 @@ public class WelcomeMailDetails {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getUnsubscribed() {
+	
+	public int getUnsubscribed() {
 		return unsubscribed;
 	}
-	public void setUnsubscribed(String unsubscribed) {
+	public void setUnsubscribed(int unsubscribed) {
 		this.unsubscribed = unsubscribed;
 	}
 	@Override
