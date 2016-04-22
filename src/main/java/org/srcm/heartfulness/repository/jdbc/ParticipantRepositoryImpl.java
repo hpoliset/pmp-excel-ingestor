@@ -24,6 +24,7 @@ import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.repository.ParticipantRepository;
+import org.srcm.heartfulness.util.SmsUtil;
 
 /**
  *
@@ -126,6 +127,26 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 			if (participantId > 0) {
 				participant.setId(participantId);
+				String seqId = this.jdbcTemplate.query(
+						"SELECT seqId from participant where id=?",
+						new Object[]{participantId},
+						new ResultSetExtractor<String>() {
+							@Override
+							public String extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+								if (resultSet.next()) {
+									return resultSet.getString(1);
+								}
+								return "";
+							}
+						}
+						);
+				if(null != seqId && !seqId.isEmpty()){
+					participant.setSeqId(seqId);	
+				}else{
+					participant.setSeqId(SmsUtil.generateFourDigitPIN());
+				}
+			}else{
+				participant.setSeqId(SmsUtil.generateFourDigitPIN());
 			}
 		}
 
@@ -148,7 +169,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 					+ "first_sitting=:firstSittingTaken," + "second_sitting=:secondSittingTaken,"
 					+ "third_sitting=:thirdSittingTaken," + "first_sitting_date=:firstSittingDate, "
 					+ "second_sitting_date=:secondSittingDate, " + "third_sitting_date=:thirdSittingDate, "
-					+ "batch=:batch, "+"seqId=:seqId " + "WHERE id=:id", parameterSource);
+					+ "batch=:batch, "+ "introduced=:introduced, "+"seqId=:seqId " + "WHERE id=:id", parameterSource);
 		}
 	}
 
