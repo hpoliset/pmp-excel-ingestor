@@ -1,0 +1,1 @@
+UPDATE `participant` SET `created_source`='SMS' WHERE `excel_sheet_sequence_number`=0;

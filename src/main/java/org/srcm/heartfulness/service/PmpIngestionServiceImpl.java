@@ -73,6 +73,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 				} else {
 					// Persist the program
 					Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version);
+					program.setCreatedSource("Excel");
 					programRepository.save(program);
 					response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
 				}
