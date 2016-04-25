@@ -60,7 +60,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 				sendySubscriber = new SendySubscriber();
 				participantCount = welcomeMailRepository.getIntroducedParticipantCount(participant.getPrintName(),
 						participant.getEmail());
-				if (participantCount < 1 && null!=participant.getEmail() && participant.getEmail().isEmpty()) {
+				if (participantCount < 1 && null!=participant.getEmail() && !participant.getEmail().isEmpty()) {
 					sendySubscriber.setNameToSendMail(getName(participant.getPrintName()));
 					sendySubscriber.setUserName(participant.getPrintName());
 					sendySubscriber.setEmail(participant.getEmail());
