@@ -43,7 +43,12 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		params.put("createDate", date);
 		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);*/
 		List<Participant> participants = this.namedParameterJdbcTemplate.query(
-				"SELECT id,print_name,email,language FROM participant WHERE create_time < CURDATE() AND welcome_mail_sent=0 OR welcome_mail_sent IS NULL",
+				"SELECT id,print_name,email,language "
+				+ "FROM participant "
+				+ "WHERE create_time < CURDATE() "
+				+ "AND email IS NOT NULL "
+				+ "AND welcome_mail_sent=0 "
+				+ "OR welcome_mail_sent IS NULL",
 				BeanPropertyRowMapper.newInstance(Participant.class));
 
 		return participants;
