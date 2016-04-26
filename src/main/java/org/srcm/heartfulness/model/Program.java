@@ -82,6 +82,16 @@ public class Program {
     private String programName;
     
     private List<Participant> participantList = Collections.emptyList();
+    
+    private String createdSource;
+
+	public String getCreatedSource() {
+		return createdSource;
+	}
+
+	public void setCreatedSource(String createdSource) {
+		this.createdSource = createdSource;
+	}
 
     public String getProgramName() {
 		return programName;

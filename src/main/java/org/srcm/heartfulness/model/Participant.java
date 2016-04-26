@@ -54,6 +54,16 @@ public class Participant {
     
     private int welcomeMailSent;
     
+    private String createdSource;
+
+	public String getCreatedSource() {
+		return createdSource;
+	}
+
+	public void setCreatedSource(String createdSource) {
+		this.createdSource = createdSource;
+	}
+    
     public int getWelcomeMailSent() {
 		return welcomeMailSent;
 	}
