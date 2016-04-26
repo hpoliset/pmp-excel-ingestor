@@ -27,7 +27,7 @@ public class SendyAPIController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendyAPIController.class);
 
-	@Scheduled(cron = "0 0 4 * * *")
+	@Scheduled(cron = "0 45 14 * * *")
 	public void subscribeUser(){
 		try {
 			sendyAPIService.addNewSubscriber();
@@ -38,7 +38,7 @@ public class SendyAPIController {
 	}
 	
 	
-	@Scheduled(cron = "0 0 6 * * *")
+	@Scheduled(cron = "0 50 14 * * *")
 	public void unsubscribeUser(){
 		try {
 			sendyAPIService.unsubscribeUsers();
