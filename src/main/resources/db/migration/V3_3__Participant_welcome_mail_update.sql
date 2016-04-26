@@ -1,0 +1,1 @@
+UPDATE participant set welcome_mail_sent=0 WHERE create_time < CURDATE() AND (email IS NULL OR email='');
