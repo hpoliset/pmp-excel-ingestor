@@ -55,6 +55,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		int participantCount = 0;
 		String response = null;
 		boolean flag=true;
+		LOGGER.debug("partcipant size {}"+participants.size());
 		if (participants.size() >= 1) {
 			for (Participant participant : participants) {
 				sendySubscriber = new SendySubscriber();
@@ -86,7 +87,9 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			LOGGER.debug("No participant found.");
 		}
 		if (subscriberSet.size() >= 1 && flag) {
+			LOGGER.debug("sending mail");
 			response = sendyRestTemplate.sendWelcomeMail();
+			LOGGER.debug("Mail Sent");
 			if (response.equals("Campaign created and now sending")) {
 				try {
 					sendyRestTemplate.executeCronJob();
