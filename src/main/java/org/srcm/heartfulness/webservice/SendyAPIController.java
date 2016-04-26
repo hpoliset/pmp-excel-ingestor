@@ -7,7 +7,6 @@ import javax.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
@@ -27,7 +26,7 @@ public class SendyAPIController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendyAPIController.class);
 
-	@Scheduled(cron = "0 0 4 * * *")
+	//@Scheduled(cron = "0 0 4 * * *")
 	public void subscribeUser(){
 		try {
 			sendyAPIService.addNewSubscriber();
@@ -36,7 +35,7 @@ public class SendyAPIController {
 			LOGGER.error("Exception while Subscribe - {} "+ e.getMessage());
 		}
 	}
-	@Scheduled(cron = "0 0 6 * * *")
+	//@Scheduled(cron = "0 0 6 * * *")
 	public void unsubscribeUser(){
 		try {
 			sendyAPIService.unsubscribeUsers();
