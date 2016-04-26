@@ -27,9 +27,10 @@ public class SendyAPIController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendyAPIController.class);
 
-	@Scheduled(cron = "0 45 14 * * *")
+	@Scheduled(cron = "0 15 21 * * *")
 	public void subscribeUser(){
 		try {
+			LOGGER.debug("Subcribe user called.");
 			sendyAPIService.addNewSubscriber();
 		} catch (HttpClientErrorException | IOException | MessagingException e) {
 			//e.printStackTrace();
@@ -38,9 +39,10 @@ public class SendyAPIController {
 	}
 	
 	
-	@Scheduled(cron = "0 50 14 * * *")
+	@Scheduled(cron = "0 30 21 * * *")
 	public void unsubscribeUser(){
 		try {
+			LOGGER.debug("Unsubcribe user called.");
 			sendyAPIService.unsubscribeUsers();
 		} catch (HttpClientErrorException | IOException e) {
 			//e.printStackTrace();
