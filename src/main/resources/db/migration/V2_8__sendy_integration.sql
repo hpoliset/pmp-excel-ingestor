@@ -8,5 +8,3 @@ CREATE TABLE IF NOT EXISTS `welcome_mail_subscribers` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 ALTER TABLE participant ADD welcome_mail_sent tinyint(1)  NOT NULL DEFAULT '0' COMMENT '0 means not sent/1 means sent';
-
-UPDATE participant set welcome_mail_sent=1 WHERE create_time < CURDATE()-1;
