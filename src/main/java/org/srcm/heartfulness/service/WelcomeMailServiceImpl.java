@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.EventConstants;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
@@ -61,7 +62,8 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 				sendySubscriber = new SendySubscriber();
 				participantCount = welcomeMailRepository.getIntroducedParticipantCount(participant.getPrintName(),
 						participant.getEmail());
-				if (participantCount < 1 && null != participant.getEmail() && !participant.getEmail().isEmpty()) {
+				if (participantCount < 1 && null != participant.getEmail() && !participant.getEmail().isEmpty() 
+						&& EventConstants.EMAIL_REGEX.matches(participant.getEmail())) {
 					sendySubscriber.setNameToSendMail(getName(participant.getPrintName()));
 					sendySubscriber.setUserName(participant.getPrintName());
 					sendySubscriber.setEmail(participant.getEmail());
@@ -102,7 +104,9 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			}
 		}
 		for (Participant participant : participants) {
-			welcomeMailRepository.updateParticipantMailSentById(participant.getId());
+			if(EventConstants.EMAIL_REGEX.matches(participant.getEmail())){
+				welcomeMailRepository.updateParticipantMailSentById(participant.getId());
+			}
 		}
 	}
 
