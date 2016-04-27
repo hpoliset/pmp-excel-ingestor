@@ -57,6 +57,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		String response = null;
 		boolean flag=true;
 		LOGGER.debug("partcipant size {}"+participants.size());
+		Set<Integer> invalidParticipantSet = new HashSet<Integer>();
 		if (participants.size() >= 1) {
 			for (Participant participant : participants) {
 				sendySubscriber = new SendySubscriber();
@@ -73,8 +74,8 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 					flag = response.equals("1") ? true : response.equals("Already subscribed.") ? true : false;
 					if (!flag) {
 						LOGGER.debug("Error while adding subscriber - " + response);
-						sendyRestTemplate.sendErrorAlertMail();
-						break;
+						//sendyRestTemplate.sendErrorAlertMail();
+						invalidParticipantSet.add(participant.getId());
 					}
 					else {
 						WelcomeMailDetails welcomeMailDetails = new WelcomeMailDetails();
@@ -88,7 +89,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		}else {
 			LOGGER.debug("No participant found.");
 		}
-		if (subscriberSet.size() >= 1 && flag) {
+		if (subscriberSet.size() >= 1) {
 			LOGGER.debug("sending mail");
 			response = sendyRestTemplate.sendWelcomeMail();
 			LOGGER.debug("Mail Sent");
@@ -105,7 +106,8 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		}
 		for (Participant participant : participants) {
 			if(participant.getEmail().matches(EventConstants.EMAIL_REGEX)){
-				welcomeMailRepository.updateParticipantMailSentById(participant.getId());
+				if(!invalidParticipantSet.contains(participant.getId()))
+						welcomeMailRepository.updateParticipantMailSentById(participant.getId());
 			}
 		}
 	}
