@@ -63,7 +63,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 				participantCount = welcomeMailRepository.getIntroducedParticipantCount(participant.getPrintName(),
 						participant.getEmail());
 				if (participantCount < 1 && null != participant.getEmail() && !participant.getEmail().isEmpty() 
-						&& EventConstants.EMAIL_REGEX.matches(participant.getEmail())) {
+						&& participant.getEmail().matches(EventConstants.EMAIL_REGEX)) {
 					sendySubscriber.setNameToSendMail(getName(participant.getPrintName()));
 					sendySubscriber.setUserName(participant.getPrintName());
 					sendySubscriber.setEmail(participant.getEmail());
@@ -104,7 +104,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			}
 		}
 		for (Participant participant : participants) {
-			if(EventConstants.EMAIL_REGEX.matches(participant.getEmail())){
+			if(participant.getEmail().matches(EventConstants.EMAIL_REGEX)){
 				welcomeMailRepository.updateParticipantMailSentById(participant.getId());
 			}
 		}
