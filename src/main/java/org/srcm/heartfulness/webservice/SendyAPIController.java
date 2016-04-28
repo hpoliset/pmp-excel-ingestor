@@ -39,7 +39,7 @@ public class SendyAPIController {
 	}
 	
 	
-	@Scheduled(cron = "0 30 14 * * *",zone="UTC")
+	@Scheduled(cron = "0 30 15 * * *",zone="UTC")
 	public void unsubscribeUser(){
 		try {
 			LOGGER.debug("Unsubcribe user called.");
