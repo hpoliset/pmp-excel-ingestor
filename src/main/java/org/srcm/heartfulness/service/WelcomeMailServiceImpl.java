@@ -79,7 +79,11 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 					}
 					else {
 						WelcomeMailDetails welcomeMailDetails = new WelcomeMailDetails();
-						welcomeMailDetails.setPrintName(sendySubscriber.getUserName());
+						if(null!=sendySubscriber.getUserName() && !sendySubscriber.getUserName().isEmpty()){
+							welcomeMailDetails.setPrintName(sendySubscriber.getUserName());
+						}else{
+							welcomeMailDetails.setPrintName("Friend");
+						}
 						welcomeMailDetails.setEmail(sendySubscriber.getEmail());
 						welcomeMailDetails.setCreateTime(new Date());
 						welcomeMailRepository.save(welcomeMailDetails);
@@ -119,14 +123,18 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	 * @return the salitatetd print name
 	 */
 	private String getName(String printName) {
-		printName = printName.replace(".", " ");
-		String[] name = printName.split(" ");
-		if (name.length > 0) {
-			for (int i = 0; i < name.length; i++) {
-				if (name[i].length() > 2) {
-					return name[i].substring(0, 1).toUpperCase() + name[i].substring(1);
+		if(null!=printName && !printName.isEmpty()){
+			printName = printName.replace(".", " ");
+			String[] name = printName.split(" ");
+			if (name.length > 0) {
+				for (int i = 0; i < name.length; i++) {
+					if (name[i].length() > 2) {
+						return name[i].substring(0, 1).toUpperCase() + name[i].substring(1);
+					}
 				}
 			}
+		}else{
+			return "Friend";
 		}
 		return printName;
 	}
