@@ -61,17 +61,18 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		List<Participant> participantList = new ArrayList<Participant>();
 		int totalRows = participantsSheet.getPhysicalNumberOfRows();
 		// skip first two
+		int j = 1;
 		for (int i=1; i < totalRows; i++) {
 			Row currentRow = participantsSheet.getRow(i);
 			Participant participant = parseParticipantRow(currentRow);
 			// this will go away
-			if (participant.getExcelSheetSequenceNumber() == 0) {
-				participant.setExcelSheetSequenceNumber(i);
+			if(!participant.getPrintName().isEmpty()){
+				if (participant.getExcelSheetSequenceNumber() == 0) {
+					participant.setExcelSheetSequenceNumber(j);
+				}
+				participantList.add(participant);
+				j++;
 			}
-			if ("".equals(participant.getPrintName())) {
-				break; // Not able to figure out how to get correct rows.
-			}
-			participantList.add(participant);
 		}
 
 		return participantList;
@@ -125,7 +126,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		}else{
 			participant.setThirdSittingTaken(0);
 		}
-		
+
 		participant.setCountry(participantRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString());
 		participant.setState(participantRow.getCell(5, Row.CREATE_NULL_AS_BLANK).toString());
 		participant.setCity(participantRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString());

@@ -54,6 +54,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		participants = welcomeMailRepository.getParticipantsToSendWelcomeMail();
 		Set<SendySubscriber> subscriberSet = new HashSet<SendySubscriber>();
 		int participantCount = 0;
+		int validEmailSubscribersCount=0;
 		String response = null;
 		boolean flag=true;
 		LOGGER.debug("partcipant size {}"+participants.size());
@@ -78,6 +79,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 						invalidParticipantSet.add(participant.getId());
 					}
 					else {
+						validEmailSubscribersCount++;
 						WelcomeMailDetails welcomeMailDetails = new WelcomeMailDetails();
 						if(null!=sendySubscriber.getUserName() && !sendySubscriber.getUserName().isEmpty()){
 							welcomeMailDetails.setPrintName(sendySubscriber.getUserName());
@@ -90,13 +92,13 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 					}
 				}
 			} 
+			LOGGER.debug("Valid mail id count - "+validEmailSubscribersCount);
 		}else {
 			LOGGER.debug("No participant found.");
 		}
 		if (subscriberSet.size() >= 1) {
 			LOGGER.debug("sending mail");
 			response = sendyRestTemplate.sendWelcomeMail();
-			LOGGER.debug("Mail Sent");
 			if (response.equals("Campaign created and now sending")) {
 				try {
 					sendyRestTemplate.executeCronJob();
@@ -114,6 +116,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 						welcomeMailRepository.updateParticipantMailSentById(participant.getId());
 			}
 		}
+		LOGGER.debug("Mail sent successfully.");
 	}
 
 	/**

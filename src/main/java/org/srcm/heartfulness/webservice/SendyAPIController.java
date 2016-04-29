@@ -1,6 +1,7 @@
 package org.srcm.heartfulness.webservice;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.mail.MessagingException;
 
@@ -27,10 +28,10 @@ public class SendyAPIController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendyAPIController.class);
 
-	@Scheduled(cron = "0 0 14 * * *",zone="UTC")
+	@Scheduled(cron = "${welcome.mail.subscribe.cron.time}")
 	public void subscribeUser(){
 		try {
-			LOGGER.debug("Subcribe user called.");
+			LOGGER.debug("Scheduler started at - "+new Date());
 			sendyAPIService.addNewSubscriber();
 		} catch (HttpClientErrorException | IOException | MessagingException e) {
 			//e.printStackTrace();
@@ -39,7 +40,7 @@ public class SendyAPIController {
 	}
 	
 	
-	@Scheduled(cron = "0 30 15 * * *",zone="UTC")
+	@Scheduled(cron = "${welcome.mail.unsubscribe.cron.time}")
 	public void unsubscribeUser(){
 		try {
 			LOGGER.debug("Unsubcribe user called.");
