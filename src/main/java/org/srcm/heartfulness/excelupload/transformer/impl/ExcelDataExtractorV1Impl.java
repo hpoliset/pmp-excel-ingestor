@@ -30,7 +30,7 @@ import org.srcm.heartfulness.util.InvalidExcelFileException;
 public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExcelDataExtractorV1Impl.class);
-	
+
 
 	/*
 	 * (non-Javadoc)
@@ -45,39 +45,39 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 		return program;
 	}
 
-	
+
 	/**
-     * This method is used to parse the Participant details and fill all the data in Participant POJO class.
-     *
-     * @return List of Participant details
-     */
+	 * This method is used to parse the Participant details and fill all the data in Participant POJO class.
+	 *
+	 * @return List of Participant details
+	 */
 	private List<Participant> getParticipantList(Sheet sheet) throws InvalidExcelFileException {
 		LOGGER.debug("Started to parse participant data for altered 1.0 template.");
 		List<Participant> participantList = new ArrayList<Participant>();
-		int totalRows = sheet.getPhysicalNumberOfRows();
+		int totalRows = sheet.getPhysicalNumberOfRows(),j=15;
 		for (int i = 15; i < totalRows; i++) {
 			Row currentRow = sheet.getRow(i);
 			Participant participant = parseParticipantRow(currentRow);
-			if (participant.getExcelSheetSequenceNumber() == 0) {
-				participant.setExcelSheetSequenceNumber(i - 14);
+			if(!participant.getPrintName().isEmpty()){
+				if (participant.getExcelSheetSequenceNumber() == 0) {
+					participant.setExcelSheetSequenceNumber(j - 14);
+				}
+				participantList.add(participant);
+				j++;
 			}
-			if ("".equals(participant.getPrintName())) {
-				break;
-			}
-			participantList.add(participant);
 		}
 		LOGGER.debug("Parsing participant data completed for altered 1.0 template.");
 		return participantList;
 	}
 
-	
+
 	/**
-     * Parses the Participant details from the excel sheet and populates Participant class.
-     *
-     * @param currentRow
-     * @return Participant Details
-     * @throws InvalidExcelFileException
-     */
+	 * Parses the Participant details from the excel sheet and populates Participant class.
+	 *
+	 * @param currentRow
+	 * @return Participant Details
+	 * @throws InvalidExcelFileException
+	 */
 	private Participant parseParticipantRow(Row currentRow) throws InvalidExcelFileException {
 		Participant participant = new Participant();
 		if (!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()) {
@@ -116,14 +116,14 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 		participant.setRemarks(currentRow.getCell(10, Row.CREATE_NULL_AS_BLANK).toString());
 		return participant;
 	}
-	
-	
+
+
 	/**
-     * This method is used to parse the Event details and populate the Program class
-     *
-     * @return Program details.
-     * @throws InvalidExcelFileException
-     */
+	 * This method is used to parse the Event details and populate the Program class
+	 *
+	 * @return Program details.
+	 * @throws InvalidExcelFileException
+	 */
 	private Program parseProgram(Sheet sheet) throws InvalidExcelFileException {
 		LOGGER.debug("Started to parse program data for altered 1.0 template.");
 		Program program = new Program();
