@@ -89,7 +89,7 @@ public class PMPConstants {
 
 	public static final String GENDER_FEMALE = "F";
 	
-	public static final String UPDATE_EVENT_URL="https:en.stating.heartfulness.org";
+	public static final String UPDATE_EVENT_URL="https://pmpbeta.heartfulness.org/pmp/home";
 	
 	public static final String SECURITY_EVENT_KEY="security.encrypt.eventkey";
 	
