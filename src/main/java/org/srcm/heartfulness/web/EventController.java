@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.srcm.heartfulness.authorizationservice.PmpAuthorizationService;
+import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.helper.AuthorizationHelper;
 import org.srcm.heartfulness.model.Program;
@@ -72,6 +73,13 @@ public class EventController {
 			return response;
 		}
 		return response;
+		
+	}
+	
+	@RequestMapping(value = "/updateeventredirect", method = RequestMethod.GET)
+	public String showEventUpdateForm(@RequestParam(required = false, value = "id") String encryptedValue,
+			HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
+		return "redirect:"+PMPConstants.UPDATE_EVENT_URL+"?id=" + encryptedValue;
 	}
 
 	@RequestMapping(value = "/saveevent", method = RequestMethod.POST)

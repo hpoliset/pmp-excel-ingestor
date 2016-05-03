@@ -88,7 +88,7 @@ public class PMPConstants {
 	public static final String GENDER_MALE = "M";
 
 	public static final String GENDER_FEMALE = "F";
-
 	
-
+	public static final String UPDATE_EVENT_URL="https:en.stating.heartfulness.org";
+	
 }
