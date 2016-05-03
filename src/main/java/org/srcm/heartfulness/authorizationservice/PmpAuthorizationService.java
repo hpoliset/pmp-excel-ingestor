@@ -57,7 +57,6 @@ public interface PmpAuthorizationService {
 	 *  method which authorizes based on role and shows index form
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_PRECEPTOR','ROLE_SEEKER')")
 	String showIndexForm();
 
 	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_PRECEPTOR')")
