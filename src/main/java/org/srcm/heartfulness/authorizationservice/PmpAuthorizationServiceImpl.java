@@ -129,7 +129,7 @@ public class PmpAuthorizationServiceImpl implements PmpAuthorizationService {
 			model.addAttribute("program",new Program());
 		}else{
 			//write service to get the program
-			String decryptedProgramId = aesEncryptDecrypt.decrypt(encryptedProgramId, env.getProperty("security.encrypt.token"));
+			String decryptedProgramId = aesEncryptDecrypt.decrypt(encryptedProgramId, env.getProperty(PMPConstants.SECURITY_TOKEN_KEY));
 			Program program = programService.getProgramById(Integer.valueOf(decryptedProgramId));
 			model.addAttribute("program",program);
 			model.addAttribute("encryptedProgramId",encryptedProgramId);
@@ -154,7 +154,7 @@ public class PmpAuthorizationServiceImpl implements PmpAuthorizationService {
 		}
 		for(Program program : programList ){
 			String encryptedProgramId = aesEncryptDecrypt.encrypt(String.valueOf(program.getProgramId()),
-					env.getProperty("security.encrypt.token"));
+					env.getProperty(PMPConstants.SECURITY_TOKEN_KEY));
 			program.setEncryptedId(encryptedProgramId);
 		}
 		return new ResponseEntity<List<Program>>(programList,HttpStatus.OK);

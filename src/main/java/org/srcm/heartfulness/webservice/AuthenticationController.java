@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.helper.AuthorizationHelper;
 import org.srcm.heartfulness.model.CurrentUser;
@@ -62,9 +63,9 @@ public class AuthenticationController {
 			LOGGER.debug("Trying to Authenticate :  {}", authenticationRequest.getUsername());
 			SrcmAuthenticationResponse authenticationResponse = userProfileService.ValidateLogin(authenticationRequest);
 			authenticationResponse.setAccess_token(encryptDecryptAES.encrypt(authenticationResponse.getAccess_token(),
-					env.getProperty("security.encrypt.token")));
+					env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
 			authenticationResponse.setRefresh_token(encryptDecryptAES.encrypt(
-					authenticationResponse.getRefresh_token(), env.getProperty("security.encrypt.token")));
+					authenticationResponse.getRefresh_token(), env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
 			LOGGER.debug("User:{} is validated and token is generated", authenticationRequest.getUsername());
 			authHelper.doAutoLogin(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 			session.setAttribute("Authentication", SecurityContextHolder.getContext().getAuthentication().getPrincipal() );
@@ -98,11 +99,11 @@ public class AuthenticationController {
 		try {
 			LOGGER.debug("Trying to Authenticate :  {}", authenticationRequest.getUsername());
 			SrcmAuthenticationResponse refreshResponse = userProfileService.getRefreshToken(encryptDecryptAES.decrypt(
-					authenticationRequest.getRefreshToken(), env.getProperty("security.encrypt.token")));
+					authenticationRequest.getRefreshToken(), env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
 			refreshResponse.setAccess_token(encryptDecryptAES.encrypt(refreshResponse.getAccess_token(),
-					env.getProperty("security.encrypt.token")));
+					env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
 			refreshResponse.setRefresh_token(encryptDecryptAES.encrypt(refreshResponse.getRefresh_token(),
-					env.getProperty("security.encrypt.token")));
+					env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
 			LOGGER.debug("Refresh token is validated and token details are generated");
 			return new ResponseEntity<SrcmAuthenticationResponse>(refreshResponse, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {

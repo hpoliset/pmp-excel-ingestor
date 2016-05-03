@@ -62,7 +62,7 @@ public class IntroductionController {
 		Introductionresponse response=new Introductionresponse();
 		try{
 			Result result = userProfileService.getUserProfile(encryptDecryptAES.decrypt(token,
-					env.getProperty("security.encrypt.token")));
+					env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
 			UserProfile srcmProfile = result.getUserProfile()[0];
 			if(user.getEmail().equalsIgnoreCase(srcmProfile.getEmail())){
 				User newUser = userProfileService.loadUserByEmail(srcmProfile.getEmail());

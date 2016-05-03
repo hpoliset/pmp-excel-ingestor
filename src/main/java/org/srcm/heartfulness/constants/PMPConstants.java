@@ -91,4 +91,8 @@ public class PMPConstants {
 	
 	public static final String UPDATE_EVENT_URL="https:en.stating.heartfulness.org";
 	
+	public static final String SECURITY_EVENT_KEY="security.encrypt.eventkey";
+	
+	public static final String SECURITY_TOKEN_KEY="security.encrypt.tokenkey";
+	
 }

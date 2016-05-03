@@ -17,6 +17,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EventConstants;
+import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
@@ -229,7 +230,7 @@ public class CreateEventHelper {
 	 */
 	public UserProfile validateToken(String token) throws HttpClientErrorException, 
 		JsonParseException, JsonMappingException, IOException,IllegalBlockSizeException,NumberFormatException,BadPaddingException{
-		Result result = userProfileService.getUserProfile(encryptDecryptAES.decrypt(token,env.getProperty("security.encrypt.token")));
+		Result result = userProfileService.getUserProfile(encryptDecryptAES.decrypt(token,env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
 		return result.getUserProfile()[0];
 	}
 

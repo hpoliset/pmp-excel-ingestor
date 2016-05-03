@@ -53,7 +53,7 @@ public class EventController {
 				authHelper.setcurrentUsertoContext(request.getSession());
 				String eventId = encryptedValue;
 				try {
-					eventId = aesEncryptDecrypt.decrypt(encryptedValue, env.getProperty("security.encrypt.token"));
+					eventId = aesEncryptDecrypt.decrypt(encryptedValue, env.getProperty(PMPConstants.SECURITY_TOKEN_KEY));
 				} catch (Exception ex) {
 					LOGGER.debug("Invalid Event ID :" + eventId + " Please provide a valid Event ID.");
 				}
@@ -126,7 +126,7 @@ public class EventController {
 			if(!program.getEncryptedId().isEmpty()){
 
 				String decryptedProgramId = 
-						aesEncryptDecrypt.decrypt(program.getEncryptedId(), env.getProperty("security.encrypt.token"));
+						aesEncryptDecrypt.decrypt(program.getEncryptedId(), env.getProperty(PMPConstants.SECURITY_TOKEN_KEY));
 				List<Participant> participantList = programService.getProgramById(Integer.valueOf(decryptedProgramId)).getParticipantList();
 				model.addAttribute("encryptedProgramId",program.getEncryptedId());
 				model.addAttribute("participantList",participantList);
@@ -140,7 +140,7 @@ public class EventController {
 			model.addAttribute("result", "Event has been successfully created");
 			return "eventresponse";
 		}else{
-			String decryptedProgramId = aesEncryptDecrypt.decrypt(program.getEncryptedId(), env.getProperty("security.encrypt.token"));
+			String decryptedProgramId = aesEncryptDecrypt.decrypt(program.getEncryptedId(), env.getProperty(PMPConstants.SECURITY_TOKEN_KEY));
 			program.setProgramId(Integer.valueOf(decryptedProgramId));
 			programService.createProgram(program);
 			model.addAttribute("result", "Event has been successfully updated");
@@ -166,7 +166,7 @@ public class EventController {
 	public ResponseEntity<?> loadParticipants(Model model,@RequestParam(required=false,name="programId") String encryptedProgramId ){
 		List<Participant> participantList = new ArrayList<Participant>();
 		if(!encryptedProgramId.isEmpty()){
-			String decryptedProgramId = aesEncryptDecrypt.decrypt(encryptedProgramId, env.getProperty("security.encrypt.token"));
+			String decryptedProgramId = aesEncryptDecrypt.decrypt(encryptedProgramId, env.getProperty(PMPConstants.SECURITY_TOKEN_KEY));
 			participantList = programService.getParticipantByProgramId(Integer.valueOf(decryptedProgramId));
 		}
 		model.addAttribute("participantListSize",participantList);

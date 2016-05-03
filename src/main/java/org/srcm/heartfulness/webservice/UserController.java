@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
@@ -49,7 +50,7 @@ public class UserController {
 	public ResponseEntity<?> getUserProfile(@RequestHeader(value = "Authorization") String token) {
 		try {
 			Result result = userProfileService.getUserProfile(encryptDecryptAES.decrypt(token,
-					env.getProperty("security.encrypt.token")));
+					env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
 			UserProfile srcmProfile = result.getUserProfile()[0];
 			User user = userProfileService.loadUserByEmail(srcmProfile.getEmail());
 			if (null == user) {
@@ -86,7 +87,7 @@ public class UserController {
 			@RequestHeader(value = "Authorization") String token) {
 		try {
 			Result result = userProfileService.getUserProfile(encryptDecryptAES.decrypt(token,
-					env.getProperty("security.encrypt.token")));
+					env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
 			UserProfile srcmProfile = result.getUserProfile()[0];
 			User pmpUser = userProfileService.loadUserByEmail(srcmProfile.getEmail());
 			if (pmpUser != null && id == pmpUser.getId()) {
