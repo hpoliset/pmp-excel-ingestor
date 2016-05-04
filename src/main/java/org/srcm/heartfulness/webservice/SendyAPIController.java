@@ -28,7 +28,7 @@ public class SendyAPIController {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendyAPIController.class);
 
-	@Scheduled(cron = "${welcome.mail.subscribe.cron.time}")
+	/*@Scheduled(cron = "${welcome.mail.subscribe.cron.time}")*/
 	public void subscribeUser(){
 		try {
 			LOGGER.debug("Scheduler started at - "+new Date());
@@ -40,7 +40,7 @@ public class SendyAPIController {
 	}
 	
 	
-	@Scheduled(cron = "${welcome.mail.unsubscribe.cron.time}")
+	/*@Scheduled(cron = "${welcome.mail.unsubscribe.cron.time}")*/
 	public void unsubscribeUser(){
 		try {
 			LOGGER.debug("Unsubcribe user called.");
