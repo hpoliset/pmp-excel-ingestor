@@ -595,7 +595,7 @@ public class EventsController {
 		}
 	}
 	
-	@RequestMapping(value = "/geteventdetailswithID", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/fetcheventdetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getEventDetailsWithDecryptedID(@RequestHeader(value = "Authorization") String token,
 			@RequestBody Event event) {
 
