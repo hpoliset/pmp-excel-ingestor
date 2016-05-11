@@ -4,6 +4,7 @@ import java.io.StringWriter;
 import java.util.Date;
 import java.util.Properties;
 
+import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -79,7 +80,7 @@ public class SendMail {
 			Session session = Session.getDefaultInstance(props);
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress("heartfulness.org"));
-
+			message.setRecipients(Message.RecipientType.TO,InternetAddress.parse(participant.getEmail()));
 			message.setSubject("Test Mail Subject");
 			velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
 			velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
