@@ -19,7 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.enumeration.ExcelType;
 import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractorFactory;
+import org.srcm.heartfulness.mail.SendMail;
 import org.srcm.heartfulness.model.Organisation;
+import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.repository.OrganisationRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
@@ -46,12 +48,16 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	@Autowired
 	private VersionIdentifier versionIdentifier;
 
+	@Autowired
+	private SendMail sendMail;
+
 	/**
-	 * This method is used to parse the excel file and populate the data into database.
+	 * This method is used to parse the excel file and populate the data into
+	 * database.
 	 * 
 	 * @param fileName
 	 * @param fileContent
-	 * @return the status and error messages. 
+	 * @return the status and error messages.
 	 */
 	@Override
 	@Transactional
@@ -65,7 +71,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			// Validate and Parse the excel file
 			ExcelType version = versionIdentifier.findVersion(workBook);
 			response.setExcelVersion(version);
-			if(version != version.INVALID){
+			if (version != version.INVALID) {
 				errorResponse = EventDetailsExcelValidatorFactory.validateExcel(workBook, version);
 				if (!errorResponse.isEmpty()) {
 					response.setErrorMsg(errorResponse);
@@ -75,14 +81,15 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 					Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version);
 					program.setCreatedSource("Excel");
 					programRepository.save(program);
+					sendAutomaticConfirmationMailToParticipants(program.getParticipantList());
 					response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
 				}
-			}else{
+			} else {
 				errorResponse.add("Invalid file contents.");
 				response.setErrorMsg(errorResponse);
 				response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 			}
-		}catch (IOException | InvalidExcelFileException | POIXMLException ex) {
+		} catch (IOException | InvalidExcelFileException | POIXMLException ex) {
 			// To show the error message to the end user.
 			LOGGER.error(ex.getMessage());
 			errorResponse.add(ex.getMessage());
@@ -90,6 +97,12 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 		}
 		return response;
+	}
+
+	private void sendAutomaticConfirmationMailToParticipants(List<Participant> participantList) {
+		for (Participant participant : participantList) {
+			sendMail.SendConfirmationMailToParticipant(participant);
+		}
 	}
 
 	@Override

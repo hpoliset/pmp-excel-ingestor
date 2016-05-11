@@ -146,7 +146,10 @@ public class ParticipantController {
 			if (null == ceh.validateToken(token)) {
 				ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
 				return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
-			} else if (null == request.getSeqId() && null == request.getEventId()) {
+			}
+
+			if (null == request.getSeqId() || request.getSeqId().isEmpty() || null == request.getEventId()
+					|| request.getEventId().isEmpty()) {
 				ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, "event ID and Seq Id is required");
 				return new ResponseEntity<ErrorResponse>(error, HttpStatus.PRECONDITION_FAILED);
 			} else {
@@ -160,14 +163,9 @@ public class ParticipantController {
 		} catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
 			ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
-		} catch (JsonParseException e) {
+		} catch (JsonParseException | JsonMappingException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "parse-error : error while parsing json data");
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		} catch (JsonMappingException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"json mapping-error : json data is not mapped properly");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
@@ -179,7 +177,6 @@ public class ParticipantController {
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Please try after sometime.");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
 	}
 
 	/**
@@ -213,23 +210,13 @@ public class ParticipantController {
 		} catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
 			ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
-		} catch (JsonParseException e) {
+		} catch (JsonParseException | JsonMappingException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "parse-error : error while parsing json data");
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		} catch (JsonMappingException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"json mapping-error : json data is not mapped properly");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "input/output-error ; Please try after sometime");
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		} catch (ParseException e) {
-			e.printStackTrace();
-			LOGGER.error("Exception    :" + e.getMessage());
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Parse Exception");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -269,20 +256,16 @@ public class ParticipantController {
 		} catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
 			ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
-		} catch (JsonParseException e) {
+		} catch (JsonParseException | JsonMappingException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "parse-error : error while parsing json data");
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		} catch (JsonMappingException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"json mapping-error : json data is not mapped properly");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "input/output-error ; Please try after sometime");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
+			e.printStackTrace();
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Please try after sometime.");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
