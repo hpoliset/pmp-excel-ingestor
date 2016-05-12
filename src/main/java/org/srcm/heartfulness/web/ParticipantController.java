@@ -19,6 +19,7 @@ public class ParticipantController {
 	@Autowired
 	private WelcomeMailService sendyAPIService;
 	
+	@Autowired
 	private ParticipantRepository participantRepository;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ParticipantController.class);
