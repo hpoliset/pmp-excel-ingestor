@@ -55,7 +55,7 @@ public class SendMail {
 
 	public void SendConfirmationMailToParticipant(Participant participant) {
 		if (null != participant.getPrintName() && !participant.getPrintName().isEmpty()) {
-			addParameter("NAME",getName( participant.getPrintName()));
+			addParameter("NAME",getName(participant.getPrintName()));
 			addParameter("LINK", PMPConstants.UNSUBSCRIBE_LINK+"?email="+participant.getEmail()+"&name="+participant.getPrintName());
 		} else {
 			addParameter("NAME", "Sir/Madam");
