@@ -25,7 +25,7 @@ public class ParticipantController {
 
 	@RequestMapping(value = "/unsubscribe", method = RequestMethod.GET)
 	public String showForm(HttpServletRequest request, Model model,
-			@RequestParam(required = false, value = "mail") String mail,
+			@RequestParam(required = false, value = "email") String mail,
 			@RequestParam(required = false, value = "name") String name) {
 		LOGGER.debug("unsubscription - mail : {} , name : {}",mail , name);
 		if(1 == participantRepository.checkForMailSubcription(mail)){
