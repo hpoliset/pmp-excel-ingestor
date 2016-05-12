@@ -79,4 +79,6 @@ public interface ParticipantRepository {
 
 	void updateConfirmationMailStatus(Participant participant);
 
+	int CheckForConfirmationMailStatus(Participant participant);
+
 }

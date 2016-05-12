@@ -6,7 +6,7 @@
 <div>
 <table>
 <tr>
-<td>Welcome ${NAME} ,</td>
+<td>Welcome ${NAME},</td>
 </tr>
 <tr>
 <td>

@@ -109,8 +109,10 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 				LOGGER.debug("Mail subscription : {} ",
 						participantRepository.checkForMailSubcription(participant.getEmail()) + "");
 				if (1 != participantRepository.checkForMailSubcription(participant.getEmail())) {
-					sendMail.SendConfirmationMailToParticipant(participant);
-					participantRepository.updateConfirmationMailStatus(participant);
+					if( 1 != participantRepository.CheckForConfirmationMailStatus(participant)){
+						sendMail.SendConfirmationMailToParticipant(participant);
+						participantRepository.updateConfirmationMailStatus(participant);
+					}
 				}
 			}
 		}

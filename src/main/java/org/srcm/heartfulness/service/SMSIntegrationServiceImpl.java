@@ -309,8 +309,10 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 						programRepository.saveWithProgramName(program);
 						if (null != participant.getEmail() && ! participant.getEmail().isEmpty()) {
 							if(1 != participantRepository.checkForMailSubcription(participant.getEmail())){
-								sendMail.SendConfirmationMailToParticipant(participant);
-								participantRepository.updateConfirmationMailStatus(participant);
+								if( 1 != participantRepository.CheckForConfirmationMailStatus(participant)){
+									sendMail.SendConfirmationMailToParticipant(participant);
+									participantRepository.updateConfirmationMailStatus(participant);
+								}
 							}
 						}
 						response = SMSConstants.SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_1
