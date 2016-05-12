@@ -101,7 +101,9 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 
 	private void sendAutomaticConfirmationMailToParticipants(List<Participant> participantList) {
 		for (Participant participant : participantList) {
-			sendMail.SendConfirmationMailToParticipant(participant);
+			if (null != participant.getEmail() && ! participant.getEmail().isEmpty()) {
+				sendMail.SendConfirmationMailToParticipant(participant);
+			}
 		}
 	}
 

@@ -46,9 +46,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
  */
 @RestController
 @RequestMapping("/api/participant")
-public class ParticipantController {
+public class ParticipantsController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ParticipantController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ParticipantsController.class);
 
 	@Autowired
 	private ProgramService programService;

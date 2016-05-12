@@ -95,4 +95,6 @@ public class PMPConstants {
 	
 	public static final String SECURITY_TOKEN_KEY="security.encrypt.tokenkey";
 	
+	public static final String UNSUBSCRIBE_LINK = "https://pmpbeta.heartfulness.org/pmp/unsubscribe";
+	
 }

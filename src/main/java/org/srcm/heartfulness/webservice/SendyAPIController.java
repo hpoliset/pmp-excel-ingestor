@@ -1,14 +1,17 @@
 package org.srcm.heartfulness.webservice;
 
+import java.io.IOException;
+import java.util.Date;
+
+import javax.mail.MessagingException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.srcm.heartfulness.model.SendySubscriber;
-import org.srcm.heartfulness.service.SendyAPIService;
+import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.service.WelcomeMailService;
 
 /**
  * 
@@ -18,34 +21,32 @@ import org.srcm.heartfulness.service.SendyAPIService;
 @RestController
 @RequestMapping("/api/sendy/")
 public class SendyAPIController {
-	
+
 	@Autowired
-	private SendyAPIService sendyAPIService;
+	private WelcomeMailService sendyAPIService;
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(SendyAPIController.class);
 
-	@RequestMapping(value = "subscribe", method ={ RequestMethod.POST, RequestMethod.GET })
-	public String addNewSubscriber(@RequestBody SendySubscriber sendySubcriber) {
-		String response = "";
-		response = sendyAPIService.subscribe(sendySubcriber.getUserName(),sendySubcriber.getEmail());
-		return response;
-	}
-
-	@RequestMapping(value = "unsubscribe", method ={ RequestMethod.POST, RequestMethod.GET })
-	public String unsubscribeUser(@RequestBody SendySubscriber sendySubcriber){
-		String response = "";
-		response = sendyAPIService.unsubscribe(sendySubcriber.getEmail());
-		return response;
+	/*@Scheduled(cron = "${welcome.mail.subscribe.cron.time}")*/
+	public void subscribeUser(){
+		try {
+			LOGGER.debug("Scheduler started at - "+new Date());
+			sendyAPIService.addNewSubscriber();
+		} catch (HttpClientErrorException | IOException | MessagingException e) {
+			//e.printStackTrace();
+			LOGGER.error("Exception while Subscribe - {} "+ e.getMessage());
+		}
 	}
 	
-	@RequestMapping(value = "subscribescheduler", method ={ RequestMethod.POST, RequestMethod.GET })
-	public String addSubscriber() {
-		sendyAPIService.addNewSubscriber();
-		return "completed";
-	}
-
-	@RequestMapping(value = "unsubscribescheduler", method ={ RequestMethod.POST, RequestMethod.GET })
-	public String unsubscribe(){
-		sendyAPIService.unsubscribeUsers();
-		return "completed";
-	}
 	
+	/*@Scheduled(cron = "${welcome.mail.unsubscribe.cron.time}")*/
+	public void unsubscribeUser(){
+		try {
+			LOGGER.debug("Unsubcribe user called.");
+			sendyAPIService.unsubscribeUsers();
+		} catch (HttpClientErrorException | IOException e) {
+			//e.printStackTrace();
+			LOGGER.error("Exception while Unsubscribe - {} "+ e.getMessage());
+		}
+	}
 }

@@ -1,0 +1,34 @@
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<div>
+<table>
+<tr>
+<td>Welcome ${NAME} ,</td>
+</tr>
+<tr>
+<td>
+</br>
+<p>Greetings and Good Wishes from Heartfulness.</p>
+<p>We have Recieved your details through SMS and we would like to stay in touch with you and respond to your interest in meditation.</p>
+</td>
+</tr>
+<tr>
+<td>
+<br/>
+<p> If dont want to recieve this mailer, <a href="${LINK}" >unsuscribe</a> </p>
+</td>
+</tr>
+</table>
+<br/>
+<br/>
+<div style="font-style: italic; font-weight: bold;">
+With regards
+<br/>
+Heartfulness Webmaster
+</div>
+</div>
+</body>
+</html>

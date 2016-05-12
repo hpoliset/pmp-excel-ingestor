@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.model.Participant;
 
@@ -53,47 +54,29 @@ public class SendMail {
 	Environment env;
 
 	public void SendConfirmationMailToParticipant(Participant participant) {
-		addParameter("NAME", participant.getFirstName() + participant.getLastName());
+		if (null != participant.getPrintName() && !participant.getPrintName().isEmpty()) {
+			addParameter("NAME", participant.getPrintName());
+		} else {
+			addParameter("NAME", "Sir/Madam");
+		}
+		addParameter("LINK", PMPConstants.UNSUBSCRIBE_LINK);
 		Properties props = System.getProperties();
-		/*
-		 * props.put("mail.debug", "true"); props.put("mail.smtp.host",
-		 * "test.local"); props.put("mail.smtp.ssl.enable", "true");
-		 * props.put("mail.smtp.auth", "true");
-		 * 
-		 * Session session = Session.getDefaultInstance(props, new
-		 * javax.mail.Authenticator() {
-		 * 
-		 * @Override protected PasswordAuthentication
-		 * getPasswordAuthentication() { return new
-		 * PasswordAuthentication("receiver1openerp@test.local", "Rec1@123"); }
-		 * });
-		 */
-
 		try {
-			/*
-			 * SMTPMessage message = new SMTPMessage(session);
-			 * message.setFrom(new
-			 * InternetAddress("receiver1openerp@test.local"));
-			 * message.setRecipients(Message.RecipientType.TO,
-			 * InternetAddress.parse(participant.getEmail()));
-			 */
 			Session session = Session.getDefaultInstance(props);
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress("heartfulness.org"));
-			message.setRecipients(Message.RecipientType.TO,InternetAddress.parse(participant.getEmail()));
-			message.setSubject("Test Mail Subject");
-			velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(participant.getEmail()));
+			message.setSubject("Heartfulness confirmation mail - Test");
+			/*velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
 			velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
 			Template template = velocityEngine.getTemplate("templates" + "/MailConfirmationTemplate.vm");
 			StringWriter stringWriter = new StringWriter();
-			template.merge(getParameter(), stringWriter);
-			message.setContent(stringWriter.toString(), "text/html");
+			template.merge(getParameter(), stringWriter);*/
+			message.setContent(getWelcomeMailContent(participant.getCreatedSource()), "text/html");
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
-
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
 			int returnOption = message.getReturnOption();
-
 			System.out.println(returnOption);
 			Transport.send(message);
 			System.out.println("sent");
@@ -105,4 +88,23 @@ public class SendMail {
 		}
 	}
 
+	/**
+	 * to get the email content as string from the vm template
+	 * 
+	 * @param welcomemail
+	 * @return
+	 */
+	private String getWelcomeMailContent(String createdSource){
+		Template template = null;
+		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath"); 
+		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+		if("Excel".equalsIgnoreCase(createdSource)){
+			template = velocityEngine.getTemplate("templates"+"/MailConfirmationTemplate.vm");
+		}else if("SMS".equalsIgnoreCase(createdSource)){
+			template = velocityEngine.getTemplate("templates"+"/MailConfirmationTemplateForSMS.vm");
+		}
+		StringWriter stringWriter = new StringWriter();
+		template.merge(getParameter(), stringWriter);
+		return stringWriter.toString();
+	}
 }
