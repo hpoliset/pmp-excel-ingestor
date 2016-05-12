@@ -283,22 +283,31 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 	@Override
 	public int checkForMailSubcription(String email) {
-		try{
-		int unSubscribed = this.jdbcTemplate.query("SELECT unsubscribed from welcome_email_log where email=?",
-				new Object[] { email }, new ResultSetExtractor<Integer>() {
-					@Override
-					public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-						if (resultSet.next()) {
-							return resultSet.getInt(1);
+		try {
+			int unSubscribed = this.jdbcTemplate.query("SELECT unsubscribed from welcome_email_log where email=?",
+					new Object[] { email }, new ResultSetExtractor<Integer>() {
+						@Override
+						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+							if (resultSet.next()) {
+								return resultSet.getInt(1);
+							}
+							return 0;
 						}
-						return 0;
-					}
-				});
-		
-		return unSubscribed;
-		}catch(EmptyResultDataAccessException e){
+					});
+
+			return unSubscribed;
+		} catch (EmptyResultDataAccessException e) {
 			return 0;
 		}
+	}
+
+	@Override
+	public void updateConfirmationMailStatus(Participant participant) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("confirmationMailSent", 1);
+		params.put("email", participant.getEmail());
+		this.namedParameterJdbcTemplate.update(
+				"UPDATE participant SET confirmation_mail_sent=:confirmationMailSent WHERE email=:email", params);
 	}
 
 }

@@ -55,6 +55,16 @@ public class Participant {
     private int welcomeMailSent;
     
     private String createdSource;
+    
+    private String confirmationMailSent;
+    
+	public String getConfirmationMailSent() {
+		return confirmationMailSent;
+	}
+
+	public void setConfirmationMailSent(String confirmationMailSent) {
+		this.confirmationMailSent = confirmationMailSent;
+	}
 
 	public String getCreatedSource() {
 		return createdSource;
