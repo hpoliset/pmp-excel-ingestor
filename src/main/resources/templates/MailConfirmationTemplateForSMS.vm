@@ -12,20 +12,20 @@
 <td>
 </br>
 <p>Greetings and Good Wishes from Heartfulness.</p>
-<p>We have Recieved your details through SMS and we would like to stay in touch with you and respond to your interest in meditation.</p>
+<p>We have received your details through SMS and we would like to stay in touch with you and respond to your interest in meditation.</p>
 </td>
 </tr>
 </table>
 <br/>
 <br/>
 <div style="font-style: italic; font-weight: bold;">
-With regards
+With regards,
 <br/>
 Heartfulness Webmaster
 </div>
 <br/>
 <br/>
-<p> If dont want to recieve this mailer, <a href="${LINK}" >unsubscribe</a> </p>
+<p> If you don't want to receive this mailer, <a href="${LINK}" >unsubscribe</a> </p>
 </div>
 </body>
 </html>

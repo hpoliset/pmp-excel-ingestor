@@ -21,9 +21,11 @@ public class ParticipantController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ParticipantController.class);
 
 	@RequestMapping(value = "/unsubscribe", method = RequestMethod.GET)
-	public String showForm(HttpServletRequest request, Model model, @RequestParam String mail,@RequestParam String name) {
+	public String showForm(HttpServletRequest request, Model model,
+			@RequestParam(required = false, value = "mail") String mail,
+			@RequestParam(required = false, value = "name") String name) {
 		LOGGER.debug("Unsubcribe user called.");
-		sendyAPIService.unsubscribe(mail,name);
+		sendyAPIService.unsubscribe(mail, name);
 		model.addAttribute("message", "unsubcribed successfully.");
 		return "eventsuccess";
 	}
