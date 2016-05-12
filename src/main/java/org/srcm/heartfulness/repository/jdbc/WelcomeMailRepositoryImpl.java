@@ -140,7 +140,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 			welcomeMailDetails.setId(newId.intValue());
 		} else {
 			this.namedParameterJdbcTemplate
-					.update("UPDATE welcome_email_log set unsubscribed=1 WHERE email=? ", parameterSource);
+					.update("UPDATE welcome_email_log set unsubscribed=:unsubscribed WHERE email=:email", parameterSource);
 		}
 		
 	}

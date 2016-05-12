@@ -168,6 +168,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		WelcomeMailDetails sendySubscriber = new WelcomeMailDetails();
 		sendySubscriber.setEmail(mailID);
 		sendySubscriber.setPrintName(name);
+		sendySubscriber.setUnsubscribed(1);
 		welcomeMailRepository.updateUserUnsubscribed(sendySubscriber);
 		//return response;
 	}
