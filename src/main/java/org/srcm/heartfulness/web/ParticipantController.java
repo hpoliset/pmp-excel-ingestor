@@ -27,7 +27,8 @@ public class ParticipantController {
 	public String showForm(HttpServletRequest request, Model model,
 			@RequestParam(required = false, value = "mail") String mail,
 			@RequestParam(required = false, value = "name") String name) {
-		if(1 == participantRepository.checkForMailSubcription(mail) ){
+		LOGGER.debug("unsubscription - mail : {} , name : {}",mail , name);
+		if(1 == participantRepository.checkForMailSubcription(mail)){
 			model.addAttribute("message", "You've already unsubscribed.");
 			return "eventsuccess";
 		}else{

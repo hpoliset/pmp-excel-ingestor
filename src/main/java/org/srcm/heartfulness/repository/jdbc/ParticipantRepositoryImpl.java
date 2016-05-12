@@ -283,6 +283,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 	@Override
 	public int checkForMailSubcription(String email) {
+		try{
 		int unSubscribed = this.jdbcTemplate.query("SELECT unsubscribed from welcome_email_log where email=?",
 				new Object[] { email }, new ResultSetExtractor<Integer>() {
 					@Override
@@ -293,7 +294,11 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 						return 0;
 					}
 				});
+		
 		return unSubscribed;
+		}catch(EmptyResultDataAccessException e){
+			return 0;
+		}
 	}
 
 }
