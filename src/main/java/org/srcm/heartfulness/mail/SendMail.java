@@ -55,11 +55,11 @@ public class SendMail {
 
 	public void SendConfirmationMailToParticipant(Participant participant) {
 		if (null != participant.getPrintName() && !participant.getPrintName().isEmpty()) {
-			addParameter("NAME", participant.getPrintName());
+			addParameter("NAME",getName( participant.getPrintName()));
 			addParameter("LINK", PMPConstants.UNSUBSCRIBE_LINK+"?email="+participant.getEmail()+"&name="+participant.getPrintName());
 		} else {
 			addParameter("NAME", "Sir/Madam");
-			addParameter("LINK", PMPConstants.UNSUBSCRIBE_LINK+"?email="+participant.getEmail());
+			addParameter("LINK", PMPConstants.UNSUBSCRIBE_LINK+"?email="+participant.getEmail()+"&name="+"");
 		}
 	
 		Properties props = System.getProperties();
@@ -83,6 +83,19 @@ public class SendMail {
 			throw new RuntimeException(e);
 
 		}
+	}
+
+	private String getName(String printName) {
+		printName = printName.replace(".", " ");
+		String[] name = printName.split(" ");
+		if (name.length > 0) {
+			for (int i = 0; i < name.length; i++) {
+				if (name[i].length() > 2) {
+					return name[i].substring(0, 1).toUpperCase() + name[i].substring(1).toLowerCase();
+				}
+			}
+		}
+		return printName;
 	}
 
 	/**

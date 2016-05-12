@@ -131,7 +131,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			if (name.length > 0) {
 				for (int i = 0; i < name.length; i++) {
 					if (name[i].length() > 2) {
-						return name[i].substring(0, 1).toUpperCase() + name[i].substring(1);
+						return name[i].substring(0, 1).toUpperCase() + name[i].substring(1).toLowerCase();
 					}
 				}
 			}
