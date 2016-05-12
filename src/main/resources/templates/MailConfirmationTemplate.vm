@@ -16,12 +16,6 @@
 <p>We have Recieved your details and, we would like to stay in touch with you and respond to your interest in meditation.</p>
 </td>
 </tr>
-<tr>
-<td>
-<br/>
-<p> If dont want to recieve this mailer, <a href="${LINK}" >unsuscribe</a> </p>
-</td>
-</tr>
 </table>
 <br/>
 <br/>
@@ -30,6 +24,9 @@ With regards
 <br/>
 Heartfulness Webmaster
 </div>
+<br/>
+<br/>
+<p> If dont want to recieve this mailer, <a href="${LINK}" >unsubscribe</a> </p>
 </div>
 </body>
 </html>

@@ -69,4 +69,6 @@ public interface ParticipantRepository {
 
 	List<Participant> getParticipantList(SearchRequest searchRequest);
 
+	int checkForMailSubcription(String email);
+
 }

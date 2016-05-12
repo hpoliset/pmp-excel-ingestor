@@ -48,23 +48,23 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	@Override
 	public void addNewSubscriber() throws HttpClientErrorException, JsonParseException, JsonMappingException,
 			IOException, MessagingException {
-		
+
 		SendySubscriber sendySubscriber = null;
 		List<Participant> participants = new ArrayList<Participant>();
 		participants = welcomeMailRepository.getParticipantsToSendWelcomeMail();
 		Set<SendySubscriber> subscriberSet = new HashSet<SendySubscriber>();
 		int participantCount = 0;
-		int validEmailSubscribersCount=0;
+		int validEmailSubscribersCount = 0;
 		String response = null;
-		boolean flag=true;
-		LOGGER.debug("partcipant size {}"+participants.size());
+		boolean flag = true;
+		LOGGER.debug("partcipant size {}" + participants.size());
 		Set<Integer> invalidParticipantSet = new HashSet<Integer>();
 		if (participants.size() >= 1) {
 			for (Participant participant : participants) {
 				sendySubscriber = new SendySubscriber();
 				participantCount = welcomeMailRepository.getIntroducedParticipantCount(participant.getPrintName(),
 						participant.getEmail());
-				if (participantCount < 1 && null != participant.getEmail() && !participant.getEmail().isEmpty() 
+				if (participantCount < 1 && null != participant.getEmail() && !participant.getEmail().isEmpty()
 						&& participant.getEmail().matches(EventConstants.EMAIL_REGEX)) {
 					sendySubscriber.setNameToSendMail(getName(participant.getPrintName()));
 					sendySubscriber.setUserName(participant.getPrintName());
@@ -75,15 +75,14 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 					flag = response.equals("1") ? true : response.equals("Already subscribed.") ? true : false;
 					if (!flag) {
 						LOGGER.debug("Error while adding subscriber - " + response);
-						//sendyRestTemplate.sendErrorAlertMail();
+						// sendyRestTemplate.sendErrorAlertMail();
 						invalidParticipantSet.add(participant.getId());
-					}
-					else {
+					} else {
 						validEmailSubscribersCount++;
 						WelcomeMailDetails welcomeMailDetails = new WelcomeMailDetails();
-						if(null!=sendySubscriber.getUserName() && !sendySubscriber.getUserName().isEmpty()){
+						if (null != sendySubscriber.getUserName() && !sendySubscriber.getUserName().isEmpty()) {
 							welcomeMailDetails.setPrintName(sendySubscriber.getUserName());
-						}else{
+						} else {
 							welcomeMailDetails.setPrintName("Friend");
 						}
 						welcomeMailDetails.setEmail(sendySubscriber.getEmail());
@@ -91,9 +90,9 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 						welcomeMailRepository.save(welcomeMailDetails);
 					}
 				}
-			} 
-			LOGGER.debug("Valid mail id count - "+validEmailSubscribersCount);
-		}else {
+			}
+			LOGGER.debug("Valid mail id count - " + validEmailSubscribersCount);
+		} else {
 			LOGGER.debug("No participant found.");
 		}
 		if (subscriberSet.size() >= 1) {
@@ -111,9 +110,9 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			}
 		}
 		for (Participant participant : participants) {
-			if(participant.getEmail().matches(EventConstants.EMAIL_REGEX)){
-				if(!invalidParticipantSet.contains(participant.getId()))
-						welcomeMailRepository.updateParticipantMailSentById(participant.getId());
+			if (participant.getEmail().matches(EventConstants.EMAIL_REGEX)) {
+				if (!invalidParticipantSet.contains(participant.getId()))
+					welcomeMailRepository.updateParticipantMailSentById(participant.getId());
 			}
 		}
 		LOGGER.debug("Mail sent successfully.");
@@ -126,7 +125,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	 * @return the salitatetd print name
 	 */
 	private String getName(String printName) {
-		if(null!=printName && !printName.isEmpty()){
+		if (null != printName && !printName.isEmpty()) {
 			printName = printName.replace(".", " ");
 			String[] name = printName.split(" ");
 			if (name.length > 0) {
@@ -136,7 +135,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 					}
 				}
 			}
-		}else{
+		} else {
 			return "Friend";
 		}
 		return printName;
@@ -161,5 +160,15 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 				sendyRestTemplate.unsubscribeUser(subscriber);
 			}
 		}
+	}
+
+	@Override
+	public void unsubscribe(String mailID, String name) {
+		//String response = null;
+		WelcomeMailDetails sendySubscriber = new WelcomeMailDetails();
+		sendySubscriber.setEmail(mailID);
+		sendySubscriber.setPrintName(name);
+		welcomeMailRepository.updateUserUnsubscribed(sendySubscriber);
+		//return response;
 	}
 }

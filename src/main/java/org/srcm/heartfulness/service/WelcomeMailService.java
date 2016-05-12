@@ -15,5 +15,8 @@ public interface WelcomeMailService {
 	public void addNewSubscriber() throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException, MessagingException;
 	
 	public void unsubscribeUsers() throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
+	
+	public void unsubscribe(String mailID, String name);
+
 
 }

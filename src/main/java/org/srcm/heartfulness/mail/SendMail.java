@@ -56,10 +56,12 @@ public class SendMail {
 	public void SendConfirmationMailToParticipant(Participant participant) {
 		if (null != participant.getPrintName() && !participant.getPrintName().isEmpty()) {
 			addParameter("NAME", participant.getPrintName());
+			addParameter("LINK", PMPConstants.UNSUBSCRIBE_LINK+"?email="+participant.getEmail()+"&name="+participant.getPrintName());
 		} else {
 			addParameter("NAME", "Sir/Madam");
+			addParameter("LINK", PMPConstants.UNSUBSCRIBE_LINK+"?email="+participant.getEmail());
 		}
-		addParameter("LINK", PMPConstants.UNSUBSCRIBE_LINK);
+	
 		Properties props = System.getProperties();
 		try {
 			Session session = Session.getDefaultInstance(props);
@@ -67,11 +69,6 @@ public class SendMail {
 			message.setFrom(new InternetAddress("heartfulness.org"));
 			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(participant.getEmail()));
 			message.setSubject("Heartfulness confirmation mail - Test");
-			/*velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-			velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
-			Template template = velocityEngine.getTemplate("templates" + "/MailConfirmationTemplate.vm");
-			StringWriter stringWriter = new StringWriter();
-			template.merge(getParameter(), stringWriter);*/
 			message.setContent(getWelcomeMailContent(participant.getCreatedSource()), "text/html");
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());

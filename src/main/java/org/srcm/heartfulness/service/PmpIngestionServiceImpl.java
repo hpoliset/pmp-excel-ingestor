@@ -24,6 +24,7 @@ import org.srcm.heartfulness.model.Organisation;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.repository.OrganisationRepository;
+import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.service.response.ExcelUploadResponse;
 import org.srcm.heartfulness.util.ExcelParserUtils;
@@ -50,6 +51,9 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 
 	@Autowired
 	private SendMail sendMail;
+	
+	@Autowired
+	private ParticipantRepository participantRepository;
 
 	/**
 	 * This method is used to parse the excel file and populate the data into
@@ -102,7 +106,9 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	private void sendAutomaticConfirmationMailToParticipants(List<Participant> participantList) {
 		for (Participant participant : participantList) {
 			if (null != participant.getEmail() && ! participant.getEmail().isEmpty()) {
-				sendMail.SendConfirmationMailToParticipant(participant);
+				if(1 != participantRepository.checkForMailSubcription(participant.getEmail())){
+					sendMail.SendConfirmationMailToParticipant(participant);
+				}
 			}
 		}
 	}

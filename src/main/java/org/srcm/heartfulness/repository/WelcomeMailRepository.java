@@ -44,10 +44,11 @@ public interface WelcomeMailRepository {
 	 */
 	void updateParticipant(String mailID);
 
-	void updateUserUnsubscribed(String mailID);
+	void updateUserUnsubscribed(WelcomeMailDetails sendySubscriber);
 
 	String updateUserSubscribed(String name,String mailID);
 	
 	public void updateParticipantMailSentById(int id);
+	
 
 }
