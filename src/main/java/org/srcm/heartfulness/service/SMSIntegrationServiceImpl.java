@@ -308,9 +308,12 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 						program.setCreatedSource("SMS");
 						programRepository.saveWithProgramName(program);
 						if (null != participant.getEmail() && ! participant.getEmail().isEmpty()) {
+							LOGGER.debug("Mail subscription : {} ",	participantRepository.checkForMailSubcription(participant.getEmail()) + "");
+							LOGGER.debug("confirmation Mail sent  : {} ",	participantRepository.CheckForConfirmationMailStatus(participant) + "");
 							if(1 != participantRepository.checkForMailSubcription(participant.getEmail())){
 								if( 1 != participantRepository.CheckForConfirmationMailStatus(participant)){
 									sendMail.SendConfirmationMailToParticipant(participant);
+									LOGGER.debug("Confirmation Mail sent to  : {} ",participant.getEmail());
 									participantRepository.updateConfirmationMailStatus(participant);
 								}
 							}

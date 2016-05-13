@@ -63,6 +63,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setCity(participantRequest.getCity());
 			participant.setState(participantRequest.getState());
 			participant.setCountry(participantRequest.getCountry());
+			participant.setAbhyasiId(participantRequest.getAbhyasiId());
+			participant.setIntroducedBy(participantRequest.getIntroducedBy());
 			participant.setIntroduced((null != participantRequest.getIntroducedStatus() 
 					&& PMPConstants.REQUIRED_YES.equalsIgnoreCase(participantRequest.getIntroducedStatus())) ? 1 : 0);
 			participant.setIntroductionDate(null != participantRequest.getIntroductionDate() 
@@ -87,6 +89,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setCity(participantRequest.getCity());
 			participant.setState(participantRequest.getState());
 			participant.setCountry(participantRequest.getCountry());
+			participant.setAbhyasiId(participantRequest.getAbhyasiId());
+			participant.setIntroducedBy(participantRequest.getIntroducedBy());
 			participant.setIntroduced((null != participantRequest.getIntroducedStatus() 
 					&& PMPConstants.REQUIRED_YES.equalsIgnoreCase(participantRequest.getIntroducedStatus())) ? 1 : 0);
 			participant.setIntroductionDate(null != participantRequest.getIntroductionDate()
@@ -115,6 +119,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				? PMPConstants.REQUIRED_YES : PMPConstants.REQUIRED_NO);
 		participantRequest.setIntroductionDate(null != participantRequest.getIntroductionDate()
 				? sdf.format(participant.getIntroductionDate()) : null);
+		participantRequest.setAbhyasiId(participant.getAbhyasiId());
+		participantRequest.setIntroducedBy(participant.getIntroducedBy());
 		return participantRequest;
 	}
 
@@ -144,8 +150,10 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participantRequest.setCountry(participant.getCountry());
 			participantRequest.setIntroducedStatus(0 != participant.getIntroduced()
 					? PMPConstants.REQUIRED_YES	: PMPConstants.REQUIRED_NO);
-			participantRequest.setIntroductionDate(null != participantRequest.getIntroductionDate()
+			participantRequest.setIntroductionDate(null != participant.getIntroductionDate()
 					? sdf.format(participant.getIntroductionDate()) : null);
+			participantRequest.setAbhyasiId(participant.getAbhyasiId());
+			participantRequest.setIntroducedBy(participant.getIntroducedBy());
 		}else{
 			participantRequest = new ParticipantRequest();
 		}
@@ -199,7 +207,9 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participantReq.setCity(participant.getCity());
 			participantReq.setState(participant.getState());
 			participantReq.setCountry(participant.getCountry());
-
+			participantReq.setAbhyasiId(participant.getAbhyasiId());
+			participantReq.setIntroducedBy(participant.getIntroducedBy());
+			
 			if (1 == participant.getIntroduced()) {
 				participantReq.setIntroducedStatus(PMPConstants.REQUIRED_YES);
 			} else if (0 == participant.getIntroduced()) {

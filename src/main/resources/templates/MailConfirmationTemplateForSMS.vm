@@ -25,7 +25,7 @@ Heartfulness Webmaster
 </div>
 <br/>
 <br/>
-<p> If you don't want to receive this mailer, <a href="${LINK}" >unsubscribe</a> </p>
+<p>If you don't want to receive this mailer, <a href="${LINK}" >unsubscribe</a> </p>
 </div>
 </body>
 </html>

@@ -306,14 +306,14 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 		Map<String, Object> params = new HashMap<>();
 		params.put("confirmationMailSent", 1);
 		params.put("email", participant.getEmail());
-		this.namedParameterJdbcTemplate.update(
-				"UPDATE participant SET confirmation_mail_sent=:confirmationMailSent WHERE email=:email", params);
+		this.namedParameterJdbcTemplate.update("UPDATE participant SET confirmation_mail_sent=:confirmationMailSent WHERE email=:email", params);
 	}
 
 	@Override
 	public int CheckForConfirmationMailStatus(Participant participant) {
-		int confirmationmailSent = this.jdbcTemplate.query("SELECT confirmation_mail_sent from participant where email=? and seqId=?",
-				new Object[] { participant.getEmail() , participant.getSeqId() }, new ResultSetExtractor<Integer>() {
+		int confirmationmailSent = this.jdbcTemplate.query(
+				"SELECT confirmation_mail_sent from participant where email=? and seqId=?",
+				new Object[] { participant.getEmail(), participant.getSeqId() }, new ResultSetExtractor<Integer>() {
 					@Override
 					public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
 						if (resultSet.next()) {

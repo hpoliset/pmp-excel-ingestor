@@ -106,8 +106,8 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	private void sendAutomaticConfirmationMailToParticipants(List<Participant> participantList) {
 		for (Participant participant : participantList) {
 			if (null != participant.getEmail() && !participant.getEmail().isEmpty()) {
-				LOGGER.debug("Mail subscription : {} ",
-						participantRepository.checkForMailSubcription(participant.getEmail()) + "");
+				LOGGER.debug("Mail subscription : {} ",	participantRepository.checkForMailSubcription(participant.getEmail()) + "");
+				LOGGER.debug("confirmation Mail sent  : {} ",	participantRepository.CheckForConfirmationMailStatus(participant) + "");
 				if (1 != participantRepository.checkForMailSubcription(participant.getEmail())) {
 					if( 1 != participantRepository.CheckForConfirmationMailStatus(participant)){
 						sendMail.SendConfirmationMailToParticipant(participant);
