@@ -162,4 +162,15 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			}
 		}
 	}
+	
+	@Override
+	public void unsubscribe(String mailID, String name) {
+		//String response = null;
+		WelcomeMailDetails sendySubscriber = new WelcomeMailDetails();
+		sendySubscriber.setEmail(mailID);
+		sendySubscriber.setPrintName(name);
+		sendySubscriber.setUnsubscribed(1);
+		welcomeMailRepository.updateUserUnsubscribed(sendySubscriber);
+		//return response;
+	}
 }

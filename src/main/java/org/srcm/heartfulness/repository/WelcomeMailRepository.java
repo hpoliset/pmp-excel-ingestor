@@ -50,4 +50,6 @@ public interface WelcomeMailRepository {
 	
 	public void updateParticipantMailSentById(int id);
 
+	void updateUserUnsubscribed(WelcomeMailDetails welcomeMailDetails);
+
 }

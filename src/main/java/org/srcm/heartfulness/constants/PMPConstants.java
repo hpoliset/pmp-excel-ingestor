@@ -1,7 +1,7 @@
 package org.srcm.heartfulness.constants;
 
 public class PMPConstants {
-	
+
 	public static final String ROLE_PREFIX = "ROLE_";
 
 	public static final String LOGIN_ROLE_SEEKER = "SEEKER";
@@ -13,7 +13,7 @@ public class PMPConstants {
 	public static final String REGISTRATION = "Registration";
 
 	public static final String LOGIN_ROLE_ADMIN = "SYSTEM_ADMIN";
-	
+
 	public static final String LOGIN_ACCESS_DENIED = "ACCESS_DENIED";
 
 	public static final String STATUS_NEW = "New";
@@ -55,5 +55,11 @@ public class PMPConstants {
 	public static final String STATE_SEEMANDHRA = "SEEMANDHRA";
 
 	public static final String STATE_WESTBENGAL = "WESTBENGAL";
+
+	public static final String SECURITY_EVENT_KEY = "security.encrypt.eventkey";
+
+	public static final String SECURITY_TOKEN_KEY = "security.encrypt.tokenkey";
+	
+	public static final String UNSUBSCRIBE_LINK ="https://pmpbeta.heartfulness.org/pmp/unsubscribe";
 
 }

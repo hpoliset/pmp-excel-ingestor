@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="/pmp/css/skeleton.css">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Heartfulness Events Form</title>
+<title>Heartfulness</title>
 </head>
 <body>
 	<div class="row" align="center">

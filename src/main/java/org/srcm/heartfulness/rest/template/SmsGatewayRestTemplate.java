@@ -81,9 +81,9 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 		httpHeaders.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
 		System.out.println("request params"+mapper.writeValueAsString(smsRequestParams));
 		httpEntity = new HttpEntity<Object>(mapper.writeValueAsString(smsRequestParams),httpHeaders);
-		ResponseEntity<String> response = this.exchange(sendSmsUri, HttpMethod.POST, httpEntity, String.class);
-		return mapper.readValue(response.getBody(), SMSResponse.class);
-		//return new SMSResponse();
+		//ResponseEntity<String> response = this.exchange(sendSmsUri, HttpMethod.POST, httpEntity, String.class);
+		//return mapper.readValue(response.getBody(), SMSResponse.class);
+		return new SMSResponse();
 	}
 	
 	public GoogleResponse getLocationdetails(String address, String pincode)
