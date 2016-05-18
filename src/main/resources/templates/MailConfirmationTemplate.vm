@@ -4,19 +4,9 @@
 </head>
 <body>
 <div>
-<table>
-<tr>
-<td>Welcome ${NAME},</td>
-</tr>
-<tr>
-<td>
-</br>
-<p>Thank you for attending one of our Heartfulness program.</p>
-<p>We hope you enjoyed the experience of relaxation and meditation with yogic transmission.</p>
-<p>We have received your details, we would like to stay in touch with you and respond to your interest in meditation.</p>
-</td>
-</tr>
-</table>
+Dear ${NAME},
+<br/>
+<p style="padding-left:5em" >Thank you for attending one of our Heartfulness program, we hope you enjoyed the experience of relaxation and meditation. This mail is to confirm that we have received your details and we would like to stay in touch with you and respond to your interest in meditation.</p>
 <br/>
 <br/>
 <div style="font-style: italic; font-weight: bold;">
@@ -26,6 +16,7 @@ Heartfulness Webmaster
 </div>
 <br/>
 <br/>
+<div>
 <p>If you don't want to receive this mailer, <a href="${LINK}" >unsubscribe</a> </p>
 </div>
 </body>
