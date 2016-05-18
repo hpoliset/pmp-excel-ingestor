@@ -68,7 +68,7 @@ public class SendMail {
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress("heartfulness.org"));
 			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(participant.getEmail()));
-			message.setSubject("Heartfulness confirmation mail - Test");
+			message.setSubject("Welcome to Heartfulness");
 			message.setContent(getWelcomeMailContent(participant.getCreatedSource()), "text/html");
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
