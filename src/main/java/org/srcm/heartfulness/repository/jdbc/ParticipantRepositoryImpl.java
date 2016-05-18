@@ -24,6 +24,7 @@ import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.repository.ParticipantRepository;
+import org.srcm.heartfulness.util.SmsUtil;
 
 /**
  *
@@ -136,14 +137,17 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 								return "";
 							}
 						});
-				/*
-				 * if(null != seqId && !seqId.isEmpty()){
-				 * participant.setSeqId(seqId); }else{
-				 * participant.setSeqId(SmsUtil.generateFourDigitPIN()); }
-				 */
-			}/*
-			 * else{ participant.setSeqId(SmsUtil.generateFourDigitPIN()); }
-			 */
+
+				if (null != seqId && !seqId.isEmpty()) {
+					participant.setSeqId(seqId);
+				} else {
+					participant.setSeqId(SmsUtil.generateFourDigitPIN());
+				}
+
+			} else {
+				participant.setSeqId(SmsUtil.generateFourDigitPIN());
+			}
+
 		}
 
 		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(participant);
