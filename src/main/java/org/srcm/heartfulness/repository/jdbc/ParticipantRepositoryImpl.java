@@ -254,7 +254,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	@Override
 	public void updateConfirmationMailStatus(Participant participant) {
 		Map<String, Object> params = new HashMap<>();
-		params.put("confirmationMailSent", true);
+		params.put("confirmationMailSent", 1);
 		params.put("email", participant.getEmail());
 		this.namedParameterJdbcTemplate.update(
 				"UPDATE participant SET confirmation_mail_sent=:confirmationMailSent WHERE email=:email", params);
