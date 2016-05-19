@@ -31,7 +31,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
- * Validator Implementaion to streamline all Event dashboard validation implementation.
+ * Validator Implementation to streamline all Event Dashboard validation implementation.
  * 
  */
 @Component
@@ -52,6 +52,11 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	@Autowired
 	Environment env;
 
+	/**
+	 * Method to validate mandatory fields in the participant request before creating participant.
+	 * @param participant
+	 * @return
+	 */
 	@Override
 	public Map<String, String> checkPartcicipantMandatoryFields(ParticipantRequest participant) {
 		Map<String, String> errors = new HashMap<>();
@@ -102,6 +107,11 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		return errors;
 	}
 
+	/**
+	 * Method to validate the values given in <code>ParticipantIntroductionRequest</code> before updating introductory status.
+	 * @param participantRequest
+	 * @return
+	 */
 	@Override
 	public Map<String, String> checkIntroductionRequestMandatoryFields(ParticipantIntroductionRequest participantRequest) {
 		Map<String, String> errors = new HashMap<>();
@@ -121,6 +131,11 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		return errors;
 	}
 
+	/**
+	 * Method to validate the values given in <code>EventAdminChangeRequest</code> before updating event admin.
+	 * @param eventAdminChangeRequest
+	 * @return errors
+	 */
 	@Override
 	public Map<String, String> checkUpdateEventAdminMandatoryFields(EventAdminChangeRequest eventAdminChangeRequest) {
 		Map<String, String> errors = new HashMap<>();
@@ -246,6 +261,11 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		return result.getUserProfile()[0];
 	}
 
+	/**
+	 * Method to validate the values given in ParticipantIntroductionRequest before deleting the participant.
+	 * @param participantRequest
+	 * @return errors
+	 */
 	@Override
 	public Map<String, String> checkDeleteRequestMandatoryFields(ParticipantIntroductionRequest participantRequest) {
 		Map<String, String> errors = new HashMap<>();

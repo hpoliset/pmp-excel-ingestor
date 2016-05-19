@@ -120,10 +120,10 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	}
 
 	/**
-	 * To add salitation to the print name
+	 * To add salutation to the print name
 	 * 
 	 * @param printName
-	 * @return the salitatetd print name
+	 * @return the salutated print name
 	 */
 	private String getName(String printName) {
 		if(null!=printName && !printName.isEmpty()){

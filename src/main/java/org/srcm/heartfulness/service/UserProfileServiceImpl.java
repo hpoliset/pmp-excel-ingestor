@@ -48,15 +48,6 @@ public class UserProfileServiceImpl implements UserProfileService {
 	}
 
 	/**
-	 * method to validate the user with srcm
-	 */
-	@Override
-	public SrcmAuthenticationResponse validateLogin(AuthenticationRequest authenticationRequest)
-			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
-		return srcmRest.authenticate(authenticationRequest);
-	}
-
-	/**
 	 * method to get the user profile from srcm
 	 *
 	 */

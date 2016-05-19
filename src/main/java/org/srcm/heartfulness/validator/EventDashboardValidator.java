@@ -25,23 +25,23 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 public interface EventDashboardValidator {
 
 	/**
-	 * Method to validate mandatory fields in the participant request.
+	 * Method to validate mandatory fields in the participant request before creating participant.
 	 * @param participant
 	 * @return
 	 */
 	public Map<String, String> checkPartcicipantMandatoryFields(ParticipantRequest participant);
 
 	/**
-	 * 
+	 * Method to validate the values given in <code>ParticipantIntroductionRequest</code> before updating introductory status.
 	 * @param participantRequest
 	 * @return
 	 */
 	public Map<String, String> checkIntroductionRequestMandatoryFields(ParticipantIntroductionRequest participantRequest);
 
 	/**
-	 * 
+	 * Method to validate the values given in <code>EventAdminChangeRequest</code> before updating event admin.
 	 * @param eventAdminChangeRequest
-	 * @return
+	 * @return errors
 	 */
 	public Map<String, String> checkUpdateEventAdminMandatoryFields(EventAdminChangeRequest eventAdminChangeRequest);
 
@@ -57,14 +57,14 @@ public interface EventDashboardValidator {
 	public Map<String, String> checkMandatoryEventFields(Event event);
 
 	/**
-	 * Token is validated against mysrcm endpoint.
+	 * Token is validated against MySRCM endpoint.
 	 * 
 	 * @param token
-	 *            need to be validated against mysrcm api.
+	 *            need to be validated against MySRCM API.
 	 * @throws HttpClientErrorException
 	 *             if client exception occurs.
 	 * @throws JsonParseException
-	 *             while parsing json data.
+	 *             while parsing JSON data.
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
@@ -72,9 +72,9 @@ public interface EventDashboardValidator {
 			JsonMappingException, IOException, IllegalBlockSizeException, NumberFormatException, BadPaddingException;
 
 	/**
-	 * 
+	 * Method to validate the values given in ParticipantIntroductionRequest before deleting the participant.
 	 * @param participantRequest
-	 * @return
+	 * @return errors
 	 */
 	public Map<String, String> checkDeleteRequestMandatoryFields(ParticipantIntroductionRequest participantRequest);
 

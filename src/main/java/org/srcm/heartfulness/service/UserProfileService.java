@@ -28,19 +28,6 @@ public interface UserProfileService {
 	User loadUserByEmail(String email);
 
 	/**
-	 * Method to validate the user based on username and password.
-	 * 
-	 * @param authenticationRequest
-	 * @return
-	 * @throws HttpClientErrorException
-	 * @throws JsonParseException
-	 * @throws JsonMappingException
-	 * @throws IOException
-	 */
-	SrcmAuthenticationResponse validateLogin(AuthenticationRequest authenticationRequest)
-			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
-
-	/**
 	 * method to get the user profile from MYSRCM.
 	 * 
 	 * @param token

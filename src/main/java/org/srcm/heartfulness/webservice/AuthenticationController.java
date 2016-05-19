@@ -2,7 +2,6 @@ package org.srcm.heartfulness.webservice;
 
 import java.io.IOException;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -27,6 +26,7 @@ import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
+import org.srcm.heartfulness.service.AuthenticationService;
 import org.srcm.heartfulness.service.UserProfileService;
 
 /**
@@ -42,6 +42,9 @@ public class AuthenticationController {
 
 	@Autowired
 	private UserProfileService userProfileService;
+	
+	@Autowired
+	private AuthenticationService authenticationService;
 
 	@Autowired
 	Environment env;
@@ -64,12 +67,7 @@ public class AuthenticationController {
 			HttpServletRequest request, ModelMap model) {
 		try {
 			LOGGER.debug("Trying to Authenticate :  {}", authenticationRequest.getUsername());
-			SrcmAuthenticationResponse authenticationResponse = userProfileService.validateLogin(authenticationRequest);
-			authenticationResponse.setAccess_token(encryptDecryptAES.encrypt(authenticationResponse.getAccess_token(),
-					env.getProperty("security.encrypt.token")));
-			authenticationResponse.setRefresh_token(encryptDecryptAES.encrypt(
-					authenticationResponse.getRefresh_token(), env.getProperty("security.encrypt.token")));
-			LOGGER.debug("User:{} is validated and token is generated", authenticationRequest.getUsername());
+			SrcmAuthenticationResponse authenticationResponse = authenticationService.authenticate(authenticationRequest);
 			authHelper.doAutoLogin(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 			session.setAttribute("Authentication", SecurityContextHolder.getContext().getAuthentication()
 					.getPrincipal());
