@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.srcm.heartfulness.authorizationservice.PmpAuthorizationService;
+import org.srcm.heartfulness.constants.EventConstants;
+import org.srcm.heartfulness.constants.SMSConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.helper.AuthorizationHelper;
 import org.srcm.heartfulness.model.Participant;
@@ -55,7 +57,7 @@ public class EventController {
 	@RequestMapping(value = "/updateevent", method = RequestMethod.GET)
 	public String showEventForm(@RequestParam(required = false, value = "id") String encryptedValue,
 			HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
-		String response = "redirect:/login";
+		/*String response = "redirect:/login";
 		try {
 			if (request.getSession().getAttribute("Authentication") != null) {
 				authHelper.setcurrentUsertoContext(request.getSession());
@@ -80,7 +82,8 @@ public class EventController {
 		} catch (Exception e) {
 			return response;
 		}
-		return response;
+		return response;*/
+		return "redirect:/"+SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL+"?id="+encryptedValue;
 	}
 
 	@RequestMapping(value = "/saveevent", method = RequestMethod.POST)
