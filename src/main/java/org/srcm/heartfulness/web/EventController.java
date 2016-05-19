@@ -83,7 +83,7 @@ public class EventController {
 			return response;
 		}
 		return response;*/
-		return "redirect:/"+SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL+"?id="+encryptedValue;
+		return "redirect:"+SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL+"?id="+encryptedValue;
 	}
 
 	@RequestMapping(value = "/saveevent", method = RequestMethod.POST)
