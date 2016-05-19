@@ -551,6 +551,8 @@ public class ProgramServiceImpl implements ProgramService {
 		eventDetails.setWelcomeCardSignedByName(program.getWelcomeCardSignedByName());
 
 		eventDetails.setWelcomeCardSignerIdCardNumber(program.getWelcomeCardSignerIdCardNumber());
+		
+		eventDetails.setRemarks(program.getRemarks());
 		return eventDetails;
 	}
 
