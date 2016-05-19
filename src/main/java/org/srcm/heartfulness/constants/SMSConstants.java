@@ -167,5 +167,9 @@ public class SMSConstants {
 	public static final String SMS_CREATE_EVENT_INVALID_MOBILE_RESPONSE_1 = "Specified Mobile number ( ";
 
 	public static final String SMS_CREATE_EVENT_INVALID_MOBILE_RESPONSE_2 = " ) is not valid. Please provide a valid mobile number.";
+	
+	public static final String SMS_CREATE_EVENT_INVALID_EMAIL_RESPONSE_1 = "Specified emailID ( ";
+
+	public static final String SMS_CREATE_EVENT_INVALID_EMAIL_RESPONSE_2 = " ) is not valid. Please provide a valid emailID.";
 }
 		
