@@ -51,7 +51,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 	 * method to validate the user with srcm
 	 */
 	@Override
-	public SrcmAuthenticationResponse ValidateLogin(AuthenticationRequest authenticationRequest)
+	public SrcmAuthenticationResponse validateLogin(AuthenticationRequest authenticationRequest)
 			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
 		return srcmRest.authenticate(authenticationRequest);
 	}
@@ -64,6 +64,35 @@ public class UserProfileServiceImpl implements UserProfileService {
 	public Result getUserProfile(String accessToken) throws HttpClientErrorException, JsonParseException,
 			JsonMappingException, IOException {
 		return srcmRest.getUserProfile(accessToken);
+	}
+	
+	/**
+	 * Method to create the user in MySRCM & PMP and to persist user details in
+	 * PMP.
+	 * 
+	 */
+	@Override
+	public User createUser(User user) throws HttpClientErrorException, JsonParseException, JsonMappingException,
+			IOException {
+
+		User newUser = srcmRest.createUserProfile(user);
+		// srcm will return null values for the city,state,country
+		if (null != user.getName())
+			newUser.setName(user.getName());
+		if (null != user.getCity())
+			newUser.setCity(user.getCity());
+		if (null != user.getCountry())
+			newUser.setCountry(user.getCountry());
+		if (null != user.getState())
+			newUser.setState(user.getState());
+		if (null != user.getMobile())
+			newUser.setMobile(user.getMobile());
+
+		// need to confirm and need to change code
+		newUser.setMembershipId(user.getMembershipId() == null ? "0" : user.getMembershipId());
+		newUser.setAbyasiId(user.getMembershipId() == null ? 0 : Integer.valueOf(user.getMembershipId()));
+		userRepository.save(newUser);
+		return newUser;
 	}
 
 }

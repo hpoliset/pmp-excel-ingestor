@@ -5,7 +5,6 @@ import java.security.SecureRandom;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.srcm.heartfulness.service.SMSIntegrationServiceImpl;
 
 /**
  * 
@@ -20,7 +19,8 @@ public class SmsUtil {
 	/**
 	 * To Parse the sms content and get the values
 	 * 
-	 * @param smsContent - sms content
+	 * @param smsContent
+	 *            - sms content
 	 * @return the response
 	 */
 	public static String[] parseSmsContent(String smsContent) {
@@ -31,7 +31,8 @@ public class SmsUtil {
 	/**
 	 * To generate a random number based on the digits given
 	 * 
-	 * @param digit - number of digits
+	 * @param digit
+	 *            - number of digits
 	 * @return the generated random number
 	 */
 	public static String generateRandomNumber(int digit) {

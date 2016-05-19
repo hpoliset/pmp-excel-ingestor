@@ -12,7 +12,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
- * This class is service provider for the user profile based actions
+ * This class is service provider for the user profile based actions.
  * 
  * @author HimaSree
  *
@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 public interface UserProfileService {
 
 	/**
-	 * method to save <code>User</code> to the data store.
+	 * Method to save <code>User</code> to the data store.
 	 * 
 	 * @param email
 	 * @return
@@ -28,7 +28,7 @@ public interface UserProfileService {
 	User loadUserByEmail(String email);
 
 	/**
-	 * method to validate the user based on username and password
+	 * Method to validate the user based on username and password.
 	 * 
 	 * @param authenticationRequest
 	 * @return
@@ -37,11 +37,11 @@ public interface UserProfileService {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	SrcmAuthenticationResponse ValidateLogin(AuthenticationRequest authenticationRequest)
+	SrcmAuthenticationResponse validateLogin(AuthenticationRequest authenticationRequest)
 			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
 
 	/**
-	 * method to get the user profile from MYSRCM
+	 * method to get the user profile from MYSRCM.
 	 * 
 	 * @param token
 	 * @return Result object
@@ -60,4 +60,12 @@ public interface UserProfileService {
 	 * @param user
 	 */
 	void save(User user);
+	
+	/**
+	 * Method to create user in MySRCM and PMP.
+	 * 
+	 * @param user
+	 */
+	User createUser(User user) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
+	
 }

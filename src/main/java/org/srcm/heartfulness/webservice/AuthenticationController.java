@@ -2,6 +2,8 @@ package org.srcm.heartfulness.webservice;
 
 import java.io.IOException;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -17,9 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.helper.AuthorizationHelper;
 import org.srcm.heartfulness.model.CurrentUser;
+import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
@@ -57,10 +61,13 @@ public class AuthenticationController {
 	 */
 	@RequestMapping(value = "authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest, HttpSession session,
-			ModelMap model) {
+			HttpServletRequest request, ModelMap model) {
 		try {
 			LOGGER.debug("Trying to Authenticate :  {}", authenticationRequest.getUsername());
-			SrcmAuthenticationResponse authenticationResponse = userProfileService.ValidateLogin(authenticationRequest);
+			ServletContext servletContext = request.getServletContext();
+			LOGGER.debug("context path : "+servletContext.getContextPath());
+			LOGGER.debug("virtual server name : "+servletContext.getVirtualServerName());
+			SrcmAuthenticationResponse authenticationResponse = userProfileService.validateLogin(authenticationRequest);
 			authenticationResponse.setAccess_token(encryptDecryptAES.encrypt(authenticationResponse.getAccess_token(),
 					env.getProperty("security.encrypt.token")));
 			authenticationResponse.setRefresh_token(encryptDecryptAES.encrypt(
@@ -86,6 +93,35 @@ public class AuthenticationController {
 		} catch (Exception e) {
 			LOGGER.error("Error occured while authenticating :{}", authenticationRequest.getUsername(), e);
 			ErrorResponse error = new ErrorResponse("Please try after some time.", "Server Connection time out");
+			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Web service endpoint to create new profile to the user by calling MySRCM
+	 * API.
+	 * 
+	 * @param user
+	 *            holds user details.
+	 * 
+	 * @return User with 200 OK status.
+	 * 
+	 *         If some exception is raised while processing the request, error
+	 *         response is returned with respective HttpStatus code.
+	 */
+	@RequestMapping(value = "users", method = RequestMethod.POST)
+	public ResponseEntity<?> createUsers(@RequestBody User user) {
+		try {
+			user.setUser_type("se");
+			user = userProfileService.createUser(user);
+			return new ResponseEntity<User>(user, HttpStatus.OK);
+		} catch (HttpClientErrorException e) {
+			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
+		} catch (IOException e) {
+			ErrorResponse error = new ErrorResponse(ErrorConstants.PLEASE_TRY_AFTER_SOMETIME, e.getMessage());
+			return new ResponseEntity<ErrorResponse>(error, HttpStatus.REQUEST_TIMEOUT);
+		} catch (Exception e) {
+			ErrorResponse error = new ErrorResponse(ErrorConstants.PLEASE_TRY_AFTER_SOMETIME, e.getMessage());
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

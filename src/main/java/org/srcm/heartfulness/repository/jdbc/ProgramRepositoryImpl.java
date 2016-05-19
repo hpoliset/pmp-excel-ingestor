@@ -2,6 +2,7 @@ package org.srcm.heartfulness.repository.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -11,6 +12,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -24,18 +27,24 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.constants.EventConstants;
+import org.srcm.heartfulness.constants.PMPConstants;
+import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
+import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
+import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.SmsUtil;
 
 /**
- * Program Repository
- * Created by vsonnathi on 11/17/15.
+ * Program Repository Created by vsonnathi on 11/17/15.
  */
 @Repository
 public class ProgramRepositoryImpl implements ProgramRepository {
+
+	private static Logger LOGGER = LoggerFactory.getLogger(ProgramRepositoryImpl.class);
 
 	private final JdbcTemplate jdbcTemplate;
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -43,21 +52,29 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	private SimpleJdbcInsert insertProgram;
 	private ParticipantRepository participantRepository;
 
+	private SimpleJdbcInsert insertCoOrdinatorStatistics;
+	private SimpleJdbcInsert insertDeletedParticipants;
 
 	@Autowired
 	public ProgramRepositoryImpl(DataSource dataSource, ParticipantRepository participantRepository) {
 		this.participantRepository = participantRepository;
 
-		this.insertProgram = new SimpleJdbcInsert(dataSource)
-		.withTableName("program")
-		.usingGeneratedKeyColumns("program_id");
+		this.insertProgram = new SimpleJdbcInsert(dataSource).withTableName("program").usingGeneratedKeyColumns(
+				"program_id");
 		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+		this.insertCoOrdinatorStatistics = new SimpleJdbcInsert(dataSource).withTableName("coordinator_statistics")
+				.usingGeneratedKeyColumns("id");
+		this.insertDeletedParticipants = new SimpleJdbcInsert(dataSource).withTableName("deleted_participants")
+				.usingGeneratedKeyColumns("id");
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.ProgramRepository#findByHashCode(java.lang.String)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.ProgramRepository#findByHashCode(java
+	 * .lang.String)
 	 */
 	@Override
 	public Collection<Program> findByHashCode(String hashCode) throws DataAccessException {
@@ -66,17 +83,18 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.ProgramRepository#findById(java.lang.Integer)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.ProgramRepository#findById(java.lang
+	 * .Integer)
 	 */
 	@Override
 	public Program findById(int id) throws DataAccessException {
 		Program program;
 		Map<String, Object> params = new HashMap<>();
 		params.put("program_id", id);
-		program = this.namedParameterJdbcTemplate.queryForObject(
-				"SELECT * FROM program WHERE program_id=:program_id",
-				params, BeanPropertyRowMapper.newInstance(Program.class)
-				);
+		program = this.namedParameterJdbcTemplate.queryForObject("SELECT * FROM program WHERE program_id=:program_id",
+				params, BeanPropertyRowMapper.newInstance(Program.class));
 
 		// get the participantList
 		List<Participant> participants = this.participantRepository.findByProgramId(id);
@@ -86,13 +104,16 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.ProgramRepository#findUpdatedProgramIdsSince(java.util.Date;)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.ProgramRepository#findUpdatedProgramIdsSince
+	 * (java.util.Date;)
 	 */
 	@Override
 	public List<Integer> findUpdatedProgramIdsSince(Date lastBatchRun) {
-		List<Integer> programIds = this.jdbcTemplate.queryForList("SELECT program_id from program where update_time > ?",
-				new Object[]{lastBatchRun}, Integer.class);
-		//update the last batch run
+		List<Integer> programIds = this.jdbcTemplate.queryForList(
+				"SELECT program_id from program where update_time > ?", new Object[] { lastBatchRun }, Integer.class);
+		// update the last batch run
 		this.jdbcTemplate.update("UPDATE batch_operations_status set last_normalization_run=?", new Date());
 
 		return programIds;
@@ -100,14 +121,17 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.ProgramRepository#save(Program program)
+	 * 
+	 * @see org.srcm.heartfulness.repository.ProgramRepository#save(Program
+	 * program)
 	 */
 	@Override
 	public void save(Program program) {
 
-		/*if (null != program.getAutoGeneratedEventId()) {
+		if (null != program.getAutoGeneratedEventId()) {
 			int programId = this.jdbcTemplate.query("SELECT program_id from program where auto_generated_event_id=?",
 					new Object[] { program.getAutoGeneratedEventId() }, new ResultSetExtractor<Integer>() {
+
 						@Override
 						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
 							if (resultSet.next()) {
@@ -118,8 +142,9 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 					});
 			program.setProgramId(programId);
 			program.setAutoGeneratedIntroId(getAutoGeneratedIntroId(programId));
-		}*/
+		}
 
+		// Find if there is an existing program row
 		if (program.getProgramId() == 0) {
 			int programId = this.jdbcTemplate.query("SELECT program_id from program where program_hash_code=?",
 					new Object[] { program.getProgramHashCode() }, new ResultSetExtractor<Integer>() {
@@ -134,7 +159,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			if (programId > 0) {
 				program.setProgramId(programId);
 
-				/*String autoGeneratedEventId = getAutogeneratedEventId(programId);
+				String autoGeneratedEventId = getAutogeneratedEventId(programId);
 				String autoGeneratedIntroId = getAutoGeneratedIntroId(programId);
 
 				if (autoGeneratedEventId != null && !autoGeneratedEventId.isEmpty()) {
@@ -147,31 +172,15 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 					program.setAutoGeneratedIntroId(autoGeneratedIntroId);
 				} else {
 					program.setAutoGeneratedIntroId(EventConstants.INTRO_ID_PREFIX + SmsUtil.generateRandomNumber(7));
-				}*/
-				
+				}
 
-			} /*else {
+			} else {
 
 				program.setAutoGeneratedEventId(EventConstants.EVENT_ID_PREFIX + SmsUtil.generateRandomNumber(6));
 				program.setAutoGeneratedIntroId(EventConstants.INTRO_ID_PREFIX + SmsUtil.generateRandomNumber(7));
-			}*/
+			}
 
 		}
-
-		// Find if there is an existing program row
-		/*
-		 * if (program.getProgramId() == 0) { int programId =
-		 * this.jdbcTemplate.query(
-		 * "SELECT program_id from program where program_hash_code=?", new
-		 * Object[]{program.getProgramHashCode()}, new
-		 * ResultSetExtractor<Integer>() {
-		 * 
-		 * @Override public Integer extractData(ResultSet resultSet) throws
-		 * SQLException, DataAccessException { if (resultSet.next()) { return
-		 * resultSet.getInt(1); } return 0; } } );
-		 * 
-		 * if (programId > 0) { program.setProgramId(programId); } }
-		 */
 
 		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(program);
 		if (program.getProgramId() == 0) {
@@ -206,20 +215,20 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			participantRepository.save(participant);
 		}
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.ProgramRepository#save(Program program)
+	 * 
+	 * @see org.srcm.heartfulness.repository.ProgramRepository#save(Program
+	 * program)
 	 */
 	@Override
 	public void saveWithProgramName(Program program) {
 
 		// Find if there is an existing program row
 		if (program.getProgramId() == 0) {
-			int programId = this.jdbcTemplate.query(
-					"SELECT program_id from program where program_name=?",
-					new Object[]{program.getProgramName()},
-					new ResultSetExtractor<Integer>() {
+			int programId = this.jdbcTemplate.query("SELECT program_id from program where program_name=?",
+					new Object[] { program.getProgramName() }, new ResultSetExtractor<Integer>() {
 						@Override
 						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
 							if (resultSet.next()) {
@@ -227,8 +236,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 							}
 							return 0;
 						}
-					}
-					);
+					});
 
 			if (programId > 0) {
 				program.setProgramId(programId);
@@ -241,34 +249,24 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			program.setProgramId(newId.intValue());
 		} else {
 			// TODO: Need to deal with Hashcode.
-			this.namedParameterJdbcTemplate.update(
-					"UPDATE program SET " +
-							"program_hash_code=:programHashCode, " +
-							"program_name=:programName, " +
-							"program_channel=:programChannel, " +
-							"program_start_date=:programStartDate, " +
-							"program_end_date=:programEndDate," +
-							"coordinator_name=:coordinatorName," +
-							"coordinator_email=:coordinatorEmail," +
-							"coordinator_mobile=:coordinatorMobile," +
-							"event_place=:eventPlace," +
-							"event_city=:eventCity," +
-							"event_state=:eventState," +
-							"event_country=:eventCountry," +
-							"organization_department=:organizationDepartment," +
-							"organization_name=:organizationName," +
-							"organization_web_site=:organizationWebSite," +
-							"organization_contact_name=:organizationContactName," +
-							"organization_contact_email=:organizationContactEmail," +
-							"organization_contact_mobile=:organizationContactMobile," +
-							"preceptor_name=:preceptorName," +
-							"preceptor_id_card_number=:preceptorIdCardNumber," +
-							"welcome_card_signed_by_name=:welcomeCardSignedByName," +
-							"welcome_card_signer_id_card_number=:welcomeCardSignerIdCardNumber," +
-							"remarks=:remarks, " +
-							"auto_generated_event_id=:autoGeneratedEventId, " +
-							"auto_generated_intro_id=:autoGeneratedIntroId " +
-							"WHERE program_id=:programId", parameterSource);
+			this.namedParameterJdbcTemplate
+					.update("UPDATE program SET " + "program_hash_code=:programHashCode, "
+							+ "program_name=:programName, " + "program_channel=:programChannel, "
+							+ "program_start_date=:programStartDate, " + "program_end_date=:programEndDate,"
+							+ "coordinator_name=:coordinatorName," + "coordinator_email=:coordinatorEmail,"
+							+ "coordinator_mobile=:coordinatorMobile," + "event_place=:eventPlace,"
+							+ "event_city=:eventCity," + "event_state=:eventState," + "event_country=:eventCountry,"
+							+ "organization_department=:organizationDepartment,"
+							+ "organization_name=:organizationName," + "organization_web_site=:organizationWebSite,"
+							+ "organization_contact_name=:organizationContactName,"
+							+ "organization_contact_email=:organizationContactEmail,"
+							+ "organization_contact_mobile=:organizationContactMobile,"
+							+ "preceptor_name=:preceptorName," + "preceptor_id_card_number=:preceptorIdCardNumber,"
+							+ "welcome_card_signed_by_name=:welcomeCardSignedByName,"
+							+ "welcome_card_signer_id_card_number=:welcomeCardSignerIdCardNumber,"
+							+ "remarks=:remarks, " + "auto_generated_event_id=:autoGeneratedEventId, "
+							+ "auto_generated_intro_id=:autoGeneratedIntroId " + "WHERE program_id=:programId",
+							parameterSource);
 		}
 
 		// If there are participants update them.
@@ -282,15 +280,16 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.ProgramRepository#isProgramExist(Program program)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.ProgramRepository#isProgramExist(Program
+	 * program)
 	 */
 	@Override
 	public boolean isProgramExist(Program program) {
 		if (program.getProgramId() == 0) {
-			int programId = this.jdbcTemplate.query(
-					"SELECT program_id from program where program_hash_code=?",
-					new Object[]{program.getProgramHashCode()},
-					new ResultSetExtractor<Integer>() {
+			int programId = this.jdbcTemplate.query("SELECT program_id from program where program_hash_code=?",
+					new Object[] { program.getProgramHashCode() }, new ResultSetExtractor<Integer>() {
 						@Override
 						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
 							if (resultSet.next()) {
@@ -298,8 +297,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 							}
 							return 0;
 						}
-					}
-					);
+					});
 
 			if (programId > 0) {
 				program.setProgramId(programId);
@@ -308,19 +306,19 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		}
 		return false;
 	}
-	
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.ProgramRepository#isProgramExist(Program program)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.ProgramRepository#isProgramExist(Program
+	 * program)
 	 */
 	@Override
 	public boolean isProgramExistByProgramName(Program program) {
 		if (program.getProgramId() == 0) {
-			int programId = this.jdbcTemplate.query(
-					"SELECT program_id from program where program_name=?",
-					new Object[]{program.getProgramName()},
-					new ResultSetExtractor<Integer>() {
+			int programId = this.jdbcTemplate.query("SELECT program_id from program where program_name=?",
+					new Object[] { program.getProgramName() }, new ResultSetExtractor<Integer>() {
 						@Override
 						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
 							if (resultSet.next()) {
@@ -328,8 +326,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 							}
 							return 0;
 						}
-					}
-					);
+					});
 
 			if (programId > 0) {
 				program.setProgramId(programId);
@@ -338,58 +335,31 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		}
 		return false;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.ProgramRepository#findByAutoGeneratedEventId(java.lang.String)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.ProgramRepository#findByAutoGeneratedEventId
+	 * (java.lang.String)
 	 */
 	@Override
-	public Program findByAutoGeneratedEventId(String autoGeneratedEventid){
+	public Program findByAutoGeneratedEventId(String autoGeneratedEventid) {
 		Program program;
 		Map<String, Object> params = new HashMap<>();
 		params.put("auto_generated_event_id", autoGeneratedEventid);
-		try{
+		try {
 			program = this.namedParameterJdbcTemplate.queryForObject(
-					"SELECT * FROM program WHERE auto_generated_event_id=:auto_generated_event_id",
-					params, BeanPropertyRowMapper.newInstance(Program.class)
-					);
-		}catch(EmptyResultDataAccessException ex){
+					"SELECT * FROM program WHERE auto_generated_event_id=:auto_generated_event_id", params,
+					BeanPropertyRowMapper.newInstance(Program.class));
+		} catch (EmptyResultDataAccessException ex) {
 			program = new Program();
 		}
 		List<Participant> participants = null;
 		// get the participantList
-		if(program!=null && program.getProgramId()>0){
-			participants =  this.participantRepository.findByProgramId(program.getProgramId());
-		}else{
-			participants = new ArrayList<Participant>();
-		}
-		program.setParticipantList(participants);
-		return program;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.ProgramRepository#findByEventName(java.lang.String)
-	 */
-	@Override
-	public Program findByEventName(String eventName){
-		Program program = new Program();
-		program.setProgramChannel(eventName);
-		Map<String, Object> params = new HashMap<>();
-		params.put("program_hash_code", program.getProgramHashCode());
-		try{
-			program = this.namedParameterJdbcTemplate.queryForObject(
-					"SELECT * FROM program WHERE program_hash_code=:program_hash_code",
-					params, BeanPropertyRowMapper.newInstance(Program.class)
-					);
-		}catch(EmptyResultDataAccessException ex){
-			program = new Program();
-		}
-		List<Participant> participants = null;
-		// get the participantList
-		if(program!=null && program.getProgramId()>0){
-			participants =  this.participantRepository.findByProgramId(program.getProgramId());
-		}else{
+		if (program != null && program.getProgramId() > 0) {
+			participants = this.participantRepository.findByProgramId(program.getProgramId());
+		} else {
 			participants = new ArrayList<Participant>();
 		}
 		program.setParticipantList(participants);
@@ -398,32 +368,110 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.ProgramRepository#findByAutoGeneratedIntroId(java.lang.String)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.ProgramRepository#findByEventName(java
+	 * .lang.String)
+	 */
+	@Override
+	public Program findByEventName(String eventName) {
+		Program program = new Program();
+		program.setProgramChannel(eventName);
+		Map<String, Object> params = new HashMap<>();
+		params.put("program_hash_code", program.getProgramHashCode());
+		try {
+			program = this.namedParameterJdbcTemplate.queryForObject(
+					"SELECT * FROM program WHERE program_hash_code=:program_hash_code", params,
+					BeanPropertyRowMapper.newInstance(Program.class));
+		} catch (EmptyResultDataAccessException ex) {
+			program = new Program();
+		}
+		List<Participant> participants = null;
+		// get the participantList
+		if (program != null && program.getProgramId() > 0) {
+			participants = this.participantRepository.findByProgramId(program.getProgramId());
+		} else {
+			participants = new ArrayList<Participant>();
+		}
+		program.setParticipantList(participants);
+		return program;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.ProgramRepository#findByAutoGeneratedIntroId
+	 * (java.lang.String)
 	 */
 	@Override
 	public Program findByAutoGeneratedIntroId(String autoGeneratedIntroId) {
 		Program program;
 		Map<String, Object> params = new HashMap<>();
 		params.put("auto_generated_intro_id", autoGeneratedIntroId);
-		try{
+		try {
 			program = this.namedParameterJdbcTemplate.queryForObject(
-					"SELECT * FROM program WHERE auto_generated_intro_id=:auto_generated_intro_id",
-					params, BeanPropertyRowMapper.newInstance(Program.class)
-					);
-		}catch(EmptyResultDataAccessException ex){
+					"SELECT * FROM program WHERE auto_generated_intro_id=:auto_generated_intro_id", params,
+					BeanPropertyRowMapper.newInstance(Program.class));
+		} catch (EmptyResultDataAccessException ex) {
 			program = new Program();
 		}
 		List<Participant> participants = null;
 		// get the participantList
-		if(program!=null && program.getProgramId()>0){
-			participants =  this.participantRepository.findByProgramId(program.getProgramId());
-		}else{
+		if (program != null && program.getProgramId() > 0) {
+			participants = this.participantRepository.findByProgramId(program.getProgramId());
+		} else {
 			participants = new ArrayList<Participant>();
 		}
 		program.setParticipantList(participants);
 		return program;
 	}
-	
+
+	/**
+	 * Get the list of programs depending on the coordinator email and whether
+	 * he is admin or not.
+	 * 
+	 * @param email
+	 * @param isAdmin
+	 * @return
+	 */
+	@Override
+	public List<Program> getEventByEmail(String email, boolean isAdmin) {
+		List<Program> program = null;
+		StringBuilder whereCondition = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		params.put("coordinator_email", email);
+		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+
+		if (!isAdmin) {
+			whereCondition.append("coordinator_email=:coordinator_email");
+		}
+		program = this.namedParameterJdbcTemplate.query(
+				"SELECT program_id,program_channel,program_start_date,program_end_date,"
+						+ "coordinator_name,coordinator_email,coordinator_mobile,event_place,"
+						+ "event_city,event_state,event_country,organization_department,"
+						+ "organization_name,organization_web_site,organization_contact_name,"
+						+ "organization_contact_email,organization_contact_mobile,preceptor_name,"
+						+ "preceptor_id_card_number,welcome_card_signed_by_name,welcome_card_signer_Id_card_number,"
+						+ "remarks,auto_generated_event_id,auto_generated_intro_id" + " FROM program"
+						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""), sqlParameterSource,
+				BeanPropertyRowMapper.newInstance(Program.class));
+		return program;
+	}
+
+	/**
+	 * gets the list of participants for the given program ID
+	 * 
+	 * @param decryptedProgramId
+	 * @return List<Participant>
+	 */
+	@Override
+	public List<Participant> getParticipantList(int decryptedProgramId) {
+		List<Participant> participants = new ArrayList<Participant>();
+		participants = this.participantRepository.findByProgramId(decryptedProgramId);
+		return participants;
+	}
+
 	@Override
 	public Program getEventById(int id) {
 		Program program;
@@ -449,9 +497,17 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		program.setParticipantList(participants);
 		return program;
 	}
-	
+
+	/**
+	 * Get the list of programs depending on the coordinator email and whether
+	 * he is admin or not.
+	 * 
+	 * @param email
+	 * @param isAdmin
+	 * @return
+	 */
 	@Override
-	public List<Program> getEventByEmail(String email, boolean isAdmin) {
+	public List<Program> getEventsByEmail(String email, boolean isAdmin) {
 		List<Program> program = null;
 		StringBuilder whereCondition = new StringBuilder("");
 		Map<String, Object> params = new HashMap<>();
@@ -462,27 +518,109 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			whereCondition.append("coordinator_email=:coordinator_email");
 		}
 		program = this.namedParameterJdbcTemplate.query(
-				"SELECT program_id,program_channel,program_start_date,program_end_date,"
+				"SELECT auto_generated_event_id,program_channel,program_name,program_start_date,program_end_date,"
 						+ "coordinator_name,coordinator_email,coordinator_mobile,event_place,"
-						+ "event_city,event_state,event_country,organization_department,"
-						+ "organization_name,organization_web_site,organization_contact_name,"
-						+ "organization_contact_email,organization_contact_mobile,preceptor_name,"
-						+ "preceptor_id_card_number,welcome_card_signed_by_name,welcome_card_signer_Id_card_number,"
-						+ "remarks,auto_generated_event_id,auto_generated_intro_id" + " FROM program"
-						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""), sqlParameterSource,
-				BeanPropertyRowMapper.newInstance(Program.class));
+						+ "event_city,event_state,event_country,preceptor_name," + "preceptor_id_card_number"
+						+ " FROM program" + (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""),
+				sqlParameterSource, BeanPropertyRowMapper.newInstance(Program.class));
 		return program;
 	}
 
+	/**
+	 * Repository method to create a new record or update an existing event
+	 * record.
+	 * 
+	 * @param event
+	 *            to persist into the database.
+	 * @return Program
+	 */
 	@Override
-	public List<Participant> getParticipantList(int decryptedProgramId) {
-		List<Participant> participants = new ArrayList<Participant>();
-		participants = this.participantRepository.findByProgramId(decryptedProgramId);
-		return participants;
+	public Program saveProgram(Program program) {
+
+		if (null != program.getAutoGeneratedEventId()) {
+			int programId = this.jdbcTemplate.query("SELECT program_id from program where auto_generated_event_id=?",
+					new Object[] { program.getAutoGeneratedEventId() }, new ResultSetExtractor<Integer>() {
+						@Override
+						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+							if (resultSet.next()) {
+								return resultSet.getInt(1);
+							}
+							return 0;
+						}
+					});
+			program.setProgramId(programId);
+			program.setAutoGeneratedIntroId(getAutoGeneratedIntroId(programId));
+		}
+
+		if (program.getProgramId() == 0) {
+			int programId = this.jdbcTemplate.query("SELECT program_id from program where program_hash_code=?",
+					new Object[] { program.getProgramHashCode() }, new ResultSetExtractor<Integer>() {
+						@Override
+						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+							if (resultSet.next()) {
+								return resultSet.getInt(1);
+							}
+							return 0;
+						}
+					});
+			if (programId > 0) {
+				program.setProgramId(programId);
+
+				String autoGeneratedEventId = getAutogeneratedEventId(programId);
+				String autoGeneratedIntroId = getAutoGeneratedIntroId(programId);
+
+				if (autoGeneratedEventId != null && !autoGeneratedEventId.isEmpty()) {
+					program.setAutoGeneratedEventId(autoGeneratedEventId);
+				} else {
+					program.setAutoGeneratedEventId(EventConstants.EVENT_ID_PREFIX + SmsUtil.generateRandomNumber(6));
+				}
+
+				if (autoGeneratedIntroId != null && !autoGeneratedIntroId.isEmpty()) {
+					program.setAutoGeneratedIntroId(autoGeneratedIntroId);
+				} else {
+					program.setAutoGeneratedIntroId(EventConstants.INTRO_ID_PREFIX + SmsUtil.generateRandomNumber(7));
+				}
+				// program.setAutoGeneratedIntroId(getAutoGeneratedIntroId(programId));
+
+			} else {
+
+				program.setAutoGeneratedEventId(EventConstants.EVENT_ID_PREFIX + SmsUtil.generateRandomNumber(6));
+				program.setAutoGeneratedIntroId(EventConstants.INTRO_ID_PREFIX + SmsUtil.generateRandomNumber(7));
+			}
+
+		}
+
+		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(program);
+		if (program.getProgramId() == 0) {
+			Number newId = this.insertProgram.executeAndReturnKey(parameterSource);
+			program.setProgramId(newId.intValue());
+		} else {
+			// TODO: Need to deal with Hashcode.
+			this.namedParameterJdbcTemplate
+					.update("UPDATE program SET " + "program_hash_code=:programHashCode, "
+							+ "program_name=:programName, " + "program_channel=:programChannel, "
+							+ "program_start_date=:programStartDate, " + "program_end_date=:programEndDate,"
+							+ "coordinator_name=:coordinatorName," + "coordinator_email=:coordinatorEmail,"
+							+ "coordinator_mobile=:coordinatorMobile," + "event_place=:eventPlace,"
+							+ "event_city=:eventCity," + "event_state=:eventState," + "event_country=:eventCountry,"
+							+ "organization_department=:organizationDepartment,"
+							+ "organization_name=:organizationName," + "organization_web_site=:organizationWebSite,"
+							+ "organization_contact_name=:organizationContactName,"
+							+ "organization_contact_email=:organizationContactEmail,"
+							+ "organization_contact_mobile=:organizationContactMobile,"
+							+ "preceptor_name=:preceptorName," + "preceptor_id_card_number=:preceptorIdCardNumber,"
+							+ "welcome_card_signed_by_name=:welcomeCardSignedByName,"
+							+ "welcome_card_signer_id_card_number=:welcomeCardSignerIdCardNumber,"
+							+ "remarks=:remarks, " + "auto_generated_event_id=:autoGeneratedEventId, "
+							+ "auto_generated_intro_id=:autoGeneratedIntroId " + "WHERE program_id=:programId",
+							parameterSource);
+		}
+		return program;
 	}
-	
+
 	/**
 	 * method to get the auto generated eventID for the given programID
+	 * 
 	 * @param programId
 	 * @return
 	 */
@@ -503,7 +641,8 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	}
 
 	/**
-	 *  method to get the auto generated introID for the given programID
+	 * method to get the auto generated introID for the given programID
+	 * 
 	 * @param programId
 	 * @return
 	 */
@@ -523,5 +662,368 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		return autoGeneratedIntroId;
 	}
 
+	/**
+	 * gets the program ID for the given event ID
+	 * 
+	 * @param eventID
+	 * @return
+	 */
+	@Override
+	public int getProgramIdByEventId(String eventId) {
+
+		int programId = this.jdbcTemplate.query("SELECT program_id from program where auto_generated_event_id=?",
+				new Object[] { eventId }, new ResultSetExtractor<Integer>() {
+					@Override
+					public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+						if (resultSet.next()) {
+							return resultSet.getInt(1);
+						}
+						return 0;
+					}
+				});
+
+		return programId;
+	}
+
+	/**
+	 * gets the count of the events available for the given mail and based on
+	 * user role
+	 * 
+	 * @param email
+	 * @param isAdmin
+	 * @return
+	 */
+	@Override
+	public int getEventCountByEmail(String email, boolean isAdmin) {
+		StringBuilder whereCondition = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		params.put("coordinator_email", email);
+		if (!isAdmin) {
+			whereCondition.append("coordinator_email=:coordinator_email");
+		}
+		int count = this.namedParameterJdbcTemplate.queryForObject(
+				"SELECT count(program_channel ) + count( CASE WHEN program_channel IS NULL THEN 1 END )	FROM program"
+						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""), params, Integer.class);
+
+		return count;
+	}
+
+	/**
+	 * gets the count of un-categorized events for the given email and based on
+	 * user role
+	 * 
+	 * @param email
+	 * @param isAdmin
+	 * @return
+	 */
+	@Override
+	public int getNonCategorizedEventsByEmail(String email, boolean isAdmin) {
+		StringBuilder whereCondition = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		params.put("coordinator_email", email);
+		if (!isAdmin) {
+			whereCondition.append(" coordinator_email=:coordinator_email");
+		}
+		int count = this.namedParameterJdbcTemplate.queryForObject(
+				"SELECT COUNT(CASE WHEN program_channel='' THEN 1 END)"
+						+ " + COUNT(CASE WHEN program_channel IS NULL THEN 1 END) " + " FROM program "
+						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""), params, Integer.class);
+		return count;
+	}
+
+	/**
+	 * gets the all the available event categories from the database
+	 * 
+	 * @return List<String>
+	 */
+	@Override
+	public List<String> getAllEventCategories() {
+		try {
+			List<String> events = this.jdbcTemplate.queryForList("SELECT distinct name FROM channel", null,
+					String.class);
+			return events;
+		} catch (EmptyResultDataAccessException ex) {
+			return new ArrayList<String>();
+		}
+	}
+
+	/**
+	 * gets the count of events for the given email and based on user role
+	 * 
+	 * @param email
+	 * @param isAdmin
+	 * @param eventCategory
+	 * @return
+	 */
+	@Override
+	public int getEventCountByCategory(String email, boolean isAdmin, String eventCategory) {
+		StringBuilder whereCondition = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		params.put("coordinator_email", email);
+		params.put("program_channel", eventCategory);
+
+		if (!isAdmin) {
+			whereCondition.append("AND coordinator_email=:coordinator_email");
+		}
+		int count = this.namedParameterJdbcTemplate.queryForObject("SELECT COUNT(program_channel)" + " FROM program"
+				+ (whereCondition.length() > 0 ? " WHERE (program_channel=:program_channel) " + whereCondition : ""),
+				params, Integer.class);
+		return count;
+	}
+
+	/**
+	 * gets the count of miscellaneous events for the given email and based on
+	 * user role
+	 * 
+	 * @param email
+	 * @param isAdmin
+	 * @param eventcategories
+	 * @return
+	 */
+	@Override
+	public int getMiscellaneousEventsByEmail(String email, boolean isAdmin, List<String> eventcategories) {
+		StringBuilder whereCondition = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		params.put("coordinator_email", email);
+		if (!isAdmin) {
+			whereCondition.append("AND coordinator_email=:coordinator_email");
+		}
+		int count = this.namedParameterJdbcTemplate
+				.queryForObject(
+						"SELECT COUNT(program_channel)"
+								+ " FROM program"
+								+ (whereCondition.length() > 0 ? " WHERE ( (program_channel NOT IN (SELECT distinct `name` FROM `channel`)) "
+										+ "AND ( program_channel IS NOT NULL "
+										+ "AND program_channel!='') ) "
+										+ whereCondition
+										: ""), params, Integer.class);
+		return count;
+	}
+
+	/**
+	 * update the co-ordinator details in the datbase after changing the admin
+	 * for the event
+	 * 
+	 * @param eventAdminChangeRequest
+	 */
+	@Override
+	public void updateCoOrdinatorStatistics(EventAdminChangeRequest eventAdminChangeRequest) {
+		try {
+			Map<String, Object> params = new HashMap<>();
+			params.put("auto_generated_event_id", eventAdminChangeRequest.getEventId());
+			Program program = this.namedParameterJdbcTemplate.queryForObject(
+					"SELECT * FROM program WHERE auto_generated_event_id=:auto_generated_event_id", params,
+					BeanPropertyRowMapper.newInstance(Program.class));
+			eventAdminChangeRequest.setProgramId(program.getProgramId());
+			BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(eventAdminChangeRequest);
+			Number newId = this.insertCoOrdinatorStatistics.executeAndReturnKey(parameterSource);
+			eventAdminChangeRequest.setId(newId.intValue());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * gets the participant for the given seqId and program ID
+	 * 
+	 * @param seqId
+	 * @param programId
+	 * @return
+	 */
+	@Override
+	public Participant findParticipantBySeqId(String seqId, int programId) {
+		Participant participant;
+		Map<String, Object> params = new HashMap<>();
+		params.put("seqId", seqId);
+		params.put("programId", programId);
+		try {
+			participant = this.namedParameterJdbcTemplate.queryForObject(
+					"SELECT * FROM participant WHERE seqId=:seqId AND program_id=:programId", params,
+					BeanPropertyRowMapper.newInstance(Participant.class));
+			return participant;
+
+		} catch (EmptyResultDataAccessException ex) {
+			// participant=new ParticipantRequest();
+			return null;
+		}
+
+	}
+
+	/**
+	 * updates the participant introduced status for the given participant Ids
+	 * of the goven eventId
+	 * 
+	 * @param participantIds
+	 * @param eventId
+	 * @param introduced
+	 */
+	@Override
+	public void UpdateParticipantsStatus(String participantIds, String eventId, String introduced) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("introduced", PMPConstants.REQUIRED_YES.equalsIgnoreCase(introduced) ? 1 : 0);
+		params.put("programId", getProgramIdByEventId(eventId));
+		params.put("seqId", participantIds);
+		this.namedParameterJdbcTemplate.update(
+				"UPDATE participant SET introduced=:introduced WHERE program_id=:programId AND seqId=:seqId ", params);
+
+	}
+
+	/**
+	 * gets the count of un-catgorized events for the given email and based on
+	 * user role
+	 * 
+	 * @param username
+	 * @param isAdmin
+	 * @return List<String>
+	 */
+	@Override
+	public List<String> getNonCategorizedEventListByEmail(String username, boolean isAdmin) {
+		StringBuilder whereCondition = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		params.put("coordinator_email", username);
+		if (!isAdmin) {
+			whereCondition.append("AND coordinator_email=:coordinator_email");
+		}
+		List<String> UncategorizedEvents = this.namedParameterJdbcTemplate.queryForList("SELECT distinct program_name"
+				+ " FROM program"
+				+ (whereCondition.length() > 0 ? " WHERE (program_channel IS NULL OR program_channel='') "
+						+ whereCondition : ""), params, String.class);
+		return UncategorizedEvents;
+	}
+
+	/**
+	 * gets the all available co-ordinators from the database
+	 * 
+	 * @return List<Coordinator>
+	 */
+	@Override
+	public List<Coordinator> getAllCoOrdinatorsList() {
+
+		List<Coordinator> coOrdinators = null;
+		Map<String, Object> params = new HashMap<>();
+		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+
+		coOrdinators = this.namedParameterJdbcTemplate
+				.query("SELECT DISTINCT * from program WHERE coordinator_email IS NOT NULL AND coordinator_email != '' order by coordinator_email asc",
+						sqlParameterSource, BeanPropertyRowMapper.newInstance(Coordinator.class));
+		return coOrdinators;
+
+	}
+
+	/**
+	 * deletes participant for the given seq Id of the given Event Id
+	 * 
+	 * @param seqId
+	 * @param eventId
+	 * @return Participant
+	 */
+	@Override
+	public Participant deleteParticipant(String seqId, String eventId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("programId", getProgramIdByEventId(eventId));
+		params.put("seqId", seqId);
+		Participant participant = this.namedParameterJdbcTemplate.queryForObject(
+				"SELECT * FROM participant WHERE seqId=:seqId AND program_id=:programId", params,
+				BeanPropertyRowMapper.newInstance(Participant.class));
+		if (null != participant) {
+			this.namedParameterJdbcTemplate.update(
+					"DELETE FROM `participant` WHERE program_id=:programId AND seqId=:seqId ", params);
+			return participant;
+		}
+		return new Participant();
+	}
+
+	/**
+	 * updates the deleted participant details in the database
+	 * 
+	 * @param deletedParticipant
+	 * @param deletedBy
+	 */
+	@Override
+	public void updateDeletedParticipant(Participant deletedParticipant, String deletedBy) {
+		try {
+			Map<String, Object> params = new HashMap<>();
+			params.put("seqId", deletedParticipant.getSeqId());
+			BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(deletedParticipant);
+			Number newId = this.insertDeletedParticipants.executeAndReturnKey(parameterSource);
+			deletedParticipant.setId(newId.intValue());
+			if (null != newId) {
+				params.put("deleted_by", deletedBy);
+				params.put("id", deletedParticipant.getId());
+				this.namedParameterJdbcTemplate.update(
+						"UPDATE deleted_participants SET deleted_by=:deleted_by WHERE id=:id ", params);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	@Override
+	public List<Program> searchEvents(SearchRequest searchRequest) {
+		List<Program> program = null;
+		StringBuilder whereCondition = new StringBuilder("");
+		StringBuilder orderBy = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		if (!("ALL".equals(searchRequest.getSearchField())) && null != searchRequest.getSearchField()
+				&& !searchRequest.getSearchField().isEmpty()) {
+			if (null != searchRequest.getSearchText() && !searchRequest.getSearchText().isEmpty()) {
+				whereCondition.append(whereCondition.length() > 0 ? " and " + searchRequest.getSearchField()
+						+ " LIKE '%" + searchRequest.getSearchText() + "%'" : searchRequest.getSearchField()
+						+ " LIKE '%" + searchRequest.getSearchText() + "%'");
+			}
+		}
+		if ((searchRequest.getDateFrom() != null && !searchRequest.getDateFrom().isEmpty())) {
+			try {
+				whereCondition.append(whereCondition.length() > 0 ? " and program_start_date >=:program_start_date "
+						: " program_start_date >=:program_start_date ");
+				params.put("program_start_date", DateUtils.parseToSqlDate(searchRequest.getDateFrom()));
+			} catch (ParseException e) {
+				LOGGER.error("Error While converting date", e);
+			}
+		}
+
+		if (searchRequest.getDateTo() != null && !searchRequest.getDateTo().isEmpty()) {
+			try {
+				whereCondition
+						.append(whereCondition.length() > 0 ? " and CASE WHEN program_end_date IS NOT NULL THEN program_end_date <=:program_end_date ELSE TRUE END "
+								: " CASE WHEN program_end_date IS NOT NULL THEN program_end_date <=:program_end_date ELSE TRUE END ");
+				params.put("program_end_date", DateUtils.parseToSqlDate(searchRequest.getDateTo()));
+			} catch (ParseException e) {
+				LOGGER.error("Error While converting date", e);
+			}
+		}
+		if (null != searchRequest.getSortBy() && !searchRequest.getSortBy().isEmpty()) {
+			orderBy.append(orderBy.length() > 0 ? ", " + searchRequest.getSortBy() : searchRequest.getSortBy());
+			if (null != searchRequest.getSortDirection() && !searchRequest.getSortDirection().isEmpty()) {
+				orderBy.append(searchRequest.getSortDirection().equalsIgnoreCase("0") ? " asc" : " desc");
+			}
+		}
+
+		program = this.namedParameterJdbcTemplate.query(
+				"SELECT auto_generated_event_id,program_channel,program_name,program_start_date,program_end_date,"
+						+ "coordinator_name,coordinator_email,coordinator_mobile,event_place,"
+						+ "event_city,event_state,event_country,preceptor_name," + "preceptor_id_card_number"
+						+ " FROM program" + (whereCondition.length() > 0 ? " WHERE " + whereCondition : "")
+						+ (orderBy.length() > 0 ? " ORDER BY " + orderBy : ""), params,
+				BeanPropertyRowMapper.newInstance(Program.class));
+
+		return program;
+
+	}
+
+	@Override
+	public String getEventIdByProgramID(int programId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("program_id", programId);
+		try {
+			String eventId = this.namedParameterJdbcTemplate.queryForObject(
+					"SELECT auto_generated_event_id from program where program_id=:program_id", params,
+					BeanPropertyRowMapper.newInstance(String.class));
+			return eventId;
+		} catch (EmptyResultDataAccessException e) {
+			return "";
+		}
+	}
 
 }
