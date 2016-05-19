@@ -64,9 +64,6 @@ public class AuthenticationController {
 			HttpServletRequest request, ModelMap model) {
 		try {
 			LOGGER.debug("Trying to Authenticate :  {}", authenticationRequest.getUsername());
-			ServletContext servletContext = request.getServletContext();
-			LOGGER.debug("context path : "+servletContext.getContextPath());
-			LOGGER.debug("virtual server name : "+servletContext.getVirtualServerName());
 			SrcmAuthenticationResponse authenticationResponse = userProfileService.validateLogin(authenticationRequest);
 			authenticationResponse.setAccess_token(encryptDecryptAES.encrypt(authenticationResponse.getAccess_token(),
 					env.getProperty("security.encrypt.token")));
