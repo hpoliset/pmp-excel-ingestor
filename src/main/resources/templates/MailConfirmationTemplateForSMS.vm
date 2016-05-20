@@ -6,16 +6,13 @@
 <div>
 Dear ${NAME},
 <br/>
-<p style="padding-left:5em">Greetings and Good Wishes from Heartfulness.</p>
-<p style="padding-left:5em">Thank you for registering with Heartfulness meditation.This mail is to confirm that we have received your details and we would like to stay in touch with you and respond to your interest in meditation.</p>
-<br/>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thank you for registering with Heartfulness meditation.This mail is to confirm that we have received your details and we would like to stay in touch with you and respond to your interest in meditation.</p>
 <br/>
 <div style="font-style: italic; font-weight: bold;">
 With regards,
 <br/>
 Heartfulness Webmaster
 </div>
-<br/>
 <br/>
 <div>
 <p>If you don't want to receive this mailer, <a href="${LINK}" >unsubscribe</a> </p>
