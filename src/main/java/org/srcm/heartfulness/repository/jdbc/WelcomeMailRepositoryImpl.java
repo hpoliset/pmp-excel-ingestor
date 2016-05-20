@@ -1,12 +1,16 @@
 package org.srcm.heartfulness.repository.jdbc;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -113,13 +117,37 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	}
 	
 	@Override
-	public void updateUserUnsubscribed(String mailID) {
-		this.jdbcTemplate.update("UPDATE welcome_email_log set unsubscribed=1 WHERE email=? ",new Object[] {mailID});
-	}
-	
-	@Override
 	public String updateUserSubscribed(String name,String mailID) {
 		this.jdbcTemplate.update("UPDATE welcome_email_log set unsubscribed=0 WHERE email=? AND print_name=?",new Object[] {mailID,name});
 		return "Subscribed.";
+	}
+
+	@Override
+	public void updateUserUnsubscribed(WelcomeMailDetails welcomeMailDetails) {
+
+		if (welcomeMailDetails.getId() == 0) {
+			Integer welcomeMailDetailsID = this.jdbcTemplate.query(
+					"SELECT id from welcome_email_log where email=? AND print_name=?", new Object[] {
+							welcomeMailDetails.getEmail(), welcomeMailDetails.getPrintName() },
+					new ResultSetExtractor<Integer>() {
+						@Override
+						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+							if (resultSet.next()) {
+								return resultSet.getInt(1);
+							}
+							return 0;
+						}
+					});
+			welcomeMailDetails.setId(welcomeMailDetailsID);
+		}
+		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(welcomeMailDetails);
+		if (welcomeMailDetails.getId() == 0) {
+			Number newId = this.insertSubscriber.executeAndReturnKey(parameterSource);
+			welcomeMailDetails.setId(newId.intValue());
+		} else {
+			this.namedParameterJdbcTemplate.update(
+					"UPDATE welcome_email_log set unsubscribed=:unsubscribed WHERE email=:email", parameterSource);
+		}
+
 	}
 }

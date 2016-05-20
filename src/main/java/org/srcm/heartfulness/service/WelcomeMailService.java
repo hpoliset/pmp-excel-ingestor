@@ -32,4 +32,11 @@ public interface WelcomeMailService {
 	 */
 	public void unsubscribeUsers() throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
 
+	/**
+	 * Method unsubscribe the user to stop receiving mails.
+	 * @param mailID
+	 * @param name
+	 */
+	public void unsubscribe(String mailID, String name);
+
 }

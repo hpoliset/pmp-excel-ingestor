@@ -56,6 +56,26 @@ public class Participant {
 
 	private String createdSource;
 
+	private int isBounced;
+
+	private int confirmationMailSent;
+
+	public int getConfirmationMailSent() {
+		return confirmationMailSent;
+	}
+
+	public void setConfirmationMailSent(int confirmationMailSent) {
+		this.confirmationMailSent = confirmationMailSent;
+	}
+
+	public int getIsBounced() {
+		return isBounced;
+	}
+
+	public void setIsBounced(int isBounced) {
+		this.isBounced = isBounced;
+	}
+
 	public String getCreatedSource() {
 		return createdSource;
 	}

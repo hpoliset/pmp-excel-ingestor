@@ -162,4 +162,18 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			}
 		}
 	}
+	
+	/**
+	 * Method unsubscribe the user to stop receiving mails.
+	 * @param mailID
+	 * @param name
+	 */
+	@Override
+	public void unsubscribe(String mailID, String name) {
+		WelcomeMailDetails sendySubscriber = new WelcomeMailDetails();
+		sendySubscriber.setEmail(mailID);
+		sendySubscriber.setPrintName(name);
+		sendySubscriber.setUnsubscribed(1);
+		welcomeMailRepository.updateUserUnsubscribed(sendySubscriber);
+	}
 }

@@ -39,15 +39,25 @@ public interface WelcomeMailRepository {
 	List<WelcomeMailDetails> getSubscribersToUnsubscribe();
 
 	/**
-	 * update the welcome mail sent in participant table
+	 * Update the welcome mail sent in participant table
 	 * @param string 
 	 */
 	void updateParticipant(String mailID);
 
-	void updateUserUnsubscribed(String mailID);
-
+	/**
+	 * Method to update the subscribed status in DB.
+	 * @param name
+	 * @param mailID
+	 * @return
+	 */
 	String updateUserSubscribed(String name,String mailID);
 	
+	/**
+	 * Method to update Participant mail sent status by ID.
+	 * @param id
+	 */
 	public void updateParticipantMailSentById(int id);
+
+	void updateUserUnsubscribed(WelcomeMailDetails sendySubscriber);
 
 }

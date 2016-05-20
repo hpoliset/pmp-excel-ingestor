@@ -77,5 +77,7 @@ public class PMPConstants {
 	public static final String GENDER_FEMALE = "F";
 
 	public static final String SECURITY_TOKEN_KEY = "security.encrypt.token";
+	
+	public static final String UNSUBSCRIBE_LINK ="https://pmpbeta.heartfulness.org/pmp/unsubscribe";
 
 }

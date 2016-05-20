@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.SMSConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
+import org.srcm.heartfulness.mail.SendMail;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.SMS;
@@ -47,6 +48,9 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 
 	@Autowired
 	Environment env;
+	
+	@Autowired
+	SendMail sendMail;
 
 	/*
 	 * (non-Javadoc)
@@ -309,6 +313,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 							program.setParticipantList(participantList);
 							program.setCreatedSource("SMS");
 							programRepository.saveWithProgramName(program);
+							SendConfirmationMailToNewParticipants(participant);
 							response = SMSConstants.SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_1
 									+ SMSConstants.SMS_HEARTFULNESS_HOMEPAGE_URL
 									+ SMSConstants.SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_2;
@@ -335,6 +340,29 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 			e.printStackTrace();
 		}
 		return response;
+	}
+	
+	/**
+	 * Method to send confirmation mail to the newly registered participants.
+	 * 
+	 * @param participant
+	 */
+	private void SendConfirmationMailToNewParticipants(Participant participant) {
+		//Checks whether the emailID exists for the participant.
+		if (null != participant.getEmail() && !participant.getEmail().isEmpty()) {
+			LOGGER.debug("Mail subscription : {} ",
+					participantRepository.checkForMailSubcription(participant.getEmail()) + "");
+			LOGGER.debug("confirmation Mail sent  : {} ",
+					participantRepository.CheckForConfirmationMailStatus(participant) + "");
+			//Checks whether the participant unsubscribed for receiving mails.
+			if (1 != participantRepository.checkForMailSubcription(participant.getEmail())) {
+				// Checks whether the participant already received the confirmation mail or not.
+				if (1 != participantRepository.CheckForConfirmationMailStatus(participant)) {
+					sendMail.SendConfirmationMailToParticipant(participant);
+					participantRepository.updateConfirmationMailStatus(participant);
+				}
+			}
+		}
 	}
 
 	/*
