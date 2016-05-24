@@ -1,0 +1,84 @@
+/**
+ * 
+ */
+package org.srcm.heartfulness.helper;
+
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.srcm.heartfulness.constants.EventConstants;
+
+/**
+ * This is a helper class to parse the bounced email content
+ * and find out the email from the body content.
+ * @author Koustav Dutta
+ *
+ */
+
+@Component
+public class BounceEmailHelper {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(BounceEmailHelper.class);
+
+	/**
+	 * This method checks whether the mail content is instance of String or multipart.
+	 * If the mail content is of type multipart it calls parseEmailContent 
+	 * method and passes the mail content. 
+	 * @param message contains the mail content to parse.
+	 * @return bounced email parsed from mail content.
+	 */
+	public String getBouncedEmail(Message message){
+		String recipientEmail = "";
+		try {
+			Object content = message.getContent();
+			if(content instanceof String){
+				recipientEmail = parseEmailContent((String)content);
+			}else if(content instanceof Multipart){
+				Multipart multiparts = (Multipart)content;
+				String multipartContent = multiparts.getBodyPart(0).getContent().toString();
+				recipientEmail = parseEmailContent(multipartContent);
+			}
+		} catch (IOException | MessagingException e) {
+			LOGGER.debug("EXCEPTION: Unable to parse Mail content");
+			LOGGER.debug("EXCEPTION: "+e.getMessage());
+		} 
+		return recipientEmail;
+	}
+
+	/**
+	 * It parses the mail content and searches for an email in the content body.
+	 * @param content email content to parse and find out if 
+	 * any email is present in the content body.
+	 * @return email if found in email content.
+	 */
+	private String parseEmailContent(String content) {
+		String[] contentPart = content.split(" ");
+		String emailMatches = "";
+		Pattern pattern = Pattern.compile(EventConstants.EMAIL_REGEX,Pattern.CASE_INSENSITIVE);
+		Matcher matcher;
+		for(String matchContent:contentPart){
+
+			if(matchContent.contains("<")){
+				matchContent.replaceAll("<", "");
+			}else if(matchContent.contains(">")){
+				matchContent.replaceAll(">", "");
+			}
+
+			matcher = pattern.matcher(matchContent);
+			if(matcher.matches()){
+				emailMatches = matcher.group();
+				break;
+			}
+		}
+		return emailMatches;
+	}
+
+}
