@@ -35,11 +35,11 @@ public class BouncedEmailController {
 	 * from hfnbounce@srcm.org mailbox.
 	 * 
 	 */
-	//@RequestMapping("/api/bouncedemail")
+	@RequestMapping("/api/bouncedemail")
 	//@Scheduled(cron = "${srcm.bounced.email.fetching.cron.time}")
 	public void handleBouncedEmails(){
 		LOGGER.debug("START: Handling bounced emails");
-		bncdEmailSrcv.fetchBouncedEmails();
+		bncdEmailSrcv.readBouncedEmailsAndUpdateInDatabase();
 		LOGGER.debug("END: Handling bounced emails");
 	}
 

@@ -54,7 +54,7 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 	 * 
 	 */
 	@Override
-	public void fetchBouncedEmails() {
+	public void readBouncedEmailsAndUpdateInDatabase() {
 		LOGGER.debug("START: Fetching emails from hfnbounce@srcm.org mailbox");
 		try{
 			Session session = Session.getDefaultInstance(new Properties( ));
@@ -65,7 +65,7 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 					envProperties.getProperty("srcm.bounced.email.from.address"),
 					envProperties.getProperty("srcm.bounced.email.from.password"));
 			Folder inbox = store.getFolder(envProperties.getProperty("srcm.bounced.email.mailbox"));
-			inbox.open( Folder.READ_WRITE );
+			inbox.open( Folder.READ_ONLY );
 			LOGGER.debug("Total number of mails in inbox: "+inbox.getMessageCount());
 			LOGGER.debug("Total number of unread mails in inbox: "+inbox.getUnreadMessageCount());
 			int readMessagesCount = inbox.getMessageCount() - inbox.getUnreadMessageCount();
@@ -114,21 +114,21 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 					//Check if the bounced email is empty or not
 					if(bouncedEmail.isEmpty()){
 						//mark message as read
-						Flags flags = new Flags(Flag.SEEN);
-						message.setFlags(flags, true);
+						/*Flags flags = new Flags(Flag.SEEN);
+						message.setFlags(flags, true);*/
 						LOGGER.debug("Mail-->"+ message.getFrom()[0].toString() + "<-- with mail number " +message.getMessageNumber()
 						+" is marked as read ");
 					}else{
 						//mark message as read
-						Flags flags = new Flags(Flag.SEEN);
-						message.setFlags(flags, true);
+						/*Flags flags = new Flags(Flag.SEEN);
+						message.setFlags(flags, true);*/
 						LOGGER.debug("Mail-->"+ message.getFrom()[0].toString() + "<-- with mail number " +message.getMessageNumber()
 						+" is marked as read ");
 
 						//call dao layer to mark the email as bounced
 						int bouncedStatus = bncdEmailRepo.updateBouncedEmails(bouncedEmail);
 						if(bouncedStatus != 1){
-							message.setFlags(flags, false);
+							/*message.setFlags(flags, false);*/
 							LOGGER.debug("Mail-->"+ bouncedEmail + "<-- with mail number " +message.getMessageNumber()
 							+" is marked as unread ");
 						}
@@ -136,8 +136,8 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 					LOGGER.debug("-----------------------FINISH-----------------------");
 				}catch(Exception ex){
 					//if any exceptions occurs mark the message as unread
-					Flags flags = new Flags(Flag.SEEN);
-					message.setFlags(flags, false);
+					/*Flags flags = new Flags(Flag.SEEN);
+					message.setFlags(flags, false);*/
 					LOGGER.debug("Mail-->"+ message.getFrom()[0] + "<-- with mail number " +message.getMessageNumber()
 					+" is marked as unread ");
 				}

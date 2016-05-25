@@ -85,6 +85,44 @@ public class SendMail {
 		}
 	}
 
+	/**
+	 * To send notification mail to the team if no new participants found to
+	 * send mail for the day
+	 * 
+	 * @param toMailIds-recipients TO
+	 * @param ccMailIds-recipients CC
+	 */
+	public void sendNotificationForNoEmails(String toMailIds, String ccMailIds,String subject) {
+		Properties props = System.getProperties();
+		String[] toIds = toMailIds.split(",");
+		String[] ccIds = ccMailIds.split(",");
+		try {
+			Session session = Session.getDefaultInstance(props);
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress("heartfulness.org"));
+			for (String toId : toIds) {
+				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toId));
+			}
+			for (String ccId : ccIds) {
+				message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccId));
+			}
+			message.setSubject(subject);
+			message.setContent(getWelcomeMailContent("welcomeMail"), "text/html");
+			message.setAllow8bitMIME(true);
+			message.setSentDate(new Date());
+			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+			int returnOption = message.getReturnOption();
+			System.out.println(returnOption);
+			Transport.send(message);
+			LOGGER.debug("Mail sent successfully : {} ");
+
+		} catch (MessagingException e) {
+			LOGGER.error("Sending Mail Failed : {} " + e.getMessage());
+			throw new RuntimeException(e);
+
+		}
+	}
+	
 	private String getName(String printName) {
 		printName = printName.replace(".", " ");
 		String[] name = printName.split(" ");
@@ -112,6 +150,8 @@ public class SendMail {
 			template = velocityEngine.getTemplate("templates"+"/MailConfirmationTemplate.vm");
 		}else if("SMS".equalsIgnoreCase(createdSource)){
 			template = velocityEngine.getTemplate("templates"+"/MailConfirmationTemplateForSMS.vm");
+		}else if ("welcomeMail".equalsIgnoreCase(createdSource)) {
+			template = velocityEngine.getTemplate("templates" + "/NotificationMailForNoNewParticipants.vm");
 		}
 		StringWriter stringWriter = new StringWriter();
 		template.merge(getParameter(), stringWriter);

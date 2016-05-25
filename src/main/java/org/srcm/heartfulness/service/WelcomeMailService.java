@@ -1,5 +1,6 @@
 package org.srcm.heartfulness.service;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.mail.MessagingException;
@@ -8,6 +9,8 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 
 public interface WelcomeMailService {
 
@@ -39,4 +42,14 @@ public interface WelcomeMailService {
 	 */
 	public void unsubscribe(String mailID, String name);
 
+	/**
+	 * Method to add welcome mail list in a file and upload it to a FTP.
+	 * 
+	 * @throws FileNotFoundException
+	 * @throws JSchException
+	 * @throws SftpException
+	 * @throws IOException
+	 */
+	public void uploadParticipantEmailidsToFTP() throws FileNotFoundException, IOException, JSchException,
+			SftpException;
 }

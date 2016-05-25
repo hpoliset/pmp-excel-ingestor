@@ -21,6 +21,6 @@ public interface BouncedEmailService {
 	 * if required and marks them as read in the mail server.
 	 */
 	
-	public void fetchBouncedEmails();
+	public void readBouncedEmailsAndUpdateInDatabase();
 
 }

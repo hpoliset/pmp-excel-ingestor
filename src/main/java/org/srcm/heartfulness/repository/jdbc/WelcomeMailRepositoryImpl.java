@@ -16,9 +16,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.model.Participant;
+import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
 import org.srcm.heartfulness.repository.WelcomeMailRepository;
-
 
 @Repository
 public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
@@ -39,38 +39,43 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.SendyMailRepository#getParticipantsToSendWelcomeMail()
+	 * 
+	 * @see org.srcm.heartfulness.repository.SendyMailRepository#
+	 * getParticipantsToSendWelcomeMail()
 	 */
 	@Override
 	public List<Participant> getParticipantsToSendWelcomeMail() {
-		/*Map<String, Object> params = new HashMap<>();
-		params.put("createDate", date);
-		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);*/
-		List<Participant> participants = this.namedParameterJdbcTemplate.query(
-				"SELECT id,print_name,email,language "
-				+ "FROM participant WHERE "
-				+ "email IS NOT NULL AND email <> ''"
-				+ "AND ( welcome_mail_sent=0 "
-				+ "OR welcome_mail_sent IS NULL)",
-				BeanPropertyRowMapper.newInstance(Participant.class));
+		/*
+		 * Map<String, Object> params = new HashMap<>();
+		 * params.put("createDate", date); SqlParameterSource sqlParameterSource
+		 * = new MapSqlParameterSource(params);
+		 */
+		List<Participant> participants = this.namedParameterJdbcTemplate.query("SELECT id,print_name,email,language "
+				+ "FROM participant WHERE " + "email IS NOT NULL AND email <> ''" + "AND ( welcome_mail_sent=0 "
+				+ "OR welcome_mail_sent IS NULL)", BeanPropertyRowMapper.newInstance(Participant.class));
 
 		return participants;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.SendyMailRepository#getIntroducedParticipantCount(java.lang.String,java.lang.String)
+	 * 
+	 * @see org.srcm.heartfulness.repository.SendyMailRepository#
+	 * getIntroducedParticipantCount(java.lang.String,java.lang.String)
 	 */
 	@Override
 	public int getIntroducedParticipantCount(String printName, String email) {
 		int introducedParticipantsCount = this.jdbcTemplate.queryForObject(
-				"SELECT count(id) FROM welcome_email_log WHERE email=?",new Object[] {email},Integer.class);
+				"SELECT count(id) FROM welcome_email_log WHERE email=?", new Object[] { email }, Integer.class);
 		return introducedParticipantsCount;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.SendyMailRepository#save(WelcomeMailDetails welcomeMailDetails)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.SendyMailRepository#save(WelcomeMailDetails
+	 * welcomeMailDetails)
 	 */
 	@Override
 	public void save(WelcomeMailDetails welcomeMailDetails) {
@@ -80,16 +85,16 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 			Number newId = this.insertSubscriber.executeAndReturnKey(parameterSource);
 			welcomeMailDetails.setId(newId.intValue());
 		} else {
-			this.namedParameterJdbcTemplate.update("UPDATE welcome_email_log SET " + 
-				"print_name=:printName, " + 
-				"email=:mail, " +
-				"email_sent_time=:createTime ", parameterSource);
+			this.namedParameterJdbcTemplate.update("UPDATE welcome_email_log SET " + "print_name=:printName, "
+					+ "email=:mail, " + "email_sent_time=:createTime ", parameterSource);
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.SendyMailRepository#getSubscribersToUnsubscribe()
+	 * 
+	 * @see org.srcm.heartfulness.repository.SendyMailRepository#
+	 * getSubscribersToUnsubscribe()
 	 */
 	@Override
 	public List<WelcomeMailDetails> getSubscribersToUnsubscribe() {
@@ -102,26 +107,62 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.SendyMailRepository#updateParticipant()
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.SendyMailRepository#updateParticipant
+	 * (java.lang.String)
 	 */
 	@Override
 	public void updateParticipant(String mailID) {
-		this.jdbcTemplate.update("UPDATE participant set welcome_mail_sent=1 WHERE email=? ",new Object[] {mailID});
-		
+		this.jdbcTemplate.update("UPDATE participant set welcome_mail_sent=1 WHERE email=? ", new Object[] { mailID });
+
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.SendyMailRepository#
+	 * updateParticipantMailSentById(java.lang.Integer)
+	 */
 	@Override
 	public void updateParticipantMailSentById(int id) {
-		this.jdbcTemplate.update("UPDATE participant set welcome_mail_sent=1 WHERE id=? ",new Object[] {id});
-		
+		this.jdbcTemplate.update("UPDATE participant set welcome_mail_sent=1 WHERE id=? ", new Object[] { id });
+
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.SendyMailRepository#updateUserUnsubscribed
+	 * (java.lang.String)
+	 */
 	@Override
-	public String updateUserSubscribed(String name,String mailID) {
-		this.jdbcTemplate.update("UPDATE welcome_email_log set unsubscribed=0 WHERE email=? AND print_name=?",new Object[] {mailID,name});
+	public void updateUserUnsubscribed(String mailID) {
+		this.jdbcTemplate.update("UPDATE welcome_email_log set unsubscribed=1 WHERE email=? ", new Object[] { mailID });
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.SendyMailRepository#updateUserSubscribed
+	 * (java.lang.String,java.lang.String)
+	 */
+	@Override
+	public String updateUserSubscribed(String name, String mailID) {
+		this.jdbcTemplate.update("UPDATE welcome_email_log set unsubscribed=0 WHERE email=? AND print_name=?",
+				new Object[] { mailID, name });
 		return "Subscribed.";
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.SendyMailRepository#updateUserUnsubscribed
+	 * (WelcomeMailDetails welcomeMailDetails)
+	 */
 	@Override
 	public void updateUserUnsubscribed(WelcomeMailDetails welcomeMailDetails) {
 
@@ -150,4 +191,47 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		}
 
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.SendyMailRepository#
+	 * getParticipantsToSendWelcomeEmails()
+	 */
+	@Override
+	public List<Participant> getParticipantsToSendWelcomeEmails() {
+		List<Participant> participants = this.namedParameterJdbcTemplate.query("SELECT email,id,print_name,language "
+				+ "FROM participant WHERE " + "email IS NOT NULL AND email <> '' " + "AND (welcome_mail_sent=0 "
+				+ "OR welcome_mail_sent IS NULL) " + "AND confirmation_mail_sent=1 AND is_bounced =0 "
+				+ "AND email NOT IN (SELECT email from welcome_email_log) GROUP BY email ",
+				BeanPropertyRowMapper.newInstance(Participant.class));
+		return participants;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.SendyMailRepository#updateWelcomeMailLog
+	 * (java.lang.String,java.lang.String)
+	 */
+	@Override
+	public void updateWelcomeMailLog(String userName, String email) {
+		this.jdbcTemplate.query("select update_or_insert_welcome_email_log(?, ?, 0)", new Object[] { userName, email },
+				BeanPropertyRowMapper.newInstance(SendySubscriber.class));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.SendyMailRepository#
+	 * updateParticipantByMailId(java.lang.String)
+	 */
+	@Override
+	public void updateParticipantByMailId(String email) {
+		this.jdbcTemplate.update("UPDATE participant set welcome_mail_sent=1 WHERE email=? AND "
+				+ "(welcome_mail_sent=0 " + "OR welcome_mail_sent IS NULL) " + "AND confirmation_mail_sent=1 ",
+				new Object[] { email });
+	}
+
 }

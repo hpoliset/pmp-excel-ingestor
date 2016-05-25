@@ -8,6 +8,7 @@ import javax.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
@@ -20,18 +21,18 @@ import org.srcm.heartfulness.service.WelcomeMailService;
  */
 @RestController
 @RequestMapping("/api/sendy/")
-public class SendyAPIController {
+public class WelcomeMailController {
 
 	@Autowired
-	private WelcomeMailService sendyAPIService;
+	private WelcomeMailService WelcomeMailService;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SendyAPIController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WelcomeMailController.class);
 
 	/* @Scheduled(cron = "${welcome.mail.subscribe.cron.time}") */
 	public void subscribeUser() {
 		try {
 			LOGGER.debug("Scheduler started at - " + new Date());
-			sendyAPIService.addNewSubscriber();
+			WelcomeMailService.addNewSubscriber();
 		} catch (HttpClientErrorException | IOException | MessagingException e) {
 			// e.printStackTrace();
 			LOGGER.error("Exception while Subscribe - {} " + e.getMessage());
@@ -42,10 +43,20 @@ public class SendyAPIController {
 	public void unsubscribeUser() {
 		try {
 			LOGGER.debug("Unsubcribe user called.");
-			sendyAPIService.unsubscribeUsers();
+			WelcomeMailService.unsubscribeUsers();
 		} catch (HttpClientErrorException | IOException e) {
 			// e.printStackTrace();
 			LOGGER.error("Exception while Unsubscribe - {} " + e.getMessage());
+		}
+	}
+
+	@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}")
+	public void uploadDailyWelcomeMailidsToFTP() {
+		try {
+			LOGGER.debug("Upload File to FTP called.");
+			WelcomeMailService.uploadParticipantEmailidsToFTP();
+		} catch (Exception e) {
+			LOGGER.error("Exception while uploading file - {} " + e.getMessage());
 		}
 	}
 }
