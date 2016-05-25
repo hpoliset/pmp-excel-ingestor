@@ -22,7 +22,7 @@ import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 
 @Component
-@ConfigurationProperties(locations = "classpath:dev.ftpserver.properties", ignoreUnknownFields = false, prefix = "ftp")
+@ConfigurationProperties(locations = "classpath:dev.ftpserver.properties", ignoreUnknownFields = false, prefix = "ftp.sahajmarginfo")
 public class FTPConnectionHelper {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FTPConnectionHelper.class);
@@ -30,52 +30,50 @@ public class FTPConnectionHelper {
 	@Autowired
 	private SendMail sendMail;
 
-	public static class SahajmargInfo {
-		private String username;
-		private String host;
-		private int port;
-		private String password;
-		private String backUpFolderName;
+	private String username;
+	private String host;
+	private int port;
+	private String password;
+	private String backUpFolderName;
 
-		public String getBackUpFolderName() {
-			return backUpFolderName;
-		}
+	public String getBackUpFolderName() {
+		return backUpFolderName;
+	}
 
-		public void setBackUpFolderName(String backUpFolderName) {
-			this.backUpFolderName = backUpFolderName;
-		}
+	public void setBackUpFolderName(String backUpFolderName) {
+		this.backUpFolderName = backUpFolderName;
+	}
 
-		public String getUsername() {
-			return username;
-		}
+	public String getUsername() {
+		return username;
+	}
 
-		public void setUsername(String username) {
-			this.username = username;
-		}
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-		public String getHost() {
-			return host;
-		}
+	public String getHost() {
+		return host;
+	}
 
-		public void setHost(String host) {
-			this.host = host;
-		}
+	public void setHost(String host) {
+		this.host = host;
+	}
 
-		public int getPort() {
-			return port;
-		}
+	public int getPort() {
+		return port;
+	}
 
-		public void setPort(int port) {
-			this.port = port;
-		}
+	public void setPort(int port) {
+		this.port = port;
+	}
 
-		public String getPassword() {
-			return password;
-		}
+	public String getPassword() {
+		return password;
+	}
 
-		public void setPassword(String password) {
-			this.password = password;
-		}
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public static class NotificationMail {
@@ -109,18 +107,7 @@ public class FTPConnectionHelper {
 	}
 
 	@NotNull
-	private SahajmargInfo sahajmarginfo;
-
-	@NotNull
 	private NotificationMail notificationmail;
-
-	public SahajmargInfo getSahajmarginfo() {
-		return sahajmarginfo;
-	}
-
-	public void setSahajmarginfo(SahajmargInfo sahajmarginfo) {
-		this.sahajmarginfo = sahajmarginfo;
-	}
 
 	public NotificationMail getNotificationmail() {
 		return notificationmail;
@@ -152,9 +139,9 @@ public class FTPConnectionHelper {
 		Session session = null;
 		try {
 			LOGGER.debug("Connecting to server...");
-			session = jsch.getSession(sahajmarginfo.username, sahajmarginfo.host, sahajmarginfo.port);
+			session = jsch.getSession(username, host, port);
 			session.setConfig("StrictHostKeyChecking", "no");
-			session.setPassword(sahajmarginfo.password);
+			session.setPassword(password);
 			session.connect();
 
 			Channel channel = session.openChannel("sftp");
@@ -163,9 +150,9 @@ public class FTPConnectionHelper {
 			LOGGER.debug("Connected succesfully..!");
 
 			if (isFileExists(sftpChannel, welcomeMailidsRemoteFilepath + welcomeMailidsFileName)) {
-				sftpChannel.mkdir(sahajmarginfo.backUpFolderName);
+				sftpChannel.mkdir(backUpFolderName);
 				sftpChannel.rename(welcomeMailidsRemoteFilepath + welcomeMailidsFileName, welcomeMailidsRemoteFilepath
-						+ sahajmarginfo.backUpFolderName + "/" + welcomeMailidsFileName);
+						+ backUpFolderName + "/" + welcomeMailidsFileName);
 				sftpChannel.put(welcomeMailidsLocalFilepath + currentDate + "_" + welcomeMailidsFileName,
 						welcomeMailidsRemoteFilepath + welcomeMailidsFileName);
 				LOGGER.debug("Old file copied to Archives folder and new file created succesfully..!");
@@ -206,6 +193,7 @@ public class FTPConnectionHelper {
 	 * send mail for the day
 	 */
 	public void sendNotificationForNoEmails() {
-		sendMail.sendNotificationForNoEmails(notificationmail.getRecipientsTo(), notificationmail.getRecipientsCc(),notificationmail.getSubject());
+		sendMail.sendNotificationForNoEmails(notificationmail.getRecipientsTo(), notificationmail.getRecipientsCc(),
+				notificationmail.getSubject());
 	}
 }
