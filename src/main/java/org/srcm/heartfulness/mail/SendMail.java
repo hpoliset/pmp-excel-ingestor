@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -190,10 +191,10 @@ public class SendMail {
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(username));
 			for (String toId : toIds) {
-				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toId));
+				message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toId));
 			}
 			for (String ccId : ccIds) {
-				message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccId));
+				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(ccId));
 			}
 			message.setSubject(subject);
 			message.setContent(getMessageContentbyTemplateName(noparticipantstemplatename), "text/html");
