@@ -82,7 +82,7 @@ public class SendMail {
 	}
 
 	@NotNull
-	private MailTemplate mailTemplate;
+	private MailTemplate mailtemplate;
 
 	public String getUsername() {
 		return username;
@@ -109,11 +109,11 @@ public class SendMail {
 	}
 
 	public MailTemplate getTemplate() {
-		return mailTemplate;
+		return mailtemplate;
 	}
 
 	public void setTemplate(MailTemplate mailTemplate) {
-		this.mailTemplate = mailTemplate;
+		this.mailtemplate = mailTemplate;
 	}
 
 	public String getConfirmationlink() {
@@ -205,7 +205,7 @@ public class SendMail {
 				message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccId));
 			}
 			message.setSubject(subject);
-			message.setContent(getMessageContentbyTemplateName(mailTemplate.notificationfornoparticipants), "text/html");
+			message.setContent(getMessageContentbyTemplateName(mailtemplate.notificationfornoparticipants), "text/html");
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -249,9 +249,9 @@ public class SendMail {
 		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
 		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
 		if ("Excel".equalsIgnoreCase(createdSource)) {
-			velocityTemplate = velocityEngine.getTemplate(mailTemplate.excel);
+			velocityTemplate = velocityEngine.getTemplate(mailtemplate.excel);
 		} else if ("SMS".equalsIgnoreCase(createdSource)) {
-			velocityTemplate = velocityEngine.getTemplate(mailTemplate.sms);
+			velocityTemplate = velocityEngine.getTemplate(mailtemplate.sms);
 		}
 		StringWriter stringWriter = new StringWriter();
 		velocityTemplate.merge(getParameter(), stringWriter);
@@ -323,7 +323,7 @@ public class SendMail {
 		List<String> toEmailIDs = new ArrayList<String>();
 		toEmailIDs.add(mail);
 		try {
-			sendMail(toEmailIDs, new ArrayList<String>(), getMessageContentbyTemplateName(mailTemplate.online));
+			sendMail(toEmailIDs, new ArrayList<String>(), getMessageContentbyTemplateName(mailtemplate.online));
 			LOGGER.debug("Mail sent successfully : {} ", mail);
 		} catch (MessagingException e) {
 			LOGGER.error("Sending Mail Failed : {} ", mail);
