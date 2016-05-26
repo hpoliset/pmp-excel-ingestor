@@ -47,43 +47,10 @@ public class SendMail {
 	private String defaultname;
 	private String confirmationlink;
 	private String unsubscribelink;
-	
-
-	public static class MailTemplate {
-		private String sms;
-		private String excel;
-		private String online;
-		private String notificationfornoparticipants;
-		
-		public String getSms() {
-			return sms;
-		}
-		public void setSms(String sms) {
-			this.sms = sms;
-		}
-		public String getExcel() {
-			return excel;
-		}
-		public void setExcel(String excel) {
-			this.excel = excel;
-		}
-		public String getOnline() {
-			return online;
-		}
-		public void setOnline(String online) {
-			this.online = online;
-		}
-		public String getNotificationfornoparticipants() {
-			return notificationfornoparticipants;
-		}
-		public void setNotificationfornoparticipants(String notificationfornoparticipants) {
-			this.notificationfornoparticipants = notificationfornoparticipants;
-		}
-
-	}
-
-	@NotNull
-	private MailTemplate mailtemplate;
+	private String smstemplatename;
+	private String exceltemplatename;
+	private String onlinetemplatename;
+	private String noparticipantstemplatename;
 
 	public String getUsername() {
 		return username;
@@ -109,14 +76,6 @@ public class SendMail {
 		this.defaultname = defaultname;
 	}
 
-	public MailTemplate getMailtemplate() {
-		return mailtemplate;
-	}
-
-	public void setMailtemplate(MailTemplate mailtemplate) {
-		this.mailtemplate = mailtemplate;
-	}
-
 	public String getConfirmationlink() {
 		return confirmationlink;
 	}
@@ -132,6 +91,40 @@ public class SendMail {
 	public void setUnsubscribelink(String unsubscribelink) {
 		this.unsubscribelink = unsubscribelink;
 	}
+
+	public String getSmstemplatename() {
+		return smstemplatename;
+	}
+
+	public void setSmstemplatename(String smstemplatename) {
+		this.smstemplatename = smstemplatename;
+	}
+
+	public String getExceltemplatename() {
+		return exceltemplatename;
+	}
+
+	public void setExceltemplatename(String exceltemplatename) {
+		this.exceltemplatename = exceltemplatename;
+	}
+
+	public String getOnlinetemplatename() {
+		return onlinetemplatename;
+	}
+
+	public void setOnlinetemplatename(String onlinetemplatename) {
+		this.onlinetemplatename = onlinetemplatename;
+	}
+
+	public String getNoparticipantstemplatename() {
+		return noparticipantstemplatename;
+	}
+
+	public void setNoparticipantstemplatename(String noparticipantstemplatename) {
+		this.noparticipantstemplatename = noparticipantstemplatename;
+	}
+
+
 
 	private VelocityEngine velocityEngine = new VelocityEngine();
 
@@ -206,7 +199,7 @@ public class SendMail {
 				message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccId));
 			}
 			message.setSubject(subject);
-			message.setContent(getMessageContentbyTemplateName(mailtemplate.notificationfornoparticipants), "text/html");
+			message.setContent(getMessageContentbyTemplateName(noparticipantstemplatename), "text/html");
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -250,9 +243,9 @@ public class SendMail {
 		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
 		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
 		if ("Excel".equalsIgnoreCase(createdSource)) {
-			velocityTemplate = velocityEngine.getTemplate(mailtemplate.excel);
+			velocityTemplate = velocityEngine.getTemplate(exceltemplatename);
 		} else if ("SMS".equalsIgnoreCase(createdSource)) {
-			velocityTemplate = velocityEngine.getTemplate(mailtemplate.sms);
+			velocityTemplate = velocityEngine.getTemplate(smstemplatename);
 		}
 		StringWriter stringWriter = new StringWriter();
 		velocityTemplate.merge(getParameter(), stringWriter);
@@ -324,7 +317,7 @@ public class SendMail {
 		List<String> toEmailIDs = new ArrayList<String>();
 		toEmailIDs.add(mail);
 		try {
-			sendMail(toEmailIDs, new ArrayList<String>(), getMessageContentbyTemplateName(mailtemplate.online));
+			sendMail(toEmailIDs, new ArrayList<String>(), getMessageContentbyTemplateName(onlinetemplatename));
 			LOGGER.debug("Mail sent successfully : {} ", mail);
 		} catch (MessagingException e) {
 			LOGGER.error("Sending Mail Failed : {} ", mail);
