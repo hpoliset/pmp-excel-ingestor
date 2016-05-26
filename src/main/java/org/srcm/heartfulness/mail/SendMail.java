@@ -54,43 +54,35 @@ public class SendMail {
 		private String excel;
 		private String online;
 		private String notificationfornoparticipants;
-
 		public String getSms() {
 			return sms;
 		}
-
 		public void setSms(String sms) {
 			this.sms = sms;
 		}
-
 		public String getExcel() {
 			return excel;
 		}
-
 		public void setExcel(String excel) {
 			this.excel = excel;
 		}
-
 		public String getOnline() {
 			return online;
 		}
-
 		public void setOnline(String online) {
 			this.online = online;
 		}
-
 		public String getNotificationfornoparticipants() {
 			return notificationfornoparticipants;
 		}
-
 		public void setNotificationfornoparticipants(String notificationfornoparticipants) {
 			this.notificationfornoparticipants = notificationfornoparticipants;
 		}
-		
+
 	}
 
 	@NotNull
-	private MailTemplate template;
+	private MailTemplate mailTemplate;
 
 	public String getUsername() {
 		return username;
@@ -117,11 +109,11 @@ public class SendMail {
 	}
 
 	public MailTemplate getTemplate() {
-		return template;
+		return mailTemplate;
 	}
 
 	public void setTemplate(MailTemplate mailTemplate) {
-		this.template = mailTemplate;
+		this.mailTemplate = mailTemplate;
 	}
 
 	public String getConfirmationlink() {
@@ -213,7 +205,7 @@ public class SendMail {
 				message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccId));
 			}
 			message.setSubject(subject);
-			message.setContent(getMessageContentbyTemplateName(template.notificationfornoparticipants), "text/html");
+			message.setContent(getMessageContentbyTemplateName(mailTemplate.notificationfornoparticipants), "text/html");
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -257,9 +249,9 @@ public class SendMail {
 		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
 		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
 		if ("Excel".equalsIgnoreCase(createdSource)) {
-			velocityTemplate = velocityEngine.getTemplate(template.excel);
+			velocityTemplate = velocityEngine.getTemplate(mailTemplate.excel);
 		} else if ("SMS".equalsIgnoreCase(createdSource)) {
-			velocityTemplate = velocityEngine.getTemplate(template.sms);
+			velocityTemplate = velocityEngine.getTemplate(mailTemplate.sms);
 		}
 		StringWriter stringWriter = new StringWriter();
 		velocityTemplate.merge(getParameter(), stringWriter);
@@ -331,7 +323,7 @@ public class SendMail {
 		List<String> toEmailIDs = new ArrayList<String>();
 		toEmailIDs.add(mail);
 		try {
-			sendMail(toEmailIDs, new ArrayList<String>(), getMessageContentbyTemplateName(template.online));
+			sendMail(toEmailIDs, new ArrayList<String>(), getMessageContentbyTemplateName(mailTemplate.online));
 			LOGGER.debug("Mail sent successfully : {} ", mail);
 		} catch (MessagingException e) {
 			LOGGER.error("Sending Mail Failed : {} ", mail);
