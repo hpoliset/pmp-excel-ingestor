@@ -102,11 +102,10 @@ public class MailSubscriptionController {
 		}
 	}
 
-	public static void main(String[] args) {
-		AESEncryptDecrypt aes = new AESEncryptDecrypt();
-		String mail = "himasree@htcindia.com";
-		String id = aes.encrypt(mail, "h2ItE7t6kp+I/R8kJBteRw==");
-		System.out.println(id);
-	}
+	/*
+	 * public static void main(String[] args) { AESEncryptDecrypt aes = new
+	 * AESEncryptDecrypt(); String mail = "himasree@htcindia.com"; String id =
+	 * aes.encrypt(mail, "h2ItE7t6kp+I/R8kJBteRw=="); System.out.println(id); }
+	 */
 
 }
