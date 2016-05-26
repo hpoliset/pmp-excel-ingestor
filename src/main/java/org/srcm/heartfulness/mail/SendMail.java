@@ -11,7 +11,6 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
-import javax.validation.constraints.NotNull;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -37,7 +36,7 @@ import com.sun.mail.smtp.SMTPMessage;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:mail.api.properties", ignoreUnknownFields = false, prefix = "mail")
+@ConfigurationProperties(locations = "classpath:mail.api.properties", ignoreUnknownFields = false, prefix = "mail.api")
 public class SendMail {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendMail.class);
@@ -123,8 +122,6 @@ public class SendMail {
 	public void setNoparticipantstemplatename(String noparticipantstemplatename) {
 		this.noparticipantstemplatename = noparticipantstemplatename;
 	}
-
-
 
 	private VelocityEngine velocityEngine = new VelocityEngine();
 
