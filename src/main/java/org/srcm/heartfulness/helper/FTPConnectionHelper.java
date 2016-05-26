@@ -154,9 +154,9 @@ public class FTPConnectionHelper {
 					sftpChannel.mkdir(backUpFolderName);
 				}
 				sftpChannel.rename(welcomeMailidsRemoteFilepath + welcomeMailidsFileName, welcomeMailidsRemoteFilepath
-						+ backUpFolderName + "/" + welcomeMailidsFileName);
+						+ backUpFolderName + "/" + currentDate+"_"+ welcomeMailidsFileName);
 				sftpChannel.put(welcomeMailidsLocalFilepath + currentDate + "_" + welcomeMailidsFileName,
-						welcomeMailidsRemoteFilepath + currentDate+"_"+welcomeMailidsFileName);
+						welcomeMailidsRemoteFilepath +welcomeMailidsFileName);
 				LOGGER.debug("Old file copied to Archives folder and new file created succesfully..!");
 			} else {
 				sftpChannel.put(welcomeMailidsLocalFilepath + currentDate + "_" + welcomeMailidsFileName,
