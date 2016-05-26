@@ -90,7 +90,7 @@ public class SendMail {
 	}
 
 	@NotNull
-	private MailTemplate mailTemplate;
+	private MailTemplate template;
 
 	public String getUsername() {
 		return username;
@@ -117,11 +117,11 @@ public class SendMail {
 	}
 
 	public MailTemplate getTemplate() {
-		return mailTemplate;
+		return template;
 	}
 
 	public void setTemplate(MailTemplate mailTemplate) {
-		this.mailTemplate = mailTemplate;
+		this.template = mailTemplate;
 	}
 
 	public String getConfirmationlink() {
@@ -213,7 +213,7 @@ public class SendMail {
 				message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccId));
 			}
 			message.setSubject(subject);
-			message.setContent(getMessageContentbyTemplateName(mailTemplate.notificationfornoparticipants), "text/html");
+			message.setContent(getMessageContentbyTemplateName(template.notificationfornoparticipants), "text/html");
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -253,16 +253,16 @@ public class SendMail {
 	 * @return
 	 */
 	private String getWelcomeMailContent(String createdSource) {
-		Template template = null;
+		Template velocityTemplate = null;
 		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
 		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
 		if ("Excel".equalsIgnoreCase(createdSource)) {
-			template = velocityEngine.getTemplate(mailTemplate.excel);
+			velocityTemplate = velocityEngine.getTemplate(template.excel);
 		} else if ("SMS".equalsIgnoreCase(createdSource)) {
-			template = velocityEngine.getTemplate(mailTemplate.sms);
+			velocityTemplate = velocityEngine.getTemplate(template.sms);
 		}
 		StringWriter stringWriter = new StringWriter();
-		template.merge(getParameter(), stringWriter);
+		velocityTemplate.merge(getParameter(), stringWriter);
 		return stringWriter.toString();
 	}
 
@@ -331,7 +331,7 @@ public class SendMail {
 		List<String> toEmailIDs = new ArrayList<String>();
 		toEmailIDs.add(mail);
 		try {
-			sendMail(toEmailIDs, new ArrayList<String>(), getMessageContentbyTemplateName(mailTemplate.online));
+			sendMail(toEmailIDs, new ArrayList<String>(), getMessageContentbyTemplateName(template.online));
 			LOGGER.debug("Mail sent successfully : {} ", mail);
 		} catch (MessagingException e) {
 			LOGGER.error("Sending Mail Failed : {} ", mail);
