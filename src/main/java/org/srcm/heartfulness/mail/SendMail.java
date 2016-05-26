@@ -282,10 +282,10 @@ public class SendMail {
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(username));
 		for (String toemailID : toEmailIDs) {
-			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toemailID));
+			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toemailID));
 		}
 		for (String ccemailID : ccEmailIDs) {
-			message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccemailID));
+			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(ccemailID));
 		}
 		message.setSubject(subject);
 		message.setContent(messageContent, "text/html");
