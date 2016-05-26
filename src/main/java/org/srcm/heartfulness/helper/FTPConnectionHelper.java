@@ -150,11 +150,13 @@ public class FTPConnectionHelper {
 			LOGGER.debug("Connected succesfully..!");
 
 			if (isFileExists(sftpChannel, welcomeMailidsRemoteFilepath + welcomeMailidsFileName)) {
-				sftpChannel.mkdir(backUpFolderName);
+				if(!isFileExists(sftpChannel,welcomeMailidsRemoteFilepath + backUpFolderName)){
+					sftpChannel.mkdir(backUpFolderName);
+				}
 				sftpChannel.rename(welcomeMailidsRemoteFilepath + welcomeMailidsFileName, welcomeMailidsRemoteFilepath
 						+ backUpFolderName + "/" + welcomeMailidsFileName);
 				sftpChannel.put(welcomeMailidsLocalFilepath + currentDate + "_" + welcomeMailidsFileName,
-						welcomeMailidsRemoteFilepath + welcomeMailidsFileName);
+						welcomeMailidsRemoteFilepath + currentDate+"_"+welcomeMailidsFileName);
 				LOGGER.debug("Old file copied to Archives folder and new file created succesfully..!");
 			} else {
 				sftpChannel.put(welcomeMailidsLocalFilepath + currentDate + "_" + welcomeMailidsFileName,
