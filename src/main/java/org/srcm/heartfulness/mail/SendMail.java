@@ -54,6 +54,7 @@ public class SendMail {
 		private String excel;
 		private String online;
 		private String notificationfornoparticipants;
+		
 		public String getSms() {
 			return sms;
 		}
@@ -108,12 +109,12 @@ public class SendMail {
 		this.defaultname = defaultname;
 	}
 
-	public MailTemplate getTemplate() {
+	public MailTemplate getMailtemplate() {
 		return mailtemplate;
 	}
 
-	public void setTemplate(MailTemplate mailTemplate) {
-		this.mailtemplate = mailTemplate;
+	public void setMailtemplate(MailTemplate mailtemplate) {
+		this.mailtemplate = mailtemplate;
 	}
 
 	public String getConfirmationlink() {
