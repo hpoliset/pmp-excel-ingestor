@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
-import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.model.User;
@@ -23,6 +22,8 @@ import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.service.UserProfileService;
 
 /**
+ * This class holds the web service end points to get the user profile and
+ * update profile
  * 
  * @author HimaSree
  *
@@ -41,8 +42,8 @@ public class UserController {
 	Environment env;
 
 	/**
-	 * Method to get the user profile from the MySRCM and persists user details in
-	 * PMP DB, if the user details is not available in PMP.
+	 * Method to get the user profile from the MySRCM and persists user details
+	 * in PMP DB, if the user details is not available in PMP.
 	 * 
 	 * @param accessToken
 	 * @param request
@@ -76,16 +77,16 @@ public class UserController {
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	/**
 	 * Method to update the user details in PMP.
 	 * 
 	 * @param id
 	 *            userId of the user whose details need to be updated.
-	 * @param user,
-	 *            holds user details.
-	 * @param token,
-	 *            Token to be validated against MYSRCM endpoint.
+	 * @param user
+	 *            , holds user details.
+	 * @param token
+	 *            , Token to be validated against MYSRCM endpoint.
 	 * @return
 	 */
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
@@ -98,8 +99,8 @@ public class UserController {
 			User pmpUser = userProfileService.loadUserByEmail(srcmProfile.getEmail());
 			if (pmpUser != null && id == pmpUser.getId()) {
 				if (id == pmpUser.getId()) {
-					user.setMembershipId(user.getMembershipId() == null ? "0" :user.getMembershipId());
-					user.setAbyasiId(user.getMembershipId() == null ? 0 : Integer.valueOf(user.getMembershipId()) );
+					user.setMembershipId(user.getMembershipId() == null ? "0" : user.getMembershipId());
+					user.setAbyasiId(user.getMembershipId() == null ? 0 : Integer.valueOf(user.getMembershipId()));
 					userProfileService.save(user);
 				}
 			}

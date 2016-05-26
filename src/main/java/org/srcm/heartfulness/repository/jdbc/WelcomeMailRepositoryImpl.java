@@ -2,12 +2,15 @@ package org.srcm.heartfulness.repository.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -180,14 +183,17 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 						}
 					});
 			welcomeMailDetails.setId(welcomeMailDetailsID);
+			welcomeMailDetails.setSubscribed(0);
+			welcomeMailDetails.setConfirmed(0);
 		}
 		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(welcomeMailDetails);
 		if (welcomeMailDetails.getId() == 0) {
 			Number newId = this.insertSubscriber.executeAndReturnKey(parameterSource);
 			welcomeMailDetails.setId(newId.intValue());
 		} else {
-			this.namedParameterJdbcTemplate.update(
-					"UPDATE welcome_email_log set unsubscribed=:unsubscribed WHERE email=:email", parameterSource);
+			this.namedParameterJdbcTemplate
+					.update("UPDATE welcome_email_log set unsubscribed=:unsubscribed , subscribed=:subscribed , confirmed=:confirmed, email_status=:emailStatus  WHERE email=:email",
+							parameterSource);
 		}
 
 	}
@@ -201,8 +207,8 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	@Override
 	public List<Participant> getParticipantsToSendWelcomeEmails() {
 		List<Participant> participants = this.namedParameterJdbcTemplate.query("SELECT email,id,print_name,language "
-				+ "FROM participant WHERE " + "email IS NOT NULL AND email <> '' " + "AND (welcome_mail_sent=0 "
-				+ "OR welcome_mail_sent IS NULL) " + "AND confirmation_mail_sent=1 AND is_bounced =0 "
+				+ "FROM participant WHERE email IS NOT NULL AND email <> '' AND (welcome_mail_sent=0 "
+				+ "OR welcome_mail_sent IS NULL) AND is_bounced =0 "
 				+ "AND email NOT IN (SELECT email from welcome_email_log) GROUP BY email ",
 				BeanPropertyRowMapper.newInstance(Participant.class));
 		return participants;
@@ -230,8 +236,154 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	@Override
 	public void updateParticipantByMailId(String email) {
 		this.jdbcTemplate.update("UPDATE participant set welcome_mail_sent=1 WHERE email=? AND "
-				+ "(welcome_mail_sent=0 " + "OR welcome_mail_sent IS NULL) " + "AND confirmation_mail_sent=1 ",
-				new Object[] { email });
+				+ "(welcome_mail_sent=0 OR welcome_mail_sent IS NULL)", new Object[] { email });
+	}
+
+	/**
+	 * Update the participant subscribed status as `1` in the PMP.
+	 * 
+	 * @param sendySubscriber
+	 */
+	@Override
+	public void updateUserSubscribedStatus(WelcomeMailDetails welcomeMailDetails) {
+
+		if (welcomeMailDetails.getId() == 0) {
+			Integer welcomeMailDetailsID = this.jdbcTemplate.query("SELECT id from welcome_email_log where email=? ",
+					new Object[] { welcomeMailDetails.getEmail() }, new ResultSetExtractor<Integer>() {
+						@Override
+						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+							if (resultSet.next()) {
+								return resultSet.getInt(1);
+							}
+							return 0;
+						}
+					});
+			welcomeMailDetails.setId(welcomeMailDetailsID);
+			welcomeMailDetails.setUnsubscribed(0);
+			welcomeMailDetails.setEmailStatus(null);
+		}
+		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(welcomeMailDetails);
+		if (welcomeMailDetails.getId() == 0) {
+			Number newId = this.insertSubscriber.executeAndReturnKey(parameterSource);
+			welcomeMailDetails.setId(newId.intValue());
+		} else {
+			this.namedParameterJdbcTemplate
+					.update("UPDATE welcome_email_log set subscribed=:subscribed , unsubscribed=:unsubscribed WHERE email=:email",
+							parameterSource);
+		}
+
+	}
+
+	/**
+	 * Update the participant subscription confirmed status as `1` for the given mailID
+	 * in the PMP.
+	 * 
+	 * @param mailID
+	 */
+	@Override
+	public void updateconfirmSubscribedStatus(String mailID) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("email", mailID);
+		params.put("confirmed", "1");
+		this.namedParameterJdbcTemplate.update("UPDATE welcome_email_log set confirmed=:confirmed WHERE email=:email",
+				params);
+	}
+	
+	
+	@Override
+	public int checkForMailSubcription(String email) {
+		try {
+			int unSubscribed = this.jdbcTemplate.query("SELECT unsubscribed from welcome_email_log where email=?",
+					new Object[] { email }, new ResultSetExtractor<Integer>() {
+						@Override
+						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+							if (resultSet.next()) {
+								return resultSet.getInt(1);
+							}
+							return 0;
+						}
+					});
+
+			return unSubscribed;
+		} catch (EmptyResultDataAccessException e) {
+			return 0;
+		}
+	}
+
+	@Override
+	public void updateConfirmationMailStatus(Participant participant) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("confirmationMailSent", 1);
+		params.put("email", participant.getEmail());
+		this.namedParameterJdbcTemplate.update(
+				"UPDATE participant SET confirmation_mail_sent=:confirmationMailSent WHERE email=:email", params);
+	}
+
+	@Override
+	public int CheckForConfirmationMailStatus(Participant participant) {
+		int confirmationmailSent = this.jdbcTemplate.query(
+				"SELECT confirmation_mail_sent from participant where email=? and seqId=?",
+				new Object[] { participant.getEmail(), participant.getSeqId() }, new ResultSetExtractor<Integer>() {
+					@Override
+					public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+						if (resultSet.next()) {
+							return resultSet.getInt(1);
+						}
+						return 0;
+					}
+				});
+
+		return confirmationmailSent;
+	}
+	
+	/**
+	 * Method to check whether the email is subscribed or not.
+	 * @param mail
+	 * @return
+	 */
+	@Override
+	public int checkMailSubscribedStatus(String mail) {
+		try {
+			int subscribed = this.jdbcTemplate.query("SELECT subscribed from welcome_email_log where email=? ",
+					new Object[] { mail }, new ResultSetExtractor<Integer>() {
+						@Override
+						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+							if (resultSet.next()) {
+								return resultSet.getInt(1);
+							}
+							return 0;
+						}
+					});
+
+			return subscribed;
+		} catch (EmptyResultDataAccessException e) {
+			return 0;
+		}
+	}
+
+	/**
+	 * Method to check whether the email subscription is confirmed or not.
+	 * @param mailID
+	 * @return
+	 */
+	@Override
+	public int checkForconfirmStatusOfSubscription(String mailID) {
+		try {
+			int confirmed = this.jdbcTemplate.query("SELECT confirmed from welcome_email_log where email=? ",
+					new Object[] { mailID }, new ResultSetExtractor<Integer>() {
+						@Override
+						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+							if (resultSet.next()) {
+								return resultSet.getInt(1);
+							}
+							return 0;
+						}
+					});
+
+			return confirmed;
+		} catch (EmptyResultDataAccessException e) {
+			return 0;
+		}
 	}
 
 }

@@ -6,8 +6,8 @@ package org.srcm.heartfulness.webservice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.srcm.heartfulness.service.BouncedEmailService;
 
@@ -24,23 +24,24 @@ import org.srcm.heartfulness.service.BouncedEmailService;
 
 @RestController
 public class BouncedEmailController {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(BouncedEmailController.class);
-	
+
 	@Autowired
-	private BouncedEmailService bncdEmailSrcv;	
-	
+	private BouncedEmailService bncdEmailSrcv;
+
 	/**
-	 * This controller method is used to handle all the bounced emails
-	 * from hfnbounce@srcm.org mailbox.
+	 * This controller method is used to handle all the bounced emails from
+	 * hfnbounce@srcm.org mailbox.
 	 * 
 	 */
-	@RequestMapping("/api/bouncedemail")
-	//@Scheduled(cron = "${srcm.bounced.email.fetching.cron.time}")
-	public void handleBouncedEmails(){
+	@RequestMapping(value = "/api/bouncedemail", method = RequestMethod.POST)
+	// @Scheduled(cron = "${srcm.bounced.email.fetching.cron.time}")
+	public String handleBouncedEmails() {
 		LOGGER.debug("START: Handling bounced emails");
 		bncdEmailSrcv.readBouncedEmailsAndUpdateInDatabase();
 		LOGGER.debug("END: Handling bounced emails");
+		return "Process Completed.";
 	}
 
 }

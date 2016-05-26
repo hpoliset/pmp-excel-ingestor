@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * this class is the request to create or update the paricipant for the event
+ * This class is the request to create or update the paricipant for the event
+ * 
  * @author himasreev
  *
  */
-@JsonIgnoreProperties(ignoreUnknown = true,allowGetters = false)
+@JsonIgnoreProperties(ignoreUnknown = true, allowGetters = false)
 public class ParticipantRequest {
 
 	@JsonIgnore
@@ -42,9 +43,9 @@ public class ParticipantRequest {
 	private String country;
 
 	private String introducedStatus;
-	
+
 	private String introductionDate;
-	
+
 	@JsonIgnore
 	private int introduced;
 
@@ -174,7 +175,7 @@ public class ParticipantRequest {
 	public void setAbhyasiId(String abhyasiId) {
 		this.abhyasiId = abhyasiId;
 	}
-	
+
 	public String getGender() {
 		return gender;
 	}
@@ -206,7 +207,7 @@ public class ParticipantRequest {
 	public void setAddressLine2(String addressLine2) {
 		this.addressLine2 = addressLine2;
 	}
-	
+
 	public String getIntroducedStatus() {
 		return introducedStatus;
 	}

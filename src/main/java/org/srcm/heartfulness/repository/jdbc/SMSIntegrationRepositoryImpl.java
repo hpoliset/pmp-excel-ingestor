@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.repository.SMSIntegrationRepository;
 
 @Repository
-public class SMSIntegrationRepositoryImpl implements SMSIntegrationRepository{
-	
+public class SMSIntegrationRepositoryImpl implements SMSIntegrationRepository {
+
 	private final JdbcTemplate jdbcTemplate;
 
 	private static Logger LOGGER = LoggerFactory.getLogger(ParticipantFullDetailsRepositoryImpl.class);
@@ -21,29 +21,35 @@ public class SMSIntegrationRepositoryImpl implements SMSIntegrationRepository{
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.SMSIntegrationRepository#getRegisteredParticipantsCount(java.lang.String)
+	 * 
+	 * @see org.srcm.heartfulness.repository.SMSIntegrationRepository#
+	 * getRegisteredParticipantsCount(java.lang.String)
 	 */
 	@Override
 	public int getRegisteredParticipantsCount(String eventId) {
-		int registeredParticipantsCount = this.jdbcTemplate.queryForObject(
-				"SELECT count(p.id) FROM program pr INNER JOIN participant p on p.program_id=pr.program_id WHERE pr.auto_generated_event_id=?",new Object[] {eventId},Integer.class);
+		int registeredParticipantsCount = this.jdbcTemplate
+				.queryForObject(
+						"SELECT count(p.id) FROM program pr INNER JOIN participant p on p.program_id=pr.program_id WHERE pr.auto_generated_event_id=?",
+						new Object[] { eventId }, Integer.class);
 		return registeredParticipantsCount;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.SMSIntegrationRepository#getIntroducedParticipantsCount(java.lang.String)
+	 * 
+	 * @see org.srcm.heartfulness.repository.SMSIntegrationRepository#
+	 * getIntroducedParticipantsCount(java.lang.String)
 	 */
 	@Override
 	public int getIntroducedParticipantsCount(String introId) {
-		int registeredParticipantsCount = this.jdbcTemplate.queryForObject(
-				"SELECT count(p.id) FROM program pr INNER JOIN participant p on p.program_id=pr.program_id WHERE pr.auto_generated_intro_id=? and p.welcome_card_number is not null",new Object[] {introId},Integer.class);
+		int registeredParticipantsCount = this.jdbcTemplate
+				.queryForObject(
+						"SELECT count(p.id) FROM program pr INNER JOIN participant p on p.program_id=pr.program_id WHERE pr.auto_generated_intro_id=? and p.welcome_card_number is not null",
+						new Object[] { introId }, Integer.class);
 		return registeredParticipantsCount;
 	}
-	
-	
 
 }

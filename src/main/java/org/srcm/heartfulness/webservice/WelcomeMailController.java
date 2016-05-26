@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.service.WelcomeMailService;
@@ -50,13 +51,17 @@ public class WelcomeMailController {
 		}
 	}
 
-	@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}")
-	public void uploadDailyWelcomeMailidsToFTP() {
+	/*@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}")*/
+	@RequestMapping(value = "/api/uploadtoftp", method = RequestMethod.POST)
+	public String uploadDailyWelcomeMailidsToFTP() {
 		try {
 			LOGGER.debug("Upload File to FTP called.");
 			WelcomeMailService.uploadParticipantEmailidsToFTP();
+			return "Process Completed.";
 		} catch (Exception e) {
 			LOGGER.error("Exception while uploading file - {} " + e.getMessage());
+			return "Error Occurred.";
 		}
 	}
+
 }

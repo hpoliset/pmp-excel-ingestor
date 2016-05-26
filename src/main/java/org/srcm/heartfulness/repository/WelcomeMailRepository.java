@@ -109,4 +109,57 @@ public interface WelcomeMailRepository {
 	 */
 	void updateParticipantByMailId(String email);
 
+	/**
+	 * Update the participant subscribed status in the PMP.
+	 * 
+	 * @param sendySubscriber
+	 */
+	void updateUserSubscribedStatus(WelcomeMailDetails sendySubscriber);
+
+	/**
+	 * Update the participant subscription confirmed status for the given mailID
+	 * in the PMP.
+	 * 
+	 * @param mailID
+	 */
+	void updateconfirmSubscribedStatus(String mailID);
+	
+	/**
+	 * Method to check whether the given email ID has unsubscribed or not.
+	 * 
+	 * @param email
+	 * @return
+	 */
+	int checkForMailSubcription(String email);
+
+	/**
+	 * Method to update the participant with Confirmation mail sent status.
+	 * 
+	 * @param participant
+	 */
+	void updateConfirmationMailStatus(Participant participant);
+
+	/**
+	 * Method to check whether the confirmation mail sent to the participant or
+	 * not.
+	 * 
+	 * @param participant
+	 * @return
+	 */
+	int CheckForConfirmationMailStatus(Participant participant);
+	
+	/**
+	 * Method to check whether the email is subscribed or not.
+	 * @param mail
+	 * @return
+	 */
+	int checkMailSubscribedStatus(String mail);
+
+	/**
+	 * Method to check whether the email subscription is confirmed or not.
+	 * @param mailID
+	 * @return
+	 */
+	int checkForconfirmStatusOfSubscription(String mailID);
+
 }

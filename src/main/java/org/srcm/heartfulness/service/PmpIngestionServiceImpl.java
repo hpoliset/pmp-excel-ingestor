@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +27,7 @@ import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.repository.OrganisationRepository;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
+import org.srcm.heartfulness.repository.WelcomeMailRepository;
 import org.srcm.heartfulness.service.response.ExcelUploadResponse;
 import org.srcm.heartfulness.util.ExcelParserUtils;
 import org.srcm.heartfulness.util.InvalidExcelFileException;
@@ -48,19 +50,26 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 
 	@Autowired
 	private VersionIdentifier versionIdentifier;
-	
+
 	@Autowired
 	private SendMail sendMail;
 
 	@Autowired
 	private ParticipantRepository participantRepository;
+	
+	@Autowired
+	private WelcomeMailRepository welcomeMailRepository;
+
+	@Autowired
+	private Environment env;
 
 	/**
-	 * This method is used to parse the excel file and populate the data into database.
+	 * This method is used to parse the excel file and populate the data into
+	 * database.
 	 * 
 	 * @param fileName
 	 * @param fileContent
-	 * @return the status and error messages. 
+	 * @return the status and error messages.
 	 */
 	@Override
 	@Transactional
@@ -74,7 +83,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			// Validate and Parse the excel file
 			ExcelType version = versionIdentifier.findVersion(workBook);
 			response.setExcelVersion(version);
-			if(version != version.INVALID){
+			if (version != version.INVALID) {
 				errorResponse = EventDetailsExcelValidatorFactory.validateExcel(workBook, version);
 				if (!errorResponse.isEmpty()) {
 					response.setErrorMsg(errorResponse);
@@ -84,15 +93,17 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 					Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version);
 					program.setCreatedSource("Excel");
 					programRepository.save(program);
-					sendAutomaticConfirmationMailToParticipants(program.getParticipantList());
+					if("true".equalsIgnoreCase(env.getProperty("partcipant.send.confimationmail"))){
+						sendAutomaticConfirmationMailToParticipants(program.getParticipantList());
+					}
 					response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
 				}
-			}else{
+			} else {
 				errorResponse.add("Invalid file contents.");
 				response.setErrorMsg(errorResponse);
 				response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 			}
-		}catch (IOException | InvalidExcelFileException | POIXMLException ex) {
+		} catch (IOException | InvalidExcelFileException | POIXMLException ex) {
 			// To show the error message to the end user.
 			LOGGER.error(ex.getMessage());
 			errorResponse.add(ex.getMessage());
@@ -101,7 +112,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 		}
 		return response;
 	}
-	
+
 	/**
 	 * Method to send the confirmation mail to the newly registered
 	 * participants.
@@ -110,18 +121,20 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	 */
 	private void sendAutomaticConfirmationMailToParticipants(List<Participant> participantList) {
 		for (Participant participant : participantList) {
-			//Checks whether the emailID exists for the participant.
+			// Checks whether the emailID exists for the participant.
 			if (null != participant.getEmail() && !participant.getEmail().isEmpty()) {
 				LOGGER.debug("Mail subscription : {} ",
-						participantRepository.checkForMailSubcription(participant.getEmail()) + "");
+						welcomeMailRepository.checkForMailSubcription(participant.getEmail()) + "");
 				LOGGER.debug("confirmation Mail sent  : {} ",
-						participantRepository.CheckForConfirmationMailStatus(participant) + "");
-				//Checks whether the participant unsubscribed for receiving mails.
-				if (1 != participantRepository.checkForMailSubcription(participant.getEmail())) {
-					// Checks whether the participant already received the confirmation mail or not.
-					if (1 != participantRepository.CheckForConfirmationMailStatus(participant)) {
+						welcomeMailRepository.CheckForConfirmationMailStatus(participant) + "");
+				// Checks whether the participant unsubscribed for receiving
+				// mails.
+				if (1 != welcomeMailRepository.checkForMailSubcription(participant.getEmail())) {
+					// Checks whether the participant already received the
+					// confirmation mail or not.
+					if (1 != welcomeMailRepository.CheckForConfirmationMailStatus(participant)) {
 						sendMail.SendConfirmationMailToParticipant(participant);
-						participantRepository.updateConfirmationMailStatus(participant);
+						welcomeMailRepository.updateConfirmationMailStatus(participant);
 					}
 				}
 			}

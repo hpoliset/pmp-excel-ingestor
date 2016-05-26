@@ -23,6 +23,7 @@ import org.srcm.heartfulness.model.json.googleapi.response.GoogleResponse;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.repository.SMSIntegrationRepository;
+import org.srcm.heartfulness.repository.WelcomeMailRepository;
 import org.srcm.heartfulness.rest.template.SmsGatewayRestTemplate;
 import org.srcm.heartfulness.util.SmsUtil;
 
@@ -48,9 +49,12 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 
 	@Autowired
 	Environment env;
-	
+
 	@Autowired
 	SendMail sendMail;
+	
+	@Autowired
+	private WelcomeMailRepository welcomeMailRepository;
 
 	/*
 	 * (non-Javadoc)
@@ -313,7 +317,9 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 							program.setParticipantList(participantList);
 							program.setCreatedSource("SMS");
 							programRepository.saveWithProgramName(program);
-							SendConfirmationMailToNewParticipants(participant);
+							if ("true".equalsIgnoreCase(env.getProperty("partcipant.send.confimationmail"))) {
+								SendConfirmationMailToNewParticipants(participant);
+							}
 							response = SMSConstants.SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_1
 									+ SMSConstants.SMS_HEARTFULNESS_HOMEPAGE_URL
 									+ SMSConstants.SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_2;
@@ -341,25 +347,26 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		}
 		return response;
 	}
-	
+
 	/**
 	 * Method to send confirmation mail to the newly registered participants.
 	 * 
 	 * @param participant
 	 */
 	private void SendConfirmationMailToNewParticipants(Participant participant) {
-		//Checks whether the emailID exists for the participant.
+		// Checks whether the emailID exists for the participant.
 		if (null != participant.getEmail() && !participant.getEmail().isEmpty()) {
 			LOGGER.debug("Mail subscription : {} ",
-					participantRepository.checkForMailSubcription(participant.getEmail()) + "");
+					welcomeMailRepository.checkForMailSubcription(participant.getEmail()) + "");
 			LOGGER.debug("confirmation Mail sent  : {} ",
-					participantRepository.CheckForConfirmationMailStatus(participant) + "");
-			//Checks whether the participant unsubscribed for receiving mails.
-			if (1 != participantRepository.checkForMailSubcription(participant.getEmail())) {
-				// Checks whether the participant already received the confirmation mail or not.
-				if (1 != participantRepository.CheckForConfirmationMailStatus(participant)) {
+					welcomeMailRepository.CheckForConfirmationMailStatus(participant) + "");
+			// Checks whether the participant unsubscribed for receiving mails.
+			if (1 != welcomeMailRepository.checkForMailSubcription(participant.getEmail())) {
+				// Checks whether the participant already received the
+				// confirmation mail or not.
+				if (1 != welcomeMailRepository.CheckForConfirmationMailStatus(participant)) {
 					sendMail.SendConfirmationMailToParticipant(participant);
-					participantRepository.updateConfirmationMailStatus(participant);
+					welcomeMailRepository.updateConfirmationMailStatus(participant);
 				}
 			}
 		}

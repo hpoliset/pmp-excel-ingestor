@@ -7,7 +7,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -21,19 +20,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EventConstants;
 import org.srcm.heartfulness.helper.FTPConnectionHelper;
-import org.srcm.heartfulness.mail.SendMail;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
+import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.WelcomeMailRepository;
 import org.srcm.heartfulness.rest.template.SendyRestTemplate;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 @Service
@@ -58,6 +54,9 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 
 	@Autowired
 	private FTPConnectionHelper ftpConnectionHelper;
+	
+	@Autowired
+	private ParticipantRepository participantRepository;
 
 	/**
 	 * To fetch the participants from database and subscribe to the welcome mail
@@ -187,21 +186,6 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	}
 
 	/**
-	 * To unsubscribe a participant from receiving any mail from PMP
-	 * 
-	 */
-	@Override
-	public void unsubscribe(String mailID, String name) {
-		// String response = null;
-		WelcomeMailDetails sendySubscriber = new WelcomeMailDetails();
-		sendySubscriber.setEmail(mailID);
-		sendySubscriber.setPrintName(name);
-		sendySubscriber.setUnsubscribed(1);
-		welcomeMailRepository.updateUserUnsubscribed(sendySubscriber);
-		// return response;
-	}
-
-	/**
 	 * To upload list of welcome mail ids as a file to the FTP
 	 * 
 	 * @throws IOException
@@ -254,4 +238,5 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			ftpConnectionHelper.sendNotificationForNoEmails();
 		}
 	}
+	
 }

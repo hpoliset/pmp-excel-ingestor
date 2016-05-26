@@ -30,8 +30,10 @@ import org.srcm.heartfulness.service.AuthenticationService;
 import org.srcm.heartfulness.service.UserProfileService;
 
 /**
+ * This class holds the web service end points for the login, token generation
+ * and create user.
  * 
- * @author HimaSree
+ * @author himasreev
  *
  */
 @RestController
@@ -56,11 +58,17 @@ public class AuthenticationController {
 	AuthorizationHelper authHelper;
 
 	/**
-	 * method to authenticate the user with user email and password by calling
-	 * srcm api
+	 * Web service endpoint to authenticate the user with user email and password by calling MySRCM
+	 * API.
 	 * 
 	 * @param authenticationRequest
-	 * @return
+	 *            holds the username and password.
+	 *            
+	 * @return SrcmAuthenticationResponse with 200 OK status.
+	 * 
+	 * If some exception is raised while processing the request, error response
+	 * is returned with respective HttpStatus code.
+	 * 
 	 */
 	@RequestMapping(value = "authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest, HttpSession session,
@@ -93,16 +101,15 @@ public class AuthenticationController {
 	}
 
 	/**
-	 * Web service endpoint to create new profile to the user by calling MySRCM
-	 * API.
+	 * Web service endpoint to create new profile to the user by calling MySRCM API.
 	 * 
 	 * @param user
-	 *            holds user details.
+	 * 			holds user details.
 	 * 
 	 * @return User with 200 OK status.
 	 * 
-	 *         If some exception is raised while processing the request, error
-	 *         response is returned with respective HttpStatus code.
+	 * If some exception is raised while processing the request, error response
+	 * is returned with respective HttpStatus code.
 	 */
 	@RequestMapping(value = "users", method = RequestMethod.POST)
 	public ResponseEntity<?> createUsers(@RequestBody User user) {

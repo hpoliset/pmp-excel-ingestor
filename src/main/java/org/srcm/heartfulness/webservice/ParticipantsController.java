@@ -39,6 +39,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
+ * This class holds the web service end points for participant related dashboard
+ * services.
  * 
  * @author himasreev
  *

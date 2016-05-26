@@ -1,7 +1,9 @@
 package org.srcm.heartfulness.mail;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -9,6 +11,7 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.validation.constraints.NotNull;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -18,6 +21,7 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.srcm.heartfulness.constants.PMPConstants;
@@ -26,10 +30,115 @@ import org.srcm.heartfulness.model.Participant;
 
 import com.sun.mail.smtp.SMTPMessage;
 
+/**
+ * This class is to hold the Mailing functionality.
+ * 
+ * @author HimaSree
+ *
+ */
 @Component
+@ConfigurationProperties(locations = "classpath:mail.api.properties", ignoreUnknownFields = false, prefix = "mail")
 public class SendMail {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendMail.class);
+
+	private String username;
+	private String subject;
+	private String defaultname;
+	private String confirmationlink;
+	private String unsubscribelink;
+	
+
+	public static class MailTemplate {
+		private String sms;
+		private String excel;
+		private String online;
+		private String notificationfornoparticipants;
+
+		public String getSms() {
+			return sms;
+		}
+
+		public void setSms(String sms) {
+			this.sms = sms;
+		}
+
+		public String getExcel() {
+			return excel;
+		}
+
+		public void setExcel(String excel) {
+			this.excel = excel;
+		}
+
+		public String getOnline() {
+			return online;
+		}
+
+		public void setOnline(String online) {
+			this.online = online;
+		}
+
+		public String getNotificationfornoparticipants() {
+			return notificationfornoparticipants;
+		}
+
+		public void setNotificationfornoparticipants(String notificationfornoparticipants) {
+			this.notificationfornoparticipants = notificationfornoparticipants;
+		}
+		
+	}
+
+	@NotNull
+	private MailTemplate mailTemplate;
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	public String getDefaultname() {
+		return defaultname;
+	}
+
+	public void setDefaultname(String defaultname) {
+		this.defaultname = defaultname;
+	}
+
+	public MailTemplate getTemplate() {
+		return mailTemplate;
+	}
+
+	public void setTemplate(MailTemplate mailTemplate) {
+		this.mailTemplate = mailTemplate;
+	}
+
+	public String getConfirmationlink() {
+		return confirmationlink;
+	}
+
+	public void setConfirmationlink(String confirmationlink) {
+		this.confirmationlink = confirmationlink;
+	}
+
+	public String getUnsubscribelink() {
+		return unsubscribelink;
+	}
+
+	public void setUnsubscribelink(String unsubscribelink) {
+		this.unsubscribelink = unsubscribelink;
+	}
 
 	private VelocityEngine velocityEngine = new VelocityEngine();
 
@@ -53,31 +162,26 @@ public class SendMail {
 	@Autowired
 	Environment env;
 
+	/**
+	 * Method to send confirmation mail to the newly registered participants
+	 * through Excel upload and SMS.
+	 * 
+	 * @param participant
+	 */
 	public void SendConfirmationMailToParticipant(Participant participant) {
 		if (null != participant.getPrintName() && !participant.getPrintName().isEmpty()) {
-			addParameter("NAME",getName(participant.getPrintName()));
-			addParameter("LINK", PMPConstants.UNSUBSCRIBE_LINK+"?email="+participant.getEmail()+"&name="+participant.getPrintName());
+			addParameter("NAME", getName(participant.getPrintName()));
+			addParameter("LINK",
+					unsubscribelink + "?email=" + participant.getEmail() + "&name=" + participant.getPrintName());
 		} else {
-			addParameter("NAME", "Sir/Madam");
-			addParameter("LINK", PMPConstants.UNSUBSCRIBE_LINK+"?email="+participant.getEmail()+"&name="+"");
+			addParameter("NAME", defaultname);
+			addParameter("LINK", unsubscribelink + "?email=" + participant.getEmail() + "&name=" + "");
 		}
-	
-		Properties props = System.getProperties();
+		List<String> toEmailIDs = new ArrayList<String>();
+		toEmailIDs.add(participant.getEmail());
 		try {
-			Session session = Session.getDefaultInstance(props);
-			SMTPMessage message = new SMTPMessage(session);
-			message.setFrom(new InternetAddress("heartfulness.org"));
-			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(participant.getEmail()));
-			message.setSubject("Welcome to Heartfulness");
-			message.setContent(getWelcomeMailContent(participant.getCreatedSource()), "text/html");
-			message.setAllow8bitMIME(true);
-			message.setSentDate(new Date());
-			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-			int returnOption = message.getReturnOption();
-			System.out.println(returnOption);
-			Transport.send(message);
-			LOGGER.debug("Mail sent successfully : {} ",participant.getEmail());
-
+			sendMail(toEmailIDs, new ArrayList<String>(), getWelcomeMailContent(participant.getCreatedSource()));
+			LOGGER.debug("Mail sent successfully : {} ", participant.getEmail());
 		} catch (MessagingException e) {
 			LOGGER.error("Sending Mail Failed : {} ", participant.getEmail());
 			throw new RuntimeException(e);
@@ -89,17 +193,19 @@ public class SendMail {
 	 * To send notification mail to the team if no new participants found to
 	 * send mail for the day
 	 * 
-	 * @param toMailIds-recipients TO
-	 * @param ccMailIds-recipients CC
+	 * @param toMailIds
+	 *            -recipients TO
+	 * @param ccMailIds
+	 *            -recipients CC
 	 */
-	public void sendNotificationForNoEmails(String toMailIds, String ccMailIds,String subject) {
+	public void sendNotificationForNoEmails(String toMailIds, String ccMailIds, String subject) {
 		Properties props = System.getProperties();
 		String[] toIds = toMailIds.split(",");
 		String[] ccIds = ccMailIds.split(",");
 		try {
 			Session session = Session.getDefaultInstance(props);
 			SMTPMessage message = new SMTPMessage(session);
-			message.setFrom(new InternetAddress("heartfulness.org"));
+			message.setFrom(new InternetAddress(username));
 			for (String toId : toIds) {
 				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toId));
 			}
@@ -107,12 +213,10 @@ public class SendMail {
 				message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccId));
 			}
 			message.setSubject(subject);
-			message.setContent(getWelcomeMailContent("welcomeMail"), "text/html");
+			message.setContent(getMessageContentbyTemplateName(mailTemplate.notificationfornoparticipants), "text/html");
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-			int returnOption = message.getReturnOption();
-			System.out.println(returnOption);
 			Transport.send(message);
 			LOGGER.debug("Mail sent successfully : {} ");
 
@@ -122,7 +226,13 @@ public class SendMail {
 
 		}
 	}
-	
+
+	/**
+	 * Method to get the personalized name of the given participant.
+	 * 
+	 * @param printName
+	 * @return
+	 */
 	private String getName(String printName) {
 		printName = printName.replace(".", " ");
 		String[] name = printName.split(" ");
@@ -137,24 +247,96 @@ public class SendMail {
 	}
 
 	/**
-	 * to get the email content as string from the vm template
+	 * To get the email content as string from the vm template.
 	 * 
 	 * @param welcomemail
 	 * @return
 	 */
-	private String getWelcomeMailContent(String createdSource){
+	private String getWelcomeMailContent(String createdSource) {
 		Template template = null;
-		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath"); 
+		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
 		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
-		if("Excel".equalsIgnoreCase(createdSource)){
-			template = velocityEngine.getTemplate("templates"+"/MailConfirmationTemplate.vm");
-		}else if("SMS".equalsIgnoreCase(createdSource)){
-			template = velocityEngine.getTemplate("templates"+"/MailConfirmationTemplateForSMS.vm");
-		}else if ("welcomeMail".equalsIgnoreCase(createdSource)) {
-			template = velocityEngine.getTemplate("templates" + "/NotificationMailForNoNewParticipants.vm");
+		if ("Excel".equalsIgnoreCase(createdSource)) {
+			template = velocityEngine.getTemplate(mailTemplate.excel);
+		} else if ("SMS".equalsIgnoreCase(createdSource)) {
+			template = velocityEngine.getTemplate(mailTemplate.sms);
 		}
 		StringWriter stringWriter = new StringWriter();
 		template.merge(getParameter(), stringWriter);
 		return stringWriter.toString();
+	}
+
+	/**
+	 * To get the email content as string from the vm template.
+	 * 
+	 * @param welcomemail
+	 * @return
+	 */
+	private String getMessageContentbyTemplateName(String templateName) {
+		Template template = null;
+		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+		template = velocityEngine.getTemplate(templateName);
+		StringWriter stringWriter = new StringWriter();
+		template.merge(getParameter(), stringWriter);
+		return stringWriter.toString();
+	}
+
+	/**
+	 * Method to send mail to the given to and cc mailIDs with the provided
+	 * message content.
+	 * 
+	 * @param toEmailIDs
+	 * @param ccEmailIDs
+	 * @param messageContent
+	 * @throws MessagingException
+	 */
+	public void sendMail(List<String> toEmailIDs, List<String> ccEmailIDs, String messageContent)
+			throws MessagingException {
+		Properties props = System.getProperties();
+		Session session = Session.getDefaultInstance(props);
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(username));
+		for (String toemailID : toEmailIDs) {
+			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toemailID));
+		}
+		for (String ccemailID : ccEmailIDs) {
+			message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(ccemailID));
+		}
+		message.setSubject(subject);
+		message.setContent(messageContent, "text/html");
+		message.setAllow8bitMIME(true);
+		message.setSentDate(new Date());
+		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+		Transport.send(message);
+
+	}
+
+	/**
+	 * Method to send confirm subscription mail to the online users.
+	 * 
+	 * @param mail
+	 * @param name
+	 */
+	public void sendConfirmSubscriptionMail(String mail, String name) {
+		if (null != name && !name.isEmpty()) {
+			addParameter("NAME", getName(name));
+		} else {
+			addParameter("NAME", defaultname);
+		}
+		addParameter(
+				"CONFIRMATION_LINK",
+				confirmationlink + "?id="
+						+ aesEncryptDecrypt.encrypt(mail, env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
+		List<String> toEmailIDs = new ArrayList<String>();
+		toEmailIDs.add(mail);
+		try {
+			sendMail(toEmailIDs, new ArrayList<String>(), getMessageContentbyTemplateName(mailTemplate.online));
+			LOGGER.debug("Mail sent successfully : {} ", mail);
+		} catch (MessagingException e) {
+			LOGGER.error("Sending Mail Failed : {} ", mail);
+			throw new RuntimeException(e);
+
+		}
 	}
 }

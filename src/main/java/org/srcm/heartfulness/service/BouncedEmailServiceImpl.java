@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.srcm.heartfulness.helper.BounceEmailHelper;
 import org.srcm.heartfulness.repository.BouncedEmailRepository;
 
@@ -54,6 +55,7 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 	 * 
 	 */
 	@Override
+	@Transactional
 	public void readBouncedEmailsAndUpdateInDatabase() {
 		LOGGER.debug("START: Fetching emails from hfnbounce@srcm.org mailbox");
 		try{
@@ -74,16 +76,6 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 
 			// Fetch unread mails from inbox folder
 			Message[] messages = inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
-
-			// Sort mails from recent to oldest
-			/*			Arrays.sort( messages, ( m1, m2 ) -> {
-				try {
-					return m2.getSentDate().compareTo( m1.getSentDate() );
-				} catch ( MessagingException e ) {
-					LOGGER.debug("Error while sorting mails from recent to oldest");
-					throw new RuntimeException( e );
-				}
-			});*/
 
 			for ( Message message : messages ) {
 				LOGGER.debug("-----------------------START-----------------------");
@@ -114,30 +106,39 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 					//Check if the bounced email is empty or not
 					if(bouncedEmail.isEmpty()){
 						//mark message as read
-						/*Flags flags = new Flags(Flag.SEEN);
-						message.setFlags(flags, true);*/
+						//Flags flags = new Flags(Flag.SEEN);
+						//message.setFlags(flags, true);
+						LOGGER.debug("Unable to find bounced email from mail content for mail number "+message.getMessageNumber());
 						LOGGER.debug("Mail-->"+ message.getFrom()[0].toString() + "<-- with mail number " +message.getMessageNumber()
 						+" is marked as read ");
 					}else{
 						//mark message as read
-						/*Flags flags = new Flags(Flag.SEEN);
-						message.setFlags(flags, true);*/
+						//Flags flags = new Flags(Flag.SEEN);
+						//message.setFlags(flags, true);
+						LOGGER.debug("Bounced email-->"+message.getFrom()[0].toString()+"<-- found from mail content for mail number "
+								+message.getMessageNumber());
 						LOGGER.debug("Mail-->"+ message.getFrom()[0].toString() + "<-- with mail number " +message.getMessageNumber()
 						+" is marked as read ");
 
-						//call dao layer to mark the email as bounced
-						int bouncedStatus = bncdEmailRepo.updateBouncedEmails(bouncedEmail);
-						if(bouncedStatus != 1){
-							/*message.setFlags(flags, false);*/
+						//call dao layer to update is_bounced as 1.
+						int isEmailBounced = bncdEmailRepo.updateEmailAsBounced(bouncedEmail);
+						//update status and set unsubscribed flag to 1 
+						int updateStatus = bncdEmailRepo.updateEmailStatusAsBounced(bouncedEmail);
+						if(updateStatus != 1){
+							bncdEmailRepo.createEmailAsBounced(bouncedEmail);
+						}
+
+						if(isEmailBounced != 1 || updateStatus != 1){
+							//message.setFlags(flags, false);
 							LOGGER.debug("Mail-->"+ bouncedEmail + "<-- with mail number " +message.getMessageNumber()
 							+" is marked as unread ");
 						}
 					}
-					LOGGER.debug("-----------------------FINISH-----------------------");
+					//LOGGER.debug("-----------------------FINISH-----------------------");
 				}catch(Exception ex){
 					//if any exceptions occurs mark the message as unread
-					/*Flags flags = new Flags(Flag.SEEN);
-					message.setFlags(flags, false);*/
+					//Flags flags = new Flags(Flag.SEEN);
+					//message.setFlags(flags, false);
 					LOGGER.debug("Mail-->"+ message.getFrom()[0] + "<-- with mail number " +message.getMessageNumber()
 					+" is marked as unread ");
 				}
@@ -148,7 +149,7 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 					+envProperties.getProperty("srcm.bounced.email.from.address"));
 			LOGGER.debug("EXCEPTION: "+ex.getMessage());
 		}
-		LOGGER.debug("END: Completed Fetching emails from hfnbounce@srcm.org mailbox");
+		LOGGER.debug("END: Completed processing emails from hfnbounce@srcm.org mailbox");
 	}
 
 }

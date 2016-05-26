@@ -36,13 +36,6 @@ public interface WelcomeMailService {
 	public void unsubscribeUsers() throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
 
 	/**
-	 * Method unsubscribe the user to stop receiving mails.
-	 * @param mailID
-	 * @param name
-	 */
-	public void unsubscribe(String mailID, String name);
-
-	/**
 	 * Method to add welcome mail list in a file and upload it to a FTP.
 	 * 
 	 * @throws FileNotFoundException
@@ -52,4 +45,5 @@ public interface WelcomeMailService {
 	 */
 	public void uploadParticipantEmailidsToFTP() throws FileNotFoundException, IOException, JSchException,
 			SftpException;
+	
 }
