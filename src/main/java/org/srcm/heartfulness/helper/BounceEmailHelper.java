@@ -39,13 +39,17 @@ public class BounceEmailHelper {
 		String recipientEmail = "";
 		try {
 			Object content = message.getContent();
+			LOGGER.debug("Inside parse message part -- >");
 			if(content instanceof String){
-				LOGGER.debug("Message Content: "+ content);
+				LOGGER.debug("Inside String part -- >");
+				//LOGGER.debug("Message Content: "+ content);
 				recipientEmail = parseEmailContent((String)content);
 			}else if(content instanceof Multipart){
+				LOGGER.debug("Inside multi part -- >");
 				Multipart multiparts = (Multipart)content;
+				LOGGER.debug("Before taking multi part -- >");
 				String multipartContent = multiparts.getBodyPart(0).getContent().toString();
-				LOGGER.debug("Message Content: "+ multipartContent);
+				//LOGGER.debug("Message Content: "+ multipartContent);
 				recipientEmail = parseEmailContent(multipartContent);
 			}
 		} catch (IOException | MessagingException e) {
