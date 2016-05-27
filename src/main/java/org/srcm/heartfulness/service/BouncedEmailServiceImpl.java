@@ -79,6 +79,7 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 			for (Message message : messages) {
 				LOGGER.debug("-----------------------START-----------------------");
 				LOGGER.debug("Mail Number: " + message.getMessageNumber());
+				LOGGER.debug("Message Content Type: " + message.getContentType());
 				try {
 					// read the message content
 					String bouncedEmail = "";

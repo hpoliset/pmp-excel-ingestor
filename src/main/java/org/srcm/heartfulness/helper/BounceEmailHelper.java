@@ -40,10 +40,12 @@ public class BounceEmailHelper {
 		try {
 			Object content = message.getContent();
 			if(content instanceof String){
+				LOGGER.debug("Message Content: "+ content);
 				recipientEmail = parseEmailContent((String)content);
 			}else if(content instanceof Multipart){
 				Multipart multiparts = (Multipart)content;
 				String multipartContent = multiparts.getBodyPart(0).getContent().toString();
+				LOGGER.debug("Message Content: "+ multipartContent);
 				recipientEmail = parseEmailContent(multipartContent);
 			}
 		} catch (IOException | MessagingException e) {
@@ -66,17 +68,24 @@ public class BounceEmailHelper {
 		Matcher matcher;
 		for(String matchContent:contentPart){
 
-			if(matchContent.contains("<")){
+			/*if(matchContent.contains("<")){
 				matchContent.replaceAll("<", "");
 			}else if(matchContent.contains(">")){
 				matchContent.replaceAll(">", "");
+			}*/
+			
+			if(matchContent.contains("<")){
+				String subcontent=matchContent.substring(matchContent.indexOf("<") + 1, matchContent.indexOf(">"));
+				//if(subcontent.matches(EventConstants.EMAIL_REGEX))
+				matcher = pattern.matcher(subcontent);
+			}else{
+				matcher = pattern.matcher(matchContent);
 			}
-
-			matcher = pattern.matcher(matchContent);
 			if(matcher.matches()){
 				emailMatches = matcher.group();
 				break;
 			}
+			
 		}
 		return emailMatches;
 	}
