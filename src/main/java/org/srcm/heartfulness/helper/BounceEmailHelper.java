@@ -54,7 +54,7 @@ public class BounceEmailHelper {
 					LOGGER.debug("TEXT PLAIN TYPE"+parseEmailContent(multiparts.getBodyPart(0).getContent().toString()));
 				}else if(multiparts.getBodyPart(0).isMimeType("multipart/ALTERNATIVE")){
 					Multipart part = (Multipart)multiparts.getBodyPart(0).getContent();
-					String mailContent = checkMultipartContent(part);
+					String mailContent = getMultipartContentAsText(part);
 					LOGGER.debug("TEXT PLAIN TYPE"+parseEmailContent(mailContent));
 				}/*else if(multiparts.getBodyPart(0).isMimeType("multipart/MIXED")){
 					LOGGER.debug("TEXT PLAIN TYPE"+parseEmailContent((String)multiparts.getBodyPart(0).getContent()));
@@ -64,9 +64,9 @@ public class BounceEmailHelper {
 					LOGGER.debug("Message Sub content type not in");
 
 				}
-				String multipartContent = multiparts.getBodyPart(0).getContent().toString();
+				//String multipartContent = multiparts.getBodyPart(0).getContent().toString();
 				//LOGGER.debug("Message Content: "+ multipartContent);
-				recipientEmail = parseEmailContent(multipartContent);
+				//recipientEmail = parseEmailContent(multipartContent);
 			}else{
 				LOGGER.debug("Else part...."+message.getContentType());
 				LOGGER.debug("Message Content"+message.getContent());
@@ -79,7 +79,7 @@ public class BounceEmailHelper {
 	}
 
 
-	private String checkMultipartContent(Multipart multipart){
+	private String getMultipartContentAsText(Multipart multipart){
 		LOGGER.debug("Checking Multipart Content recusively");
 		String textContent = "";
 		try {
@@ -87,7 +87,7 @@ public class BounceEmailHelper {
 				textContent = multipart.getBodyPart(0).getContent().toString();
 			}else{
 				Multipart part = (Multipart)multipart.getBodyPart(0).getContent();
-				checkMultipartContent(part);
+				getMultipartContentAsText(part);
 			}
 		} catch (MessagingException | IOException e) {
 			e.printStackTrace();
