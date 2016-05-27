@@ -36,6 +36,7 @@ public class BounceEmailHelper {
 	 * @return bounced email parsed from mail content.
 	 */
 	public String getBouncedEmail(Message message){
+		
 		String recipientEmail = "";
 		try {
 			Object content = message.getContent();
@@ -48,9 +49,13 @@ public class BounceEmailHelper {
 				LOGGER.debug("Inside multi part -- >");
 				Multipart multiparts = (Multipart)content;
 				LOGGER.debug("Before taking multi part -- >");
+				LOGGER.debug("Multipart body content type -- >"+multiparts.getBodyPart(0).getContentType());
 				String multipartContent = multiparts.getBodyPart(0).getContent().toString();
 				//LOGGER.debug("Message Content: "+ multipartContent);
 				recipientEmail = parseEmailContent(multipartContent);
+			}else{
+				LOGGER.debug("Else part...."+message.getContentType());
+				LOGGER.debug("Message Content"+message.getContent());
 			}
 		} catch (IOException | MessagingException e) {
 			LOGGER.debug("EXCEPTION: Unable to parse Mail content");
