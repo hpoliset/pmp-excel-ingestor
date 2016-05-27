@@ -42,8 +42,10 @@ public class BounceEmailHelper {
 			if(content instanceof String){
 				recipientEmail = parseEmailContent((String)content);
 			}else if(content instanceof Multipart){
-				Multipart multiparts = (Multipart)content;
-				String multipartContent = multiparts.getBodyPart(0).getContent().toString();
+				Multipart multipart = (Multipart)content;
+				String multipartContent = convertMultipartToTextPlain(multipart);
+
+				//String multipartContent = multipart.getBodyPart(0).getContent().toString();
 				recipientEmail = parseEmailContent(multipartContent);
 			}
 		} catch (IOException | MessagingException e) {
@@ -51,6 +53,22 @@ public class BounceEmailHelper {
 			LOGGER.debug("EXCEPTION: "+e.getMessage());
 		} 
 		return recipientEmail;
+	}
+
+	private String convertMultipartToTextPlain(Multipart multipart) {
+		String stringContent = "";
+		try {
+			if(multipart.getBodyPart(0).isMimeType("TEXT/PLAIN")){
+				stringContent = multipart.getBodyPart(0).getContent().toString();
+			}else{
+				convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+		return stringContent;
 	}
 
 	/**
@@ -67,12 +85,12 @@ public class BounceEmailHelper {
 		for(String matchContent:contentPart){
 
 			if(matchContent.contains("<")){
-				String subcontent=matchContent.substring(matchContent.indexOf("<") + 1, matchContent.indexOf(">"));
+				String subcontent = matchContent.substring(matchContent.indexOf("<") + 1, matchContent.indexOf(">"));
 				LOGGER.debug("Mail from message content contains <> format");
 				//if(subcontent.matches(EventConstants.EMAIL_REGEX))
 				matcher = pattern.matcher(subcontent);
 			}else{
-				LOGGER.debug("Mail from message content doesnot contain <> format");
+				//LOGGER.debug("Mail from message content doesnot contain <> format");
 				matcher = pattern.matcher(matchContent);
 			}
 
