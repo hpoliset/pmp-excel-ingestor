@@ -50,6 +50,18 @@ public class BounceEmailHelper {
 				Multipart multiparts = (Multipart)content;
 				LOGGER.debug("Before taking multi part -- >");
 				LOGGER.debug("Multipart body content type -- >"+multiparts.getBodyPart(0).getContentType());
+				if(multiparts.getBodyPart(0).isMimeType("TEXT/PLAIN")){
+					LOGGER.debug("TEXT PLAIN TYPE"+parseEmailContent(multiparts.getBodyPart(0).getContent().toString()));
+				}else if(multiparts.getBodyPart(0).isMimeType("multipart/ALTERNATIVE")){
+					LOGGER.debug("TEXT PLAIN TYPE"+parseEmailContent((String)multiparts.getBodyPart(0).getContent()));
+				}else if(multiparts.getBodyPart(0).isMimeType("multipart/MIXED")){
+					LOGGER.debug("TEXT PLAIN TYPE"+parseEmailContent((String)multiparts.getBodyPart(0).getContent()));
+				}else if(multiparts.getBodyPart(0).isMimeType("multipart/REPORT")){
+					LOGGER.debug("TEXT PLAIN TYPE"+parseEmailContent((String)multiparts.getBodyPart(0).getContent()));
+				}else{
+					LOGGER.debug("Message Sub content type not in");
+					
+				}
 				String multipartContent = multiparts.getBodyPart(0).getContent().toString();
 				//LOGGER.debug("Message Content: "+ multipartContent);
 				recipientEmail = parseEmailContent(multipartContent);
@@ -74,7 +86,7 @@ public class BounceEmailHelper {
 		String[] contentPart = content.split(" ");
 		String emailMatches = "";
 		Pattern pattern = Pattern.compile(EventConstants.EMAIL_REGEX,Pattern.CASE_INSENSITIVE);
-		Matcher matcher;
+		Matcher matcher = null;
 		for(String matchContent:contentPart){
 
 			/*if(matchContent.contains("<")){
@@ -85,11 +97,14 @@ public class BounceEmailHelper {
 			
 			if(matchContent.contains("<")){
 				String subcontent=matchContent.substring(matchContent.indexOf("<") + 1, matchContent.indexOf(">"));
+				LOGGER.debug("Substring value..."+subcontent);
 				//if(subcontent.matches(EventConstants.EMAIL_REGEX))
 				matcher = pattern.matcher(subcontent);
-			}else{
+			}else if(matchContent.contains("@")){
+				LOGGER.debug("Substring value..."+matchContent);
 				matcher = pattern.matcher(matchContent);
 			}
+			
 			if(matcher.matches()){
 				emailMatches = matcher.group();
 				break;
