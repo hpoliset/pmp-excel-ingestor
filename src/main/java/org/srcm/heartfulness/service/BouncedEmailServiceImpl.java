@@ -139,6 +139,7 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 					// message.setFlags(flags, false);
 					LOGGER.debug("Mail-->" + message.getFrom()[0] + "<-- with mail number "
 							+ message.getMessageNumber() + " is marked as unread ");
+					LOGGER.debug("EXCEPTION:"+ex.getStackTrace());
 				}
 			}
 

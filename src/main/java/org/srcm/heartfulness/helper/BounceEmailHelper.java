@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.internet.MimeMultipart;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,37 +41,17 @@ public class BounceEmailHelper {
 		String recipientEmail = "";
 		try {
 			Object content = message.getContent();
-			LOGGER.debug("Inside parse message part -- >");
+
 			if(content instanceof String){
-				LOGGER.debug("Inside String part -- >");
-				//LOGGER.debug("Message Content: "+ content);
+
 				recipientEmail = parseEmailContent((String)content);
 			}else if(content instanceof Multipart){
-				LOGGER.debug("Inside multi part -- >");
-				Multipart multiparts = (Multipart)content;
-				LOGGER.debug("Before taking multi part -- >");
-				LOGGER.debug("Multipart body content type -- >"+multiparts.getBodyPart(0).getContentType());
-				if(multiparts.getBodyPart(0).isMimeType("TEXT/PLAIN")){
-					LOGGER.debug("TEXT PLAIN TYPE"+parseEmailContent(multiparts.getBodyPart(0).getContent().toString()));
-				}else if(multiparts.getBodyPart(0).isMimeType("multipart/ALTERNATIVE")){
-					Multipart part = (Multipart)multiparts.getBodyPart(0).getContent();
-					String mailContent = getMultipartContentAsText(part);
-					LOGGER.debug("TEXT PLAIN TYPE"+parseEmailContent(mailContent));
-				}/*else if(multiparts.getBodyPart(0).isMimeType("multipart/MIXED")){
-					LOGGER.debug("TEXT PLAIN TYPE"+parseEmailContent((String)multiparts.getBodyPart(0).getContent()));
-				}else if(multiparts.getBodyPart(0).isMimeType("multipart/REPORT")){
-					LOGGER.debug("TEXT PLAIN TYPE"+parseEmailContent((String)multiparts.getBodyPart(0).getContent()));
-				}*/else{
-					LOGGER.debug("Message Sub content type not in");
 
-				}
-				//String multipartContent = multiparts.getBodyPart(0).getContent().toString();
-				//LOGGER.debug("Message Content: "+ multipartContent);
-				//recipientEmail = parseEmailContent(multipartContent);
-			}else{
-				LOGGER.debug("Else part...."+message.getContentType());
-				LOGGER.debug("Message Content"+message.getContent());
+				MimeMultipart multipart = (MimeMultipart)content;
+				String multipartContent = multipart.getBodyPart(0).getContent().toString();
+				recipientEmail = parseEmailContent(multipartContent);
 			}
+
 		} catch (IOException | MessagingException e) {
 			LOGGER.debug("EXCEPTION: Unable to parse Mail content");
 			LOGGER.debug("EXCEPTION: "+e.getMessage());
@@ -79,7 +60,7 @@ public class BounceEmailHelper {
 	}
 
 
-	private String getMultipartContentAsText(Multipart multipart){
+	/*private String getMultipartContentAsText(Multipart multipart){
 		LOGGER.debug("Checking Multipart Content recusively");
 		String textContent = "";
 		try {
@@ -93,7 +74,7 @@ public class BounceEmailHelper {
 			e.printStackTrace();
 		}
 		return textContent;
-	}
+	}*/
 	/**
 	 * It parses the mail content and searches for an email in the content body.
 	 * @param content email content to parse and find out if 
