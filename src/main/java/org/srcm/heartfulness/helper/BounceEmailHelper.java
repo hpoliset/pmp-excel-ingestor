@@ -10,8 +10,6 @@ import java.util.regex.Pattern;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.internet.MimeMultipart;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -47,7 +45,7 @@ public class BounceEmailHelper {
 				recipientEmail = parseEmailContent((String)content);
 			}else if(content instanceof Multipart){
 
-				MimeMultipart multipart = (MimeMultipart)content;
+				Multipart multipart = (Multipart)content;
 				String multipartContent = multipart.getBodyPart(0).getContent().toString();
 				recipientEmail = parseEmailContent(multipartContent);
 			}
@@ -55,6 +53,7 @@ public class BounceEmailHelper {
 		} catch (IOException | MessagingException e) {
 			LOGGER.debug("EXCEPTION: Unable to parse Mail content");
 			LOGGER.debug("EXCEPTION: "+e.getMessage());
+			LOGGER.debug("EXCEPTION: "+e.getStackTrace());
 		} 
 		return recipientEmail;
 	}

@@ -147,6 +147,7 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 			LOGGER.debug("EXCEPTION: Error while fetching mails from "
 					+ envProperties.getProperty("srcm.bounced.email.from.address"));
 			LOGGER.debug("EXCEPTION: " + ex.getMessage());
+			LOGGER.debug("EXCEPTION: " + ex.getStackTrace());
 		}
 		LOGGER.debug("END: Completed processing emails from hfnbounce@srcm.org mailbox");
 	}
