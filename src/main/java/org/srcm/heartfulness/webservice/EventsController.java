@@ -76,7 +76,7 @@ public class EventsController {
 	 * is returned with respective HttpStatus code.
 	 * 
 	 * @param token
-	 *            ,Token to be validated against mysrcm endpoint.
+	 *            ,Token to be validated against MySRCM endpoint.
 	 * @param event
 	 * @return A ResponseEntity containing success message, if created
 	 *         successfully, and a HTTP status code as described in the method
@@ -122,17 +122,17 @@ public class EventsController {
 		} catch (JsonParseException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (JsonMappingException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -155,7 +155,7 @@ public class EventsController {
 	 * is returned with respective HttpStatus code.
 	 * 
 	 * @param token
-	 *            ,Token to be validated against mysrcm endpoint.
+	 *            ,Token to be validated against MySRCM endpoint.
 	 * @return A ResponseEntity containing success message, if created
 	 *         successfully, and a HTTP status code as described in the method
 	 *         comment.
@@ -198,17 +198,17 @@ public class EventsController {
 		} catch (JsonParseException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (JsonMappingException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -230,7 +230,7 @@ public class EventsController {
 	 * @param Event
 	 *            to create an event in the pmp database.
 	 * @param token
-	 *            Token to be validated against mysrcm endpoint.
+	 *            Token to be validated against MySRCM endpoint.
 	 * @return A ResponseEntity containing success message if found, and a HTTP
 	 *         status code as described in the method comment.
 	 * @param program
@@ -265,17 +265,17 @@ public class EventsController {
 		} catch (JsonParseException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (JsonMappingException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -298,7 +298,7 @@ public class EventsController {
 	 * @param Event
 	 *            to update an existing event in the pmp database.
 	 * @param token
-	 *            Token to be validated against mysrcm endpoint.
+	 *            Token to be validated against MySRCM endpoint.
 	 * @return A ResponseEntity containing success message if found, and a HTTP
 	 *         status code as described in the method comment.
 	 * @param program
@@ -347,17 +347,17 @@ public class EventsController {
 		} catch (JsonParseException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (JsonMappingException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -381,7 +381,7 @@ public class EventsController {
 	 * @param events
 	 *            List of events to be updated.
 	 * @param token
-	 *            Need to be authenticated against mysrcm.
+	 *            Need to be authenticated against MySRCM.
 	 * @return list of events with success ot failed status.
 	 */
 
@@ -433,17 +433,17 @@ public class EventsController {
 		} catch (JsonParseException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (JsonMappingException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -663,17 +663,17 @@ public class EventsController {
 		} catch (JsonParseException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (JsonMappingException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MySRCM");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -41,7 +41,6 @@ public class AESEncryptDecrypt {
 		Cipher c;
 		SecretKey skey = convertStringToSecretKey(key);
 		try {
-			LOGGER.debug("Trying to Encrypt. ");
 			c = Cipher.getInstance("AES");
 			c.init(Cipher.ENCRYPT_MODE, skey);
 			byte[] encVal = c.doFinal(Data.getBytes());

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.srcm.heartfulness.mail.SendMail;
 import org.srcm.heartfulness.model.json.request.SubscriptionRequest;
 import org.srcm.heartfulness.model.json.response.Response;
 import org.srcm.heartfulness.service.SubscriptionService;
@@ -22,7 +21,7 @@ import org.srcm.heartfulness.validator.SubscriptionValidator;
 
 /**
  * This class holds the web service end points to handle Subscription and
- * un-subscription services.
+ * unsubscription services.
  * 
  * @author himasreev
  *
@@ -36,9 +35,6 @@ public class SubscriptionController {
 
 	@Autowired
 	private SubscriptionValidator subscriptionValidator;
-
-	@Autowired
-	private SendMail sendMail;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionController.class);
 
@@ -61,23 +57,13 @@ public class SubscriptionController {
 		if (!map.isEmpty()) {
 			return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
 		} else {
-			if (1 == subscriptionService.checkForMailSubcription(subscriptionRequest.getMailID())) {
-				LOGGER.debug("Already unsubscribed - mail : {} , name : {}", subscriptionRequest.getMailID(),
-						subscriptionRequest.getName());
-				Response response = new Response("Success", "You've already unsubscribed.");
-				return new ResponseEntity<Response>(response, HttpStatus.OK);
-			} else {
-				LOGGER.debug("unsubscription - mail : {} , name : {}", subscriptionRequest.getMailID(),
-						subscriptionRequest.getName());
-				subscriptionService.unsubscribe(subscriptionRequest.getMailID(), subscriptionRequest.getName());
-				Response response = new Response("Success", "unsubscribed successfully.");
-				return new ResponseEntity<Response>(response, HttpStatus.OK);
-			}
+			Response response = subscriptionService.unsubscribe(subscriptionRequest.getMailID(),subscriptionRequest.getName());
+			return new ResponseEntity<Response>(response, HttpStatus.OK);
 		}
 	}
 
 	/**
-	 * Webservice endpoint to subscribe the user email ID to recieve the emails
+	 * Webservice endpoint to subscribe the user emailID to recieve the emails
 	 * from HFN.
 	 * 
 	 * If the subscription is successful, the service returns an success
@@ -93,21 +79,8 @@ public class SubscriptionController {
 		if (!map.isEmpty()) {
 			return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
 		} else {
-			if (1 == subscriptionService.checkMailSubscribedStatus(subscriptionRequest.getMailID())) {
-				LOGGER.debug("Already subscribed - mail : {} , name : {}", subscriptionRequest.getMailID(),
-						subscriptionRequest.getName());
-				Response response = new Response("Success", "You've already subscribed.");
-				return new ResponseEntity<Response>(response, HttpStatus.OK);
-			} else {
-				LOGGER.debug("subscription - mail : {} , name : {}", subscriptionRequest.getMailID(),
-						subscriptionRequest.getName());
-				subscriptionService.subscribetoMailAlerts(subscriptionRequest.getMailID(),
-						subscriptionRequest.getName());
-				sendMail.sendConfirmSubscriptionMail(subscriptionRequest.getMailID(), subscriptionRequest.getName());
-				Response response = new Response("Success", "subscribed successfully.");
-				return new ResponseEntity<Response>(response, HttpStatus.OK);
-			}
+			Response response = subscriptionService.subscribetoMailAlerts(subscriptionRequest);
+			return new ResponseEntity<Response>(response, HttpStatus.OK);
 		}
 	}
-
 }

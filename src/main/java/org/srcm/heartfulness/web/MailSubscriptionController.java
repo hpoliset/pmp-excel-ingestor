@@ -47,22 +47,9 @@ public class MailSubscriptionController {
 				model.addAttribute("message", "Invalid ID.");
 				return "eventsuccess";
 			}
-			if (1 == subscriptionService.checkMailSubscribedStatus(mailID)) {
-				if (1 == subscriptionService.checkForconfirmStatusOfSubscription(mailID)) {
-					LOGGER.debug("Already you have confirmed your mail ID. - mail : {}", mailID);
-					model.addAttribute("message", "Already you have confirmed your mail ID.");
-					return "eventsuccess";
-				} else {
-					subscriptionService.updateconfirmSubscribedStatus(mailID);
-					LOGGER.debug("You have successfully confirmed your mail ID. - mail : {}", mailID);
-					model.addAttribute("message", "Thank you for confirming your email address.");
-					return "eventsuccess";
-				}
-			}else{
-				LOGGER.debug("Please subscribe your emailID in Heartfulness Website to confirm your mailID. Invalid mailID. - mailID : {}", mailID);
-				model.addAttribute("message", "Please subscribe your emailID in Heartfulness Website to confirm your mailID.");
-				return "eventsuccess";
-			}
+			String response = subscriptionService.updateconfirmSubscribedStatus(mailID);
+			model.addAttribute("message", response);
+			return "eventsuccess";
 		} catch (IllegalBlockSizeException | NumberFormatException e) {
 			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
 			LOGGER.debug("Invalid ID. - id : {}", id);
@@ -72,6 +59,13 @@ public class MailSubscriptionController {
 
 	}
 
+	/**
+	 * Method to decrypt the id to extract the emailID.
+	 * @param id
+	 * @return
+	 * @throws IllegalBlockSizeException
+	 * @throws NumberFormatException
+	 */
 	private String getMailIDfromEncryptedID(String id) throws IllegalBlockSizeException, NumberFormatException {
 		return aesEncryptDecrypt.decrypt(id, env.getProperty(PMPConstants.SECURITY_TOKEN_KEY));
 	}

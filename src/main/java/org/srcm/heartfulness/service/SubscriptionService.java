@@ -1,5 +1,8 @@
 package org.srcm.heartfulness.service;
 
+import org.srcm.heartfulness.model.json.request.SubscriptionRequest;
+import org.srcm.heartfulness.model.json.response.Response;
+
 /**
  * This class is the service provider for the subscription based services.
  * 
@@ -13,8 +16,9 @@ public interface SubscriptionService {
 	 * 
 	 * @param mailID
 	 * @param name
+	 * @return 
 	 */
-	public void unsubscribe(String mailID, String name);
+	public Response unsubscribe(String emailID,String name);
 
 	/**
 	 * Method to unsubscribe the user to stop receiving emails.
@@ -25,12 +29,13 @@ public interface SubscriptionService {
 	public int checkForMailSubcription(String mail);
 
 	/**
-	 * Method to subscribe the given mail ID and recieve emails.
+	 * Method to subscribe the given mail ID and receive emails.
 	 * 
 	 * @param mail
 	 * @param name
+	 * @return 
 	 */
-	public void subscribetoMailAlerts(String mail, String name);
+	public Response subscribetoMailAlerts(SubscriptionRequest subscriptionRequest);
 
 	/**
 	 * Method to check whether the given mail ID is subscribed or not.
@@ -44,8 +49,9 @@ public interface SubscriptionService {
 	 * Method to update confirmed status for the given mail ID.
 	 * 
 	 * @param mailID
+	 * @return 
 	 */
-	public void updateconfirmSubscribedStatus(String mailID);
+	public String updateconfirmSubscribedStatus(String mailID);
 
 	/**
 	 * Method to check whether the given mail ID is confirmed their subscription
