@@ -79,7 +79,7 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 			for (Message message : messages) {
 				LOGGER.debug("-----------------------START-----------------------");
 				LOGGER.debug("Mail Number: " + message.getMessageNumber());
-				LOGGER.debug("Message Content Type: " + message.getContentType());
+				//LOGGER.debug("Mail-Content-Type: " + message.getContentType());
 				try {
 					// read the message content
 					String bouncedEmail = "";
@@ -147,7 +147,7 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 			LOGGER.debug("EXCEPTION: Error while fetching mails from "
 					+ envProperties.getProperty("srcm.bounced.email.from.address"));
 			LOGGER.debug("EXCEPTION: " + ex.getMessage());
-			LOGGER.debug("EXCEPTION: " + ex.getStackTrace());
+			
 		}
 		LOGGER.debug("END: Completed processing emails from hfnbounce@srcm.org mailbox");
 	}
