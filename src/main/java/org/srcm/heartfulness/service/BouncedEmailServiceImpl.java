@@ -130,6 +130,8 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 							bncdEmailRepo.createEmailAsBounced(bouncedEmail);
 						}
 					}
+					//inbox.close(true);
+					store.close();
 					// LOGGER.debug("-----------------------FINISH-----------------------");
 				} catch (Exception ex) {
 					// if any exceptions occurs mark the message as unread
