@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -35,45 +36,23 @@ public class BounceEmailHelper {
 	 * @return bounced email parsed from mail content.
 	 */
 	public String getBouncedEmail(Message message){
-
 		String recipientEmail = "";
 		try {
 			Object content = message.getContent();
-
 			if(content instanceof String){
-
 				recipientEmail = parseEmailContent((String)content);
 			}else if(content instanceof Multipart){
-
-				Multipart multipart = (Multipart)content;
-				String multipartContent = multipart.getBodyPart(0).getContent().toString();
+				Multipart multiparts = (Multipart)content;
+				String multipartContent = multiparts.getBodyPart(0).getContent().toString();
 				recipientEmail = parseEmailContent(multipartContent);
 			}
-
 		} catch (IOException | MessagingException e) {
 			LOGGER.debug("EXCEPTION: Unable to parse Mail content");
 			LOGGER.debug("EXCEPTION: "+e.getMessage());
-			LOGGER.debug("EXCEPTION: "+e.getStackTrace());
 		} 
 		return recipientEmail;
 	}
 
-
-	/*private String getMultipartContentAsText(Multipart multipart){
-		LOGGER.debug("Checking Multipart Content recusively");
-		String textContent = "";
-		try {
-			if(multipart.getBodyPart(0).isMimeType("TEXT/PLAIN")){
-				textContent = multipart.getBodyPart(0).getContent().toString();
-			}else{
-				Multipart part = (Multipart)multipart.getBodyPart(0).getContent();
-				getMultipartContentAsText(part);
-			}
-		} catch (MessagingException | IOException e) {
-			e.printStackTrace();
-		}
-		return textContent;
-	}*/
 	/**
 	 * It parses the mail content and searches for an email in the content body.
 	 * @param content email content to parse and find out if 
@@ -84,7 +63,7 @@ public class BounceEmailHelper {
 		String[] contentPart = content.split(" ");
 		String emailMatches = "";
 		Pattern pattern = Pattern.compile(EventConstants.EMAIL_REGEX,Pattern.CASE_INSENSITIVE);
-		Matcher matcher = null;
+		Matcher matcher;
 		for(String matchContent:contentPart){
 
 			if(matchContent.contains("<")){
@@ -101,7 +80,6 @@ public class BounceEmailHelper {
 				emailMatches = matcher.group();
 				break;
 			}
-
 		}
 		return emailMatches;
 	}
