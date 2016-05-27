@@ -78,20 +78,21 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 			Message[] messages = inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
 
 			for ( Message message : messages ) {
-				LOGGER.debug("-----------------------START-----------------------");
-				LOGGER.debug("Mail Number: "+message.getMessageNumber());
-				LOGGER.debug("Mail-content-type:" + message.getContentType());
 				try{
 					//read the message content
 					String bouncedEmail = "";
+					boolean bounceFlag = false;
 					if(null != message.getHeader("Return-Path")){
-						LOGGER.debug("Mail Header: "+message.getHeader("Return-Path")[0]);
 						String headerValue = message.getHeader("Return-Path")[0];
 						if (headerValue.isEmpty() || "<>".equalsIgnoreCase(headerValue)) {
+							LOGGER.debug("-----------------------START-----------------------");
+							LOGGER.debug("Mail Number: "+message.getMessageNumber());
+							LOGGER.debug("Mail-content-type:" + message.getContentType());
+							LOGGER.debug("Mail Header: "+message.getHeader("Return-Path")[0]);
 							bouncedEmail = bounceEmailHlpr.getBouncedEmail(message);
+							bounceFlag = true;
 						}
 					}else{
-						LOGGER.debug("Mail Header: null");
 						String rejectedEmailIds = envProperties.getProperty("srcm.bounced.email.rejected.emails");
 						String[] emails = rejectedEmailIds.split(",");
 						List<String> rejectedMailList = new ArrayList<String>();
@@ -99,27 +100,32 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 							rejectedMailList.add(email.trim());
 						}
 						if(!rejectedMailList.contains(message.getFrom()[0].toString().trim())){
+							LOGGER.debug("-----------------------START-----------------------");
+							LOGGER.debug("Mail Number: "+message.getMessageNumber());
+							LOGGER.debug("Mail-content-type:" + message.getContentType());
+							LOGGER.debug("Mail Header: null");
 							LOGGER.debug(message.getFrom()[0].toString().trim()+"doesnot belong to rejected email list");
 							bouncedEmail = bounceEmailHlpr.getBouncedEmail(message);
+							bounceFlag = true;
 						}
 					}
 
 					//Check if the bounced email is empty or not
-					if(bouncedEmail.isEmpty()){
+					if(bounceFlag && bouncedEmail.isEmpty() ){
 						//mark message as read
 						//Flags flags = new Flags(Flag.SEEN);
 						//message.setFlags(flags, true);
 						LOGGER.debug("Unable to find bounced email from mail content for mail number "+message.getMessageNumber());
 						LOGGER.debug("Mail-->"+ message.getFrom()[0].toString() + "<-- with mail number " +message.getMessageNumber()
-						+" is marked as read ");
-					}else{
+								+" is marked as read ");
+					}else if(bounceFlag && !bouncedEmail.isEmpty()){
 						//mark message as read
 						//Flags flags = new Flags(Flag.SEEN);
 						//message.setFlags(flags, true);
 						LOGGER.debug("Mail-->"+bouncedEmail+"<-- found from mail content for mail number "
 								+message.getMessageNumber());
 						LOGGER.debug("Mail-->"+ message.getFrom()[0].toString() + "<-- with mail number " +message.getMessageNumber()
-						+" is marked as read ");
+								+" is marked as read ");
 
 						//call dao layer to update is_bounced as 1.
 						int isEmailBounced = bncdEmailRepo.updateEmailAsBounced(bouncedEmail);
@@ -135,7 +141,7 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 					//Flags flags = new Flags(Flag.SEEN);
 					//message.setFlags(flags, false);
 					LOGGER.debug("Mail-->"+ message.getFrom()[0] + "<-- with mail number " +message.getMessageNumber()
-					+" is marked as unread ");
+							+" is marked as unread ");
 				}
 			}
 		}catch(MessagingException ex){

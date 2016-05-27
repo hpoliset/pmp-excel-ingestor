@@ -60,7 +60,11 @@ public class BounceEmailHelper {
 		try {
 			if(multipart.getBodyPart(0).isMimeType("TEXT/PLAIN")){
 				stringContent = multipart.getBodyPart(0).getContent().toString();
-			}else{
+			}else if(multipart.getBodyPart(0).isMimeType("multipart/REPORT")){
+				convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
+			}else if(multipart.getBodyPart(0).isMimeType("multipart/MIXED")){
+				convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
+			}else if(multipart.getBodyPart(0).isMimeType("multipart/ALTERNATIVE")){
 				convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
 			}
 		} catch (IOException e) {
