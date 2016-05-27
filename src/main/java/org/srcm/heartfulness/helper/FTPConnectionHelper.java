@@ -132,7 +132,7 @@ public class FTPConnectionHelper {
 	public void processUpload(String welcomeMailidsLocalFilepath, String welcomeMailidsRemoteFilepath,
 			String welcomeMailidsFileName) throws SftpException, IOException {
 		LocalDateTime dateTime = LocalDateTime.now();
-		DateTimeFormatter format = DateTimeFormatter.ofPattern("dd_MMM");
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("dd_MMM_mm");
 		String currentDate = dateTime.format(format);
 
 		JSch jsch = new JSch();

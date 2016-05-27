@@ -36,7 +36,7 @@ public class BounceEmailHelper {
 	 * @return bounced email parsed from mail content.
 	 */
 	public String getBouncedEmail(Message message){
-		
+
 		String recipientEmail = "";
 		try {
 			Object content = message.getContent();
@@ -53,14 +53,16 @@ public class BounceEmailHelper {
 				if(multiparts.getBodyPart(0).isMimeType("TEXT/PLAIN")){
 					LOGGER.debug("TEXT PLAIN TYPE"+parseEmailContent(multiparts.getBodyPart(0).getContent().toString()));
 				}else if(multiparts.getBodyPart(0).isMimeType("multipart/ALTERNATIVE")){
-					LOGGER.debug("TEXT PLAIN TYPE"+parseEmailContent((String)multiparts.getBodyPart(0).getContent()));
-				}else if(multiparts.getBodyPart(0).isMimeType("multipart/MIXED")){
+					Multipart part = (Multipart)multiparts.getBodyPart(0).getContent();
+					String mailContent = checkMultipartContent(part);
+					LOGGER.debug("TEXT PLAIN TYPE"+parseEmailContent(mailContent));
+				}/*else if(multiparts.getBodyPart(0).isMimeType("multipart/MIXED")){
 					LOGGER.debug("TEXT PLAIN TYPE"+parseEmailContent((String)multiparts.getBodyPart(0).getContent()));
 				}else if(multiparts.getBodyPart(0).isMimeType("multipart/REPORT")){
 					LOGGER.debug("TEXT PLAIN TYPE"+parseEmailContent((String)multiparts.getBodyPart(0).getContent()));
-				}else{
+				}*/else{
 					LOGGER.debug("Message Sub content type not in");
-					
+
 				}
 				String multipartContent = multiparts.getBodyPart(0).getContent().toString();
 				//LOGGER.debug("Message Content: "+ multipartContent);
@@ -76,6 +78,22 @@ public class BounceEmailHelper {
 		return recipientEmail;
 	}
 
+
+	private String checkMultipartContent(Multipart multipart){
+		LOGGER.debug("Checking Multipart Content recusively");
+		String textContent = "";
+		try {
+			if(multipart.getBodyPart(0).isMimeType("TEXT/PLAIN")){
+				textContent = multipart.getBodyPart(0).getContent().toString();
+			}else{
+				Multipart part = (Multipart)multipart.getBodyPart(0).getContent();
+				checkMultipartContent(part);
+			}
+		} catch (MessagingException | IOException e) {
+			e.printStackTrace();
+		}
+		return textContent;
+	}
 	/**
 	 * It parses the mail content and searches for an email in the content body.
 	 * @param content email content to parse and find out if 
@@ -89,27 +107,21 @@ public class BounceEmailHelper {
 		Matcher matcher = null;
 		for(String matchContent:contentPart){
 
-			/*if(matchContent.contains("<")){
-				matchContent.replaceAll("<", "");
-			}else if(matchContent.contains(">")){
-				matchContent.replaceAll(">", "");
-			}*/
-			
 			if(matchContent.contains("<")){
 				String subcontent=matchContent.substring(matchContent.indexOf("<") + 1, matchContent.indexOf(">"));
-				LOGGER.debug("Substring value..."+subcontent);
+				LOGGER.debug("Mail from message content contains <> format");
 				//if(subcontent.matches(EventConstants.EMAIL_REGEX))
 				matcher = pattern.matcher(subcontent);
-			}else if(matchContent.contains("@")){
-				LOGGER.debug("Substring value..."+matchContent);
+			}else{
+				LOGGER.debug("Mail from message content doesnot contain <> format");
 				matcher = pattern.matcher(matchContent);
 			}
-			
+
 			if(matcher.matches()){
 				emailMatches = matcher.group();
 				break;
 			}
-			
+
 		}
 		return emailMatches;
 	}
