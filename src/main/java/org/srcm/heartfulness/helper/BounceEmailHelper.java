@@ -58,6 +58,8 @@ public class BounceEmailHelper {
 	private String convertMultipartToTextPlain(Multipart multipart) {
 		String stringContent = "";
 		try {
+			LOGGER.debug("Mail Mime-Type: "+multipart.getBodyPart(0).getContentType());
+			
 			if(multipart.getBodyPart(0).isMimeType("TEXT/PLAIN")){
 				stringContent = multipart.getBodyPart(0).getContent().toString();
 			}else if(multipart.getBodyPart(0).isMimeType("multipart/REPORT")){
@@ -69,8 +71,11 @@ public class BounceEmailHelper {
 				//convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
 			}else if(multipart.getBodyPart(0).isMimeType("multipart/ALTERNATIVE")){
 				stringContent = multipart.getBodyPart(0).getContent().toString();
-				LOGGER.debug("Mail Content: "+stringContent);
+				LOGGER.debug("Mail Content: "+ multipart.getBodyPart(0).getContent().toString());
 				//convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
+			}else{
+				LOGGER.debug("Mail Content not coming in default types.");
+				LOGGER.debug("Mail Content: "+stringContent);
 			}
 		} catch (IOException e) {
 			LOGGER.debug("IO Exception,cannot convert multipart to String");
