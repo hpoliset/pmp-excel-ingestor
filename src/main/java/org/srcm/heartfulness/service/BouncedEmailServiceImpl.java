@@ -144,6 +144,7 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 							+" is marked as unread ");
 				}
 			}
+			inbox.close(true);
 			store.close();
 		}catch(MessagingException ex){
 			LOGGER.debug("EXCEPTION: Error while fetching mails from "

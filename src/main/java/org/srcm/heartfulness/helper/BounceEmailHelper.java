@@ -62,12 +62,14 @@ public class BounceEmailHelper {
 				stringContent = multipart.getBodyPart(0).getContent().toString();
 			}else if(multipart.getBodyPart(0).isMimeType("multipart/REPORT")){
 				stringContent = multipart.getBodyPart(0).getContent().toString();
+				LOGGER.debug("Mail Content: "+stringContent);
 				//convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
 			}else if(multipart.getBodyPart(0).isMimeType("multipart/MIXED")){
 				stringContent = multipart.getBodyPart(0).getContent().toString();
 				//convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
 			}else if(multipart.getBodyPart(0).isMimeType("multipart/ALTERNATIVE")){
 				stringContent = multipart.getBodyPart(0).getContent().toString();
+				LOGGER.debug("Mail Content: "+stringContent);
 				//convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
 			}
 		} catch (IOException e) {
