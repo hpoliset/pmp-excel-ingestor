@@ -41,21 +41,18 @@ public class BounceEmailHelper {
 			//check if the content is plain text
 			if (part.isMimeType("text/plain")) {
 				recipientEmail = parseEmailContent((String) part.getContent());
-				LOGGER.debug("Mail Content: "+(String) part.getContent());
 			}else if (part.isMimeType("multipart/*")) {
 				LOGGER.debug("Mail-Content-Type : multipart/*");
-				Multipart mp = (Multipart) part.getContent();
-				int count = mp.getCount();
+				Multipart multipart = (Multipart) part.getContent();
+				int count = multipart.getCount();
 				for (int i = 0; i < count; i++){
-					textContent = convertMultipartToTextPlain(mp.getBodyPart(i));
+					textContent = convertMultipartToTextPlain(multipart.getBodyPart(i));
 					if(!textContent.isEmpty()){
 						recipientEmail = parseEmailContent(textContent);
 						break;
 					}
 				}
-			}
-			//check if the content is a nested message
-			else if (part.isMimeType("message/rfc822")) {
+			}else if (part.isMimeType("message/rfc822")) {
 				LOGGER.debug("Mail-Content-Type : message/rfc822");
 				getBouncedEmail((Part) part.getContent());
 			}
@@ -69,17 +66,24 @@ public class BounceEmailHelper {
 		return recipientEmail;
 	}
 
-
+	/**
+	 * @param part mime type is used to check whether it 
+	 * is of type text/plain and if it is so then that content
+	 * is returned to be parsed later.
+	 * @return body content.
+	 */
 	private String convertMultipartToTextPlain(Part part) {
 		String stringContent = "";
 		try {
+			LOGGER.debug("Sub Part called......");
+			LOGGER.debug("Sub-part Content-type: "+part.getContentType());
 			if (part.isMimeType("text/plain")) {
 				stringContent = (String) part.getContent();
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.debug("IO Exception,cannot convert from multipart --> text/plain format");
 		} catch (MessagingException e) {
-			e.printStackTrace();
+			LOGGER.debug("Messaging Exception,cannot convert from multipart --> text/plain format");
 		}
 		return stringContent;
 	}
