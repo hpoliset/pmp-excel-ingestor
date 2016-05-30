@@ -92,11 +92,11 @@ public class BounceEmailHelper {
 			LOGGER.debug("Sub-part Content-type: "+part.getContentType());
 			if (part.isMimeType("text/plain")) {
 				stringContent = (String) part.getContent();
-				LOGGER.debug("Text/plain Type: "+stringContent);
+				//LOGGER.debug("Text/plain Type: "+stringContent);
 			}else if(part.isMimeType("message/*")){
 				Object o = part.getContent();
 				if (o instanceof String) {
-					LOGGER.debug("String Type: "+(String)o);
+					//LOGGER.debug("String Type: "+(String)o);
 				}
 				else if (o instanceof InputStream) {
 					LOGGER.debug("Input stream Type: ");
@@ -107,7 +107,7 @@ public class BounceEmailHelper {
 			             // LOGGER.debug(""+c);
 					 */				}
 				else {
-					LOGGER.debug("Unknown Type :"+o.toString());
+					//LOGGER.debug("Unknown Type :"+o.toString());
 				}
 
 				//LOGGER.debug("Mail Content: "+part.getContent());
@@ -116,14 +116,14 @@ public class BounceEmailHelper {
 				Multipart multiPart = (Multipart) part.getContent();
 				for(int i=0;i<multiPart.getCount();i++){
 					String content = convertMultipartToTextPlain(multiPart.getBodyPart(i));
-					LOGGER.debug("Sub Content: "+content);
+					//LOGGER.debug("Sub Content: "+content);
 					if(!content.isEmpty()){
 						stringContent = content;
 						break;
 					}
 				}
-				LOGGER.debug("Mail Content: "+multiPart.toString());
-				LOGGER.debug("Mail Content: toString"+part.getContent().toString());
+				//LOGGER.debug("Mail Content: "+multiPart.toString());
+				//LOGGER.debug("Mail Content: toString"+part.getContent().toString());
 			}
 		} catch (IOException e) {
 			LOGGER.debug("IO Exception,cannot convert from multipart --> text/plain format");
@@ -141,6 +141,7 @@ public class BounceEmailHelper {
 	 * @return email if found in email content.
 	 */
 	private String parseEmailContent(String content) {
+		LOGGER.debug("String Content: "+content);
 		String[] contentPart = content.split(" ");
 		String emailMatches = "";
 		Pattern pattern = Pattern.compile(EventConstants.EMAIL_REGEX,Pattern.CASE_INSENSITIVE);
