@@ -54,7 +54,16 @@ public class BounceEmailHelper {
 				}
 			}else if (part.isMimeType("message/rfc822")) {
 				LOGGER.debug("Mail-Content-Type : message/rfc822");
-				getBouncedEmail((Part) part.getContent());
+				Multipart multipart = (Multipart)part.getContent();
+				int count = multipart.getCount();
+				for (int i = 0; i < count; i++){
+					textContent = convertMultipartToTextPlain(multipart.getBodyPart(i));
+					if(!textContent.isEmpty()){
+						recipientEmail = parseEmailContent(textContent);
+						break;
+					}
+				}
+				//getBouncedEmail((Part) part.getContent());
 			}
 		}catch (IOException e) {
 			LOGGER.debug("IO Exception while reading mail content");
@@ -79,6 +88,12 @@ public class BounceEmailHelper {
 			LOGGER.debug("Sub-part Content-type: "+part.getContentType());
 			if (part.isMimeType("text/plain")) {
 				stringContent = (String) part.getContent();
+			}else if(part.isMimeType("message/*")){
+				LOGGER.debug("Mail Content: "+part.getContent());
+				LOGGER.debug("Mail Content: toString"+part.getContent().toString());
+			}else if(part.isMimeType("multipart/ALTERNATIVE")){
+				LOGGER.debug("Mail Content: "+part.getContent());
+				LOGGER.debug("Mail Content: toString"+part.getContent().toString());
 			}
 		} catch (IOException e) {
 			LOGGER.debug("IO Exception,cannot convert from multipart --> text/plain format");
