@@ -54,7 +54,7 @@ public class BounceEmailHelper {
 						break;
 					}
 				}
-			}else if (part.isMimeType("message/rfc822")) {
+			}else if (part.isMimeType("MESSAGE/*")) {
 				LOGGER.debug("Mail-Content-Type : message/rfc822");
 				Multipart multipart = (Multipart)part.getContent();
 				int count = multipart.getCount();
@@ -98,12 +98,12 @@ public class BounceEmailHelper {
 				}
 				else if (o instanceof InputStream) {
 					LOGGER.debug("Input stream Type: ");
-			            InputStream is = (InputStream) o;
+			           /* InputStream is = (InputStream) o;
 			            is = (InputStream) o;
 			            int c;
-			            while ((c = is.read()) != -1)
-			              LOGGER.debug(""+c);
-				}
+			            //while ((c = is.read()) != -1)
+			             // LOGGER.debug(""+c);
+*/				}
 				else {
 					LOGGER.debug("Unknown Type :"+o.toString());
 				}
