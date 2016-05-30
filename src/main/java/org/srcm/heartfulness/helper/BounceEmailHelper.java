@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.Part;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,60 +32,58 @@ public class BounceEmailHelper {
 	 * This method checks whether the mail content is instance of String or multipart.
 	 * If the mail content is of type multipart it calls parseEmailContent 
 	 * method and passes the mail content. 
-	 * @param message contains the mail content to parse.
+	 * @param part contains the mail content to parse.
 	 * @return bounced email parsed from mail content.
 	 */
-	public String getBouncedEmail(Message message){
-		String recipientEmail = "";
+	public String getBouncedEmail(Part part){
+		String recipientEmail = "",textContent="";
 		try {
-			Object content = message.getContent();
-			if(content instanceof String){
-				recipientEmail = parseEmailContent((String)content);
-			}else if(content instanceof Multipart){
-				Multipart multipart = (Multipart)content;
-				String multipartContent = convertMultipartToTextPlain(multipart);
-
-				//String multipartContent = multipart.getBodyPart(0).getContent().toString();
-				recipientEmail = parseEmailContent(multipartContent);
+			//check if the content is plain text
+			if (part.isMimeType("text/plain")) {
+				recipientEmail = parseEmailContent((String) part.getContent());
+				LOGGER.debug("Mail Content: "+(String) part.getContent());
+			}else if (part.isMimeType("multipart/*")) {
+				LOGGER.debug("Mail-Content-Type : multipart/*");
+				Multipart mp = (Multipart) part.getContent();
+				int count = mp.getCount();
+				for (int i = 0; i < count; i++){
+					textContent = convertMultipartToTextPlain(mp.getBodyPart(i));
+					if(!textContent.isEmpty()){
+						recipientEmail = parseEmailContent(textContent);
+						break;
+					}
+				}
 			}
-		} catch (IOException | MessagingException e) {
-			LOGGER.debug("EXCEPTION: Unable to parse Mail content");
-			LOGGER.debug("EXCEPTION: "+e.getMessage());
+			//check if the content is a nested message
+			else if (part.isMimeType("message/rfc822")) {
+				LOGGER.debug("Mail-Content-Type : message/rfc822");
+				getBouncedEmail((Part) part.getContent());
+			}
+		}catch (IOException e) {
+			LOGGER.debug("IO Exception while reading mail content");
+		}catch (MessagingException e) {
+			LOGGER.debug("Messaging Exception while reading mail content");
+		} catch (Exception e) {
+			LOGGER.debug("Exception while reading mail content");
 		} 
 		return recipientEmail;
 	}
 
-	private String convertMultipartToTextPlain(Multipart multipart) {
+
+	private String convertMultipartToTextPlain(Part part) {
 		String stringContent = "";
 		try {
-			LOGGER.debug("Mail Mime-Type: "+multipart.getBodyPart(0).getContentType());
-			
-			if(multipart.getBodyPart(0).isMimeType("TEXT/PLAIN")){
-				stringContent = multipart.getBodyPart(0).getContent().toString();
-			}else if(multipart.getBodyPart(0).isMimeType("multipart/REPORT")){
-				stringContent = multipart.getBodyPart(0).getContent().toString();
-				LOGGER.debug("Mail Content: "+stringContent);
-				//convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
-			}else if(multipart.getBodyPart(0).isMimeType("multipart/MIXED")){
-				stringContent = multipart.getBodyPart(0).getContent().toString();
-				//convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
-			}else if(multipart.getBodyPart(0).isMimeType("multipart/ALTERNATIVE")){
-				stringContent = multipart.getBodyPart(0).getContent().toString();
-				LOGGER.debug("Mail Content: "+ multipart.getBodyPart(0).getContent().toString());
-				//convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
-			}else{
-				LOGGER.debug("Mail Content not coming in default types.");
-				LOGGER.debug("Mail Content: "+stringContent);
+			if (part.isMimeType("text/plain")) {
+				stringContent = (String) part.getContent();
 			}
 		} catch (IOException e) {
-			LOGGER.debug("IO Exception,cannot convert multipart to String");
-			//e.printStackTrace();
+			e.printStackTrace();
 		} catch (MessagingException e) {
-			LOGGER.debug("Messaging Exception,cannot convert multipart to String");
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
 		return stringContent;
 	}
+
 
 	/**
 	 * It parses the mail content and searches for an email in the content body.
