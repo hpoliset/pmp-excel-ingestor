@@ -4,12 +4,14 @@
 package org.srcm.heartfulness.helper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
+import javax.mail.internet.MimeMultipart;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,11 +90,29 @@ public class BounceEmailHelper {
 			LOGGER.debug("Sub-part Content-type: "+part.getContentType());
 			if (part.isMimeType("text/plain")) {
 				stringContent = (String) part.getContent();
+				LOGGER.debug("Text/plain Type: "+stringContent);
 			}else if(part.isMimeType("message/*")){
-				LOGGER.debug("Mail Content: "+part.getContent());
-				LOGGER.debug("Mail Content: toString"+part.getContent().toString());
+				Object o = part.getContent();
+				if (o instanceof String) {
+					LOGGER.debug("String Type: "+(String)o);
+				}
+				else if (o instanceof InputStream) {
+					LOGGER.debug("Input stream Type: ");
+			            InputStream is = (InputStream) o;
+			            is = (InputStream) o;
+			            int c;
+			            while ((c = is.read()) != -1)
+			              LOGGER.debug(""+c);
+				}
+				else {
+					LOGGER.debug("Unknown Type :"+o.toString());
+				}
+
+				//LOGGER.debug("Mail Content: "+part.getContent());
+				//LOGGER.debug("Mail Content: toString"+part.getContent().toString());
 			}else if(part.isMimeType("multipart/ALTERNATIVE")){
-				LOGGER.debug("Mail Content: "+part.getContent());
+				MimeMultipart mimeMultiPart = (MimeMultipart) part.getContent();
+				LOGGER.debug("Mail Content: "+mimeMultiPart.toString());
 				LOGGER.debug("Mail Content: toString"+part.getContent().toString());
 			}
 		} catch (IOException e) {
