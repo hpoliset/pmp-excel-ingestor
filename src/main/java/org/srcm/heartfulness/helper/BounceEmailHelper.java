@@ -100,12 +100,12 @@ public class BounceEmailHelper {
 				}
 				else if (o instanceof InputStream) {
 					LOGGER.debug("Input stream Type: ");
-			           /* InputStream is = (InputStream) o;
+					/* InputStream is = (InputStream) o;
 			            is = (InputStream) o;
 			            int c;
 			            //while ((c = is.read()) != -1)
 			             // LOGGER.debug(""+c);
-*/				}
+					 */				}
 				else {
 					LOGGER.debug("Unknown Type :"+o.toString());
 				}
@@ -113,8 +113,16 @@ public class BounceEmailHelper {
 				//LOGGER.debug("Mail Content: "+part.getContent());
 				//LOGGER.debug("Mail Content: toString"+part.getContent().toString());
 			}else if(part.isMimeType("multipart/ALTERNATIVE")){
-				MimeMultipart mimeMultiPart = (MimeMultipart) part.getContent();
-				LOGGER.debug("Mail Content: "+mimeMultiPart.toString());
+				Multipart multiPart = (Multipart) part.getContent();
+				for(int i=0;i<multiPart.getCount();i++){
+					String content = convertMultipartToTextPlain(multiPart.getBodyPart(i));
+					LOGGER.debug("Sub Content: "+content);
+					if(!content.isEmpty()){
+						stringContent = content;
+						break;
+					}
+				}
+				LOGGER.debug("Mail Content: "+multiPart.toString());
 				LOGGER.debug("Mail Content: toString"+part.getContent().toString());
 			}
 		} catch (IOException e) {
