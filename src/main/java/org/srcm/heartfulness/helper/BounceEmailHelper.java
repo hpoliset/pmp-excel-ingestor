@@ -66,6 +66,8 @@ public class BounceEmailHelper {
 					}
 				}
 				//getBouncedEmail((Part) part.getContent());
+			}else{
+				LOGGER.debug("Email-Unknown-Content-Type");
 			}
 		}catch (IOException e) {
 			LOGGER.debug("IO Exception while reading mail content");
