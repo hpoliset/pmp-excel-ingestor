@@ -144,6 +144,7 @@ public class BouncedEmailServiceImpl implements BouncedEmailService {
 							+" is marked as unread ");
 				}
 			}
+			store.close();
 		}catch(MessagingException ex){
 			LOGGER.debug("EXCEPTION: Error while fetching mails from "
 					+envProperties.getProperty("srcm.bounced.email.from.address"));

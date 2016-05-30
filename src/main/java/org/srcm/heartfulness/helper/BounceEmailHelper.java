@@ -61,16 +61,21 @@ public class BounceEmailHelper {
 			if(multipart.getBodyPart(0).isMimeType("TEXT/PLAIN")){
 				stringContent = multipart.getBodyPart(0).getContent().toString();
 			}else if(multipart.getBodyPart(0).isMimeType("multipart/REPORT")){
-				convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
+				stringContent = multipart.getBodyPart(0).getContent().toString();
+				//convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
 			}else if(multipart.getBodyPart(0).isMimeType("multipart/MIXED")){
-				convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
+				stringContent = multipart.getBodyPart(0).getContent().toString();
+				//convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
 			}else if(multipart.getBodyPart(0).isMimeType("multipart/ALTERNATIVE")){
-				convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
+				stringContent = multipart.getBodyPart(0).getContent().toString();
+				//convertMultipartToTextPlain((Multipart)multipart.getBodyPart(0).getContent());
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.debug("IO Exception,cannot convert multipart to String");
+			//e.printStackTrace();
 		} catch (MessagingException e) {
-			e.printStackTrace();
+			LOGGER.debug("Messaging Exception,cannot convert multipart to String");
+			//e.printStackTrace();
 		}
 		return stringContent;
 	}
