@@ -139,7 +139,6 @@ public class BounceEmailHelper {
 	 * @return email if found in email content.
 	 */
 	private String parseEmailContent(String content) {
-		LOGGER.debug("String Content: "+content);
 		String[] contentPart = content.split(" ");
 		String emailMatches = "";
 		Pattern pattern = Pattern.compile(EventConstants.EMAIL_REGEX,Pattern.CASE_INSENSITIVE);
