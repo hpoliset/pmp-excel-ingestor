@@ -11,8 +11,6 @@ import java.util.regex.Pattern;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
-import javax.mail.internet.MimeMultipart;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -44,7 +42,6 @@ public class BounceEmailHelper {
 			if (part.isMimeType("text/plain")) {
 				recipientEmail = parseEmailContent((String) part.getContent());
 			}else if (part.isMimeType("multipart/*")) {
-				LOGGER.debug("Mail-Content-Type : multipart/*");
 				Multipart multipart = (Multipart) part.getContent();
 				int count = multipart.getCount();
 				for (int i = 0; i < count; i++){
@@ -55,7 +52,6 @@ public class BounceEmailHelper {
 					}
 				}
 			}else if (part.isMimeType("MESSAGE/*")) {
-				LOGGER.debug("Mail-Content-Type : message/rfc822");
 				Multipart multipart = (Multipart)part.getContent();
 				int count = multipart.getCount();
 				for (int i = 0; i < count; i++){
@@ -65,9 +61,17 @@ public class BounceEmailHelper {
 						break;
 					}
 				}
-				//getBouncedEmail((Part) part.getContent());
 			}else{
-				LOGGER.debug("Email-Unknown-Content-Type");
+				LOGGER.debug("Email-Content-Type doesnot match text/plain,multipart/*,message/* format");
+				Multipart multipart = (Multipart)part.getContent();
+				int count = multipart.getCount();
+				for (int i = 0; i < count; i++){
+					textContent = convertMultipartToTextPlain(multipart.getBodyPart(i));
+					if(!textContent.isEmpty()){
+						recipientEmail = parseEmailContent(textContent);
+						break;
+					}
+				}
 			}
 		}catch (IOException e) {
 			LOGGER.debug("IO Exception while reading mail content");
@@ -88,43 +92,37 @@ public class BounceEmailHelper {
 	private String convertMultipartToTextPlain(Part part) {
 		String stringContent = "";
 		try {
-			LOGGER.debug("Sub Part called......");
-			LOGGER.debug("Sub-part Content-type: "+part.getContentType());
+			LOGGER.debug("Sub-part Mime-type: "+part.getContentType());
 			if (part.isMimeType("text/plain")) {
 				stringContent = (String) part.getContent();
-				//LOGGER.debug("Text/plain Type: "+stringContent);
-			}else if(part.isMimeType("message/*")){
-				Object o = part.getContent();
-				if (o instanceof String) {
-					//LOGGER.debug("String Type: "+(String)o);
-				}
-				else if (o instanceof InputStream) {
-					LOGGER.debug("Input stream Type: ");
-					/* InputStream is = (InputStream) o;
-			            is = (InputStream) o;
-			            int c;
-			            //while ((c = is.read()) != -1)
-			             // LOGGER.debug(""+c);
-					 */				}
-				else {
-					//LOGGER.debug("Unknown Type :"+o.toString());
-				}
-
-				//LOGGER.debug("Mail Content: "+part.getContent());
-				//LOGGER.debug("Mail Content: toString"+part.getContent().toString());
 			}else if(part.isMimeType("multipart/ALTERNATIVE")){
 				Multipart multiPart = (Multipart) part.getContent();
 				for(int i=0;i<multiPart.getCount();i++){
 					String content = convertMultipartToTextPlain(multiPart.getBodyPart(i));
-					//LOGGER.debug("Sub Content: "+content);
 					if(!content.isEmpty()){
 						stringContent = content;
 						break;
 					}
 				}
-				//LOGGER.debug("Mail Content: "+multiPart.toString());
-				//LOGGER.debug("Mail Content: toString"+part.getContent().toString());
 			}
+			
+			/*else if(part.isMimeType("message/*")){
+				Object o = part.getContent();
+				if (o instanceof String) {
+					//LOGGER.debug("String Type: "+(String)o);
+				}
+				else if (o instanceof InputStream) {
+					 InputStream is = (InputStream) o;
+			            is = (InputStream) o;
+			            int c;
+			            //while ((c = is.read()) != -1)
+			             // LOGGER.debug(""+c);
+					 				
+				}
+				else {
+					//LOGGER.debug("Unknown Type :"+o.toString());
+				}
+			}*/
 		} catch (IOException e) {
 			LOGGER.debug("IO Exception,cannot convert from multipart --> text/plain format");
 		} catch (MessagingException e) {
@@ -150,11 +148,11 @@ public class BounceEmailHelper {
 
 			if(matchContent.contains("<")){
 				String subcontent = matchContent.substring(matchContent.indexOf("<") + 1, matchContent.indexOf(">"));
-				LOGGER.debug("Mail from message content contains <> format");
-				//if(subcontent.matches(EventConstants.EMAIL_REGEX))
-				matcher = pattern.matcher(subcontent);
+				LOGGER.debug("Message content contains <> format,subcontent found: "+subcontent);
+				String[] emailArray = subcontent.split(":");
+				String emailContent = emailArray[emailArray.length - 1];
+				matcher = pattern.matcher(emailContent);
 			}else{
-				//LOGGER.debug("Mail from message content doesnot contain <> format");
 				matcher = pattern.matcher(matchContent);
 			}
 
@@ -163,7 +161,7 @@ public class BounceEmailHelper {
 				break;
 			}
 		}
-		LOGGER.debug("Email Found : "+emailMatches);
+		LOGGER.debug("Email Found from content: "+emailMatches);
 		return emailMatches;
 	}
 
