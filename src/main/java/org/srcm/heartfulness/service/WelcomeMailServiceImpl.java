@@ -26,7 +26,6 @@ import org.srcm.heartfulness.model.WelcomeMailDetails;
 import org.srcm.heartfulness.model.json.response.EmailverificationResponse;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.WelcomeMailRepository;
-import org.srcm.heartfulness.rest.template.QuickEmailVerificationRestTemplate;
 import org.srcm.heartfulness.rest.template.SendyRestTemplate;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -42,9 +41,6 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	@Autowired
 	SendyRestTemplate sendyRestTemplate;
 	
-	@Autowired
-	QuickEmailVerificationRestTemplate quickEmailVerificationRestTemplate;
-
 	@Autowired
 	private WelcomeMailRepository welcomeMailRepository;
 
