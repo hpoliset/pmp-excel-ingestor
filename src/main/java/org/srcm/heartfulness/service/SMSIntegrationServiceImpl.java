@@ -52,9 +52,12 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 
 	@Autowired
 	SendMail sendMail;
-	
+
 	@Autowired
 	private WelcomeMailRepository welcomeMailRepository;
+
+	@Autowired
+	private WelcomeMailService WelcomeMailService;
 
 	/*
 	 * (non-Javadoc)
@@ -317,9 +320,6 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 							program.setParticipantList(participantList);
 							program.setCreatedSource("SMS");
 							programRepository.saveWithProgramName(program);
-							if ("true".equalsIgnoreCase(env.getProperty("partcipant.send.confimationmail"))) {
-								SendConfirmationMailToNewParticipants(participant);
-							}
 							response = SMSConstants.SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_1
 									+ SMSConstants.SMS_HEARTFULNESS_HOMEPAGE_URL
 									+ SMSConstants.SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_2;
@@ -346,30 +346,6 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 			e.printStackTrace();
 		}
 		return response;
-	}
-
-	/**
-	 * Method to send confirmation mail to the newly registered participants.
-	 * 
-	 * @param participant
-	 */
-	private void SendConfirmationMailToNewParticipants(Participant participant) {
-		// Checks whether the emailID exists for the participant.
-		if (null != participant.getEmail() && !participant.getEmail().isEmpty()) {
-			LOGGER.debug("Mail subscription : {} ",
-					welcomeMailRepository.checkForMailSubcription(participant.getEmail()) + "");
-			LOGGER.debug("confirmation Mail sent  : {} ",
-					welcomeMailRepository.CheckForConfirmationMailStatus(participant) + "");
-			// Checks whether the participant unsubscribed for receiving mails.
-			if (1 != welcomeMailRepository.checkForMailSubcription(participant.getEmail())) {
-				// Checks whether the participant already received the
-				// confirmation mail or not.
-				if (1 != welcomeMailRepository.CheckForConfirmationMailStatus(participant)) {
-					sendMail.SendConfirmationMailToParticipant(participant);
-					welcomeMailRepository.updateConfirmationMailStatus(participant);
-				}
-			}
-		}
 	}
 
 	/*

@@ -26,6 +26,7 @@ import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.repository.ParticipantRepository;
+import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.service.ProgramService;
 import org.srcm.heartfulness.util.SmsUtil;
 
@@ -41,16 +42,16 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 	private SimpleJdbcInsert insertParticipant;
 
-	private ProgramService programService;
+	private ProgramRepository programRepository;
 
 	@Autowired
-	public ParticipantRepositoryImpl(DataSource dataSource, ProgramService programService) {
+	public ParticipantRepositoryImpl(DataSource dataSource) {
 		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 
 		this.insertParticipant = new SimpleJdbcInsert(dataSource).withTableName("participant")
 				.usingGeneratedKeyColumns("id");
-		this.programService = programService;
+		this.programRepository = programRepository;
 	}
 
 	/*
@@ -249,9 +250,9 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	 */
 	@Override
 	public Participant findBySeqId(ParticipantRequest participantRequest) {
-		if (0 != programService.getProgramIdByEventId(participantRequest.getEventId())) {
-			participantRequest.setProgramId(programService.getProgramIdByEventId(participantRequest.getEventId()));
-			Participant newParticipant = programService.findParticipantBySeqId(participantRequest.getSeqId(),
+		if (0 != programRepository.getProgramIdByEventId(participantRequest.getEventId())) {
+			participantRequest.setProgramId(programRepository.getProgramIdByEventId(participantRequest.getEventId()));
+			Participant newParticipant = programRepository.findParticipantBySeqId(participantRequest.getSeqId(),
 					participantRequest.getProgramId());
 			return newParticipant;
 		} else {

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.enumeration.ExcelType;
@@ -33,6 +34,9 @@ import org.srcm.heartfulness.util.ExcelParserUtils;
 import org.srcm.heartfulness.util.InvalidExcelFileException;
 import org.srcm.heartfulness.util.VersionIdentifier;
 import org.srcm.heartfulness.validator.EventDetailsExcelValidatorFactory;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
  * Created by vsonnathi on 11/19/15.
@@ -62,6 +66,9 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 
 	@Autowired
 	private Environment env;
+	
+	@Autowired
+	private WelcomeMailService WelcomeMailService;
 
 	/**
 	 * This method is used to parse the excel file and populate the data into
@@ -93,9 +100,6 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 					Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version);
 					program.setCreatedSource("Excel");
 					programRepository.save(program);
-					if("true".equalsIgnoreCase(env.getProperty("partcipant.send.confimationmail"))){
-						sendAutomaticConfirmationMailToParticipants(program.getParticipantList());
-					}
 					response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
 				}
 			} else {
@@ -111,34 +115,6 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 		}
 		return response;
-	}
-
-	/**
-	 * Method to send the confirmation mail to the newly registered
-	 * participants.
-	 * 
-	 * @param participantList
-	 */
-	private void sendAutomaticConfirmationMailToParticipants(List<Participant> participantList) {
-		for (Participant participant : participantList) {
-			// Checks whether the emailID exists for the participant.
-			if (null != participant.getEmail() && !participant.getEmail().isEmpty()) {
-				LOGGER.debug("Mail subscription : {} ",
-						welcomeMailRepository.checkForMailSubcription(participant.getEmail()) + "");
-				LOGGER.debug("confirmation Mail sent  : {} ",
-						welcomeMailRepository.CheckForConfirmationMailStatus(participant) + "");
-				// Checks whether the participant unsubscribed for receiving
-				// mails.
-				if (1 != welcomeMailRepository.checkForMailSubcription(participant.getEmail())) {
-					// Checks whether the participant already received the
-					// confirmation mail or not.
-					if (1 != welcomeMailRepository.CheckForConfirmationMailStatus(participant)) {
-						sendMail.SendConfirmationMailToParticipant(participant);
-						welcomeMailRepository.updateConfirmationMailStatus(participant);
-					}
-				}
-			}
-		}
 	}
 
 	@Override

@@ -79,7 +79,8 @@ public class FTPConnectionHelper {
 	public static class NotificationMail {
 		private String recipientsTo;
 		private String recipientsCc;
-		private String subject;
+		private String noparticipantssubject;
+		private String particpantssubject;
 
 		public String getRecipientsTo() {
 			return recipientsTo;
@@ -97,13 +98,22 @@ public class FTPConnectionHelper {
 			this.recipientsCc = recipientsCc;
 		}
 
-		public String getSubject() {
-			return subject;
+		public String getNoparticipantssubject() {
+			return noparticipantssubject;
 		}
 
-		public void setSubject(String subject) {
-			this.subject = subject;
+		public void setNoparticipantssubject(String noparticipantssubject) {
+			this.noparticipantssubject = noparticipantssubject;
 		}
+
+		public String getParticpantssubject() {
+			return particpantssubject;
+		}
+
+		public void setParticpantssubject(String particpantssubject) {
+			this.particpantssubject = particpantssubject;
+		}
+
 	}
 
 	@NotNull
@@ -150,13 +160,16 @@ public class FTPConnectionHelper {
 			LOGGER.debug("Connected succesfully..!");
 
 			if (isFileExists(sftpChannel, welcomeMailidsRemoteFilepath + welcomeMailidsFileName)) {
-				if(!isFileExists(sftpChannel,welcomeMailidsRemoteFilepath + backUpFolderName)){
+				LOGGER.debug("Daily email file exists in remote!");
+				if (!isFileExists(sftpChannel, welcomeMailidsRemoteFilepath + backUpFolderName)) {
+					LOGGER.debug("folder created");
 					sftpChannel.mkdir(backUpFolderName);
 				}
 				sftpChannel.rename(welcomeMailidsRemoteFilepath + welcomeMailidsFileName, welcomeMailidsRemoteFilepath
-						+ backUpFolderName + "/" + currentDate+"_"+ welcomeMailidsFileName);
+						+ backUpFolderName + "/" + currentDate + "_" + welcomeMailidsFileName);
+				LOGGER.debug("File renamed!");
 				sftpChannel.put(welcomeMailidsLocalFilepath + currentDate + "_" + welcomeMailidsFileName,
-						welcomeMailidsRemoteFilepath +welcomeMailidsFileName);
+						welcomeMailidsRemoteFilepath + welcomeMailidsFileName);
 				LOGGER.debug("Old file copied to Archives folder and new file created succesfully..!");
 			} else {
 				sftpChannel.put(welcomeMailidsLocalFilepath + currentDate + "_" + welcomeMailidsFileName,
@@ -168,6 +181,7 @@ public class FTPConnectionHelper {
 			session.disconnect();
 		} catch (JSchException ex) {
 			LOGGER.debug("Error while copying file to FTP - " + ex.getMessage());
+			ex.printStackTrace();
 		}
 	}
 
@@ -194,8 +208,13 @@ public class FTPConnectionHelper {
 	 * To send notification mail to the team if no new participants found to
 	 * send mail for the day
 	 */
-	public void sendNotificationForNoEmails() {
-		sendMail.sendNotificationForNoEmails(notificationmail.getRecipientsTo(), notificationmail.getRecipientsCc(),
-				notificationmail.getSubject());
+	public void sendNotificationForNoEmails(String status, int count) {
+		if (status.equalsIgnoreCase("fileUploaded")) {
+			sendMail.sendNotificationEmail(notificationmail.getRecipientsTo(), notificationmail.getRecipientsCc(),
+					notificationmail.getParticpantssubject(), count);
+		} else if (status.equalsIgnoreCase("fileNotUploaded")) {
+			sendMail.sendNotificationEmail(notificationmail.getRecipientsTo(), notificationmail.getRecipientsCc(),
+					notificationmail.getNoparticipantssubject(), count);
+		}
 	}
 }

@@ -6,9 +6,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -51,6 +51,7 @@ public class SendMail {
 	private String exceltemplatename;
 	private String onlinetemplatename;
 	private String noparticipantstemplatename;
+	private String participantstemplatename;
 
 	public String getUsername() {
 		return username;
@@ -124,6 +125,15 @@ public class SendMail {
 		this.noparticipantstemplatename = noparticipantstemplatename;
 	}
 
+	public String getParticipantstemplatename() {
+		return participantstemplatename;
+	}
+
+	public void setParticipantstemplatename(String participantstemplatename) {
+		this.participantstemplatename = participantstemplatename;
+	}
+
+
 	private VelocityEngine velocityEngine = new VelocityEngine();
 
 	private VelocityContext context;
@@ -145,6 +155,8 @@ public class SendMail {
 
 	@Autowired
 	Environment env;
+
+
 
 	/**
 	 * Method to send confirmation mail to the newly registered participants
@@ -182,7 +194,7 @@ public class SendMail {
 	 * @param ccMailIds
 	 *            -recipients CC
 	 */
-	public void sendNotificationForNoEmails(String toMailIds, String ccMailIds, String subject) {
+	public void sendNotificationEmail(String toMailIds, String ccMailIds, String subject,int count) {
 		Properties props = System.getProperties();
 		String[] toIds = toMailIds.split(",");
 		String[] ccIds = ccMailIds.split(",");
@@ -197,7 +209,12 @@ public class SendMail {
 				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(ccId));
 			}
 			message.setSubject(subject);
-			message.setContent(getMessageContentbyTemplateName(noparticipantstemplatename), "text/html");
+			if(count==0){
+				message.setContent(getMessageContentbyTemplateName(noparticipantstemplatename), "text/html");
+			}else{
+				addParameter("COUNT", String.valueOf(count));
+				message.setContent(getMessageContentbyTemplateName(participantstemplatename), "text/html");
+			}
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);

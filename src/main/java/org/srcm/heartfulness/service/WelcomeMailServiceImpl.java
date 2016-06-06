@@ -23,8 +23,10 @@ import org.srcm.heartfulness.helper.FTPConnectionHelper;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
+import org.srcm.heartfulness.model.json.response.EmailverificationResponse;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.WelcomeMailRepository;
+import org.srcm.heartfulness.rest.template.QuickEmailVerificationRestTemplate;
 import org.srcm.heartfulness.rest.template.SendyRestTemplate;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -39,6 +41,9 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 
 	@Autowired
 	SendyRestTemplate sendyRestTemplate;
+	
+	@Autowired
+	QuickEmailVerificationRestTemplate quickEmailVerificationRestTemplate;
 
 	@Autowired
 	private WelcomeMailRepository welcomeMailRepository;
@@ -195,7 +200,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	@Override
 	public void uploadParticipantEmailidsToFTP() throws IOException, JSchException, SftpException {
 		LocalDateTime dateTime = LocalDateTime.now();
-		DateTimeFormatter format = DateTimeFormatter.ofPattern("dd_MMM");
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("dd_MMM_mm");
 		String currentDate = dateTime.format(format);
 
 		SendySubscriber sendySubscriber = null;
@@ -226,6 +231,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			ftpConnectionHelper.processUpload(welcomeMailidsLocalFilepath, welcomeMailidsRemoteFilepath,
 					welcomeMailidsFileName);
 
+			ftpConnectionHelper.sendNotificationForNoEmails("fileUploaded",validEmailSubscribersCount);
 			if (null != subscriberList && subscriberList.size() >= 1) {
 				for (SendySubscriber subscriber : subscriberList) {
 					welcomeMailRepository.updateWelcomeMailLog(subscriber.getUserName(), subscriber.getEmail());
@@ -235,7 +241,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			}
 		} else {
 			LOGGER.debug("No participant found.");
-			ftpConnectionHelper.sendNotificationForNoEmails();
+			ftpConnectionHelper.sendNotificationForNoEmails("fileNotUploaded",0);
 		}
 	}
 	

@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.mail.MessagingException;
 
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.model.Participant;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -45,5 +46,5 @@ public interface WelcomeMailService {
 	 */
 	public void uploadParticipantEmailidsToFTP() throws FileNotFoundException, IOException, JSchException,
 			SftpException;
-	
+
 }

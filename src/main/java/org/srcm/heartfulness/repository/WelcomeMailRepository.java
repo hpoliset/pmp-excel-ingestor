@@ -161,5 +161,4 @@ public interface WelcomeMailRepository {
 	 * @return
 	 */
 	int checkForconfirmStatusOfSubscription(String mailID);
-
 }
