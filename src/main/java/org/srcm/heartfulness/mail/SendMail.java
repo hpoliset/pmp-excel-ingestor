@@ -43,6 +43,8 @@ public class SendMail {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendMail.class);
 
 	private String username;
+	private String password;
+	private String hostname;
 	private String subject;
 	private String defaultname;
 	private String confirmationlink;
@@ -132,6 +134,23 @@ public class SendMail {
 	public void setParticipantstemplatename(String participantstemplatename) {
 		this.participantstemplatename = participantstemplatename;
 	}
+	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
+
 
 
 	private VelocityEngine velocityEngine = new VelocityEngine();
@@ -155,8 +174,6 @@ public class SendMail {
 
 	@Autowired
 	Environment env;
-
-
 
 	/**
 	 * Method to send confirmation mail to the newly registered participants
@@ -194,12 +211,22 @@ public class SendMail {
 	 * @param ccMailIds
 	 *            -recipients CC
 	 */
-	public void sendNotificationEmail(String toMailIds, String ccMailIds, String subject,int count) {
-		Properties props = System.getProperties();
+	public void sendNotificationEmail(String toMailIds, String ccMailIds, String subject, int count) {
 		String[] toIds = toMailIds.split(",");
 		String[] ccIds = ccMailIds.split(",");
 		try {
-			Session session = Session.getDefaultInstance(props);
+			// Session session = Session.getDefaultInstance(props);
+			Properties props = System.getProperties();
+			props.put("mail.debug", "true");
+			props.put("mail.smtp.host", hostname);
+			props.put("mail.smtp.ssl.enable", "true");
+			props.put("mail.smtp.auth", "false");
+			Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
+				@Override
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
+				}
+			});
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(username));
 			for (String toId : toIds) {
@@ -209,9 +236,9 @@ public class SendMail {
 				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(ccId));
 			}
 			message.setSubject(subject);
-			if(count==0){
+			if (count == 0) {
 				message.setContent(getMessageContentbyTemplateName(noparticipantstemplatename), "text/html");
-			}else{
+			} else {
 				addParameter("COUNT", String.valueOf(count));
 				message.setContent(getMessageContentbyTemplateName(participantstemplatename), "text/html");
 			}

@@ -20,7 +20,7 @@ import org.srcm.heartfulness.service.WelcomeMailService;
  *
  */
 @RestController
-@RequestMapping("/api/sendy/")
+@RequestMapping("/api/welcomemail/")
 public class WelcomeMailController {
 
 	@Autowired
@@ -51,7 +51,7 @@ public class WelcomeMailController {
 	}
 
 	/* @Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") */
-	@RequestMapping(value = "/api/uploadtoftp", method = RequestMethod.POST)
+	@RequestMapping(value = "/uploadtoftp", method = RequestMethod.POST)
 	public String uploadDailyWelcomeMailidsToFTP() {
 		try {
 			LOGGER.debug("Upload File to FTP called.");

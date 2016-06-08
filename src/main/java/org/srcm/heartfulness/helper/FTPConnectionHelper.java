@@ -208,7 +208,7 @@ public class FTPConnectionHelper {
 	 * To send notification mail to the team if no new participants found to
 	 * send mail for the day
 	 */
-	public void sendNotificationForNoEmails(String status, int count) {
+	public void sendNotificationForWelcomeEmails(String status, int count) {
 		if (status.equalsIgnoreCase("fileUploaded")) {
 			sendMail.sendNotificationEmail(notificationmail.getRecipientsTo(), notificationmail.getRecipientsCc(),
 					notificationmail.getParticpantssubject(), count);
