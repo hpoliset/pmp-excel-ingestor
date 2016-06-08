@@ -223,11 +223,16 @@ public class SendMail {
 			props.put("mail.smtp.ssl.enable", "true");
 			props.put("mail.smtp.auth", "true");
 			props.put("mail.smtp.starttls.enable", "true");
-			Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
+			/*Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(username, password);
 				}
+			});*/
+			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+			    protected PasswordAuthentication getPasswordAuthentication() {
+			        return new PasswordAuthentication(username, password);
+			    }
 			});
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(username));
