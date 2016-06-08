@@ -227,7 +227,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			ftpConnectionHelper.processUpload(welcomeMailidsLocalFilepath, welcomeMailidsRemoteFilepath,
 					welcomeMailidsFileName);
 
-			ftpConnectionHelper.sendNotificationForWelcomeEmails("fileUploaded",validEmailSubscribersCount);
+			ftpConnectionHelper.sendNotificationForWelcomeEmails(validEmailSubscribersCount);
 			if (null != subscriberList && subscriberList.size() >= 1) {
 				for (SendySubscriber subscriber : subscriberList) {
 					welcomeMailRepository.updateWelcomeMailLog(subscriber.getUserName(), subscriber.getEmail());
@@ -237,7 +237,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			}
 		} else {
 			LOGGER.debug("No participant found.");
-			ftpConnectionHelper.sendNotificationForWelcomeEmails("fileNotUploaded",0);
+			ftpConnectionHelper.sendNotificationForWelcomeEmails(0);
 		}
 	}
 	
