@@ -79,8 +79,7 @@ public class FTPConnectionHelper {
 	public static class NotificationMail {
 		private String recipientsTo;
 		private String recipientsCc;
-		private String noparticipantssubject;
-		private String particpantssubject;
+		private String subject;
 
 		public String getRecipientsTo() {
 			return recipientsTo;
@@ -98,20 +97,12 @@ public class FTPConnectionHelper {
 			this.recipientsCc = recipientsCc;
 		}
 
-		public String getNoparticipantssubject() {
-			return noparticipantssubject;
+		public String getSubject() {
+			return subject;
 		}
 
-		public void setNoparticipantssubject(String noparticipantssubject) {
-			this.noparticipantssubject = noparticipantssubject;
-		}
-
-		public String getParticpantssubject() {
-			return particpantssubject;
-		}
-
-		public void setParticpantssubject(String particpantssubject) {
-			this.particpantssubject = particpantssubject;
+		public void setSubject(String subject) {
+			this.subject = subject;
 		}
 
 	}
@@ -208,13 +199,9 @@ public class FTPConnectionHelper {
 	 * To send notification mail to the team if no new participants found to
 	 * send mail for the day
 	 */
-	public void sendNotificationForWelcomeEmails(String status, int count) {
-		if (status.equalsIgnoreCase("fileUploaded")) {
-			sendMail.sendNotificationEmail(notificationmail.getRecipientsTo(), notificationmail.getRecipientsCc(),
-					notificationmail.getParticpantssubject(), count);
-		} else if (status.equalsIgnoreCase("fileNotUploaded")) {
-			sendMail.sendNotificationEmail(notificationmail.getRecipientsTo(), notificationmail.getRecipientsCc(),
-					notificationmail.getNoparticipantssubject(), count);
-		}
+	public void sendNotificationForWelcomeEmails(int count) {
+		sendMail.sendNotificationEmail(notificationmail.getRecipientsTo(), notificationmail.getRecipientsCc(),
+				notificationmail.getSubject(), count);
+
 	}
 }
