@@ -219,8 +219,9 @@ public class SendMail {
 			Properties props = System.getProperties();
 			props.put("mail.debug", "true");
 			props.put("mail.smtp.host", hostname);
+			props.put("mail.smtp.port", "465");
 			props.put("mail.smtp.ssl.enable", "true");
-			props.put("mail.smtp.auth", "false");
+			props.put("mail.smtp.auth", "true");
 			Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication() {
