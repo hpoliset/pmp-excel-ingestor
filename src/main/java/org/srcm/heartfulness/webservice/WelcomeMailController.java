@@ -53,14 +53,14 @@ public class WelcomeMailController {
 
 	@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}")
 	@RequestMapping(value = "/uploadtoftp", method = RequestMethod.POST)
-	public String uploadDailyWelcomeMailidsToFTP() {
+	public void uploadDailyWelcomeMailidsToFTP() {
 		try {
 			LOGGER.debug("Upload File to FTP called.");
 			WelcomeMailService.uploadParticipantEmailidsToFTP();
-			return "Process Completed.";
+			LOGGER.debug("Process Completed.");
 		} catch (Exception e) {
 			LOGGER.error("Exception while uploading file - {} " + e.getMessage());
-			return "Error Occurred.";
+			//return "Error Occurred.";
 		}
 	}
 
