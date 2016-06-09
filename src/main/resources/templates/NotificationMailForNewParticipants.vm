@@ -1,0 +1,16 @@
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<table style="border:none;"><tbody>
+		<table style="width:100%;border:none;"><tbody><tr>
+		<td style="font-family: Helvetica, arial, sans-serif; font-size: 16px; color: #666666;  line-height: 30px; text-align: left;border:none;">Dear Team,</td>
+		</tr></tbody></table>
+		<div style="font-family: Helvetica, arial, sans-serif; font-size: 16px; color: #666666; text-align: left; line-height: 30px;">
+		<p>Please note that the welcome email list is uploaded to FTP site for ${DATE}.</p>
+		<p>Total No. of participants :  ${COUNT} </p>
+		<p>With regards,</p>
+		<p>PMP Team</p>
+</body>
+</html>

@@ -1,6 +1,9 @@
 package org.srcm.heartfulness.service;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -12,17 +15,22 @@ import javax.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EventConstants;
+import org.srcm.heartfulness.helper.FTPConnectionHelper;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
+import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.WelcomeMailRepository;
 import org.srcm.heartfulness.rest.template.SendyRestTemplate;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 
 @Service
 public class WelcomeMailServiceImpl implements WelcomeMailService {
@@ -34,6 +42,22 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 
 	@Autowired
 	private WelcomeMailRepository welcomeMailRepository;
+	
+	@Value("${welcome.mailids.filename}")
+	private String welcomeMailidsFileName;
+
+	@Value("${welcome.mailids.local.filepath}")
+	private String welcomeMailidsLocalFilepath;
+
+	@Value("${welcome.mailids.remote.filepath}")
+	private String welcomeMailidsRemoteFilepath;
+
+	@Autowired
+	private FTPConnectionHelper ftpConnectionHelper;
+	
+	@Autowired
+	private ParticipantRepository participantRepository;
+
 
 	/**
 	 * To fetch the participants from database and subscribe to the welcome mail
@@ -160,6 +184,61 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			for (WelcomeMailDetails subscriber : subscribers) {
 				sendyRestTemplate.unsubscribeUser(subscriber);
 			}
+		}
+	}
+	
+	/**
+	 * To upload list of welcome mail ids as a file to the FTP
+	 * 
+	 * @throws IOException
+	 * @throws JSchException
+	 * @throws SftpException
+	 */
+	@Override
+	public void uploadParticipantEmailidsToFTP() throws IOException, JSchException, SftpException {
+		LocalDateTime dateTime = LocalDateTime.now();
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("dd_MMM_mm");
+		String currentDate = dateTime.format(format);
+
+		SendySubscriber sendySubscriber = null;
+		List<SendySubscriber> subscriberList = new ArrayList<SendySubscriber>();
+		List<Participant> participants = new ArrayList<Participant>();
+		participants = welcomeMailRepository.getParticipantsToSendWelcomeEmails();
+		int validEmailSubscribersCount = 0;
+		StringBuilder sb = new StringBuilder();
+		LOGGER.debug("partcipant size {}" + participants.size());
+		if (null != participants && participants.size() >= 1) {
+			for (Participant participant : participants) {
+				if (null != participant.getEmail() && !participant.getEmail().isEmpty()
+						&& participant.getEmail().matches(EventConstants.EMAIL_REGEX)) {
+					sendySubscriber = new SendySubscriber();
+					validEmailSubscribersCount++;
+					sb.append(participant.getEmail() + System.lineSeparator());
+					sendySubscriber.setUserName(participant.getPrintName());
+					sendySubscriber.setEmail(participant.getEmail());
+					subscriberList.add(sendySubscriber);
+				}
+			}
+			FileOutputStream fop = new FileOutputStream(welcomeMailidsLocalFilepath + currentDate + "_"
+					+ welcomeMailidsFileName);
+			fop.write(sb.toString().getBytes());
+			fop.close();
+			LOGGER.debug("File copied to  " + welcomeMailidsLocalFilepath + currentDate + "_" + welcomeMailidsFileName);
+			LOGGER.debug("Valid email count- " + validEmailSubscribersCount);
+			ftpConnectionHelper.processUpload(welcomeMailidsLocalFilepath, welcomeMailidsRemoteFilepath,
+					welcomeMailidsFileName);
+
+			ftpConnectionHelper.sendNotificationForWelcomeEmails(validEmailSubscribersCount);
+			if (null != subscriberList && subscriberList.size() >= 1) {
+				for (SendySubscriber subscriber : subscriberList) {
+					welcomeMailRepository.updateWelcomeMailLog(subscriber.getUserName(), subscriber.getEmail());
+					welcomeMailRepository.updateParticipantByMailId(subscriber.getEmail());
+				}
+				LOGGER.debug("Details updated to participant and welcome email log table for {} participants." ,subscriberList.size());
+			}
+		} else {
+			LOGGER.debug("No participant found.");
+			ftpConnectionHelper.sendNotificationForWelcomeEmails(0);
 		}
 	}
 }

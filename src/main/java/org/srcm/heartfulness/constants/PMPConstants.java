@@ -55,5 +55,7 @@ public class PMPConstants {
 	public static final String STATE_SEEMANDHRA = "SEEMANDHRA";
 
 	public static final String STATE_WESTBENGAL = "WESTBENGAL";
+	
+	public static final String SECURITY_TOKEN_KEY = "security.encrypt.token";
 
 }
