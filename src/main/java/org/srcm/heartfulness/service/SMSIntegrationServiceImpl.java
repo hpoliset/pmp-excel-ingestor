@@ -16,6 +16,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.constants.SMSConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
+import org.srcm.heartfulness.helper.EWelcomeIDGenerationHelper;
 import org.srcm.heartfulness.mail.SendMail;
 import org.srcm.heartfulness.model.Aspirant;
 import org.srcm.heartfulness.model.Participant;
@@ -62,6 +63,9 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 
 	@Autowired
 	SendMail sendMail;
+	
+	@Autowired
+	EWelcomeIDGenerationHelper eWelcomeIDGenerationHelper;
 
 	@Autowired
 	private WelcomeMailRepository welcomeMailRepository;
@@ -561,7 +565,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 						if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty()) {
 							// participant.setWelcomeCardNumber(String.valueOf(SmsUtil.generateRandomNumber(9)));
 							try {
-								generateEWelcomeId(participant);
+								eWelcomeIDGenerationHelper.generateEWelcomeId(participant);
 								participantRepository.save(participant);
 								response = SMSConstants.SMS_EWELCOME_RESPONSE_SUCCESS_1
 										+ participant.getWelcomeCardNumber() + SMSConstants.SMS_EWELCOME_RESPONSE_SUCCESS_2;

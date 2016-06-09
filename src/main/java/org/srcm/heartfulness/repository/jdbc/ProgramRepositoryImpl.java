@@ -833,6 +833,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	@Override
 	public Participant findParticipantBySeqId(String seqId, int programId) {
 		Participant participant;
+		Program program;
 		Map<String, Object> params = new HashMap<>();
 		params.put("seqId", seqId);
 		params.put("programId", programId);
@@ -840,6 +841,12 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			participant = this.namedParameterJdbcTemplate.queryForObject(
 					"SELECT * FROM participant WHERE seqId=:seqId AND program_id=:programId", params,
 					BeanPropertyRowMapper.newInstance(Participant.class));
+			if (participant != null && participant.getProgramId() > 0) {
+				program = participantRepository.findOnlyProgramById(participant.getProgramId());
+			} else {
+				program = new Program();
+			}
+			participant.setProgram(program);
 			return participant;
 
 		} catch (EmptyResultDataAccessException ex) {

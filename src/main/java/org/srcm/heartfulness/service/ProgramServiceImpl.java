@@ -1,5 +1,6 @@
 package org.srcm.heartfulness.service;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -10,9 +11,11 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.enumeration.EventSearchField;
+import org.srcm.heartfulness.helper.EWelcomeIDGenerationHelper;
 import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
@@ -20,8 +23,12 @@ import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
+import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.validator.EventDashboardValidator;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 @Service
 public class ProgramServiceImpl implements ProgramService {
@@ -31,6 +38,12 @@ public class ProgramServiceImpl implements ProgramService {
 
 	@Autowired
 	EventDashboardValidator eventDashboardValidator;
+
+	@Autowired
+	ParticipantRepository participantRepository;
+
+	@Autowired
+	EWelcomeIDGenerationHelper eWelcomeIDGenerationHelper;
 
 	/*
 	 * (non-Javadoc)
@@ -551,7 +564,7 @@ public class ProgramServiceImpl implements ProgramService {
 		eventDetails.setWelcomeCardSignedByName(program.getWelcomeCardSignedByName());
 
 		eventDetails.setWelcomeCardSignerIdCardNumber(program.getWelcomeCardSignerIdCardNumber());
-		
+
 		eventDetails.setRemarks(program.getRemarks());
 		return eventDetails;
 	}
@@ -627,4 +640,35 @@ public class ProgramServiceImpl implements ProgramService {
 		return programRepository.getEventIdByProgramID(programId);
 	}
 
+	/**
+	 * Retrieve <code>e-Welcome ID</code> generated in MySRCM and persist in data store for the given eventID and seqID.
+	 * @param seqID
+	 * @param eventId
+	 * @return
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	@Override
+	public String generateeWelcomeID(String seqID, String eventId) throws HttpClientErrorException, JsonParseException,
+			JsonMappingException, IOException {
+		int programID = programRepository.getProgramIdByEventId(eventId);
+		Participant participant = programRepository.findParticipantBySeqId(seqID, programID);
+		if (participant.getId() > 0 && participant.getProgramId() > 0) {
+			if (seqID != null && seqID.length() == 4) {
+				if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty()) {
+					eWelcomeIDGenerationHelper.generateEWelcomeId(participant);
+					participantRepository.save(participant);
+					return participant.getWelcomeCardNumber();
+				} else {
+					return participant.getWelcomeCardNumber();
+				}
+			} else {
+				return "Invalid SeqID";
+			}
+		} else {
+			return "Invalid SeqID/eventID";
+		}
+	}
 }

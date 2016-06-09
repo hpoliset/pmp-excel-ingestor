@@ -1,8 +1,10 @@
 package org.srcm.heartfulness.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
@@ -10,6 +12,9 @@ import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 public interface ProgramService {
 	
@@ -215,5 +220,17 @@ public interface ProgramService {
 	 * @return
 	 */
 	public String getEventIdByProgramID(int programId);
+
+	/**
+	 * Retrieve <code>e-Welcome ID</code> generated in MySRCM and persist in data store for the given eventID and seqID.
+	 * @param seqID
+	 * @param eventId
+	 * @return
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	public String generateeWelcomeID(String seqID, String eventId) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
 
 }
