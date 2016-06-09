@@ -84,6 +84,36 @@ public class Program {
 	private List<Participant> participantList = Collections.emptyList();
 
 	private String createdSource;
+	
+	private String srcmGroup;
+
+	private String prefectId;
+
+	private String abyasiRefNo;
+	
+	public String getSrcmGroup() {
+		return srcmGroup;
+	}
+
+	public void setSrcmGroup(String srcmGroup) {
+		this.srcmGroup = srcmGroup;
+	}
+
+	public String getPrefectId() {
+		return prefectId;
+	}
+
+	public void setPrefectId(String prefectId) {
+		this.prefectId = prefectId;
+	}
+
+	public String getAbyasiRefNo() {
+		return abyasiRefNo;
+	}
+
+	public void setAbyasiRefNo(String abyasiRefNo) {
+		this.abyasiRefNo = abyasiRefNo;
+	}
 
 	public String getCreatedSource() {
 		return createdSource;

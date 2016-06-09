@@ -32,8 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ConfigurationProperties(locations = "classpath:prod.sms.gateway.properties", ignoreUnknownFields = false, prefix = "gateway")
 public class SmsGatewayRestTemplate extends RestTemplate {
 
-	
-	private String  username;
+	private String username;
 	private String password;
 	private String apiKey;
 	private String senderid;
@@ -52,13 +51,13 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 	private HttpHeaders httpHeaders = new HttpHeaders();
 	private MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
 	private HttpEntity<?> httpEntity;
-	
-	public SMSResponse sendSMS(String mobileNumber, String textMessage)
-			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
-		
+
+	public SMSResponse sendSMS(String mobileNumber, String textMessage) throws HttpClientErrorException,
+			JsonParseException, JsonMappingException, IOException {
+
 		if (proxy)
 			setProxy();
-		
+
 		Account account = new Account();
 		account.setUser(username);
 		account.setPassword(password);
@@ -71,76 +70,69 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 		Messages messages = new Messages();
 		messages.setNumber(mobileNumber);
 		messages.setText(textMessage);
-		
+
 		SMSRequest smsRequestParams = new SMSRequest();
 		smsRequestParams.setAccount(account);
-		smsRequestParams.setMessages(new Messages[]{messages});
-		
+		smsRequestParams.setMessages(new Messages[] { messages });
+
 		httpHeaders = new HttpHeaders();
 		httpHeaders.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 		httpHeaders.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
-		System.out.println("request params"+mapper.writeValueAsString(smsRequestParams));
-		httpEntity = new HttpEntity<Object>(mapper.writeValueAsString(smsRequestParams),httpHeaders);
+		System.out.println("request params" + mapper.writeValueAsString(smsRequestParams));
+		httpEntity = new HttpEntity<Object>(mapper.writeValueAsString(smsRequestParams), httpHeaders);
 		ResponseEntity<String> response = this.exchange(sendSmsUri, HttpMethod.POST, httpEntity, String.class);
 		return mapper.readValue(response.getBody(), SMSResponse.class);
-		//return new SMSResponse();
+		// return new SMSResponse();
 	}
-	
-	public GoogleResponse getLocationdetails(String address, String pincode)
-			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
-			setProxy();
+
+	public GoogleResponse getLocationdetails(String address, String pincode) throws HttpClientErrorException,
+			JsonParseException, JsonMappingException, IOException {
+		setProxy();
 		httpHeaders = new HttpHeaders();
 		httpHeaders.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
-		ResponseEntity<String> response = this.exchange("http://maps.google.com/maps/api/geocode/json?address="+address+""
-				+ "&components=postal_code:"+pincode+"&sensor=false", HttpMethod.GET, httpEntity, String.class);
+		ResponseEntity<String> response = this.exchange("http://maps.google.com/maps/api/geocode/json?address="
+				+ address + "" + "&components=postal_code:" + pincode + "&sensor=false", HttpMethod.GET, httpEntity,
+				String.class);
 		return mapper.readValue(response.getBody(), GoogleResponse.class);
 	}
-	
-	/*public static void main(String[] args){
-		SmsGatewayRestTemplate template = new SmsGatewayRestTemplate();
-		try {
-			template.username = "LOVHFN";
-			template.password = "325344";
-			//template.apiKey = "790f5fcd-4211-4574-a7c4-c06e6d8d6661";
-			template.username = "SHORTCODE";
-			template.senderid = "LOVHFN";
-			template.channel = "2";
-			template.DCS = "0";
-			template.sendSmsUri="http://login.smsgatewayhub.com/RestAPI/MT.svc/mt";
-			SMSResponse response = template.sendSMS("9790078454","https post method");
-			System.out.println("Final Response : "+response);
-		} catch (HttpClientErrorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}*/
+
+	/*
+	 * public static void main(String[] args){ SmsGatewayRestTemplate template =
+	 * new SmsGatewayRestTemplate(); try { template.username = "LOVHFN";
+	 * template.password = "325344"; //template.apiKey =
+	 * "790f5fcd-4211-4574-a7c4-c06e6d8d6661"; template.username = "SHORTCODE";
+	 * template.senderid = "LOVHFN"; template.channel = "2"; template.DCS = "0";
+	 * template.sendSmsUri="http://login.smsgatewayhub.com/RestAPI/MT.svc/mt";
+	 * SMSResponse response =
+	 * template.sendSMS("9790078454","https post method");
+	 * System.out.println("Final Response : "+response); } catch
+	 * (HttpClientErrorException e) { // TODO Auto-generated catch block
+	 * e.printStackTrace(); } catch (JsonParseException e) { // TODO
+	 * Auto-generated catch block e.printStackTrace(); } catch
+	 * (JsonMappingException e) { // TODO Auto-generated catch block
+	 * e.printStackTrace(); } catch (IOException e) { // TODO Auto-generated
+	 * catch block e.printStackTrace(); } }
+	 */
 
 	/**
 	 * 
 	 */
 	private void setProxy() {
-		/*CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
-				new UsernamePasswordCredentials(proxyUser, proxyPassword));
-		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-		clientBuilder.useSystemProperties();
-		clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
-		clientBuilder.setDefaultCredentialsProvider(credsProvider);
-		clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-		CloseableHttpClient client = clientBuilder.build();
-		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-		factory.setHttpClient(client);
-		this.setRequestFactory(factory);*/
+		/*
+		 * CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		 * credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST,
+		 * AuthScope.ANY_PORT), new UsernamePasswordCredentials(proxyUser,
+		 * proxyPassword)); HttpClientBuilder clientBuilder =
+		 * HttpClientBuilder.create(); clientBuilder.useSystemProperties();
+		 * clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
+		 * clientBuilder.setDefaultCredentialsProvider(credsProvider);
+		 * clientBuilder.setProxyAuthenticationStrategy(new
+		 * ProxyAuthenticationStrategy()); CloseableHttpClient client =
+		 * clientBuilder.build(); HttpComponentsClientHttpRequestFactory factory
+		 * = new HttpComponentsClientHttpRequestFactory();
+		 * factory.setHttpClient(client); this.setRequestFactory(factory);
+		 */
 	}
 
 	public void setUsername(String username) {
@@ -174,8 +166,5 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 	public void setBody(MultiValueMap<String, String> body) {
 		this.body = body;
 	}
-
-
-	
 
 }
