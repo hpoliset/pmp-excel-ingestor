@@ -256,6 +256,7 @@ public class SendMail {
 					return new PasswordAuthentication(username, password);
 				}
 			});
+
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(username));
 			for (String toId : toIds) {
@@ -266,7 +267,7 @@ public class SendMail {
 			}
 			message.setSubject(subject);
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
-			addParameter("DATE",sdf.format(new Date()));
+			addParameter("DATE", sdf.format(new Date()));
 			if (count == 0) {
 				message.setContent(getMessageContentbyTemplateName(noparticipantstemplatename), "text/html");
 			} else {
@@ -401,35 +402,37 @@ public class SendMail {
 		}
 	}
 
-	public void sendMailNotificationToCoordinator(String toMailId,String participantCount,String eventName,String coordinatorName){
-		LOGGER.debug("START  :Sending mail to "+toMailId);
-		Properties props = System.getProperties();
-		/*props.put("mail.debug", "true");
-		props.put("mail.smtp.host", "mail.htcindia.com");
-		props.put("mail.smtp.ssl.enable", "true");
-		props.put("mail.smtp.auth", "true");
-		Session session =Session.getDefaultInstance(props,new javax.mail.Authenticator(){
-			@Override
-			protected PasswordAuthentication
-			getPasswordAuthentication()
-			{
-				return new PasswordAuthentication("test@htcindia.com","");
-			}
-		});*/
-
+	public void sendMailNotificationToCoordinator(String toMailId, String participantCount, String eventName,
+			String coordinatorName) {
+		LOGGER.debug("START  :Sending mail to " + toMailId);
 		try {
-			Session session = Session.getDefaultInstance(props);
-			addParameter("NAME",getName(coordinatorName));
-			addParameter("PARTICIPANT_COUNT",participantCount);
-			addParameter("EVENT_NAME",eventName);
+			// Session session = Session.getDefaultInstance(props);
+			Properties props = System.getProperties();
+			props.put("mail.debug", "true");
+			props.put("mail.smtp.host", hostname);
+			props.put("mail.smtp.port", port);
+			props.put("mail.smtp.ssl.enable", "true");
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");
+
+			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
+				}
+			});
+
+			addParameter("NAME", getName(coordinatorName));
+			addParameter("PARTICIPANT_COUNT", participantCount);
+			addParameter("EVENT_NAME", eventName);
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, -1);
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
-			addParameter("DATE",sdf.format(cal.getTime()));
+			addParameter("DATE", sdf.format(cal.getTime()));
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(username));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toMailId));
-			//message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(ccMailId));
+			// message.addRecipients(Message.RecipientType.CC,
+			// InternetAddress.parse(ccMailId));
 			crdntrmailsubject = crdntrmailsubject + sdf.format(cal.getTime());
 			message.setSubject(crdntrmailsubject);
 			message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename), "text/html");
@@ -437,9 +440,9 @@ public class SendMail {
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
 			Transport.send(message);
-			LOGGER.debug("END  :Successfully sent mail to "+toMailId);
+			LOGGER.debug("END  :Successfully sent mail to " + toMailId);
 		} catch (MessagingException e) {
-			LOGGER.error("EXCEPTION  :Failed to sent mail to"+toMailId);
+			LOGGER.error("EXCEPTION  :Failed to sent mail to" + toMailId);
 		}
 	}
 }
