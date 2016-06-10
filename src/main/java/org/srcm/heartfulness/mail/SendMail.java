@@ -219,8 +219,8 @@ public class SendMail {
 			for (String ccId : ccIds) {
 				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(ccId));
 			}
-			message.setSubject(subject);
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+			message.setSubject(subject+" "+sdf.format(new Date()));
 			addParameter("DATE",sdf.format(new Date()));
 			if (count == 0) {
 				message.setContent(getMessageContentbyTemplateName(noparticipantstemplatename), "text/html");
