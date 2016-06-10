@@ -8,8 +8,8 @@
 		<td style="font-family: Helvetica, arial, sans-serif; font-size: 16px; color: #666666;  line-height: 30px; text-align: left;border:none;">Dear Team,</td>
 		</tr></tbody></table>
 		<div style="font-family: Helvetica, arial, sans-serif; font-size: 16px; color: #666666; text-align: left; line-height: 30px;">
-		<p>No participants registered for the day (${DATE}). Since file not uploaded to the FTP site.</p>
-		<p>With regards,</p>
-		<p>PMP Team</p>
+		<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No participants registered for the day (${DATE}). Since file not uploaded to the FTP site.</p>
+		<p>With regards,
+		<br/>PMP Team</p>
 </body>
 </html>
