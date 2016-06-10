@@ -46,5 +46,12 @@ public interface WelcomeMailService {
 	 */
 	public void uploadParticipantEmailidsToFTP() throws FileNotFoundException, IOException, JSchException,
 			SftpException;
+	
+	/**
+	 * Service method to fetch the list of coordinators who 
+	 * will receive emails for those participants who have
+	 * received welcome emails.
+	 */
+	public void getCoordinatorListAndSendMail();
 
 }

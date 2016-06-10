@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.mail.MessagingException;
@@ -16,10 +17,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EventConstants;
 import org.srcm.heartfulness.helper.FTPConnectionHelper;
+import org.srcm.heartfulness.mail.SendMail;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
@@ -40,7 +43,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 
 	@Autowired
 	SendyRestTemplate sendyRestTemplate;
-	
+
 	@Autowired
 	private WelcomeMailRepository welcomeMailRepository;
 
@@ -55,9 +58,12 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 
 	@Autowired
 	private FTPConnectionHelper ftpConnectionHelper;
-	
+
 	@Autowired
 	private ParticipantRepository participantRepository;
+
+	@Autowired
+	SendMail sendEmailNotification;
 
 	/**
 	 * To fetch the participants from database and subscribe to the welcome mail
@@ -71,7 +77,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	 */
 	@Override
 	public void addNewSubscriber() throws HttpClientErrorException, JsonParseException, JsonMappingException,
-			IOException, MessagingException {
+	IOException, MessagingException {
 
 		SendySubscriber sendySubscriber = null;
 		List<Participant> participants = new ArrayList<Participant>();
@@ -176,7 +182,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	 */
 	@Override
 	public void unsubscribeUsers() throws HttpClientErrorException, JsonParseException, JsonMappingException,
-			IOException {
+	IOException {
 		List<WelcomeMailDetails> subscribers = new ArrayList<WelcomeMailDetails>();
 		subscribers = welcomeMailRepository.getSubscribersToUnsubscribe();
 		if (subscribers.size() >= 1) {
@@ -240,5 +246,41 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			ftpConnectionHelper.sendNotificationForWelcomeEmails(0);
 		}
 	}
-	
+
+	/**
+	 * Service method that will get the list of coordinators with 
+	 * details of the participant count who have received welcome 
+	 * emails,event name,coordinator name and send mails to the respective
+	 *  coordinators with the details.
+	 */
+	@Override
+	public void getCoordinatorListAndSendMail() {
+		LOGGER.debug("START		:Getting coordinator list to send email noticafications");
+
+		try{
+			Map<String,List<String>> details = welcomeMailRepository.getCoordinatorWithEmailDetails();
+			LOGGER.debug("				Total number of coordinators to send email is : "+details.size());
+			if(!details.isEmpty()){
+				LOGGER.debug("START		:Sending email notifications to the coordinator list");
+				for(Map.Entry<String,List<String>> map:details.entrySet()){
+					sendEmailNotification.sendMailNotificationToCoordinator(map.getKey(),map.getValue().get(0),map.getValue().get(1),map.getValue().get(2));
+				}
+				LOGGER.debug("END		:Completed sending email notifications to the coordinator list");
+				LOGGER.debug("START		:Updating is_coordinator_informed column for the participants who have received welcome email");
+				int upadateStatus = welcomeMailRepository.updateCoordinatorInformedStatus();
+				if(upadateStatus > 0){
+					LOGGER.debug("END		:Completed updating is_coordinator_informed column for the participant who have received welcome email");
+				}else{
+					LOGGER.debug("Failed to update is_coordinator_informed column for the participants who have received welcome email");
+				}
+			}else{
+				LOGGER.debug("END		:No new participants found who have received welcome email");
+			}
+
+		}catch(EmptyResultDataAccessException ex){
+			LOGGER.debug("EmptyResultDataAccessException		:No new participants found who have received welcome email");
+		}catch(Exception ex){
+			LOGGER.debug("EXCEPTION		:Failed to get the list of coordinators");
+		}
+	}
 }

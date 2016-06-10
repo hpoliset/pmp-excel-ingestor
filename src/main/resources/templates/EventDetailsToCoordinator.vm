@@ -1,0 +1,18 @@
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<div>
+Dear ${NAME},
+<br/>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Welcome mail sent to the registered participants for the event ${EVENT_NAME} on ${DATE}. </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Count of participants who have received welcome email : ${PARTICIPANT_COUNT}</p>
+<br/>
+<div style="font-style: italic; font-weight: bold;">
+With regards,
+<br/>
+Heartfulness Team
+</div>
+</body>
+</html>
