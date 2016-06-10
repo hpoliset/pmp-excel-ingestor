@@ -77,7 +77,7 @@ public interface ParticipantRepository {
 	 * @param participantRequest
 	 * @return <code>Participant</code>
 	 */
-	Participant findBySeqId(ParticipantRequest participantRequest);
+	/*Participant findBySeqId(ParticipantRequest participantRequest);*/
 
 	/**
 	 * Retrieve <code>List<Participant></code> from the data store by values

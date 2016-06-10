@@ -42,8 +42,6 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 	private SimpleJdbcInsert insertParticipant;
 
-	private ProgramRepository programRepository;
-
 	@Autowired
 	public ParticipantRepositoryImpl(DataSource dataSource) {
 		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -51,7 +49,6 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 		this.insertParticipant = new SimpleJdbcInsert(dataSource).withTableName("participant")
 				.usingGeneratedKeyColumns("id");
-		this.programRepository = programRepository;
 	}
 
 	/*
@@ -247,9 +244,10 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	 * 
 	 * @param participantRequest
 	 * @return <code>Participant</code>
-	 */
+	 *//*
 	@Override
 	public Participant findBySeqId(ParticipantRequest participantRequest) {
+		System.out.println(participantRequest.getEventId());
 		if (0 != programRepository.getProgramIdByEventId(participantRequest.getEventId())) {
 			participantRequest.setProgramId(programRepository.getProgramIdByEventId(participantRequest.getEventId()));
 			Participant newParticipant = programRepository.findParticipantBySeqId(participantRequest.getSeqId(),
@@ -258,7 +256,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 		} else {
 			return new Participant();
 		}
-	}
+	}*/
 
 	/**
 	 * Retrieve <code>List<Participant></code> from the data store by values

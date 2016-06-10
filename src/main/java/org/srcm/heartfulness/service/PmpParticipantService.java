@@ -3,6 +3,7 @@ package org.srcm.heartfulness.service;
 import java.text.ParseException;
 import java.util.List;
 
+import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
 
@@ -44,5 +45,13 @@ public interface PmpParticipantService {
 	 * @return
 	 */
 	public List<ParticipantRequest> searchParticipants(SearchRequest searchRequest);
+
+	/**
+	 * Retrieve <code>Participant</code> from the data store by SeqID.
+	 * 
+	 * @param participantRequest
+	 * @return <code>Participant</code>
+	 */
+	public Participant findBySeqId(ParticipantRequest participantRequest);
 
 }

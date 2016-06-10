@@ -26,7 +26,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 
 	@Autowired
 	ParticipantRepository participantRepository;
-
+	
 	@Autowired
 	ProgramRepository programrepository;
 
@@ -78,7 +78,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setIntroductionDate(null != participantRequest.getIntroductionDate() ? sdf1.parse(sdf1
 					.format(sdf.parse(participantRequest.getIntroductionDate()))) : null);
 		} else {
-			participant = participantRepository.findBySeqId(participantRequest);
+			participant = findBySeqId(participantRequest);
 			participant.setPrintName(participantRequest.getPrintName());
 			participant.setEmail(participantRequest.getEmail());
 			participant.setMobilePhone(participantRequest.getMobilePhone());
@@ -146,7 +146,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	@Override
 	public ParticipantRequest getParticipantBySeqId(ParticipantRequest participantRequest) {
 		SimpleDateFormat sdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
-		Participant participant = participantRepository.findBySeqId(participantRequest);
+		Participant participant = findBySeqId(participantRequest);
 		if (null != participant) {
 			participantRequest.setPrintName(participant.getPrintName());
 			participantRequest.setEmail(participant.getEmail());
@@ -257,6 +257,24 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participantReqList.add(participantReq);
 		}
 		return participantReqList;
+	}
+
+	/**
+	 * Retrieve <code>Participant</code> from the data store by SeqID.
+	 * 
+	 * @param participantRequest
+	 * @return <code>Participant</code>
+	 */
+	@Override
+	public Participant findBySeqId(ParticipantRequest participantRequest) {
+		if (0 != programrepository.getProgramIdByEventId(participantRequest.getEventId())) {
+			participantRequest.setProgramId(programrepository.getProgramIdByEventId(participantRequest.getEventId()));
+			Participant newParticipant = programrepository.findParticipantBySeqId(participantRequest.getSeqId(),
+					participantRequest.getProgramId());
+			return newParticipant;
+		} else {
+			return new Participant();
+		}
 	}
 
 }
