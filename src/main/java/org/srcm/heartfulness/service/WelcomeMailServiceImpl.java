@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -263,16 +264,31 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			if(!details.isEmpty()){
 				LOGGER.debug("START		:Sending email notifications to the coordinator list");
 				for(Map.Entry<String,List<String>> map:details.entrySet()){
-					sendEmailNotification.sendMailNotificationToCoordinator(map.getKey(),map.getValue().get(0),map.getValue().get(1),map.getValue().get(2));
+					if(null != map.getKey()){
+						try{
+							LOGGER.debug("START		:Sending email to "+map.getKey());
+							sendEmailNotification.sendMailNotificationToCoordinator(map.getKey(),map.getValue().get(0),map.getValue().get(1),map.getValue().get(2));
+							LOGGER.debug("END		:Completed sending email to "+map.getKey());
+							LOGGER.debug("START		:Updating is_coordinator_informed column for the participants who have received welcome email for coordinator "+map.getKey());
+							int upadateStatus = welcomeMailRepository.updateCoordinatorInformedStatus(map.getKey());
+							if(upadateStatus > 0){
+								LOGGER.debug("END		:Completed updating is_coordinator_informed column for the participant who have received welcome email for coordinator "+map.getKey());
+							}else{
+								LOGGER.debug("Failed to update is_coordinator_informed column for the participants who have received welcome email for coordinator"+map.getKey());
+							}
+						}catch(AddressException ex){
+							LOGGER.error("ADDRESS_EXCEPTION  :Failed to sent mail to" + map.getKey());
+							LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
+						}catch(MessagingException ex){
+							LOGGER.error("MESSAGING_EXCEPTION  :Failed to sent mail to" + map.getKey());
+							LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
+						}catch(Exception ex){
+							LOGGER.error("EXCEPTION  :Failed to sent mail to" + map.getKey());
+							LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
+						}
+					}
 				}
 				LOGGER.debug("END		:Completed sending email notifications to the coordinator list");
-				LOGGER.debug("START		:Updating is_coordinator_informed column for the participants who have received welcome email");
-				int upadateStatus = welcomeMailRepository.updateCoordinatorInformedStatus();
-				if(upadateStatus > 0){
-					LOGGER.debug("END		:Completed updating is_coordinator_informed column for the participant who have received welcome email");
-				}else{
-					LOGGER.debug("Failed to update is_coordinator_informed column for the participants who have received welcome email");
-				}
 			}else{
 				LOGGER.debug("END		:No new participants found who have received welcome email");
 			}

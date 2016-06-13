@@ -426,12 +426,13 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	/**
 	 * This repository method updates the column in the
 	 * participant table for those participants who
-	 * have received welcome email. 
+	 * have received welcome email.
+	 * @param programId
 	 */
 	@Override
-	public int updateCoordinatorInformedStatus() {
+	public int updateCoordinatorInformedStatus(String programId) {
 
 		return this.jdbcTemplate.update("UPDATE participant SET is_co_ordinator_informed = 1 "
-				+  " WHERE welcome_mail_Sent = 1 AND is_co_ordinator_informed = 0 ", new Object[] {});
+				+  " WHERE welcome_mail_Sent = 1 AND is_co_ordinator_informed = 0 AND program_id=? ", new Object[] {programId});
 	}
 }

@@ -176,5 +176,5 @@ public interface WelcomeMailRepository {
 	 * value is updated or not.
 	 * @return 1 if database is updated else returns 0.
 	 */
-	public int updateCoordinatorInformedStatus();
+	public int updateCoordinatorInformedStatus(String programId);
 }
