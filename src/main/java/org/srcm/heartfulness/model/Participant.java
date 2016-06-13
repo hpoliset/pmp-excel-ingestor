@@ -47,7 +47,7 @@ public class Participant {
 	private String profession;
 	private String department;
 	private String language;
-	private int isCoordinatorInformed;
+	private int isCoOrdinatorInformed;
 	private int isEmailVerified;
 	private int isValidEmail;
 
@@ -419,12 +419,12 @@ public class Participant {
 		this.department = department;
 	}
 
-	public int getIsCoordinatorInformed() {
-		return isCoordinatorInformed;
+	public int getIsCoOrdinatorInformed() {
+		return isCoOrdinatorInformed;
 	}
 
-	public void setIsCoordinatorInformed(int isCoordinatorInformed) {
-		this.isCoordinatorInformed = isCoordinatorInformed;
+	public void setIsCoOrdinatorInformed(int isCoOrdinatorInformed) {
+		this.isCoOrdinatorInformed = isCoOrdinatorInformed;
 	}
 
 	public int getIsEmailVerified() {
@@ -463,7 +463,5 @@ public class Participant {
 	public int getExcelSheetSequenceNumber() {
 		return excelSheetSequenceNumber;
 	}
-
-
 
 }
