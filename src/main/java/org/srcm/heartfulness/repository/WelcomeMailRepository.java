@@ -177,4 +177,8 @@ public interface WelcomeMailRepository {
 	 * @return 1 if database is updated else returns 0.
 	 */
 	public int updateCoordinatorInformedStatus(String programId);
+	
+	void updateVerificationStatus(String email,int status);
+
+	void updateEmailVerfifcationAndValidation(String email);
 }

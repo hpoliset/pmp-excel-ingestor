@@ -405,7 +405,6 @@ public class SendMail {
 
 	public void sendMailNotificationToCoordinator(String toMailId, String participantCount, String eventName,
 			String coordinatorName) throws AddressException, MessagingException {
-		LOGGER.debug("START  :Sending mail to " + toMailId);
 		// Session session = Session.getDefaultInstance(props);
 		Properties props = System.getProperties();
 		props.put("mail.debug", "true");
@@ -440,6 +439,5 @@ public class SendMail {
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
 		Transport.send(message);
-		LOGGER.debug("END  :Successfully sent mail to " + toMailId);
 	}
 }

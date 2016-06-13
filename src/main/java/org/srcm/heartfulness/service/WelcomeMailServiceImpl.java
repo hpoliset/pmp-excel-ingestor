@@ -30,6 +30,7 @@ import org.srcm.heartfulness.model.WelcomeMailDetails;
 import org.srcm.heartfulness.model.json.response.EmailverificationResponse;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.WelcomeMailRepository;
+import org.srcm.heartfulness.rest.template.QuickEmailVerificationRestTemplate;
 import org.srcm.heartfulness.rest.template.SendyRestTemplate;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -44,6 +45,9 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 
 	@Autowired
 	SendyRestTemplate sendyRestTemplate;
+	
+	@Autowired
+	QuickEmailVerificationRestTemplate quickEmailVerificationRestTemplate;
 
 	@Autowired
 	private WelcomeMailRepository welcomeMailRepository;
@@ -260,7 +264,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 
 		try{
 			Map<String,List<String>> details = welcomeMailRepository.getCoordinatorWithEmailDetails();
-			LOGGER.debug("				Total number of coordinators to send email is : "+details.size());
+			LOGGER.debug("			Total number of coordinators to send email is : "+details.size());
 			if(!details.isEmpty()){
 				LOGGER.debug("START		:Sending email notifications to the coordinator list");
 				for(Map.Entry<String,List<String>> map:details.entrySet()){
@@ -270,7 +274,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 							sendEmailNotification.sendMailNotificationToCoordinator(map.getKey(),map.getValue().get(0),map.getValue().get(1),map.getValue().get(2));
 							LOGGER.debug("END		:Completed sending email to "+map.getKey());
 							LOGGER.debug("START		:Updating is_coordinator_informed column for the participants who have received welcome email for coordinator "+map.getKey());
-							int upadateStatus = welcomeMailRepository.updateCoordinatorInformedStatus(map.getKey());
+							int upadateStatus = welcomeMailRepository.updateCoordinatorInformedStatus(map.getValue().get(3));
 							if(upadateStatus > 0){
 								LOGGER.debug("END		:Completed updating is_coordinator_informed column for the participant who have received welcome email for coordinator "+map.getKey());
 							}else{
@@ -297,6 +301,21 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			LOGGER.debug("EmptyResultDataAccessException		:No new participants found who have received welcome email");
 		}catch(Exception ex){
 			LOGGER.debug("EXCEPTION		:Failed to get the list of coordinators");
+		}
+	}
+	
+	@Override
+	public void verifyEmailAddress(Participant participant) throws HttpClientErrorException, JsonParseException,
+			JsonMappingException, IOException {
+		EmailverificationResponse response = new EmailverificationResponse();
+		System.out.println("participant mail " + participant.getEmail());
+		response = quickEmailVerificationRestTemplate.verifyEmailAddress(participant.getEmail());
+		System.out.println(response.getEmail());
+		System.out.println(response.getResult());
+		if ("valid".equalsIgnoreCase(response.getResult())) {
+			welcomeMailRepository.updateVerificationStatus(response.getEmail(),1);
+		}else{
+			welcomeMailRepository.updateVerificationStatus(response.getEmail(),0);
 		}
 	}
 }

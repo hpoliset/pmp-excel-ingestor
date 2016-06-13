@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +47,9 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(PmpIngestionServiceImpl.class);
 
+	@Value("${partcipant.verify.emailid}")
+	private String verifyEmailID;
+	
 	@Autowired
 	private ProgramRepository programRepository;
 
@@ -100,6 +104,20 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 					Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version);
 					program.setCreatedSource("Excel");
 					programRepository.save(program);
+					if(verifyEmailID.equalsIgnoreCase("true")){
+						try{
+							verifyParticipantEmailAddress(program.getParticipantList());
+							LOGGER.debug("Participant mail addresses verified and updated.");
+						}catch(Exception ex){
+							LOGGER.debug("Error while verifying the mail address through API - "+ex.getMessage());
+							ex.printStackTrace();
+							List<Participant> participantList = program.getParticipantList();
+							for(Participant participant: participantList){
+								welcomeMailRepository.updateEmailVerfifcationAndValidation(participant.getEmail());
+							}
+							LOGGER.debug("validation and verfification updateed successfully.");
+						}
+					}
 					response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
 				}
 			} else {
@@ -117,6 +135,16 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 		return response;
 	}
 
+	private void verifyParticipantEmailAddress(List<Participant> participantList) throws HttpClientErrorException,
+			JsonParseException, JsonMappingException, IOException {
+		System.out.println("verifying count " + participantList.size());
+		for (Participant participant : participantList) {
+			// Checks whether the emailID exists for the participant.
+			if (null != participant.getEmail() && !participant.getEmail().isEmpty()) {
+				WelcomeMailService.verifyEmailAddress(participant);
+			}
+		}
+	}
 	@Override
 	// every 15 minutes
 	// @Scheduled(cron = "0 0/15 * * * *")

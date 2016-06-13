@@ -53,5 +53,7 @@ public interface WelcomeMailService {
 	 * received welcome emails.
 	 */
 	public void getCoordinatorListAndSendMail();
+	
+	public void verifyEmailAddress(Participant participant) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
 
 }

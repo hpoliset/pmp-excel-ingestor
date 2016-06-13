@@ -395,7 +395,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	public Map<String, List<String>> getCoordinatorWithEmailDetails() {
 
 		return this.jdbcTemplate.query(
-				"SELECT pgrm.coordinator_email,COUNT(pctpt.id),pgrm.program_channel,pgrm.coordinator_name FROM program pgrm,participant pctpt"
+				"SELECT pgrm.coordinator_email,COUNT(pctpt.id),pgrm.program_channel,pgrm.coordinator_name,pgrm.program_id FROM program pgrm,participant pctpt"
 						+	" WHERE pgrm.program_id = pctpt.program_id"
 						+	" AND pctpt.welcome_mail_sent = 1 AND pctpt.is_co_ordinator_informed = 0"
 						+	" GROUP BY pctpt.program_id ",
@@ -408,6 +408,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 									eventDetails.add(resultSet.getString(2));
 									eventDetails.add(resultSet.getString(3));
 									eventDetails.add(resultSet.getString(4));
+									eventDetails.add(resultSet.getString(5));
 									details.put(resultSet.getString(1),eventDetails);
 								}
 								/*for(Map.Entry<String, List<String>> map : details.entrySet()){
@@ -434,5 +435,32 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 
 		return this.jdbcTemplate.update("UPDATE participant SET is_co_ordinator_informed = 1 "
 				+  " WHERE welcome_mail_Sent = 1 AND is_co_ordinator_informed = 0 AND program_id=? ", new Object[] {programId});
+	}
+	
+	@Override
+	public void updateVerificationStatus(String email,int status) {
+		Map<String, Object> params = new HashMap<>();
+		if(status==0){
+			params.put("isEmailVerified", 1);
+			params.put("isValidEmail", 0);
+		}else{
+			params.put("isEmailVerified", 1);
+			params.put("isValidEmail", 1);
+		}
+		params.put("email", email);
+		this.namedParameterJdbcTemplate
+				.update("UPDATE participant SET is_email_verified=:isEmailVerified,is_valid_email=:isValidEmail WHERE email=:email",
+						params);
+	}
+
+	@Override
+	public void updateEmailVerfifcationAndValidation(String email) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("isEmailVerified", 0);
+		params.put("isValidEmail", 0);
+		params.put("email", email);
+		this.namedParameterJdbcTemplate
+				.update("UPDATE participant SET is_email_verified=:isEmailVerified,is_valid_email=:isValidEmail WHERE email=:email",
+						params);
 	}
 }
