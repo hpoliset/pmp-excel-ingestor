@@ -9,6 +9,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,6 +76,9 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 	
 	@Autowired
 	SrcmRestTemplate srcmRestTemplate;
+	
+	@Value("${partcipant.verify.emailid}")
+	private String verifyEmailID;
 
 	/*
 	 * (non-Javadoc)
@@ -425,6 +429,16 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 							program.setParticipantList(participantList);
 							program.setCreatedSource("SMS");
 							programRepository.saveWithProgramName(program);
+							if(verifyEmailID.equalsIgnoreCase("true")){
+								try{
+									verifyParticipantEmailAddress(participant);
+									LOGGER.debug("Participant mail addresses verified and updated.");
+								}catch(Exception ex){
+									LOGGER.debug("Error while verifying the mail address through API.");
+									welcomeMailRepository.updateEmailVerfifcationAndValidation(participant.getEmail());
+									LOGGER.debug("validation and verfification updateed successfully.");
+								}
+							}
 							response = 
 									SMSConstants.SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_1
 									+ SMSConstants.SMS_HEARTFULNESS_HOMEPAGE_URL
@@ -454,6 +468,17 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 			e.printStackTrace();
 		}
 		return response;
+	}
+	
+	private void verifyParticipantEmailAddress(Participant participant) {
+		// Checks whether the emailID exists for the participant.
+		if (null != participant.getEmail() && !participant.getEmail().isEmpty()) {
+			try {
+				WelcomeMailService.verifyEmailAddress(participant);
+			} catch (HttpClientErrorException | IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/*
