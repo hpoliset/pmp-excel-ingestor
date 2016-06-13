@@ -3,21 +3,12 @@ package org.srcm.heartfulness.rest.template;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
@@ -55,8 +46,8 @@ public class QuickEmailVerificationRestTemplate extends RestTemplate {
 
 	public EmailverificationResponse verifyEmailAddress(String mailID) throws JsonParseException, JsonMappingException,
 			IOException {
-		if (proxy)
-			setProxy();
+		//if (proxy)
+			//setProxy();
 		String uri = null;
 		uri = emailVerificationUri + mailID + "&apikey=" + mailapikey;
 		System.out.println("uri- " + uri);
@@ -94,7 +85,7 @@ public class QuickEmailVerificationRestTemplate extends RestTemplate {
 		this.mailapikey = mailapikey;
 	}
 
-	public void setProxy() {
+	/*public void setProxy() {
 		CredentialsProvider credsProvider = new BasicCredentialsProvider();
 		credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 				new UsernamePasswordCredentials(proxyUser, proxyPassword));
@@ -107,6 +98,6 @@ public class QuickEmailVerificationRestTemplate extends RestTemplate {
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
 		factory.setHttpClient(client);
 		this.setRequestFactory(factory);
-	}
+	}*/
 
 }
