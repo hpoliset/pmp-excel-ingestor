@@ -47,6 +47,9 @@ public class Participant {
 	private String profession;
 	private String department;
 	private String language;
+	private int isCoordinatorInformed;
+	private int isEmailVerified;
+	private int isValidEmail;
 
 	private Program program;
 	private int excelSheetSequenceNumber;
@@ -416,6 +419,30 @@ public class Participant {
 		this.department = department;
 	}
 
+	public int getIsCoordinatorInformed() {
+		return isCoordinatorInformed;
+	}
+
+	public void setIsCoordinatorInformed(int isCoordinatorInformed) {
+		this.isCoordinatorInformed = isCoordinatorInformed;
+	}
+
+	public int getIsEmailVerified() {
+		return isEmailVerified;
+	}
+
+	public void setIsEmailVerified(int isEmailVerified) {
+		this.isEmailVerified = isEmailVerified;
+	}
+
+	public int getIsValidEmail() {
+		return isValidEmail;
+	}
+
+	public void setIsValidEmail(int isValidEmail) {
+		this.isValidEmail = isValidEmail;
+	}
+
 	public void setLanguage(String language) {
 		this.language = language;
 	}
@@ -436,5 +463,7 @@ public class Participant {
 	public int getExcelSheetSequenceNumber() {
 		return excelSheetSequenceNumber;
 	}
+
+
 
 }
