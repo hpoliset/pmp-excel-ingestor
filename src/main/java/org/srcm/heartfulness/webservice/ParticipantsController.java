@@ -405,7 +405,7 @@ public class ParticipantsController {
 				} else {
 					List<UpdateIntroductionResponse> result = new ArrayList<UpdateIntroductionResponse>();
 					for (ParticipantRequest participant : participantRequest.getParticipantIds()) {
-						String eWelcomeID =null ;
+						String eWelcomeID = null;
 						if (null == participant.getSeqId() || participant.getSeqId().isEmpty()) {
 							UpdateIntroductionResponse response = new UpdateIntroductionResponse(
 									participant.getSeqId(), ErrorConstants.STATUS_FAILED, "Seq Id is required.");
@@ -421,37 +421,38 @@ public class ParticipantsController {
 									participant.getSeqId(), ErrorConstants.STATUS_FAILED, "Invalid seqId");
 							result.add(response);
 						} else {
-							try{
-							if("Y".equalsIgnoreCase(participantRequest.getIntroduced())){
-								eWelcomeID = programService.generateeWelcomeID(participant.getSeqId(),
-										participantRequest.getEventId());
-								programService.UpdateParticipantsStatus(participant.getSeqId(),
-										participantRequest.getEventId(), participantRequest.getIntroduced());
-								UpdateIntroductionResponse response = new UpdateIntroductionResponse(
-										participant.getSeqId(), ErrorConstants.STATUS_SUCCESS,
-										"Participant introduced status updated successfully. eWelcomeID : " + eWelcomeID);
-								result.add(response);
-							}else{
-								programService.UpdateParticipantsStatus(participant.getSeqId(),
-										participantRequest.getEventId(), participantRequest.getIntroduced());
-								UpdateIntroductionResponse response = new UpdateIntroductionResponse(
-										participant.getSeqId(), ErrorConstants.STATUS_SUCCESS,
-										"Participant introduced status updated successfully.");
-								result.add(response);
-							}
+							/*try {
+								if ("Y".equalsIgnoreCase(participantRequest.getIntroduced())) {
+									eWelcomeID = programService.generateeWelcomeID(participant.getSeqId(),
+											participantRequest.getEventId());
+									programService.UpdateParticipantsStatus(participant.getSeqId(),
+											participantRequest.getEventId(), participantRequest.getIntroduced());
+									UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+											participant.getSeqId(), ErrorConstants.STATUS_SUCCESS,
+											"Participant introduced status updated successfully. eWelcomeID : "
+													+ eWelcomeID);
+									result.add(response);
+								} else {*/
+									programService.UpdateParticipantsStatus(participant.getSeqId(),
+											participantRequest.getEventId(), participantRequest.getIntroduced());
+									UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+											participant.getSeqId(), ErrorConstants.STATUS_SUCCESS,
+											"Participant introduced status updated successfully.");
+									result.add(response);
+								/*}
 							} catch (HttpClientErrorException e) {
 								e.printStackTrace();
 								UpdateIntroductionResponse response = new UpdateIntroductionResponse(
 										participant.getSeqId(), ErrorConstants.STATUS_FAILED,
-										"Welcome ID generation Failed : " +  e.getResponseBodyAsString());
+										"Welcome ID generation Failed : " + e.getResponseBodyAsString());
 								result.add(response);
 							} catch (IOException e) {
 								UpdateIntroductionResponse response = new UpdateIntroductionResponse(
 										participant.getSeqId(), ErrorConstants.STATUS_FAILED,
 										"Welcome ID generation Failed : Input-Output error..! ");
 								result.add(response);
-							}
-							
+							}*/
+
 						}
 					}
 					return new ResponseEntity<List<UpdateIntroductionResponse>>(result, HttpStatus.OK);
@@ -538,5 +539,5 @@ public class ParticipantsController {
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 }
