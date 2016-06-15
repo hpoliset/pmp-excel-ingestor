@@ -49,7 +49,7 @@ public class SubscriptionController {
 	 * @param subscriptionRequest
 	 * @return
 	 */
-	@RequestMapping(value = "/unsubscribeMail", method = RequestMethod.POST)
+	@RequestMapping(value = "/unsubscribemail", method = RequestMethod.POST)
 	public ResponseEntity<?> unSubscribeToMailAlerts(HttpServletRequest request, Model model,
 			@RequestBody SubscriptionRequest subscriptionRequest) {
 		LOGGER.debug("Unsubcribe user called.");
@@ -72,7 +72,7 @@ public class SubscriptionController {
 	 * @param subscriptionRequest
 	 * @return
 	 */
-	@RequestMapping(value = "/subscribeMail", method = RequestMethod.POST)
+	@RequestMapping(value = "/subscribemail", method = RequestMethod.POST)
 	public ResponseEntity<?> subscribeToMailAlerts(@RequestBody SubscriptionRequest subscriptionRequest) {
 		LOGGER.debug("subcribe user called.");
 		Map<String, String> map = subscriptionValidator.checkMandatoryFieldsinSubscriptionRequest(subscriptionRequest);
