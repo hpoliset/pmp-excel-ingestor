@@ -356,8 +356,22 @@ public class SendMail {
 	 */
 	public void sendMail(List<String> toEmailIDs, List<String> ccEmailIDs, String messageContent)
 			throws MessagingException {
+		//Properties props = System.getProperties();
+		//Session session = Session.getDefaultInstance(props);
 		Properties props = System.getProperties();
-		Session session = Session.getDefaultInstance(props);
+		props.put("mail.debug", "true");
+		props.put("mail.smtp.host", hostname);
+		props.put("mail.smtp.port", port);
+		props.put("mail.smtp.ssl.enable", "true");
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", "true");
+
+		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(username, password);
+			}
+		});
+
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(username));
 		for (String toemailID : toEmailIDs) {
