@@ -61,5 +61,12 @@ public interface SubscriptionService {
 	 * @return
 	 */
 	public int checkForconfirmStatusOfSubscription(String mailID);
+	
+	/**
+	 * Method to validate the email Id and update the status in PMP.
+	 * @param mailID
+	 * @return
+	 */
+	public String updateValidationStatus(String mailID);
 
 }

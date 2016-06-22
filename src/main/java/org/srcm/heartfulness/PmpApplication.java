@@ -3,10 +3,12 @@ package org.srcm.heartfulness;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
+@EnableAsync
 //@EnableOAuth2Sso
 //public class PmpApplication extends WebSecurityConfigurerAdapter {
 public class PmpApplication extends SpringBootServletInitializer {

@@ -72,7 +72,8 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	private Environment env;
 	
 	@Autowired
-	private WelcomeMailService WelcomeMailService;
+	private WelcomeMailService welcomeMailService;
+	
 
 	/**
 	 * This method is used to parse the excel file and populate the data into
@@ -104,20 +105,8 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 					Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version);
 					program.setCreatedSource("Excel");
 					programRepository.save(program);
-					if(verifyEmailID.equalsIgnoreCase("true")){
-						try{
-							verifyParticipantEmailAddress(program.getParticipantList());
-							LOGGER.debug("Participant mail addresses verified and updated.");
-						}catch(Exception ex){
-							LOGGER.debug("Error while verifying the mail address through API - "+ex.getMessage());
-							ex.printStackTrace();
-							List<Participant> participantList = program.getParticipantList();
-							for(Participant participant: participantList){
-								welcomeMailRepository.updateEmailVerfifcationAndValidation(participant.getEmail());
-							}
-							LOGGER.debug("validation and verfification updateed successfully.");
-						}
-					}
+					welcomeMailService.validateMailAddress(program);
+					System.out.println("after validate***");
 					response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
 				}
 			} else {
@@ -141,7 +130,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 		for (Participant participant : participantList) {
 			// Checks whether the emailID exists for the participant.
 			if (null != participant.getEmail() && !participant.getEmail().isEmpty()) {
-				WelcomeMailService.verifyEmailAddress(participant);
+				welcomeMailService.verifyEmailAddress(participant);
 			}
 		}
 	}

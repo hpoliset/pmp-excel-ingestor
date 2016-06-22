@@ -29,6 +29,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
+import org.srcm.heartfulness.model.CoordinatorEmail;
 import org.srcm.heartfulness.model.Participant;
 
 import com.sun.mail.smtp.SMTPMessage;
@@ -53,6 +54,7 @@ public class SendMail {
 	private String defaultname;
 	private String confirmationlink;
 	private String unsubscribelink;
+	private String confirmationmaillink;
 	private String smstemplatename;
 	private String exceltemplatename;
 	private String onlinetemplatename;
@@ -95,6 +97,14 @@ public class SendMail {
 
 	public String getUnsubscribelink() {
 		return unsubscribelink;
+	}
+
+	public String getConfirmationmaillink() {
+		return confirmationmaillink;
+	}
+
+	public void setConfirmationmaillink(String confirmationmaillink) {
+		this.confirmationmaillink = confirmationmaillink;
 	}
 
 	public void setUnsubscribelink(String unsubscribelink) {
@@ -212,16 +222,19 @@ public class SendMail {
 	public void SendConfirmationMailToParticipant(Participant participant) {
 		if (null != participant.getPrintName() && !participant.getPrintName().isEmpty()) {
 			addParameter("NAME", getName(participant.getPrintName()));
-			addParameter("LINK",
-					unsubscribelink + "?email=" + participant.getEmail() + "&name=" + participant.getPrintName());
+			addParameter("CONFIRMATION_LINK",
+					confirmationmaillink + "?id="
+							+ aesEncryptDecrypt.encrypt(participant.getEmail(), env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
 		} else {
 			addParameter("NAME", defaultname);
-			addParameter("LINK", unsubscribelink + "?email=" + participant.getEmail() + "&name=" + "");
+			addParameter("CONFIRMATION_LINK", confirmationmaillink + "?id="
+					+ aesEncryptDecrypt.encrypt(participant.getEmail(), env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
 		}
 		List<String> toEmailIDs = new ArrayList<String>();
 		toEmailIDs.add(participant.getEmail());
 		try {
-			sendMail(toEmailIDs, new ArrayList<String>(), getWelcomeMailContent(participant.getCreatedSource()));
+			//sendMail(toEmailIDs, new ArrayList<String>(), getWelcomeMailContent(participant.getCreatedSource()));
+			sendMail(toEmailIDs, new ArrayList<String>(), getMessageContentbyTemplateName("templates/SubscriptionTemplate.vm"));
 			LOGGER.debug("Mail sent successfully : {} ", participant.getEmail());
 		} catch (MessagingException e) {
 			LOGGER.error("Sending Mail Failed : {} ", participant.getEmail());
@@ -417,13 +430,20 @@ public class SendMail {
 		}
 	}
 
-	public void sendMailNotificationToCoordinator(String toMailId, String participantCount, String eventName,
-			String coordinatorName) throws AddressException, MessagingException {
-		// Session session = Session.getDefaultInstance(props);
+	/**
+	 * This method is used to send email to the coordinator of an
+	 * event with details about the participant count who
+	 * have received welcome email.
+	 * @param crdntrEmail
+	 * @throws AddressException if coordinator email address in not valid.
+	 * @throws MessagingException if not able to send email.
+	 */
+	public void sendMailNotificationToCoordinator(CoordinatorEmail crdntrEmail) throws AddressException, MessagingException {
+
 		Properties props = System.getProperties();
 		props.put("mail.debug", "true");
-		props.put("mail.smtp.host", hostname);
-		props.put("mail.smtp.port", port);
+		props.put("mail.smtp.host",hostname);
+		props.put("mail.smtp.port",port);
 		props.put("mail.smtp.ssl.enable", "true");
 		props.put("mail.smtp.auth", "true");
 		props.put("mail.smtp.starttls.enable", "true");
@@ -434,18 +454,18 @@ public class SendMail {
 			}
 		});
 
-		addParameter("NAME", getName(coordinatorName));
-		addParameter("PARTICIPANT_COUNT", participantCount);
-		addParameter("EVENT_NAME", eventName);
+		addParameter("COORDINATOR_NAME", getName(crdntrEmail.getCoordinatorName()));
+		addParameter("TOTAL_PARTICIPANT_COUNT", crdntrEmail.getTotalParticipantCount());
+		addParameter("WLCM_MAIL_ALRDY_RCVD_PARTICIPANT_COUNT", crdntrEmail.getPctptAlreadyRcvdWlcmMailCount());
+		addParameter("WLCM_MAIL_RCVD_YSTRDY_PARTICIPANT_COUNT", crdntrEmail.getPctptRcvdWlcmMailYstrdayCount());
+		addParameter("EVENT_NAME", crdntrEmail.getEventName());
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 		addParameter("DATE", sdf.format(cal.getTime()));
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(username));
-		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toMailId));
-		// message.addRecipients(Message.RecipientType.CC,
-		// InternetAddress.parse(ccMailId));
+		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(crdntrEmail.getCoordinatorEmail()));
 		crdntrmailsubject = crdntrmailsubject + sdf.format(cal.getTime());
 		message.setSubject(crdntrmailsubject);
 		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename), "text/html");

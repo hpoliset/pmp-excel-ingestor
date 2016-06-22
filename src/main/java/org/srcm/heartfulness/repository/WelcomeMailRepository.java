@@ -171,14 +171,41 @@ public interface WelcomeMailRepository {
 	 */
 
 	public Map<String,List<String>> getCoordinatorWithEmailDetails();
+
+
+	/**
+	 * To get the count of participants for a particular 
+	 * program id.
+	 * @param programId
+	 * @return count of participants for a given program id.
+	 */
+	int getPctptCountByPgrmId(String programId);
+
+	/**
+	 * Rteurns the count of participants who have already received
+	 * welcome id for a given program id.
+	 * @param programId
+	 * @return count of participants who have already received welcome email.
+	 */
+	int wlcmMailRcvdPctptCount(String programId);
+
 	/**
 	 * Method returns 1 or 0 depending on whether database 
 	 * value is updated or not.
 	 * @return 1 if database is updated else returns 0.
 	 */
 	public int updateCoordinatorInformedStatus(String programId);
-	
+
 	void updateVerificationStatus(String email,int status);
 
 	void updateEmailVerfifcationAndValidation(String email);
+	
+	List<String> getEmailDomains();
+
+	int checkForMailIdInWelcomeLog(String email);
+
+	int getEmailValidationStatus(String email);
+
+	void updateValidationInWelcomeMailLog(String email,int validationStatus);
+
 }

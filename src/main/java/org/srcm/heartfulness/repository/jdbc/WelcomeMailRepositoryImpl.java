@@ -425,6 +425,33 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	}
 
 	/**
+	 * Returns the count of participants for a given program id.
+	 */
+	@Override
+	public int getPctptCountByPgrmId(String programId) {
+		int pctptCount = this.jdbcTemplate.queryForObject(
+				"SELECT count(id) FROM participant WHERE program_id=?", new Object[] { programId }, Integer.class);
+		return pctptCount;
+	}
+
+	/**
+	 * Returns the count of participants who have already
+	 * received welcome email for a given program id.
+	 * 
+	 */
+	@Override
+	public int wlcmMailRcvdPctptCount(String programId) {
+		int pctptCount = this.jdbcTemplate.queryForObject(
+
+				"SELECT count(id) FROM participant "
+						+ "WHERE welcome_mail_Sent = 1 "
+						+ "AND is_co_ordinator_informed = 1 "
+						+ "AND program_id=?", new Object[] { programId }, Integer.class);
+
+		return pctptCount;
+	}
+
+	/**
 	 * This repository method updates the column in the
 	 * participant table for those participants who
 	 * have received welcome email.
@@ -436,7 +463,8 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		return this.jdbcTemplate.update("UPDATE participant SET is_co_ordinator_informed = 1 "
 				+  " WHERE welcome_mail_Sent = 1 AND is_co_ordinator_informed = 0 AND program_id=? ", new Object[] {programId});
 	}
-	
+
+
 	@Override
 	public void updateVerificationStatus(String email,int status) {
 		Map<String, Object> params = new HashMap<>();
@@ -449,8 +477,8 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		}
 		params.put("email", email);
 		this.namedParameterJdbcTemplate
-				.update("UPDATE participant SET is_email_verified=:isEmailVerified,is_valid_email=:isValidEmail WHERE email=:email",
-						params);
+		.update("UPDATE participant SET is_email_verified=:isEmailVerified,is_valid_email=:isValidEmail WHERE email=:email",
+				params);
 	}
 
 	@Override
@@ -460,7 +488,52 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		params.put("isValidEmail", 0);
 		params.put("email", email);
 		this.namedParameterJdbcTemplate
-				.update("UPDATE participant SET is_email_verified=:isEmailVerified,is_valid_email=:isValidEmail WHERE email=:email",
-						params);
+		.update("UPDATE participant SET is_email_verified=:isEmailVerified,is_valid_email=:isValidEmail WHERE email=:email",
+				params);
+	}
+	
+	@Override
+	public List<String> getEmailDomains() {
+		List<String> domains = new ArrayList<String>();
+		domains = this.jdbcTemplate.queryForList("SELECT domain_name FROM mail_domain", null,
+				String.class);
+		return domains;
+	}
+
+	@Override
+	public int checkForMailIdInWelcomeLog(String email) {
+		int participantsCount = this.jdbcTemplate.queryForObject(
+				"SELECT count(id) FROM welcome_email_log WHERE email=?", new Object[] { email }, Integer.class);
+		return participantsCount;
+	}
+
+	@Override
+	public int getEmailValidationStatus(String email) {
+		try {
+			int validationStatus = this.jdbcTemplate.query("SELECT is_valid_email from welcome_email_log where email=? ",
+					new Object[] { email }, new ResultSetExtractor<Integer>() {
+						@Override
+						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+							if (resultSet.next()) {
+								return resultSet.getInt(1);
+							}
+							return 0;
+						}
+					});
+
+			return validationStatus;
+		} catch (EmptyResultDataAccessException e) {
+			return 0;
+		}
+	}
+
+	@Override
+	public void updateValidationInWelcomeMailLog(String email, int validationStatus) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("isEmailVerified", validationStatus);
+		params.put("email", email);
+		this.namedParameterJdbcTemplate
+		.update("UPDATE welcome_email_log set is_valid_email=:isEmailVerified WHERE email=:email",
+				params);
 	}
 }

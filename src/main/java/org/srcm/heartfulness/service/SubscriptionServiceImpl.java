@@ -131,5 +131,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	public int checkForconfirmStatusOfSubscription(String mailID) {
 		return welcomeMailRepository.checkForconfirmStatusOfSubscription(mailID);
 	}
+	
+	/**
+	 * Method to validate the email Id and update the status in PMP.
+	 * @param mailID
+	 * @return
+	 */
+	@Override
+	public String updateValidationStatus(String mailID) {
+		welcomeMailRepository.updateVerificationStatus(mailID,1);
+		LOGGER.debug("You have successfully confirmed your mail ID. - mail : {}", mailID);
+		return "Thank you for confirming your email address.";
+	}
 
 }

@@ -7,6 +7,7 @@ import javax.mail.MessagingException;
 
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.Participant;
+import org.srcm.heartfulness.model.Program;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -55,5 +56,7 @@ public interface WelcomeMailService {
 	public void getCoordinatorListAndSendMail();
 	
 	public void verifyEmailAddress(Participant participant) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
+	
+	public void validateMailAddress(Program program);
 
 }

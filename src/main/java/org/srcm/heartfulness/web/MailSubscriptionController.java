@@ -96,10 +96,31 @@ public class MailSubscriptionController {
 		}
 	}
 
-	/*
-	 * public static void main(String[] args) { AESEncryptDecrypt aes = new
-	 * AESEncryptDecrypt(); String mail = "himasree@htcindia.com"; String id =
-	 * aes.encrypt(mail, "h2ItE7t6kp+I/R8kJBteRw=="); System.out.println(id); }
+	/**
+	 * Service method to confirm the subscription for the given email ID.
+	 * 
+	 * @param id
+	 * @param model
+	 * @return
 	 */
+	@RequestMapping(value = "/validate", method = RequestMethod.GET)
+	public String UpdateConfirmationMailStatus(@RequestParam(required = false, value = "id") String id, Model model) {
+		try {
+			String mailID = getMailIDfromEncryptedID(id);
+			if (null == mailID || mailID.isEmpty() || !mailID.matches(EventConstants.EMAIL_REGEX)) {
+				LOGGER.debug("Invalid ID. - id : {}", id);
+				model.addAttribute("message", "Invalid ID.");
+				return "eventsuccess";
+			}
+			String response = subscriptionService.updateValidationStatus(mailID);
+			model.addAttribute("message", response);
+			return "eventsuccess";
+		} catch (IllegalBlockSizeException | NumberFormatException e) {
+			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
+			LOGGER.debug("Invalid ID. - id : {}", id);
+			model.addAttribute("message", "Invalid ID.");
+			return "eventsuccess";
+		}
 
+	}
 }
