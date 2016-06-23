@@ -70,7 +70,8 @@ public class WelcomeMailController {
 	 * details about the participants who have received welcome
 	 * emails.It is  a crob job running at a scheduled time.
 	 */
-	@Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}")
+	//@Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}")
+	@Scheduled(fixedDelay = 600000)
 	public void sendEmailToCoordinator(){
 		LOGGER.debug("START		:Cron job started to fetch participants to whom welcome mail already sent");
 		WelcomeMailService.getCoordinatorListAndSendMail();
