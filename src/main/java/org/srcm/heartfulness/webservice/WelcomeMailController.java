@@ -62,38 +62,16 @@ public class WelcomeMailController {
 		}
 	}
 	
-	@RequestMapping(value = "/uploadtoftp", method = RequestMethod.POST)
-	public String uploadWelcomeMailidsToFTP() {
-		try {
-			LOGGER.debug("Upload File to FTP called.");
-			WelcomeMailService.uploadParticipantEmailidsToFTP();
-			LOGGER.debug("Process Completed.");
-			return "Success";
-		} catch (Exception e) {
-			LOGGER.error("Exception while uploading file - {} " + e.getMessage());
-			return "Error Occurred.";
-		}
-	}
-
-	
 	/**
 	 * Controller is used to send email to the coordinators with event 
 	 * details about the participants who have received welcome
 	 * emails.It is  a crob job running at a scheduled time.
 	 */
-	//@Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}")
-	//@Scheduled(fixedDelay = 600000)
+	@Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}")
 	public void sendEmailToCoordinator(){
 		LOGGER.debug("START		:Cron job started to fetch participants to whom welcome mail already sent");
 		WelcomeMailService.getCoordinatorListAndSendMail();
 		LOGGER.debug("END		:Cron job completed to fetch participants to whom welcome mail already sent");
 	}
 	
-	@RequestMapping(value = "/sendmailtocoordinator", method = RequestMethod.POST)
-	public String sendmailToCoordinator(){
-		LOGGER.debug("START		:Cron job started to fetch participants to whom welcome mail already sent");
-		WelcomeMailService.getCoordinatorListAndSendMail();
-		LOGGER.debug("END		:Cron job completed to fetch participants to whom welcome mail already sent");
-		return "Cron job completed";
-	}
 }
