@@ -89,7 +89,7 @@ public class WelcomeMailController {
 		LOGGER.debug("END		:Cron job completed to fetch participants to whom welcome mail already sent");
 	}
 	
-	@RequestMapping(value = "/sendmailtocordinator", method = RequestMethod.POST)
+	@RequestMapping(value = "/sendmailtocoordinator", method = RequestMethod.POST)
 	public String sendmailToCoordinator(){
 		LOGGER.debug("START		:Cron job started to fetch participants to whom welcome mail already sent");
 		WelcomeMailService.getCoordinatorListAndSendMail();
