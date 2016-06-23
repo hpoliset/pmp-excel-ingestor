@@ -8,18 +8,23 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EventConstants;
 import org.srcm.heartfulness.helper.FTPConnectionHelper;
+import org.srcm.heartfulness.mail.SendMail;
+import org.srcm.heartfulness.model.CoordinatorEmail;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
@@ -43,6 +48,9 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	@Autowired
 	private WelcomeMailRepository welcomeMailRepository;
 	
+	@Autowired
+	private SendMail sendEmailNotification;
+
 	@Value("${welcome.mailids.filename}")
 	private String welcomeMailidsFileName;
 
@@ -54,7 +62,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 
 	@Autowired
 	private FTPConnectionHelper ftpConnectionHelper;
-	
+
 	@Autowired
 	private ParticipantRepository participantRepository;
 
@@ -71,8 +79,8 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	 */
 	@Override
 	public void addNewSubscriber() throws HttpClientErrorException, JsonParseException, JsonMappingException,
-			IOException, MessagingException {
-		
+	IOException, MessagingException {
+
 		SendySubscriber sendySubscriber = null;
 		List<Participant> participants = new ArrayList<Participant>();
 		participants = welcomeMailRepository.getParticipantsToSendWelcomeMail();
@@ -137,7 +145,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		for (Participant participant : participants) {
 			if(participant.getEmail().matches(EventConstants.EMAIL_REGEX)){
 				if(!invalidParticipantSet.contains(participant.getId()))
-						welcomeMailRepository.updateParticipantMailSentById(participant.getId());
+					welcomeMailRepository.updateParticipantMailSentById(participant.getId());
 			}
 		}
 		LOGGER.debug("Mail sent successfully.");
@@ -177,7 +185,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	 */
 	@Override
 	public void unsubscribeUsers() throws HttpClientErrorException, JsonParseException, JsonMappingException,
-			IOException {
+	IOException {
 		List<WelcomeMailDetails> subscribers = new ArrayList<WelcomeMailDetails>();
 		subscribers = welcomeMailRepository.getSubscribersToUnsubscribe();
 		if (subscribers.size() >= 1) {
@@ -186,7 +194,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			}
 		}
 	}
-	
+
 	/**
 	 * To upload list of welcome mail ids as a file to the FTP
 	 * 
@@ -219,16 +227,17 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 					subscriberList.add(sendySubscriber);
 				}
 			}
-			FileOutputStream fop = new FileOutputStream(welcomeMailidsLocalFilepath + currentDate + "_"
-					+ welcomeMailidsFileName);
-			fop.write(sb.toString().getBytes());
-			fop.close();
-			LOGGER.debug("File copied to  " + welcomeMailidsLocalFilepath + currentDate + "_" + welcomeMailidsFileName);
-			LOGGER.debug("Valid email count- " + validEmailSubscribersCount);
-			ftpConnectionHelper.processUpload(welcomeMailidsLocalFilepath, welcomeMailidsRemoteFilepath,
-					welcomeMailidsFileName);
-
-			ftpConnectionHelper.sendNotificationForWelcomeEmails(validEmailSubscribersCount);
+			if(validEmailSubscribersCount>1){
+				FileOutputStream fop = new FileOutputStream(welcomeMailidsLocalFilepath + currentDate + "_"
+						+ welcomeMailidsFileName);
+				fop.write(sb.toString().getBytes());
+				fop.close();
+				LOGGER.debug("File copied to  " + welcomeMailidsLocalFilepath + currentDate + "_" + welcomeMailidsFileName);
+				LOGGER.debug("Valid email count- " + validEmailSubscribersCount);
+				ftpConnectionHelper.processUpload(welcomeMailidsLocalFilepath, welcomeMailidsRemoteFilepath,
+						welcomeMailidsFileName);
+				ftpConnectionHelper.sendNotificationForWelcomeEmails(validEmailSubscribersCount);
+			}
 			if (null != subscriberList && subscriberList.size() >= 1) {
 				for (SendySubscriber subscriber : subscriberList) {
 					welcomeMailRepository.updateWelcomeMailLog(subscriber.getUserName(), subscriber.getEmail());
@@ -239,6 +248,71 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		} else {
 			LOGGER.debug("No participant found.");
 			ftpConnectionHelper.sendNotificationForWelcomeEmails(0);
+		}
+	}
+
+	/**
+	 * Service method that will get the list of coordinators with 
+	 * details of the participant count who have received welcome 
+	 * emails,event name,coordinator name and send mails to the respective
+	 *  coordinators with the details.
+	 */
+	@Override
+	public void getCoordinatorListAndSendMail() {
+		LOGGER.debug("START		:Getting coordinator list to send email noticafications");
+
+		try{
+			Map<String,List<String>> details = welcomeMailRepository.getCoordinatorWithEmailDetails();
+			LOGGER.debug("			Total number of coordinators to send email is : "+details.size());
+			if(!details.isEmpty()){
+				LOGGER.debug("START		:Sending email notifications to the coordinator list");
+				for(Map.Entry<String,List<String>> map:details.entrySet()){
+					if(null != map.getKey()){
+						if(!map.getKey().isEmpty()){
+							try{
+								int pctptCount = welcomeMailRepository.getPctptCountByPgrmId(map.getValue().get(3));
+								int wlcmEmailRcvdPctptCount = welcomeMailRepository.wlcmMailRcvdPctptCount(map.getValue().get(3));
+								LOGGER.debug("          	:Total count of participant for event id "+map.getValue().get(3)+" is "+pctptCount );
+								LOGGER.debug("          	:Total count of participant who have received welcome email already "+wlcmEmailRcvdPctptCount);
+								LOGGER.debug("START		:Sending email to "+map.getKey());
+								CoordinatorEmail coordinatorEmail = new CoordinatorEmail();
+								coordinatorEmail.setCoordinatorEmail(map.getKey());
+								coordinatorEmail.setCoordinatorName(map.getValue().get(2));
+								coordinatorEmail.setEventName(map.getValue().get(1));
+								coordinatorEmail.setTotalParticipantCount(String.valueOf(pctptCount));
+								coordinatorEmail.setPctptAlreadyRcvdWlcmMailCount(String.valueOf(wlcmEmailRcvdPctptCount));
+								coordinatorEmail.setPctptRcvdWlcmMailYstrdayCount(map.getValue().get(0));
+								sendEmailNotification.sendMailNotificationToCoordinator(coordinatorEmail);
+								LOGGER.debug("END		:Completed sending email to "+map.getKey());
+							}catch(AddressException aex){
+								LOGGER.debug("ADDRESS_EXCEPTION  :Failed to sent mail to" + map.getKey());
+								LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
+							}catch(MessagingException mex){
+								LOGGER.debug("MESSAGING_EXCEPTION  :Failed to sent mail to" + map.getKey());
+								LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
+							}catch(Exception ex){
+								LOGGER.debug("EXCEPTION  :Failed to sent mail to" + map.getKey());
+								LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
+							}
+						}
+					}
+					LOGGER.debug("START		:Updating database column for the participants who have received welcome email for coordinator "+map.getKey());
+					int upadateStatus = welcomeMailRepository.updateCoordinatorInformedStatus(map.getValue().get(3));
+					if(upadateStatus > 0){
+						LOGGER.debug("END		:Completed updating database column for the participant who have received welcome email for coordinator "+map.getKey());
+					}else{
+						LOGGER.debug("Failed to update database column for the participants who have received welcome email for coordinator"+map.getKey());
+					}
+				}
+				LOGGER.debug("END		:Completed sending email notifications to the coordinator list");
+			}else{
+				LOGGER.debug("END		:No new participants found who have received welcome email");
+			}
+
+		}catch(EmptyResultDataAccessException ex){
+			LOGGER.debug("EmptyResultDataAccessException		:No new participants found who have received welcome email");
+		}catch(Exception ex){
+			LOGGER.debug("EXCEPTION		:Failed to get the list of coordinators");
 		}
 	}
 }

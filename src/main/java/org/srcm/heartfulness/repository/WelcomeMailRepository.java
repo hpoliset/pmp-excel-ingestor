@@ -1,6 +1,7 @@
 package org.srcm.heartfulness.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
@@ -123,7 +124,7 @@ public interface WelcomeMailRepository {
 	 * @param mailID
 	 */
 	void updateconfirmSubscribedStatus(String mailID);
-	
+
 	/**
 	 * Method to check whether the given email ID has unsubscribed or not.
 	 * 
@@ -147,7 +148,7 @@ public interface WelcomeMailRepository {
 	 * @return
 	 */
 	int CheckForConfirmationMailStatus(Participant participant);
-	
+
 	/**
 	 * Method to check whether the email is subscribed or not.
 	 * @param mail
@@ -161,4 +162,37 @@ public interface WelcomeMailRepository {
 	 * @return
 	 */
 	int checkForconfirmStatusOfSubscription(String mailID);
+
+	/**
+	 * Repository access method to get the coordinator emails 
+	 * with participant and event details.
+	 * @return Map<String,List<String>> Map of coordinator 
+	 * email with some participant details and event details.
+	 */
+
+	public Map<String,List<String>> getCoordinatorWithEmailDetails();
+
+
+	/**
+	 * To get the count of participants for a particular 
+	 * program id.
+	 * @param programId
+	 * @return count of participants for a given program id.
+	 */
+	int getPctptCountByPgrmId(String programId);
+
+	/**
+	 * Rteurns the count of participants who have already received
+	 * welcome id for a given program id.
+	 * @param programId
+	 * @return count of participants who have already received welcome email.
+	 */
+	int wlcmMailRcvdPctptCount(String programId);
+
+	/**
+	 * Method returns 1 or 0 depending on whether database 
+	 * value is updated or not.
+	 * @return 1 if database is updated else returns 0.
+	 */
+	public int updateCoordinatorInformedStatus(String programId);
 }

@@ -64,4 +64,17 @@ public class WelcomeMailController {
 		}
 	}
 
+	
+	/**
+	 * Controller is used to send email to the coordinators with event 
+	 * details about the participants who have received welcome
+	 * emails.It is  a crob job running at a scheduled time.
+	 */
+	@Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}")
+	public void sendEmailToCoordinator(){
+		LOGGER.debug("START		:Cron job started to fetch participants to whom welcome mail already sent");
+		WelcomeMailService.getCoordinatorListAndSendMail();
+		LOGGER.debug("END		:Cron job completed to fetch participants to whom welcome mail already sent");
+	}
+
 }
