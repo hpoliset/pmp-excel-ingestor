@@ -209,7 +209,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	public List<Participant> getParticipantsToSendWelcomeEmails() {
 		List<Participant> participants = this.namedParameterJdbcTemplate.query("SELECT email,id,print_name,language "
 				+ "FROM participant WHERE email IS NOT NULL AND email <> '' AND (welcome_mail_sent=0 "
-				+ "OR welcome_mail_sent IS NULL) AND email NOT IN (SELECT email from welcome_email_log) GROUP BY email ",
+				+ "OR welcome_mail_sent IS NULL)",
 				BeanPropertyRowMapper.newInstance(Participant.class));
 		return participants;
 	}
