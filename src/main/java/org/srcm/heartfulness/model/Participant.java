@@ -56,6 +56,8 @@ public class Participant {
 
 	private String createdSource;
 
+	private int isCoOrdinatorInformed;
+	
 	public String getCreatedSource() {
 		return createdSource;
 	}
@@ -417,4 +419,12 @@ public class Participant {
 		return excelSheetSequenceNumber;
 	}
 
+	public int getIsCoOrdinatorInformed() {
+		return isCoOrdinatorInformed;
+	}
+
+	public void setIsCoOrdinatorInformed(int isCoOrdinatorInformed) {
+		this.isCoOrdinatorInformed = isCoOrdinatorInformed;
+	}
+	
 }

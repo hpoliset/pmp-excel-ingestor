@@ -24,7 +24,7 @@ public interface WelcomeMailService {
 	 * @throws MessagingException
 	 */
 	public void addNewSubscriber() throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException, MessagingException;
-	
+
 	/**
 	 * Method unsubscribe the user from the welcome mail list.
 	 * 
@@ -34,7 +34,7 @@ public interface WelcomeMailService {
 	 * @throws IOException
 	 */
 	public void unsubscribeUsers() throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
-	
+
 	/**
 	 * Method to add welcome mail list in a file and upload it to a FTP.
 	 * 
@@ -44,6 +44,13 @@ public interface WelcomeMailService {
 	 * @throws IOException
 	 */
 	public void uploadParticipantEmailidsToFTP() throws FileNotFoundException, IOException, JSchException,
-			SftpException;
+	SftpException;
+
+	/**
+	 * Service method to fetch the list of coordinators who 
+	 * will receive emails for those participants who have
+	 * received welcome emails.
+	 */
+	public void getCoordinatorListAndSendMail();
 
 }

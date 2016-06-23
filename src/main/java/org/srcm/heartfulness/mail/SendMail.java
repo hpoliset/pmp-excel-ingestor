@@ -3,6 +3,7 @@ package org.srcm.heartfulness.mail;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -12,6 +13,7 @@ import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.velocity.Template;
@@ -27,7 +29,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
-import org.srcm.heartfulness.model.Participant;
+import org.srcm.heartfulness.model.CoordinatorEmail;
 
 import com.sun.mail.smtp.SMTPMessage;
 
@@ -56,6 +58,9 @@ public class SendMail {
 	private String onlinetemplatename;
 	private String noparticipantstemplatename;
 	private String participantstemplatename;
+	private String crdntrmailsubject;
+	private String crdntrmailtemplatename;
+
 
 	public String getUsername() {
 		return username;
@@ -136,7 +141,7 @@ public class SendMail {
 	public void setParticipantstemplatename(String participantstemplatename) {
 		this.participantstemplatename = participantstemplatename;
 	}
-	
+
 	public String getPassword() {
 		return password;
 	}
@@ -177,13 +182,29 @@ public class SendMail {
 		return this.context;
 	}
 
+	public String getCrdntrmailsubject() {
+		return crdntrmailsubject;
+	}
+
+	public void setCrdntrmailsubject(String crdntrmailsubject) {
+		this.crdntrmailsubject = crdntrmailsubject;
+	}
+
+	public String getCrdntrmailtemplatename() {
+		return crdntrmailtemplatename;
+	}
+
+	public void setCrdntrmailtemplatename(String crdntrmailtemplatename) {
+		this.crdntrmailtemplatename = crdntrmailtemplatename;
+	}
+
 	@Autowired
 	private AESEncryptDecrypt aesEncryptDecrypt;
 
 	@Autowired
 	Environment env;
 
-	
+
 	/**
 	 * To send notification mail to the team if no new participants found to
 	 * send mail for the day
@@ -205,11 +226,11 @@ public class SendMail {
 			props.put("mail.smtp.ssl.enable", "true");
 			props.put("mail.smtp.auth", "true");
 			props.put("mail.smtp.starttls.enable", "true");
-			
+
 			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			    protected PasswordAuthentication getPasswordAuthentication() {
-			        return new PasswordAuthentication(username, password);
-			    }
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
+				}
 			});
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(username));
@@ -334,5 +355,49 @@ public class SendMail {
 			throw new RuntimeException(e);
 
 		}
+	}
+
+	/**
+	 * This method is used to send email to the coordinator of an
+	 * event with details about the participant count who
+	 * have received welcome email.
+	 * @param crdntrEmail
+	 * @throws AddressException if coordinator email address in not valid.
+	 * @throws MessagingException if not able to send email.
+	 */
+	public void sendMailNotificationToCoordinator(CoordinatorEmail crdntrEmail) throws AddressException, MessagingException {
+
+		Properties props = System.getProperties();
+		props.put("mail.debug", "true");
+		props.put("mail.smtp.host",hostname);
+		props.put("mail.smtp.port",port);
+		props.put("mail.smtp.ssl.enable", "true");
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", "true");
+
+		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(username, password);
+			}
+		});
+
+		addParameter("COORDINATOR_NAME", getName(crdntrEmail.getCoordinatorName()));
+		addParameter("TOTAL_PARTICIPANT_COUNT", crdntrEmail.getTotalParticipantCount());
+		addParameter("WLCM_MAIL_ALRDY_RCVD_PARTICIPANT_COUNT", crdntrEmail.getPctptAlreadyRcvdWlcmMailCount());
+		addParameter("WLCM_MAIL_RCVD_YSTRDY_PARTICIPANT_COUNT", crdntrEmail.getPctptRcvdWlcmMailYstrdayCount());
+		addParameter("EVENT_NAME", crdntrEmail.getEventName());
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+		addParameter("DATE", sdf.format(cal.getTime()));
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(username));
+		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(crdntrEmail.getCoordinatorEmail()));
+		message.setSubject(crdntrmailsubject + sdf.format(cal.getTime()));
+		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename), "text/html");
+		message.setAllow8bitMIME(true);
+		message.setSentDate(new Date());
+		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+		Transport.send(message);
 	}
 }
