@@ -222,9 +222,9 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 					int countOfEmailAvailableInWelcomeLog = welcomeMailRepository.checkForMailIdInWelcomeLog(participant.getEmail());
 					if (countOfEmailAvailableInWelcomeLog < 1) {
 						sb.append(participant.getEmail() + System.lineSeparator());
+						validEmailSubscribersCount++;
 					}
 					sendySubscriber = new SendySubscriber();
-					validEmailSubscribersCount++;
 					sendySubscriber.setUserName(participant.getPrintName());
 					sendySubscriber.setEmail(participant.getEmail());
 					subscriberList.add(sendySubscriber);
@@ -239,8 +239,8 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 				LOGGER.debug("Valid email count- " + validEmailSubscribersCount);
 				ftpConnectionHelper.processUpload(welcomeMailidsLocalFilepath, welcomeMailidsRemoteFilepath,
 						welcomeMailidsFileName);
-				ftpConnectionHelper.sendNotificationForWelcomeEmails(validEmailSubscribersCount);
 			}
+			ftpConnectionHelper.sendNotificationForWelcomeEmails(validEmailSubscribersCount);
 			if (null != subscriberList && subscriberList.size() >= 1) {
 				for (SendySubscriber subscriber : subscriberList) {
 					welcomeMailRepository.updateWelcomeMailLog(subscriber.getUserName(), subscriber.getEmail());
