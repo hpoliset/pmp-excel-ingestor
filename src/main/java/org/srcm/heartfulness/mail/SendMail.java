@@ -60,7 +60,7 @@ public class SendMail {
 	private String participantstemplatename;
 	private String crdntrmailsubject;
 	private String crdntrmailtemplatename;
-	
+
 
 	public String getUsername() {
 		return username;
@@ -393,8 +393,7 @@ public class SendMail {
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(username));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(crdntrEmail.getCoordinatorEmail()));
-		crdntrmailsubject = crdntrmailsubject + sdf.format(cal.getTime());
-		message.setSubject(crdntrmailsubject);
+		message.setSubject(crdntrmailsubject + sdf.format(cal.getTime()));
 		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename), "text/html");
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());

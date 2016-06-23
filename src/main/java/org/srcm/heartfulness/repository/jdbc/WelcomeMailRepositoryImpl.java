@@ -463,4 +463,11 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		return this.jdbcTemplate.update("UPDATE participant SET is_co_ordinator_informed = 1 "
 				+  " WHERE welcome_mail_Sent = 1 AND is_co_ordinator_informed = 0 AND program_id=? ", new Object[] {programId});
 	}
+	
+	@Override
+	public int checkForMailIdInWelcomeLog(String email) {
+	int participantsCount = this.jdbcTemplate.queryForObject(
+	"SELECT count(id) FROM welcome_email_log WHERE email=?", new Object[] { email }, Integer.class);
+	return participantsCount;
+	} 
 }

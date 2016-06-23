@@ -195,4 +195,6 @@ public interface WelcomeMailRepository {
 	 * @return 1 if database is updated else returns 0.
 	 */
 	public int updateCoordinatorInformedStatus(String programId);
+
+	int checkForMailIdInWelcomeLog(String email);
 }

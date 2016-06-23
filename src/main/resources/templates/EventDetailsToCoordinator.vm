@@ -9,25 +9,25 @@ Dear ${COORDINATOR_NAME},
 <div style="padding-left: 10px;">
 <p>Welcome mail sent to the registered participants for the event - ${EVENT_NAME} on ${DATE}. </p>
 <p>
-<table border="1" style="width: 800px;height: 100px">
+<table border="1" style="width: 100%;">
 <tr>
-<td style=" width: 100px;" ><b>Total count of participants</b></td>
-<td style=" width: 10px;" align=middle ><b>${TOTAL_PARTICIPANT_COUNT}</b></td>
+<td style=" width: 80%;" ><b>Total count of participants</b></td>
+<td style=" width: 20%;" align=middle ><b>${TOTAL_PARTICIPANT_COUNT}</b></td>
 </tr>
 <tr>
-<td style=" width: 100px;" >No. of participants to whom welcome mail already sent </td>
-<td style=" width: 10px;" align=middle >${WLCM_MAIL_ALRDY_RCVD_PARTICIPANT_COUNT}</td>
+<td style=" width: 80%;" >No. of participants to whom welcome mail already sent </td>
+<td style=" width: 20%;" align=middle >${WLCM_MAIL_ALRDY_RCVD_PARTICIPANT_COUNT}</td>
 </tr>
 <tr>
-<td style=" width: 100px;" >No. of participants to whom welcome email sent on ${DATE}</td>
-<td style=" width: 10px;" align=middle >${WLCM_MAIL_RCVD_YSTRDY_PARTICIPANT_COUNT}</td>
+<td style=" width: 80%;" >No. of participants to whom welcome email sent on ${DATE}</td>
+<td style=" width: 20%;" align=middle >${WLCM_MAIL_RCVD_YSTRDY_PARTICIPANT_COUNT}</td>
 </tr>
 </table>
 </p>
 <br/>
 </div>
 <div style="font-style: italic; font-weight: bold;">
-With regards,
+With Regards,
 <br/>
 Heartfulness Team
 </div>

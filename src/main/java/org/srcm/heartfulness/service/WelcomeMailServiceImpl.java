@@ -219,15 +219,18 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			for (Participant participant : participants) {
 				if (null != participant.getEmail() && !participant.getEmail().isEmpty()
 						&& participant.getEmail().matches(EventConstants.EMAIL_REGEX)) {
+					int countOfEmailAvailableInWelcomeLog = welcomeMailRepository.checkForMailIdInWelcomeLog(participant.getEmail());
+					if (countOfEmailAvailableInWelcomeLog < 1) {
+						sb.append(participant.getEmail() + System.lineSeparator());
+					}
 					sendySubscriber = new SendySubscriber();
 					validEmailSubscribersCount++;
-					sb.append(participant.getEmail() + System.lineSeparator());
 					sendySubscriber.setUserName(participant.getPrintName());
 					sendySubscriber.setEmail(participant.getEmail());
 					subscriberList.add(sendySubscriber);
 				}
 			}
-			if(validEmailSubscribersCount>1){
+			if(validEmailSubscribersCount>0){
 				FileOutputStream fop = new FileOutputStream(welcomeMailidsLocalFilepath + currentDate + "_"
 						+ welcomeMailidsFileName);
 				fop.write(sb.toString().getBytes());
