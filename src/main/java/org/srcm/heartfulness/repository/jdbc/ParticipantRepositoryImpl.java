@@ -141,14 +141,14 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 							}
 						}
 						);
-				/*if(null != seqId && !seqId.isEmpty()){
+				if(null != seqId && !seqId.isEmpty()){
 					participant.setSeqId(seqId);	
 				}else{
 					participant.setSeqId(SmsUtil.generateFourDigitPIN());
-				}*/
-			}/*else{
+				}
+			}else{
 				participant.setSeqId(SmsUtil.generateFourDigitPIN());
-			}*/
+			}
 		}
 
 		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(participant);
