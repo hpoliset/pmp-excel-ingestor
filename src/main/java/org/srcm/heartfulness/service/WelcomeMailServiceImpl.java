@@ -220,23 +220,26 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 				if (null != participant.getEmail() && !participant.getEmail().isEmpty()
 						&& participant.getEmail().matches(EventConstants.EMAIL_REGEX)) {
 					int countOfEmailAvailableInWelcomeLog = welcomeMailRepository.checkForMailIdInWelcomeLog(participant.getEmail());
-					if (countOfEmailAvailableInWelcomeLog < 1) {
-						sb.append(participant.getEmail() + System.lineSeparator());
-						validEmailSubscribersCount++;
-					}
 					sendySubscriber = new SendySubscriber();
 					sendySubscriber.setUserName(participant.getPrintName());
 					sendySubscriber.setEmail(participant.getEmail());
+					if (countOfEmailAvailableInWelcomeLog < 1) {
+						sb.append(participant.getEmail() + System.lineSeparator());
+						sendySubscriber.setIsCoOrdinatorInformed(0);
+						validEmailSubscribersCount++;
+					}else{
+						sendySubscriber.setIsCoOrdinatorInformed(1);
+					}
 					subscriberList.add(sendySubscriber);
 				}
 			}
+			LOGGER.debug("Valid email count- " + validEmailSubscribersCount);
 			if(validEmailSubscribersCount>0){
 				FileOutputStream fop = new FileOutputStream(welcomeMailidsLocalFilepath + currentDate + "_"
 						+ welcomeMailidsFileName);
 				fop.write(sb.toString().getBytes());
 				fop.close();
 				LOGGER.debug("File copied to  " + welcomeMailidsLocalFilepath + currentDate + "_" + welcomeMailidsFileName);
-				LOGGER.debug("Valid email count- " + validEmailSubscribersCount);
 				ftpConnectionHelper.processUpload(welcomeMailidsLocalFilepath, welcomeMailidsRemoteFilepath,
 						welcomeMailidsFileName);
 			}
@@ -244,7 +247,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			if (null != subscriberList && subscriberList.size() >= 1) {
 				for (SendySubscriber subscriber : subscriberList) {
 					welcomeMailRepository.updateWelcomeMailLog(subscriber.getUserName(), subscriber.getEmail());
-					welcomeMailRepository.updateParticipantByMailId(subscriber.getEmail());
+					welcomeMailRepository.updateParticipantByMailId(subscriber);
 				}
 				LOGGER.debug("Details updated to participant and welcome email log table for {} participants." ,subscriberList.size());
 			}

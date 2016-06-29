@@ -29,6 +29,9 @@ public class SendySubscriber {
 
 	@JsonIgnore
 	private int participantId;
+	
+	@JsonIgnore
+	private int isCoOrdinatorInformed;
 
 	public SendySubscriber(String userName, String email, String listID, String nameToSendMail, String sendFlag,
 			int participantId) {
@@ -100,12 +103,18 @@ public class SendySubscriber {
 	public void setNameToSendMail(String nameToSendMail) {
 		this.nameToSendMail = nameToSendMail;
 	}
+	public int getIsCoOrdinatorInformed() {
+		return isCoOrdinatorInformed;
+	}
+
+	public void setIsCoOrdinatorInformed(int isCoOrdinatorInformed) {
+		this.isCoOrdinatorInformed = isCoOrdinatorInformed;
+	}
 
 	@Override
 	public String toString() {
 		return "SendySubscriber [userName=" + userName + ", email=" + email + ", listID=" + listID
 				+ ", nameToSendMail=" + nameToSendMail + ", fields=" + fields + ", sendFlag=" + sendFlag
-				+ ", participantId=" + participantId + "]";
+				+ ", participantId=" + participantId + ", isCoOrdinatorInformed=" + isCoOrdinatorInformed + "]";
 	}
-
 }

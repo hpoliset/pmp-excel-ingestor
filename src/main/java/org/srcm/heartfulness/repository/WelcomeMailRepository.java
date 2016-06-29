@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.srcm.heartfulness.model.Participant;
+import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
 
 public interface WelcomeMailRepository {
@@ -108,7 +109,7 @@ public interface WelcomeMailRepository {
 	 * @param email
 	 *            -email ID to be update welcome mail sent
 	 */
-	void updateParticipantByMailId(String email);
+	void updateParticipantByMailId(SendySubscriber subscriber);
 
 	/**
 	 * Update the participant subscribed status in the PMP.
