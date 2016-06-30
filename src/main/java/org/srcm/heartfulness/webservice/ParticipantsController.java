@@ -423,14 +423,13 @@ public class ParticipantsController {
 						} else {
 							try {
 								if ("Y".equalsIgnoreCase(participantRequest.getIntroduced())) {
-									eWelcomeID = programService.generateeWelcomeID(participant.getSeqId(),
-											participantRequest.getEventId());
+									/*eWelcomeID = programService.generateeWelcomeID(participant.getSeqId(),
+											participantRequest.getEventId());*/
 									programService.UpdateParticipantsStatus(participant.getSeqId(),
 											participantRequest.getEventId(), participantRequest.getIntroduced());
 									UpdateIntroductionResponse response = new UpdateIntroductionResponse(
 											participant.getSeqId(), ErrorConstants.STATUS_SUCCESS,
-											"Participant introduced status updated successfully. eWelcomeID : "
-													+ eWelcomeID);
+											"Participant introduced status updated successfully");
 									result.add(response);
 								} else {
 									programService.UpdateParticipantsStatus(participant.getSeqId(),
@@ -441,15 +440,9 @@ public class ParticipantsController {
 									result.add(response);
 								}
 							} catch (HttpClientErrorException e) {
-								e.printStackTrace();
 								UpdateIntroductionResponse response = new UpdateIntroductionResponse(
 										participant.getSeqId(), ErrorConstants.STATUS_FAILED,
 										"Welcome ID generation Failed : " + e.getResponseBodyAsString());
-								result.add(response);
-							} catch (IOException e) {
-								UpdateIntroductionResponse response = new UpdateIntroductionResponse(
-										participant.getSeqId(), ErrorConstants.STATUS_FAILED,
-										"Welcome ID generation Failed : Input-Output error..! ");
 								result.add(response);
 							}
 
