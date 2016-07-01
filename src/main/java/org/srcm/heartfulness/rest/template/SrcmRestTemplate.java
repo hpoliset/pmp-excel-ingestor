@@ -31,13 +31,13 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * This class is template class and communicates with srcm by calling srcm api
+ * This class is template class and communicates with MySRCM by calling MySRCM API.
  * 
  * @author HimaSree
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:dev.srcm.api.properties", ignoreUnknownFields = false, prefix = "srcm.oauth2")
+@ConfigurationProperties(locations = "classpath:prod.srcm.api.properties", ignoreUnknownFields = false, prefix = "srcm.oauth2")
 public class SrcmRestTemplate extends RestTemplate {
 
 	private String clientId;
@@ -108,8 +108,8 @@ public class SrcmRestTemplate extends RestTemplate {
 	}
 
 	/**
-	 * Method to authenticate the user with srcm and return the response with
-	 * token details
+	 * Method to authenticate the user with MySRCM and return the response with
+	 * token details.
 	 * 
 	 * @param authenticationRequest
 	 * @return
@@ -298,7 +298,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	}
 
 	/**
-	 * method to set the proxy (development use only)
+	 * Method to set the proxy (development use only)
 	 */
 	private void setProxy() {
 
@@ -320,8 +320,8 @@ public class SrcmRestTemplate extends RestTemplate {
 	}
 
 	/**
-	 * method to get the client id and client secret in the form of base64
-	 * credentials
+	 * Method to get the client id and client secret in the form of base64
+	 * credentials.
 	 * 
 	 * @return base64CredsBytes
 	 */

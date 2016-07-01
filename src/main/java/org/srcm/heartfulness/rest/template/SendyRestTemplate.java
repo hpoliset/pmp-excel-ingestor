@@ -48,11 +48,9 @@ import com.sun.mail.smtp.SMTPMessage;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:dev.sendy.api.properties", ignoreUnknownFields = false, prefix = "sendy")
+@ConfigurationProperties(locations = "classpath:prod.sendy.api.properties", ignoreUnknownFields = false, prefix = "sendy")
 public class SendyRestTemplate extends RestTemplate {
 	
-	private VelocityEngine velocityEngine=new VelocityEngine();
-
 	private String subscribeUri;
 	private String sendMailUri;
 	private String apiKey;
@@ -63,7 +61,7 @@ public class SendyRestTemplate extends RestTemplate {
 	private boolean proxy = false;
 	private String proxyHost = "10.1.28.10";
 	private int proxyPort = 8080;
-	private String proxyUser = "gvivek";
+	private String proxyUser = "rramesh";
 	private String proxyPassword = "123Welcome";
 
 	private HttpHeaders httpHeaders;
@@ -170,7 +168,7 @@ public class SendyRestTemplate extends RestTemplate {
 	}
 
 	/**
-	 * To add a new subscriber to sendy welcome mail subscribers list through subscribe url  
+	 * To add a new subscriber to sendy welcome mail subscribers list through subscribe URL.  
 	 * 
 	 * @param sendySubscriberDetails - (SendySubscriber sendySubscriberDetails)
 	 * 
@@ -201,7 +199,7 @@ public class SendyRestTemplate extends RestTemplate {
 	}
 	
 	/**
-	 * To send welcome mail to the welcome mail subscribers list in sendy through send mail url
+	 * To send welcome mail to the welcome mail subscribers list in sendy through send mail URL.
 	 * 
 	 * @return the response
 	 * @throws HttpClientErrorException
@@ -239,7 +237,7 @@ public class SendyRestTemplate extends RestTemplate {
 	}
 
 	/**
-	 * To execute the sendy cron job to send mail
+	 * To execute the sendy cron job to send mail.
 	 * 
 	 * @return the response
 	 * @throws HttpClientErrorException
@@ -260,7 +258,7 @@ public class SendyRestTemplate extends RestTemplate {
 	}
 	
 	/**
-	 * To unsubscribe the users from the sendy welcome mail subscribers list
+	 * To unsubscribe the users from the sendy welcome mail subscribers list.
 	 * 
 	 * @param welcomeMailDetails -(WelcomeMailDetails welcomeMailDetails)
 	 * @return the response
@@ -286,7 +284,7 @@ public class SendyRestTemplate extends RestTemplate {
 	}
 	
 	/**
-	 * To unsubscribe the users from the sendy monthly newsletter subscribers list
+	 * To unsubscribe the users from the sendy monthly newsletter subscribers list.
 	 * 
 	 * @param welcomeMailDetails -(WelcomeMailDetails welcomeMailDetails)
 	 * @return the response
@@ -312,7 +310,7 @@ public class SendyRestTemplate extends RestTemplate {
 	}
 	
 	/**
-	 * To send error alert email when sendy mail fails
+	 * To send error alert email when sendy mail fails.
 	 * 
 	 * @throws MessagingException
 	 */
@@ -359,7 +357,7 @@ public class SendyRestTemplate extends RestTemplate {
 	}
 
 	/**
-	 * To get the content from the template
+	 * To get the content from the template.
 	 * 
 	 * @param errormail-template name
 	 * @return the content as java.String
