@@ -49,8 +49,8 @@ public class AuthenticationController {
 	AuthorizationHelper authHelper;
 
 	/**
-	 * method to authenticate the user with user email and password by calling
-	 * srcm api
+	 * Method to authenticate the user with user email and password by calling
+	 * MySRCM API.
 	 * 
 	 * @param authenticationRequest
 	 * @return

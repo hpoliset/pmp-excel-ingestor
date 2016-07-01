@@ -473,4 +473,20 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	"SELECT count(id) FROM welcome_email_log WHERE email=?", new Object[] { email }, Integer.class);
 	return participantsCount;
 	} 
+	
+	@Override
+	public void updateVerificationStatus(String email,int status) {
+		Map<String, Object> params = new HashMap<>();
+		if(status==0){
+			params.put("isEmailVerified", 1);
+			params.put("isValidEmail", 0);
+		}else{
+			params.put("isEmailVerified", 1);
+			params.put("isValidEmail", 1);
+		}
+		params.put("email", email);
+		this.namedParameterJdbcTemplate
+		.update("UPDATE participant SET is_email_verified=:isEmailVerified,is_valid_email=:isValidEmail WHERE email=:email",
+				params);
+	}
 }

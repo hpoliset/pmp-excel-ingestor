@@ -198,4 +198,6 @@ public interface WelcomeMailRepository {
 	public int updateCoordinatorInformedStatus(String programId);
 
 	int checkForMailIdInWelcomeLog(String email);
+
+	void updateVerificationStatus(String email, int status);
 }
