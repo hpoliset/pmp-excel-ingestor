@@ -37,8 +37,8 @@ public class UserController {
 	Environment env;
 
 	/**
-	 * method to get the user profile from the srcm and persists user details in
-	 * pmp db, if the user details is not available in pmp
+	 * Method to get the user profile from the MySRCM and persists user details in
+	 * PMP DB, if the user details is not available in PMP.
 	 * 
 	 * @param accessToken
 	 * @param request
