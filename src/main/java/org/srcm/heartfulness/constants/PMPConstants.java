@@ -57,5 +57,25 @@ public class PMPConstants {
 	public static final String STATE_WESTBENGAL = "WESTBENGAL";
 	
 	public static final String SECURITY_TOKEN_KEY = "security.encrypt.token";
+	
+	public static final String TOTAL_EVENTS = "Total Events";
+
+	public static final String UN_CATEGORIZED = "Un-Categorized";
+
+	public static final String MISCELLANEOUS = "Miscellaneous";
+	
+	public static final String DATE_FORMAT = "dd-MM-yyyy";
+
+	public static final String SQL_DATE_FORMAT = "yyyy-MM-dd";
+
+	public static final String MALE = "Male";
+
+	public static final String FEMALE = "Female";
+
+	public static final String GENDER_MALE = "M";
+
+	public static final String GENDER_FEMALE = "F";
+	
+	public static final String STATUS_OK = "OK";
 
 }
