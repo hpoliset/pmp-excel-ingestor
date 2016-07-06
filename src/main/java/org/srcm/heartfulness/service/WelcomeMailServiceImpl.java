@@ -205,7 +205,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	@Override
 	public void uploadParticipantEmailidsToFTP() throws IOException, JSchException, SftpException {
 		LocalDateTime dateTime = LocalDateTime.now();
-		DateTimeFormatter format = DateTimeFormatter.ofPattern("dd_MMM_mm");
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("dd_MMM");
 		String currentDate = dateTime.format(format);
 
 		SendySubscriber sendySubscriber = null;
