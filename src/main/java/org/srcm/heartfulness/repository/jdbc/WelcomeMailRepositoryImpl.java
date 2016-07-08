@@ -238,7 +238,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		Map<String, Object> params = new HashMap<>();
 		params.put("email", subscriber.getEmail());
 		params.put("informed", subscriber.getIsCoOrdinatorInformed());
-		this.jdbcTemplate.update("UPDATE participant set welcome_mail_sent=1, is_co_ordinator_informed=:informed WHERE email=:email AND "
+		this.namedParameterJdbcTemplate.update("UPDATE participant set welcome_mail_sent=1, is_co_ordinator_informed=:informed WHERE email=:email AND "
 				+ "(welcome_mail_sent=0 OR welcome_mail_sent IS NULL)", params);
 	}
 
