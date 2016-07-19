@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.crsh.shell.impl.remoting.ServerMessage.GetSize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -43,7 +44,7 @@ public class PushNotificationHelper {
 	public void sendNotification() {
 		try {
 			AmazonSNS sns = new AmazonSNSClient(new PropertiesCredentials(
-					PushNotificationHelper.class.getResourceAsStream("/resources/application.properties")));
+					PushNotificationHelper.class.getResourceAsStream("application.properties")));
 			sns.setEndpoint("https://sns.us-west-2.amazonaws.com");
 			log.debug("===========================================\n");
 			log.debug("Getting Started with Amazon SNS");
@@ -70,6 +71,8 @@ public class PushNotificationHelper {
 		} catch (IOException ioex) {
 			log.debug("Error Message: {}", ioex.getMessage());
 		} catch (Exception ex) {
+			log.debug("Error Message: {}",(Object[])ex.getStackTrace());	
+			log.warn("Error Message: {}",ex);
 			log.debug("Error Message: {}", ex.getMessage());
 		}
 	}
