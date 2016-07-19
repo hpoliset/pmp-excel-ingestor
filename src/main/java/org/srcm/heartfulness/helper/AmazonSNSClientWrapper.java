@@ -6,9 +6,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazon.htc.sns.helper.MessageGenerator;
-import com.amazon.htc.sns.helper.MessageGenerator.Platform;
-import com.amazonaws.ClientConfiguration;
+import org.srcm.heartfulness.helper.MessageGenerator;
+import org.srcm.heartfulness.helper.MessageGenerator.Platform;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.model.CreatePlatformApplicationRequest;
 import com.amazonaws.services.sns.model.CreatePlatformApplicationResult;

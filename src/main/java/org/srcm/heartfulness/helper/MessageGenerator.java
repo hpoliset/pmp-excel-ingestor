@@ -4,7 +4,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -43,7 +42,7 @@ public class MessageGenerator {
 		payload.put("created_at", String.valueOf(Calendar.getInstance().getTimeInMillis()));
 		payload.put("title", "PMP");
 		return payload;
-	}	
+	}
 
 	public static String getSampleAppleMessage() {
 		Map<String, Object> appleMessageMap = new HashMap<String, Object>();
@@ -54,15 +53,15 @@ public class MessageGenerator {
 		appleMessageMap.put("aps", appMessageMap);
 		return jsonify(appleMessageMap);
 	}
-	
+
 	public static String getSampleAndroidMessage(String message) {
 		Map<String, Object> androidMessageMap = new HashMap<String, Object>();
-		//androidMessageMap.put("collapse_key", "Welcome");
+		// androidMessageMap.put("collapse_key", "Welcome");
 		androidMessageMap.put("data", getData(message));
-		//androidMessageMap.put("delay_while_idle", true);
-		//androidMessageMap.put("time_to_live", 125);
-		//androidMessageMap.put("dry_run", false);
+		// androidMessageMap.put("delay_while_idle", true);
+		// androidMessageMap.put("time_to_live", 125);
+		// androidMessageMap.put("dry_run", false);
 		return jsonify(androidMessageMap);
-	}	
+	}
 
 }
