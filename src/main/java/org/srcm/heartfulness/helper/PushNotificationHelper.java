@@ -43,9 +43,9 @@ public class PushNotificationHelper {
 
 	public void sendNotification() {
 		try {
-		//	log.debug("getResource : {} ",PushNotificationHelper.class.getClassLoader().getResource("application.properties"));
+		//log.debug("getResource : {} ",PushNotificationHelper.class.getClassLoader().getResource("application.properties"));
 			AmazonSNS sns = new AmazonSNSClient(new PropertiesCredentials(
-					PushNotificationHelper.class.getResourceAsStream("classpath:application.properties")));
+					PushNotificationHelper.class.getClassLoader().getResource("application.properties")));
 			
 			sns.setEndpoint("https://sns.us-west-2.amazonaws.com");
 			log.debug("===========================================\n");
