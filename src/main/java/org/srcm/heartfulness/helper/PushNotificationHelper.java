@@ -43,7 +43,6 @@ public class PushNotificationHelper {
 
 	public void sendNotification() {
 		try {
-		//log.debug("getResource : {} ",PushNotificationHelper.class.getClassLoader().getResource("application.properties"));
 			AmazonSNS sns = new AmazonSNSClient(new PropertiesCredentials(
 					PushNotificationHelper.class.getClassLoader().getResource("resources/application.properties")));
 			
