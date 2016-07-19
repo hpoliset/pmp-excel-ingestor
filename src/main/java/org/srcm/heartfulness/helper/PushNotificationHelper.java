@@ -62,11 +62,13 @@ public class PushNotificationHelper {
 			log.debug("Error Type:       " + ase.getErrorType());
 			log.debug("Request ID:       " + ase.getRequestId());
 			ase.printStackTrace();
-		} catch (AmazonClientException ace) {
+		}catch (AmazonClientException ace) {
 			log.debug("Caught an AmazonClientException, which means the client encountered "
 					+ "a serious internal problem while trying to communicate with SNS, such as not "
 					+ "being able to access the network.");
 			log.debug("Error Message: " + ace.getMessage());
+		}catch (Exception ex){
+			log.debug("Error Message: {}", ex.getMessage());
 		}
 	}
 	
