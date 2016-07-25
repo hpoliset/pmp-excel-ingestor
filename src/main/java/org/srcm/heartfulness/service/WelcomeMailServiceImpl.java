@@ -264,61 +264,65 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	 *  coordinators with the details.
 	 */
 	@Override
-	public void getCoordinatorListAndSendMail() {
-		LOGGER.debug("START		:Getting coordinator list to send email noticafications");
+    public void getCoordinatorListAndSendMail() {
+        LOGGER.debug("START        :Getting coordinator list to send email noticafications");
+        try{
+            Map<String,List<String>> details = welcomeMailRepository.getCoordinatorWithEmailDetails();
+            LOGGER.debug("            Total number of coordinators to send email is : "+details.size());
+            if(!details.isEmpty()){
+                LOGGER.debug("START        :Sending email notifications to the coordinator list");
+                for(Map.Entry<String,List<String>> map:details.entrySet()){
+                    if(null != map.getKey()){
+                        if(!map.getKey().isEmpty()){
+                            if(map.getValue().get(3)!=null && !map.getValue().get(3).isEmpty()){
+                                try{
+                                    int pctptCount = welcomeMailRepository.getPctptCountByPgrmId(map.getKey());
+                                    int wlcmEmailRcvdPctptCount = welcomeMailRepository.wlcmMailRcvdPctptCount(map.getKey());
+                                    LOGGER.debug("              :Total count of participant for event id "+map.getValue().get(3)+" is "+pctptCount );
+                                    LOGGER.debug("              :Total count of participant who have received welcome email already "+wlcmEmailRcvdPctptCount);
+                                    LOGGER.debug("START        :Sending email to "+map.getValue().get(3));
+                                    CoordinatorEmail coordinatorEmail = new CoordinatorEmail();
+                                    coordinatorEmail.setCoordinatorEmail(map.getValue().get(3));
+                                    coordinatorEmail.setCoordinatorName(map.getValue().get(2));
+                                    coordinatorEmail.setEventName(map.getValue().get(1));
+                                    coordinatorEmail.setTotalParticipantCount(String.valueOf(pctptCount));
+                                    coordinatorEmail.setPctptAlreadyRcvdWlcmMailCount(String.valueOf(wlcmEmailRcvdPctptCount));
+                                    coordinatorEmail.setPctptRcvdWlcmMailYstrdayCount(map.getValue().get(0));
+                                    sendEmailNotification.sendMailNotificationToCoordinator(coordinatorEmail);
+                                    LOGGER.debug("END        :Completed sending email to "+map.getValue().get(3));
+                                }catch(AddressException aex){
+                                    LOGGER.debug("ADDRESS_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3));
+                                    LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
+                                }catch(MessagingException mex){
+                                    LOGGER.debug("MESSAGING_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3));
+                                    LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
+                                }catch(Exception ex){
+                                    LOGGER.debug("EXCEPTION  :Failed to sent mail to" + map.getValue().get(3));
+                                    LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
+                                }
+                            }else{
+                            	LOGGER.debug("MESSAGE: Coordinator email is empty. Since email not triggered for the programID : "+map.getKey());
+                            }
+                        }
+                           
+                    }
+                    LOGGER.debug("START        :Updating database column for the participants who have received welcome email for coordinator "+map.getValue().get(3));
+                    int upadateStatus = welcomeMailRepository.updateCoordinatorInformedStatus(map.getKey());
+                    if(upadateStatus > 0){
+                        LOGGER.debug("END        :Completed updating database column for the participant who have received welcome email for coordinator "+map.getValue().get(3));
+                    }else{
+                        LOGGER.debug("Failed to update database column for the participants who have received welcome email for coordinator"+map.getValue().get(3));
+                    }
+                }
+                LOGGER.debug("END        :Completed sending email notifications to the coordinator list");
+            }else{
+                LOGGER.debug("END        :No new participants found who have received welcome email");
+            }
 
-		try{
-			Map<String,List<String>> details = welcomeMailRepository.getCoordinatorWithEmailDetails();
-			LOGGER.debug("			Total number of coordinators to send email is : "+details.size());
-			if(!details.isEmpty()){
-				LOGGER.debug("START		:Sending email notifications to the coordinator list");
-				for(Map.Entry<String,List<String>> map:details.entrySet()){
-					if(null != map.getKey()){
-						if(!map.getKey().isEmpty()){
-							try{
-								int pctptCount = welcomeMailRepository.getPctptCountByPgrmId(map.getValue().get(3));
-								int wlcmEmailRcvdPctptCount = welcomeMailRepository.wlcmMailRcvdPctptCount(map.getValue().get(3));
-								LOGGER.debug("          	:Total count of participant for event id "+map.getValue().get(3)+" is "+pctptCount );
-								LOGGER.debug("          	:Total count of participant who have received welcome email already "+wlcmEmailRcvdPctptCount);
-								LOGGER.debug("START		:Sending email to "+map.getKey());
-								CoordinatorEmail coordinatorEmail = new CoordinatorEmail();
-								coordinatorEmail.setCoordinatorEmail(map.getKey());
-								coordinatorEmail.setCoordinatorName(map.getValue().get(2));
-								coordinatorEmail.setEventName(map.getValue().get(1));
-								coordinatorEmail.setTotalParticipantCount(String.valueOf(pctptCount));
-								coordinatorEmail.setPctptAlreadyRcvdWlcmMailCount(String.valueOf(wlcmEmailRcvdPctptCount));
-								coordinatorEmail.setPctptRcvdWlcmMailYstrdayCount(map.getValue().get(0));
-								sendEmailNotification.sendMailNotificationToCoordinator(coordinatorEmail);
-								LOGGER.debug("END		:Completed sending email to "+map.getKey());
-							}catch(AddressException aex){
-								LOGGER.debug("ADDRESS_EXCEPTION  :Failed to sent mail to" + map.getKey());
-								LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
-							}catch(MessagingException mex){
-								LOGGER.debug("MESSAGING_EXCEPTION  :Failed to sent mail to" + map.getKey());
-								LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
-							}catch(Exception ex){
-								LOGGER.debug("EXCEPTION  :Failed to sent mail to" + map.getKey());
-								LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
-							}
-						}
-					}
-					LOGGER.debug("START		:Updating database column for the participants who have received welcome email for coordinator "+map.getKey());
-					int upadateStatus = welcomeMailRepository.updateCoordinatorInformedStatus(map.getValue().get(3));
-					if(upadateStatus > 0){
-						LOGGER.debug("END		:Completed updating database column for the participant who have received welcome email for coordinator "+map.getKey());
-					}else{
-						LOGGER.debug("Failed to update database column for the participants who have received welcome email for coordinator"+map.getKey());
-					}
-				}
-				LOGGER.debug("END		:Completed sending email notifications to the coordinator list");
-			}else{
-				LOGGER.debug("END		:No new participants found who have received welcome email");
-			}
-
-		}catch(EmptyResultDataAccessException ex){
-			LOGGER.debug("EmptyResultDataAccessException		:No new participants found who have received welcome email");
-		}catch(Exception ex){
-			LOGGER.debug("EXCEPTION		:Failed to get the list of coordinators");
-		}
-	}
+        }catch(EmptyResultDataAccessException ex){
+            LOGGER.debug("EmptyResultDataAccessException        :No new participants found who have received welcome email");
+        }catch(Exception ex){
+            LOGGER.debug("EXCEPTION        :Failed to get the list of coordinators");
+        }
+    }
 }

@@ -411,8 +411,8 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 									eventDetails.add(resultSet.getString(2));
 									eventDetails.add(resultSet.getString(3));
 									eventDetails.add(resultSet.getString(4));
-									eventDetails.add(resultSet.getString(5));
-									details.put(resultSet.getString(1),eventDetails);
+									eventDetails.add(resultSet.getString(1));
+									details.put(resultSet.getString(5),eventDetails);
 								}
 								/*for(Map.Entry<String, List<String>> map : details.entrySet()){
 									System.out.println("-----------------------START------------------------------");
