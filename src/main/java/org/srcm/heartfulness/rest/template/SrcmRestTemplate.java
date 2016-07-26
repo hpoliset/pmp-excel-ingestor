@@ -31,13 +31,14 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * This class is template class and communicates with MySRCM by calling MySRCM API.
+ * This class is template class and communicates with MySRCM by calling MySRCM
+ * API.
  * 
  * @author HimaSree
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:prod.srcm.api.properties", ignoreUnknownFields = false, prefix = "srcm.oauth2")
+@ConfigurationProperties(locations = "classpath:dev.srcm.api.properties", ignoreUnknownFields = false, prefix = "srcm.oauth2")
 public class SrcmRestTemplate extends RestTemplate {
 
 	private String clientId;
@@ -158,7 +159,6 @@ public class SrcmRestTemplate extends RestTemplate {
 		ResponseEntity<String> response = this.exchange(userInfoUri, HttpMethod.GET, httpEntity, String.class);
 		return mapper.readValue(response.getBody(), Result.class);
 	}
-
 
 	/**
 	 * Method to create the user profile in MySRCM and PMP by calling MySRCM
