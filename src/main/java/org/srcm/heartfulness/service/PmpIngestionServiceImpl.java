@@ -21,8 +21,11 @@ import org.srcm.heartfulness.enumeration.ExcelType;
 import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractorFactory;
 import org.srcm.heartfulness.model.Organisation;
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.model.json.response.Result;
+import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.repository.OrganisationRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
+import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
 import org.srcm.heartfulness.service.response.ExcelUploadResponse;
 import org.srcm.heartfulness.util.ExcelParserUtils;
 import org.srcm.heartfulness.util.InvalidExcelFileException;
@@ -45,6 +48,9 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 
 	@Autowired
 	private VersionIdentifier versionIdentifier;
+
+	@Autowired
+	SrcmRestTemplate srcmRestTemplate;
 
 	/**
 	 * This method is used to parse the excel file and populate the data into database.
@@ -74,8 +80,39 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 					// Persist the program
 					Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version);
 					program.setCreatedSource("Excel");
-					programRepository.save(program);
-					response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
+
+					if(	null != program.getPreceptorIdCardNumber() && !program.getPreceptorIdCardNumber().isEmpty()){
+						Result result = srcmRestTemplate.getAbyasiProfile(program.getPreceptorIdCardNumber());
+						if (result.getUserProfile().length > 0) {
+							UserProfile userProfile = result.getUserProfile()[0];
+							if (null != userProfile) {
+								if (true == userProfile.isIs_prefect()
+										&& 0 != userProfile.getPrefect_id()) {
+									System.out.println("----------setting prefect id");
+									program.setAbyasiRefNo(program.getPreceptorIdCardNumber());
+									program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
+									program.setSrcmGroup(String.valueOf(userProfile.getSrcm_group()));
+									programRepository.save(program);
+									response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
+								} else {
+									errorResponse.add("Specified PreceptorId Card Number is not authorized.");
+									response.setErrorMsg(errorResponse);
+									response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
+								}
+							} else {
+								errorResponse.add("Invalid PreceptorId Card Number.");
+								response.setErrorMsg(errorResponse);
+								response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
+							}
+						}else{
+							errorResponse.add("Invalid PreceptorId Card Number.");
+							response.setErrorMsg(errorResponse);
+							response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
+						}
+					} else {
+						programRepository.save(program);
+						response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
+					}
 				}
 			}else{
 				errorResponse.add("Invalid file contents.");

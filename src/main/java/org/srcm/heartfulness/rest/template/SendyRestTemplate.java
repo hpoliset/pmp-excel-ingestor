@@ -48,7 +48,7 @@ import com.sun.mail.smtp.SMTPMessage;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:prod.sendy.api.properties", ignoreUnknownFields = false, prefix = "sendy")
+@ConfigurationProperties(locations = "classpath:dev.sendy.api.properties", ignoreUnknownFields = false, prefix = "sendy")
 public class SendyRestTemplate extends RestTemplate {
 	
 	private String subscribeUri;
@@ -59,7 +59,7 @@ public class SendyRestTemplate extends RestTemplate {
 	private String sendFlag;
 
 	private boolean proxy = false;
-	private String proxyHost = "10.1.28.10";
+	private String proxyHost = "10.1.28.12";
 	private int proxyPort = 8080;
 	private String proxyUser = "rramesh";
 	private String proxyPassword = "123Welcome";

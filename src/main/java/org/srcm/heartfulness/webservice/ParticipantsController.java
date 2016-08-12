@@ -425,8 +425,8 @@ public class ParticipantsController {
 						} else {
 							try {
 								if ("Y".equalsIgnoreCase(participantRequest.getIntroduced())) {
-									/*eWelcomeID = programService.generateeWelcomeID(participant.getSeqId(),
-											participantRequest.getEventId());*/
+									eWelcomeID = programService.generateeWelcomeID(participant.getSeqId(),
+											participantRequest.getEventId());
 									programService.UpdateParticipantsStatus(participant.getSeqId(),
 											participantRequest.getEventId(), participantRequest.getIntroduced());
 									UpdateIntroductionResponse response = new UpdateIntroductionResponse(
