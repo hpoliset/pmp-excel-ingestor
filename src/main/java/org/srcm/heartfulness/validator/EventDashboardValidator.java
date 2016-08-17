@@ -1,6 +1,7 @@
 package org.srcm.heartfulness.validator;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import javax.crypto.BadPaddingException;
@@ -8,10 +9,12 @@ import javax.crypto.IllegalBlockSizeException;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
+import org.srcm.heartfulness.model.json.response.UpdateIntroductionResponse;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -77,5 +80,7 @@ public interface EventDashboardValidator {
 	 * @return errors
 	 */
 	public Map<String, String> checkDeleteRequestMandatoryFields(ParticipantIntroductionRequest participantRequest);
+
+	public List<UpdateIntroductionResponse> checkParticipantIntroductionMandatoryFields(Participant participantInput);
 
 }

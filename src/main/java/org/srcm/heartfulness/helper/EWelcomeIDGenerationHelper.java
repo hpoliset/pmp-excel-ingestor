@@ -12,6 +12,7 @@ import org.srcm.heartfulness.constants.SMSConstants;
 import org.srcm.heartfulness.model.Aspirant;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.model.json.response.CitiesAPIResponse;
 import org.srcm.heartfulness.model.json.response.GeoSearchResponse;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.repository.ProgramRepository;
@@ -23,13 +24,13 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 @Component
 public class EWelcomeIDGenerationHelper {
-	
+
 	@Autowired
 	SrcmRestTemplate srcmRestTemplate;
-	
+
 	@Autowired
 	ProgramRepository programRepository;
-	
+
 	/**
 	 * Method to generate e-welcome ID by calling the SRCM API
 	 * 
@@ -43,39 +44,43 @@ public class EWelcomeIDGenerationHelper {
 			JsonMappingException, IOException {
 		GeoSearchResponse geoSearchResponse = srcmRestTemplate.geoSearch(participant.getCity() + ","
 				+ participant.getState() + "," + participant.getCountry());
+		
+		CitiesAPIResponse citiesAPIResponse = srcmRestTemplate.getCityName(geoSearchResponse.getCityId());
+		
 		Aspirant aspirant = new Aspirant();
-		aspirant.setCity(String.valueOf(geoSearchResponse.getCityId()));
+		aspirant.setCity(citiesAPIResponse.getName());
 		aspirant.setState(String.valueOf(geoSearchResponse.getStateId()));
 		aspirant.setCountry(String.valueOf(geoSearchResponse.getCountryId()));
 		SimpleDateFormat sdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
 		aspirant.setDateOfBirth((null != participant.getDateOfBirth()) ? sdf.format(participant.getDateOfBirth())
 				: null);
-		aspirant.setDateOfJoining((null != participant.getDateOfRegistration()) ? sdf.format(participant
-				.getDateOfRegistration()) : null);
+		aspirant.setDateOfJoining((null != participant.getProgram().getProgramStartDate()) ? sdf.format(participant
+				.getProgram().getProgramStartDate() ): null);
 		aspirant.setEmail((null != participant.getEmail() && !participant.getEmail().isEmpty()) ? participant
 				.getEmail() : null);
 		System.out.println(participant.getProgram().toString());
 		aspirant.setFirstSittingBy((null != participant.getProgram().getPrefectId() && !participant.getProgram()
 				.getPrefectId().isEmpty()) ? participant.getProgram().getPrefectId() : null);
-		aspirant.setSrcmGroup((null != participant.getProgram().getSrcmGroup() && !participant.getProgram()
-				.getSrcmGroup().isEmpty()) ? participant.getProgram().getSrcmGroup() : null);
+		aspirant.setSrcmGroup(0 != geoSearchResponse.getNearestCenter() ? String.valueOf(geoSearchResponse
+				.getNearestCenter()) : null);
 		aspirant.setMobile((null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty()) ? participant
 				.getMobilePhone() : null);
 		aspirant.setName((null != participant.getPrintName() && !participant.getPrintName().isEmpty()) ? participant
 				.getPrintName() : null);
 		aspirant.setFirstName((null != participant.getFirstName() && !participant.getFirstName().isEmpty()) ? participant
-				.getFirstName() : null);
+				.getFirstName() : participant
+				.getPrintName());
 		aspirant.setStreet((null != participant.getAddressLine1() && !participant.getAddressLine1().isEmpty()) ? participant
 				.getAddressLine1() : null);
 		aspirant.setStreet2((null != participant.getAddressLine2() && !participant.getAddressLine2().isEmpty()) ? participant
 				.getAddressLine2() : null);
-		System.out.println(aspirant.toString());
 		UserProfile userProfile = srcmRestTemplate.createAspirant(aspirant);
+		participant.getProgram().setSrcmGroup( String.valueOf(geoSearchResponse
+				.getNearestCenter()));
 		participant.setWelcomeCardNumber(userProfile.getRef());
 		participant.setWelcomeCardDate(new Date());
 	}
-	
-	
+
 	/**
 	 * Method to save the program details into the pmp database
 	 * 
@@ -97,7 +102,5 @@ public class EWelcomeIDGenerationHelper {
 		return program;
 
 	}
-	
-	
 
 }

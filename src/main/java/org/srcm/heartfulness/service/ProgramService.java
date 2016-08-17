@@ -231,7 +231,7 @@ public interface ProgramService {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public String generateeWelcomeID(String seqID, String eventId) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
+	public String generateeWelcomeID(Participant participant) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
 
 
 }

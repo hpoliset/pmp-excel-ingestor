@@ -3,7 +3,9 @@ package org.srcm.heartfulness.validator.impl;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.crypto.BadPaddingException;
@@ -13,14 +15,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.EventConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
+import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.response.Result;
+import org.srcm.heartfulness.model.json.response.UpdateIntroductionResponse;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.service.PmpParticipantService;
 import org.srcm.heartfulness.service.ProgramService;
@@ -31,7 +36,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
- * Validator Implementation to streamline all Event Dashboard validation implementation.
+ * Validator Implementation to streamline all Event Dashboard validation
+ * implementation.
  * 
  */
 @Component
@@ -53,7 +59,9 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	Environment env;
 
 	/**
-	 * Method to validate mandatory fields in the participant request before creating participant.
+	 * Method to validate mandatory fields in the participant request before
+	 * creating participant.
+	 * 
 	 * @param participant
 	 * @return
 	 */
@@ -108,7 +116,10 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	}
 
 	/**
-	 * Method to validate the values given in <code>ParticipantIntroductionRequest</code> before updating introductory status.
+	 * Method to validate the values given in
+	 * <code>ParticipantIntroductionRequest</code> before updating introductory
+	 * status.
+	 * 
 	 * @param participantRequest
 	 * @return
 	 */
@@ -132,7 +143,9 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	}
 
 	/**
-	 * Method to validate the values given in <code>EventAdminChangeRequest</code> before updating event admin.
+	 * Method to validate the values given in
+	 * <code>EventAdminChangeRequest</code> before updating event admin.
+	 * 
 	 * @param eventAdminChangeRequest
 	 * @return errors
 	 */
@@ -257,12 +270,15 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	public UserProfile validateToken(String token) throws HttpClientErrorException, JsonParseException,
 			JsonMappingException, IOException, IllegalBlockSizeException, NumberFormatException, BadPaddingException {
 		System.out.println(token);
-		Result result = userProfileService.getUserProfile(encryptDecryptAES.decrypt(token,env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
+		Result result = userProfileService.getUserProfile(encryptDecryptAES.decrypt(token,
+				env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
 		return result.getUserProfile()[0];
 	}
 
 	/**
-	 * Method to validate the values given in ParticipantIntroductionRequest before deleting the participant.
+	 * Method to validate the values given in ParticipantIntroductionRequest
+	 * before deleting the participant.
+	 * 
 	 * @param participantRequest
 	 * @return errors
 	 */
@@ -280,6 +296,58 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			errors.put("partcipantIds", "No participant Ids are available to delete");
 		}
 		return errors;
+	}
+
+	@Override
+	public List<UpdateIntroductionResponse> checkParticipantIntroductionMandatoryFields(Participant participantInput) {
+		List<UpdateIntroductionResponse> errorResult = new ArrayList<UpdateIntroductionResponse>();
+		if (null == participantInput.getCity() || participantInput.getCity().isEmpty()) {
+			UpdateIntroductionResponse response = new UpdateIntroductionResponse(participantInput.getSeqId(),
+					ErrorConstants.STATUS_FAILED, "City is required.");
+			errorResult.add(response);
+		}
+
+		if (null == participantInput.getState() || participantInput.getState().isEmpty()) {
+			UpdateIntroductionResponse response = new UpdateIntroductionResponse(participantInput.getSeqId(),
+					ErrorConstants.STATUS_FAILED, "State is required.");
+			errorResult.add(response);
+		}
+
+		if (null == participantInput.getCountry() || participantInput.getCountry().isEmpty()) {
+			UpdateIntroductionResponse response = new UpdateIntroductionResponse(participantInput.getSeqId(),
+					ErrorConstants.STATUS_FAILED, "Country is required.");
+			errorResult.add(response);
+		}
+
+		if (null == participantInput.getProgram().getProgramStartDate()) {
+			UpdateIntroductionResponse response = new UpdateIntroductionResponse(participantInput.getSeqId(),
+					ErrorConstants.STATUS_FAILED, "Program start date is required.");
+			errorResult.add(response);
+		}
+
+		System.out.println(participantInput.getFirstSittingTaken() + "=====" + participantInput.getSecondSittingTaken()
+				+ "=====" + participantInput.getThirdSittingTaken());
+
+		if ((null == participantInput.getFirstSittingDate() || null == participantInput.getSecondSittingDate() || null == participantInput
+				.getThirdSittingDate())) {
+			if ((0 == participantInput.getFirstSittingTaken() || 0 == participantInput.getSecondSittingTaken() || 0 == participantInput
+					.getThirdSittingTaken())) {
+				UpdateIntroductionResponse response = new UpdateIntroductionResponse(participantInput.getSeqId(),
+						ErrorConstants.STATUS_FAILED, "Participant not completed 3 sittings.");
+				errorResult.add(response);
+			}
+		} else if ((0 == participantInput.getFirstSittingTaken() || 0 == participantInput.getSecondSittingTaken() || 0 == participantInput
+				.getThirdSittingTaken())) {
+			if ((null == participantInput.getFirstSittingDate() || null == participantInput.getSecondSittingDate() || null == participantInput
+					.getThirdSittingDate())) {
+				UpdateIntroductionResponse response = new UpdateIntroductionResponse(participantInput.getSeqId(),
+						ErrorConstants.STATUS_FAILED, "Participant not completed 3 sittings.");
+				errorResult.add(response);
+			}
+
+		}
+
+		return errorResult;
 	}
 
 }

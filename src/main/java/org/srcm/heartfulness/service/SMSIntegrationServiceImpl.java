@@ -58,6 +58,9 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 
 	@Autowired
 	SrcmRestTemplate srcmRestTemplate;
+	
+	@Autowired
+	private ProgramService programService;
 
 	/*
 	 * (non-Javadoc)
@@ -590,10 +593,39 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 						if (participant.getWelcomeCardNumber() == null) {
 							//participant.setWelcomeCardNumber(String.valueOf(SmsUtil.generateRandomNumber(9)));
 							try {
-								eWelcomeIDGenerationHelper.generateEWelcomeId(participant);
-								participantRepository.save(participant);
-								response = SMSConstants.SMS_EWELCOME_RESPONSE_SUCCESS_1
-										+ participant.getWelcomeCardNumber() + SMSConstants.SMS_EWELCOME_RESPONSE_SUCCESS_2;
+								
+								if(null == participant.getProgram().getPrefectId() || participant.getProgram().getPrefectId().isEmpty() ){
+									if(null == participant.getProgram().getAbyasiRefNo() ||  participant.getProgram().getAbyasiRefNo().isEmpty()){
+										response =  SMSConstants.SMS_EWELCOME_RESPONSE_INVALID_FORMAT_3 ;
+									}else{
+										Result result = srcmRestTemplate.getAbyasiProfile(participant.getProgram().getPreceptorIdCardNumber());
+										if (result.getUserProfile().length > 0) {
+											UserProfile userProfile = result.getUserProfile()[0];
+											if (null != userProfile) {
+												if (true == userProfile.isIs_prefect()
+														&& 0 != userProfile.getPrefect_id()) {
+													Program program=participantRepository.findOnlyProgramById(participant.getProgram().getProgramId());
+													System.out.println(participant.getProgram().getProgramId());
+													program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
+													programRepository.save(program);
+													eWelcomeIDGenerationHelper.generateEWelcomeId(participant);
+													participantRepository.save(participant);
+													response = SMSConstants.SMS_EWELCOME_RESPONSE_SUCCESS_1
+															+ participant.getWelcomeCardNumber() + SMSConstants.SMS_EWELCOME_RESPONSE_SUCCESS_2;
+												}
+											}else{
+												response =  SMSConstants.SMS_EWELCOME_RESPONSE_INVALID_FORMAT_4;
+											}
+										}else{
+											response =   SMSConstants.SMS_EWELCOME_RESPONSE_INVALID_FORMAT_4;
+										}
+									}
+								}else{
+									eWelcomeIDGenerationHelper.generateEWelcomeId(participant);
+									participantRepository.save(participant);
+									response = SMSConstants.SMS_EWELCOME_RESPONSE_SUCCESS_1
+											+ participant.getWelcomeCardNumber() + SMSConstants.SMS_EWELCOME_RESPONSE_SUCCESS_2;
+								}
 							} catch (HttpClientErrorException e) {
 								response = "Welcome ID generation Failed due to - " + e.getResponseBodyAsString();
 								e.printStackTrace();

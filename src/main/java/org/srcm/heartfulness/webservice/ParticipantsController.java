@@ -425,14 +425,29 @@ public class ParticipantsController {
 						} else {
 							try {
 								if ("Y".equalsIgnoreCase(participantRequest.getIntroduced())) {
-									eWelcomeID = programService.generateeWelcomeID(participant.getSeqId(),
-											participantRequest.getEventId());
-									programService.UpdateParticipantsStatus(participant.getSeqId(),
-											participantRequest.getEventId(), participantRequest.getIntroduced());
-									UpdateIntroductionResponse response = new UpdateIntroductionResponse(
-											participant.getSeqId(), ErrorConstants.STATUS_SUCCESS,
-											"Participant introduced status updated successfully");
-									result.add(response);
+									
+									int programID = programService.getProgramIdByEventId(participantRequest.getEventId());
+									Participant participantInput = programService.findParticipantBySeqId(participant.getSeqId(), programID);
+									System.out.println("participant : " + participantInput.toString());
+									UpdateIntroductionResponse response = null;
+									List<UpdateIntroductionResponse> errorResult= eventDashboardValidator
+											.checkParticipantIntroductionMandatoryFields(participantInput);
+									if (!errorResult.isEmpty()) {
+										result.addAll(errorResult);
+									} else {
+										eWelcomeID = programService.generateeWelcomeID(participantInput);
+										programService.UpdateParticipantsStatus(participant.getSeqId(),
+												participantRequest.getEventId(), participantRequest.getIntroduced());
+										if("success".equalsIgnoreCase(eWelcomeID)){
+											response = new UpdateIntroductionResponse(
+													participant.getSeqId(), ErrorConstants.STATUS_SUCCESS,
+													"Participant eWelcomeID : "+participantInput.getWelcomeCardNumber());
+										}else{
+											response = new UpdateIntroductionResponse(
+													participant.getSeqId(), ErrorConstants.STATUS_SUCCESS, eWelcomeID);
+										}
+										result.add(response);
+									}
 								} else {
 									programService.UpdateParticipantsStatus(participant.getSeqId(),
 											participantRequest.getEventId(), participantRequest.getIntroduced());
@@ -444,7 +459,7 @@ public class ParticipantsController {
 							} catch (HttpClientErrorException e) {
 								UpdateIntroductionResponse response = new UpdateIntroductionResponse(
 										participant.getSeqId(), ErrorConstants.STATUS_FAILED,
-										"Welcome ID generation Failed : " + e.getResponseBodyAsString());
+										e.getResponseBodyAsString());
 								result.add(response);
 							}
 

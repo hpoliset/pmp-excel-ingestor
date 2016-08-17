@@ -21,6 +21,7 @@ import org.srcm.heartfulness.constants.RestTemplateConstants;
 import org.srcm.heartfulness.model.Aspirant;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
+import org.srcm.heartfulness.model.json.response.CitiesAPIResponse;
 import org.srcm.heartfulness.model.json.response.GeoSearchResponse;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
@@ -74,6 +75,8 @@ public class SrcmRestTemplate extends RestTemplate {
 
 		private String createAspirant;
 
+		private String citiesapi;
+
 		public String getAbyasiInfoUri() {
 			return abyasiInfoUri;
 		}
@@ -96,6 +99,14 @@ public class SrcmRestTemplate extends RestTemplate {
 
 		public void setCreateAspirant(String createAspirant) {
 			this.createAspirant = createAspirant;
+		}
+
+		public String getCitiesapi() {
+			return citiesapi;
+		}
+
+		public void setCitiesapi(String citiesapi) {
+			this.citiesapi = citiesapi;
 		}
 
 	}
@@ -297,25 +308,34 @@ public class SrcmRestTemplate extends RestTemplate {
 		return mapper.readValue(Response.getBody(), UserProfile.class);
 	}
 
+	public CitiesAPIResponse getCityName(int cityId) throws JsonParseException, JsonMappingException, IOException {
+		if (proxy)
+			setProxy();
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.add(RestTemplateConstants.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		HttpEntity<?> httpEntity = new HttpEntity<Object>(null, httpHeaders);
+		ResponseEntity<String> response = this.exchange(abyasi.citiesapi + cityId + "/?format=json", HttpMethod.GET,
+				httpEntity, String.class);
+		return mapper.readValue(response.getBody(), CitiesAPIResponse.class);
+	}
+
 	/**
 	 * Method to set the proxy (development use only)
 	 */
 	private void setProxy() {
 
-		/*
-		 * CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		 * credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST,
-		 * AuthScope.ANY_PORT), new UsernamePasswordCredentials(proxyUser,
-		 * proxyPassword)); HttpClientBuilder clientBuilder =
-		 * HttpClientBuilder.create(); clientBuilder.useSystemProperties();
-		 * clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
-		 * clientBuilder.setDefaultCredentialsProvider(credsProvider);
-		 * clientBuilder.setProxyAuthenticationStrategy(new
-		 * ProxyAuthenticationStrategy()); CloseableHttpClient client =
-		 * clientBuilder.build(); HttpComponentsClientHttpRequestFactory factory
-		 * = new HttpComponentsClientHttpRequestFactory();
-		 * factory.setHttpClient(client); this.setRequestFactory(factory);
-		 */
+	/*	CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
+				new UsernamePasswordCredentials(proxyUser, proxyPassword));
+		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+		clientBuilder.useSystemProperties();
+		clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
+		clientBuilder.setDefaultCredentialsProvider(credsProvider);
+		clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
+		CloseableHttpClient client = clientBuilder.build();
+		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+		factory.setHttpClient(client);
+		this.setRequestFactory(factory);*/
 
 	}
 
