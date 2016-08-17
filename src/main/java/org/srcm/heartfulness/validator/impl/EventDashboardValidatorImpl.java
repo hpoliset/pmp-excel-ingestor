@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
-import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.EventConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
@@ -25,7 +24,6 @@ import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.response.Result;
-import org.srcm.heartfulness.model.json.response.UpdateIntroductionResponse;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.service.PmpParticipantService;
 import org.srcm.heartfulness.service.ProgramService;
@@ -299,55 +297,40 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	}
 
 	@Override
-	public List<UpdateIntroductionResponse> checkParticipantIntroductionMandatoryFields(Participant participantInput) {
-		List<UpdateIntroductionResponse> errorResult = new ArrayList<UpdateIntroductionResponse>();
+	public List<String> checkParticipantIntroductionMandatoryFields(Participant participantInput) {
+		List<String> errors = new ArrayList<String>();
 		if (null == participantInput.getCity() || participantInput.getCity().isEmpty()) {
-			UpdateIntroductionResponse response = new UpdateIntroductionResponse(participantInput.getSeqId(),
-					ErrorConstants.STATUS_FAILED, "City is required.");
-			errorResult.add(response);
+			errors.add("City is required.");
 		}
 
 		if (null == participantInput.getState() || participantInput.getState().isEmpty()) {
-			UpdateIntroductionResponse response = new UpdateIntroductionResponse(participantInput.getSeqId(),
-					ErrorConstants.STATUS_FAILED, "State is required.");
-			errorResult.add(response);
+			errors.add("State is required.");
 		}
 
 		if (null == participantInput.getCountry() || participantInput.getCountry().isEmpty()) {
-			UpdateIntroductionResponse response = new UpdateIntroductionResponse(participantInput.getSeqId(),
-					ErrorConstants.STATUS_FAILED, "Country is required.");
-			errorResult.add(response);
+			errors.add("Country is required.");
 		}
 
 		if (null == participantInput.getProgram().getProgramStartDate()) {
-			UpdateIntroductionResponse response = new UpdateIntroductionResponse(participantInput.getSeqId(),
-					ErrorConstants.STATUS_FAILED, "Program start date is required.");
-			errorResult.add(response);
+			errors.add("Program start date is required.");
 		}
-
-		System.out.println(participantInput.getFirstSittingTaken() + "=====" + participantInput.getSecondSittingTaken()
-				+ "=====" + participantInput.getThirdSittingTaken());
 
 		if ((null == participantInput.getFirstSittingDate() || null == participantInput.getSecondSittingDate() || null == participantInput
 				.getThirdSittingDate())) {
-			if ((0 == participantInput.getFirstSittingTaken() || 0 == participantInput.getSecondSittingTaken() || 0 == participantInput
-					.getThirdSittingTaken())) {
-				UpdateIntroductionResponse response = new UpdateIntroductionResponse(participantInput.getSeqId(),
-						ErrorConstants.STATUS_FAILED, "Participant not completed 3 sittings.");
-				errorResult.add(response);
+			if ((0 == participantInput.getFirstSitting() || 0 == participantInput.getSecondSitting() || 0 == participantInput
+					.getThirdSitting())) {
+				errors.add("Participant not completed 3 sittings.");
 			}
-		} else if ((0 == participantInput.getFirstSittingTaken() || 0 == participantInput.getSecondSittingTaken() || 0 == participantInput
-				.getThirdSittingTaken())) {
+		} else if ((0 == participantInput.getFirstSitting() || 0 == participantInput.getSecondSitting() || 0 == participantInput
+				.getThirdSitting())) {
 			if ((null == participantInput.getFirstSittingDate() || null == participantInput.getSecondSittingDate() || null == participantInput
 					.getThirdSittingDate())) {
-				UpdateIntroductionResponse response = new UpdateIntroductionResponse(participantInput.getSeqId(),
-						ErrorConstants.STATUS_FAILED, "Participant not completed 3 sittings.");
-				errorResult.add(response);
+				errors.add("Participant not completed 3 sittings.");
 			}
 
 		}
 
-		return errorResult;
+		return errors;
 	}
 
 }

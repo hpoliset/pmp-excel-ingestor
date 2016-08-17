@@ -14,7 +14,6 @@ import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
-import org.srcm.heartfulness.model.json.response.UpdateIntroductionResponse;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -28,21 +27,28 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 public interface EventDashboardValidator {
 
 	/**
-	 * Method to validate mandatory fields in the participant request before creating participant.
+	 * Method to validate mandatory fields in the participant request before
+	 * creating participant.
+	 * 
 	 * @param participant
 	 * @return
 	 */
 	public Map<String, String> checkPartcicipantMandatoryFields(ParticipantRequest participant);
 
 	/**
-	 * Method to validate the values given in <code>ParticipantIntroductionRequest</code> before updating introductory status.
+	 * Method to validate the values given in
+	 * <code>ParticipantIntroductionRequest</code> before updating introductory
+	 * status.
+	 * 
 	 * @param participantRequest
 	 * @return
 	 */
 	public Map<String, String> checkIntroductionRequestMandatoryFields(ParticipantIntroductionRequest participantRequest);
 
 	/**
-	 * Method to validate the values given in <code>EventAdminChangeRequest</code> before updating event admin.
+	 * Method to validate the values given in
+	 * <code>EventAdminChangeRequest</code> before updating event admin.
+	 * 
 	 * @param eventAdminChangeRequest
 	 * @return errors
 	 */
@@ -75,12 +81,14 @@ public interface EventDashboardValidator {
 			JsonMappingException, IOException, IllegalBlockSizeException, NumberFormatException, BadPaddingException;
 
 	/**
-	 * Method to validate the values given in ParticipantIntroductionRequest before deleting the participant.
+	 * Method to validate the values given in ParticipantIntroductionRequest
+	 * before deleting the participant.
+	 * 
 	 * @param participantRequest
 	 * @return errors
 	 */
 	public Map<String, String> checkDeleteRequestMandatoryFields(ParticipantIntroductionRequest participantRequest);
 
-	public List<UpdateIntroductionResponse> checkParticipantIntroductionMandatoryFields(Participant participantInput);
+	public List<String> checkParticipantIntroductionMandatoryFields(Participant participantInput);
 
 }

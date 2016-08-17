@@ -44,9 +44,7 @@ public class EWelcomeIDGenerationHelper {
 			JsonMappingException, IOException {
 		GeoSearchResponse geoSearchResponse = srcmRestTemplate.geoSearch(participant.getCity() + ","
 				+ participant.getState() + "," + participant.getCountry());
-		
 		CitiesAPIResponse citiesAPIResponse = srcmRestTemplate.getCityName(geoSearchResponse.getCityId());
-		
 		Aspirant aspirant = new Aspirant();
 		aspirant.setCity(citiesAPIResponse.getName());
 		aspirant.setState(String.valueOf(geoSearchResponse.getStateId()));
@@ -55,7 +53,7 @@ public class EWelcomeIDGenerationHelper {
 		aspirant.setDateOfBirth((null != participant.getDateOfBirth()) ? sdf.format(participant.getDateOfBirth())
 				: null);
 		aspirant.setDateOfJoining((null != participant.getProgram().getProgramStartDate()) ? sdf.format(participant
-				.getProgram().getProgramStartDate() ): null);
+				.getProgram().getProgramStartDate()) : null);
 		aspirant.setEmail((null != participant.getEmail() && !participant.getEmail().isEmpty()) ? participant
 				.getEmail() : null);
 		System.out.println(participant.getProgram().toString());
@@ -68,15 +66,13 @@ public class EWelcomeIDGenerationHelper {
 		aspirant.setName((null != participant.getPrintName() && !participant.getPrintName().isEmpty()) ? participant
 				.getPrintName() : null);
 		aspirant.setFirstName((null != participant.getFirstName() && !participant.getFirstName().isEmpty()) ? participant
-				.getFirstName() : participant
-				.getPrintName());
+				.getFirstName() : participant.getPrintName());
 		aspirant.setStreet((null != participant.getAddressLine1() && !participant.getAddressLine1().isEmpty()) ? participant
 				.getAddressLine1() : null);
 		aspirant.setStreet2((null != participant.getAddressLine2() && !participant.getAddressLine2().isEmpty()) ? participant
 				.getAddressLine2() : null);
 		UserProfile userProfile = srcmRestTemplate.createAspirant(aspirant);
-		participant.getProgram().setSrcmGroup( String.valueOf(geoSearchResponse
-				.getNearestCenter()));
+		participant.getProgram().setSrcmGroup(String.valueOf(geoSearchResponse.getNearestCenter()));
 		participant.setWelcomeCardNumber(userProfile.getRef());
 		participant.setWelcomeCardDate(new Date());
 	}

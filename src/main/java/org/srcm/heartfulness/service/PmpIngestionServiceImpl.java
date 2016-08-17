@@ -88,7 +88,6 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 							if (null != userProfile) {
 								if (true == userProfile.isIs_prefect()
 										&& 0 != userProfile.getPrefect_id()) {
-									System.out.println("----------setting prefect id");
 									program.setAbyasiRefNo(program.getPreceptorIdCardNumber());
 									program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
 									program.setSrcmGroup(String.valueOf(userProfile.getSrcm_group()));

@@ -92,9 +92,9 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 				//ignore
 			}
 		}else if("Y".equals(firstSittingStr)){
-			participant.setFirstSittingTaken(1);
+			participant.setFirstSitting(1);
 		}else{
-			participant.setFirstSittingTaken(0);
+			participant.setFirstSitting(0);
 		}
 
 		String secondSittingStr = participantRow.getCell(2,
@@ -107,9 +107,9 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 				// ignore
 			}
 		} else if("Y".equals(secondSittingStr)){
-			participant.setSecondSittingTaken(1);
+			participant.setSecondSitting(1);
 		}else{
-			participant.setSecondSittingTaken(0);
+			participant.setSecondSitting(0);
 		}
 
 		String thirdSittingStr = participantRow.getCell(3,
@@ -122,9 +122,9 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 				// ignore
 			}
 		} else if("Y".equals(thirdSittingStr)){
-			participant.setThirdSittingTaken(1);
+			participant.setThirdSitting(1);
 		}else{
-			participant.setThirdSittingTaken(0);
+			participant.setThirdSitting(0);
 		}
 
 		participant.setCountry(participantRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString());
