@@ -41,9 +41,9 @@ public class Participant {
 	private String batch;
 	private int receiveUpdates;
 	private String printName;
-	private int firstSitting;
-	private int secondSitting;
-	private int thirdSitting;
+	private Integer firstSitting;
+	private Integer secondSitting;
+	private Integer thirdSitting;
 	private String profession;
 	private String department;
 	private String language;
@@ -350,17 +350,7 @@ public class Participant {
 		return printName;
 	}
 
-	public int getFirstSitting() {
-		return firstSitting;
-	}
-
-	public int getSecondSitting() {
-		return secondSitting;
-	}
-
-	public int getThirdSitting() {
-		return thirdSitting;
-	}
+	
 
 	public String getProfession() {
 		return profession;
@@ -378,18 +368,7 @@ public class Participant {
 		this.printName = printName;
 	}
 
-	public void setFirstSitting(int firstSitting) {
-		this.firstSitting = firstSitting;
-	}
-
-	public void setSecondSitting(int secondSitting) {
-		this.secondSitting = secondSitting;
-	}
-
-	public void setThirdSitting(int thirdSitting) {
-		this.thirdSitting = thirdSitting;
-	}
-
+	
 	public void setProfession(String profession) {
 		this.profession = profession;
 	}
@@ -426,5 +405,30 @@ public class Participant {
 	public void setIsCoOrdinatorInformed(int isCoOrdinatorInformed) {
 		this.isCoOrdinatorInformed = isCoOrdinatorInformed;
 	}
+
+	public Integer getFirstSitting() {
+		return firstSitting;
+	}
+
+	public void setFirstSitting(Integer firstSitting) {
+		this.firstSitting = firstSitting;
+	}
+
+	public Integer getSecondSitting() {
+		return secondSitting;
+	}
+
+	public void setSecondSitting(Integer secondSitting) {
+		this.secondSitting = secondSitting;
+	}
+
+	public Integer getThirdSitting() {
+		return thirdSitting;
+	}
+
+	public void setThirdSitting(Integer thirdSitting) {
+		this.thirdSitting = thirdSitting;
+	}
+	
 
 }
