@@ -77,6 +77,40 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					.equalsIgnoreCase(participantRequest.getIntroducedStatus())) ? 1 : 0);
 			participant.setIntroductionDate(null != participantRequest.getIntroductionDate() ? sdf1.parse(sdf1
 					.format(sdf.parse(participantRequest.getIntroductionDate()))) : null);
+			
+			if (null == participantRequest.getFirstSittingDate()) {
+				participant.setFirstSittingDate(null);
+			} else {
+				try {
+					participant.setFirstSittingDate( sdf1.parse(sdf1
+							.format(sdf.parse(participantRequest.getFirstSittingDate()))));
+				} catch (Exception e) {
+					participant.setFirstSittingDate(null);
+				}
+			}
+			if (null == participantRequest.getSecondSittingDate()) {
+				participant.setSecondSittingDate(null);
+			} else {
+				try {
+					participant.setSecondSittingDate( sdf1.parse(sdf1
+							.format(sdf.parse(participantRequest.getSecondSittingDate()))));
+				} catch (Exception e) {
+					participant.setSecondSittingDate(null);
+				}
+			}
+			if (null == participantRequest.getThirdSittingDate()) {
+				participant.setThirdSittingDate(null);
+			} else {
+				try {
+					participant.setThirdSittingDate( sdf1.parse(sdf1
+							.format(sdf.parse(participantRequest.getThirdSittingDate()))));
+				} catch (Exception e) {
+					participant.setThirdSittingDate(null);
+				}
+			}
+			participant.setFirstSitting("Y".equalsIgnoreCase(participantRequest.getFirstSitting()) ?1:0);
+			participant.setSecondSitting("Y".equalsIgnoreCase(participantRequest.getSecondSitting()) ?1:0);
+			participant.setThirdSitting("Y".equalsIgnoreCase(participantRequest.getThirdSitting()) ?1:0);
 		} else {
 			participant = findBySeqId(participantRequest);
 			participant.setPrintName(participantRequest.getPrintName());
@@ -104,6 +138,39 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					.equalsIgnoreCase(participantRequest.getIntroducedStatus())) ? 1 : 0);
 			participant.setIntroductionDate(null != participantRequest.getIntroductionDate() ? sdf1.parse(sdf1
 					.format(sdf.parse(participantRequest.getIntroductionDate()))) : null);
+			if (null == participantRequest.getFirstSittingDate()) {
+				participant.setFirstSittingDate(null);
+			} else {
+				try {
+					participant.setFirstSittingDate( sdf1.parse(sdf1
+							.format(sdf.parse(participantRequest.getFirstSittingDate()))));
+				} catch (Exception e) {
+					participant.setFirstSittingDate(null);
+				}
+			}
+			if (null == participantRequest.getSecondSittingDate()) {
+				participant.setSecondSittingDate(null);
+			} else {
+				try {
+					participant.setSecondSittingDate( sdf1.parse(sdf1
+							.format(sdf.parse(participantRequest.getSecondSittingDate()))));
+				} catch (Exception e) {
+					participant.setSecondSittingDate(null);
+				}
+			}
+			if (null == participantRequest.getThirdSittingDate()) {
+				participant.setThirdSittingDate(null);
+			} else {
+				try {
+					participant.setThirdSittingDate( sdf1.parse(sdf1
+							.format(sdf.parse(participantRequest.getThirdSittingDate()))));
+				} catch (Exception e) {
+					participant.setThirdSittingDate(null);
+				}
+			}
+			participant.setFirstSitting("Y".equalsIgnoreCase(participantRequest.getFirstSitting()) ?1:0);
+			participant.setSecondSitting("Y".equalsIgnoreCase(participantRequest.getSecondSitting()) ?1:0);
+			participant.setThirdSitting("Y".equalsIgnoreCase(participantRequest.getThirdSitting()) ?1:0);
 		}
 		participantRepository.save(participant);
 		participantRequest.setSeqId(participant.getSeqId());
@@ -132,6 +199,40 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				.format(participant.getIntroductionDate()) : null);
 		participantRequest.setAbhyasiId(participant.getAbhyasiId());
 		participantRequest.setIntroducedBy(participant.getIntroducedBy());
+		if (null == participant.getFirstSittingDate()) {
+			participantRequest.setFirstSittingDate("");
+		} else {
+			try {
+				participantRequest.setFirstSittingDate(sdf.format(participant.getFirstSittingDate()));
+			} catch (Exception e) {
+				participantRequest.setFirstSittingDate("");
+			}
+		}
+		if (null == participant.getSecondSittingDate()) {
+			participantRequest.setSecondSittingDate("");
+		} else {
+			try {
+				participantRequest.setSecondSittingDate(sdf.format(participant.getSecondSittingDate()));
+			} catch (Exception e) {
+				participantRequest.setSecondSittingDate("");
+			}
+		}
+		if (null == participant.getThirdSittingDate()) {
+			participantRequest.setThirdSittingDate("");
+		} else {
+			try {
+				participantRequest.setThirdSittingDate(sdf.format(participant.getThirdSittingDate()));
+			} catch (Exception e) {
+				participantRequest.setThirdSittingDate("");
+			}
+		}
+		participantRequest.setFirstSitting(1 == participant.getFirstSitting() ? PMPConstants.REQUIRED_YES
+				: PMPConstants.REQUIRED_NO);
+		participantRequest.setSecondSitting(1 == participant.getSecondSitting() ? PMPConstants.REQUIRED_YES
+				: PMPConstants.REQUIRED_NO);
+		participantRequest.setThirdSitting(1 == participant.getThirdSitting() ? PMPConstants.REQUIRED_YES
+				: PMPConstants.REQUIRED_NO);
+		
 		return participantRequest;
 	}
 
@@ -145,7 +246,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	 */
 	@Override
 	public ParticipantRequest getParticipantBySeqId(ParticipantRequest participantRequest) {
-		SimpleDateFormat sdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
+		SimpleDateFormat convertedsdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
 		Participant participant = findBySeqId(participantRequest);
 		if (null != participant) {
 			participantRequest.setPrintName(participant.getPrintName());
@@ -160,7 +261,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			}
 
 			participantRequest.setGender(participant.getGender());
-			participantRequest.setDateOfBirth(null != participant.getDateOfBirth() ? sdf.format(participant
+			participantRequest.setDateOfBirth(null != participant.getDateOfBirth() ? convertedsdf.format(participant
 					.getDateOfBirth()) : null);
 			participantRequest.setAddressLine1(participant.getAddressLine1());
 			participantRequest.setAddressLine2(participant.getAddressLine2());
@@ -169,10 +270,43 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participantRequest.setCountry(participant.getCountry());
 			participantRequest.setIntroducedStatus(0 != participant.getIntroduced() ? PMPConstants.REQUIRED_YES
 					: PMPConstants.REQUIRED_NO);
-			participantRequest.setIntroductionDate(null != participant.getIntroductionDate() ? sdf.format(participant
+			participantRequest.setIntroductionDate(null != participant.getIntroductionDate() ? convertedsdf.format(participant
 					.getIntroductionDate()) : null);
 			participantRequest.setAbhyasiId(participant.getAbhyasiId());
 			participantRequest.setIntroducedBy(participant.getIntroducedBy());
+			if (null == participant.getFirstSittingDate()) {
+				participantRequest.setFirstSittingDate("");
+			} else {
+				try {
+					participantRequest.setFirstSittingDate(convertedsdf.format(participant.getFirstSittingDate()));
+				} catch (Exception e) {
+					participantRequest.setFirstSittingDate("");
+				}
+			}
+			if (null == participant.getSecondSittingDate()) {
+				participantRequest.setSecondSittingDate("");
+			} else {
+				try {
+					participantRequest.setSecondSittingDate(convertedsdf.format(participant.getSecondSittingDate()));
+				} catch (Exception e) {
+					participantRequest.setSecondSittingDate("");
+				}
+			}
+			if (null == participant.getThirdSittingDate()) {
+				participantRequest.setThirdSittingDate("");
+			} else {
+				try {
+					participantRequest.setThirdSittingDate(convertedsdf.format(participant.getThirdSittingDate()));
+				} catch (Exception e) {
+					participantRequest.setThirdSittingDate("");
+				}
+			}
+			participantRequest.setFirstSitting(1 == participant.getFirstSitting() ? PMPConstants.REQUIRED_YES
+					: PMPConstants.REQUIRED_NO);
+			participantRequest.setSecondSitting(1 == participant.getSecondSitting() ? PMPConstants.REQUIRED_YES
+					: PMPConstants.REQUIRED_NO);
+			participantRequest.setThirdSitting(1 == participant.getThirdSitting() ? PMPConstants.REQUIRED_YES
+					: PMPConstants.REQUIRED_NO);
 		} else {
 			participantRequest = new ParticipantRequest();
 		}

@@ -188,7 +188,15 @@ public class ProgramServiceImpl implements ProgramService {
 				participantReq.setPrintName(participant.getPrintName());
 				participantReq.setEmail(participant.getEmail());
 				participantReq.setMobilePhone(participant.getMobilePhone());
-
+				if (null == participant.getIntroductionDate()) {
+					participantReq.setIntroductionDate("");
+				} else {
+					try {
+						participantReq.setIntroductionDate(convertedsdf.format(participant.getIntroductionDate()));
+					} catch (Exception e) {
+						participantReq.setIntroductionDate("");
+					}
+				}
 				if (null == participant.getGender()) {
 					participantReq.setGender("");
 				} else if (PMPConstants.GENDER_MALE.equals(participant.getGender())) {
@@ -209,6 +217,39 @@ public class ProgramServiceImpl implements ProgramService {
 					}
 				}
 
+				if (null == participant.getFirstSittingDate()) {
+					participantReq.setFirstSittingDate("");
+				} else {
+					try {
+						participantReq.setFirstSittingDate(convertedsdf.format(participant.getFirstSittingDate()));
+					} catch (Exception e) {
+						participantReq.setFirstSittingDate("");
+					}
+				}
+				if (null == participant.getSecondSittingDate()) {
+					participantReq.setSecondSittingDate("");
+				} else {
+					try {
+						participantReq.setSecondSittingDate(convertedsdf.format(participant.getSecondSittingDate()));
+					} catch (Exception e) {
+						participantReq.setSecondSittingDate("");
+					}
+				}
+				if (null == participant.getThirdSittingDate()) {
+					participantReq.setThirdSittingDate("");
+				} else {
+					try {
+						participantReq.setThirdSittingDate(convertedsdf.format(participant.getThirdSittingDate()));
+					} catch (Exception e) {
+						participantReq.setThirdSittingDate("");
+					}
+				}
+				participantReq.setFirstSitting(1 == participant.getFirstSitting() ? PMPConstants.REQUIRED_YES
+						: PMPConstants.REQUIRED_NO);
+				participantReq.setSecondSitting(1 == participant.getSecondSitting() ? PMPConstants.REQUIRED_YES
+						: PMPConstants.REQUIRED_NO);
+				participantReq.setThirdSitting(1 == participant.getThirdSitting() ? PMPConstants.REQUIRED_YES
+						: PMPConstants.REQUIRED_NO);
 				participantReq.setAddressLine1(participant.getAddressLine1());
 				participantReq.setAddressLine2(participant.getAddressLine2());
 				participantReq.setCity(participant.getCity());
@@ -216,25 +257,8 @@ public class ProgramServiceImpl implements ProgramService {
 				participantReq.setCountry(participant.getCountry());
 				participantReq.setAbhyasiId(participant.getAbhyasiId());
 				participantReq.setIntroducedBy(participant.getIntroducedBy());
-
-				if (1 == participant.getIntroduced()) {
-					participantReq.setIntroducedStatus(PMPConstants.REQUIRED_YES);
-				} else if (0 == participant.getIntroduced()) {
-					participantReq.setIntroducedStatus(PMPConstants.REQUIRED_NO);
-				} else {
-					participantReq.setIntroducedStatus("");
-				}
-
-				if (null == participant.getIntroductionDate()) {
-					participantReq.setIntroductionDate("");
-				} else {
-					try {
-						participantReq.setIntroductionDate(convertedsdf.format(participant.getIntroductionDate()));
-					} catch (Exception e) {
-						participantReq.setIntroductionDate("");
-					}
-				}
-
+				participantReq.setIntroducedStatus(1 == participant.getIntroduced() ? PMPConstants.REQUIRED_YES
+						: PMPConstants.REQUIRED_NO);
 				participantReqList.add(participantReq);
 			}
 			return participantReqList;
