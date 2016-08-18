@@ -266,8 +266,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participantRequest.setCountry(participant.getCountry());
 			participantRequest.setIntroducedStatus(0 != participant.getIntroduced() ? PMPConstants.REQUIRED_YES
 					: PMPConstants.REQUIRED_NO);
-			participantRequest.setIntroductionDate((null != participant.getIntroductionDate() && !participantRequest.getIntroductionDate().isEmpty())  ? convertedsdf.format(participant
-					.getIntroductionDate()) : null);
+			participantRequest.setIntroductionDate((null != participant.getIntroductionDate())  ?
+					convertedsdf.format(participant.getIntroductionDate()) : null);
 			participantRequest.setAbhyasiId(participant.getAbhyasiId());
 			participantRequest.setIntroducedBy(participant.getIntroducedBy());
 			if (null == participant.getFirstSittingDate()) {
