@@ -1,6 +1,7 @@
 package org.srcm.heartfulness.mail;
 
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -49,6 +50,7 @@ public class SendMail {
 	private String password;
 	private String hostname;
 	private String port;
+	private String name;
 	private String subject;
 	private String defaultname;
 	private String confirmationlink;
@@ -165,6 +167,14 @@ public class SendMail {
 	public void setPort(String port) {
 		this.port = port;
 	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	private VelocityEngine velocityEngine = new VelocityEngine();
 
@@ -233,7 +243,7 @@ public class SendMail {
 				}
 			});
 			SMTPMessage message = new SMTPMessage(session);
-			message.setFrom(new InternetAddress(username));
+			message.setFrom(new InternetAddress(username,name));
 			for (String toId : toIds) {
 				message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toId));
 			}
@@ -257,7 +267,7 @@ public class SendMail {
 				LOGGER.debug("Mail sent successfully : {} ", toId);
 			}
 
-		} catch (MessagingException e) {
+		} catch (MessagingException | UnsupportedEncodingException e) {
 			LOGGER.error("Sending Mail Failed : {} " + e.getMessage());
 			throw new RuntimeException(e);
 
@@ -307,13 +317,14 @@ public class SendMail {
 	 * @param ccEmailIDs
 	 * @param messageContent
 	 * @throws MessagingException
+	 * @throws UnsupportedEncodingException 
 	 */
 	public void sendMail(List<String> toEmailIDs, List<String> ccEmailIDs, String messageContent)
-			throws MessagingException {
+			throws MessagingException, UnsupportedEncodingException {
 		Properties props = System.getProperties();
 		Session session = Session.getDefaultInstance(props);
 		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(username));
+		message.setFrom(new InternetAddress(username,name));
 		for (String toemailID : toEmailIDs) {
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toemailID));
 		}
@@ -350,7 +361,7 @@ public class SendMail {
 		try {
 			sendMail(toEmailIDs, new ArrayList<String>(), getMessageContentbyTemplateName(onlinetemplatename));
 			LOGGER.debug("Mail sent successfully : {} ", mail);
-		} catch (MessagingException e) {
+		} catch (MessagingException | UnsupportedEncodingException e) {
 			LOGGER.error("Sending Mail Failed : {} ", mail);
 			throw new RuntimeException(e);
 
@@ -364,8 +375,9 @@ public class SendMail {
 	 * @param crdntrEmail
 	 * @throws AddressException if coordinator email address in not valid.
 	 * @throws MessagingException if not able to send email.
+	 * @throws UnsupportedEncodingException 
 	 */
-	public void sendMailNotificationToCoordinator(CoordinatorEmail crdntrEmail) throws AddressException, MessagingException {
+	public void sendMailNotificationToCoordinator(CoordinatorEmail crdntrEmail) throws AddressException, MessagingException, UnsupportedEncodingException {
 
 		Properties props = System.getProperties();
 		props.put("mail.debug", "true");
@@ -391,7 +403,7 @@ public class SendMail {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 		addParameter("DATE", sdf.format(cal.getTime()));
 		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(username));
+		message.setFrom(new InternetAddress(username,name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(crdntrEmail.getCoordinatorEmail()));
 		message.setSubject(crdntrmailsubject + sdf.format(cal.getTime()));
 		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename), "text/html");
