@@ -110,17 +110,16 @@ public class WelcomeMailController {
 			LOGGER.error("Exception" + stack.toString());
 			LOGGER.error("Exception" + e.getMessage());
 			return "Exception";
-		} catch (UnsupportedEncodingException e) {
+		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			StringWriter stack = new StringWriter();
 			e.printStackTrace(new PrintWriter(stack));
 			LOGGER.error("Exception" + stack.toString());
-			e.printStackTrace();
 			LOGGER.error("Exception" + e.getMessage());
 			return "Exception";
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
+			
 			e.printStackTrace();
 			e.printStackTrace();
 			StringWriter stack = new StringWriter();
