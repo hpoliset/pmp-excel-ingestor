@@ -167,18 +167,22 @@ public class ParticipantsController {
 				return new ResponseEntity<ParticipantRequest>(participant, HttpStatus.OK);
 			}
 		} catch (HttpClientErrorException e) {
+			e.printStackTrace();
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.REQUEST_TIMEOUT);
 		} catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
+			e.printStackTrace();
 			ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
 		} catch (JsonParseException | JsonMappingException e) {
+			e.printStackTrace();
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"parse-error : error while parsing json data");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
+			e.printStackTrace();
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"input/output-error ; Please try after sometime");
