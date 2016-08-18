@@ -108,9 +108,9 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					participant.setThirdSittingDate(null);
 				}
 			}
-			participant.setFirstSitting("Y".equalsIgnoreCase(participantRequest.getFirstSitting()) ?1:0);
-			participant.setSecondSitting("Y".equalsIgnoreCase(participantRequest.getSecondSitting()) ?1:0);
-			participant.setThirdSitting("Y".equalsIgnoreCase(participantRequest.getThirdSitting()) ?1:0);
+			participant.setFirstSitting((null!=participantRequest.getFirstSitting() && "Y".equalsIgnoreCase(participantRequest.getFirstSitting())) ?1:0);
+			participant.setSecondSitting((null!=participantRequest.getSecondSitting() && "Y".equalsIgnoreCase(participantRequest.getSecondSitting())) ?1:0);
+			participant.setThirdSitting((null!=participantRequest.getThirdSitting() && "Y".equalsIgnoreCase(participantRequest.getThirdSitting())) ?1:0);
 		} else {
 			participant = findBySeqId(participantRequest);
 			participant.setPrintName(participantRequest.getPrintName());
@@ -168,9 +168,9 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					participant.setThirdSittingDate(null);
 				}
 			}
-			participant.setFirstSitting("Y".equalsIgnoreCase(participantRequest.getFirstSitting()) ?1:0);
-			participant.setSecondSitting("Y".equalsIgnoreCase(participantRequest.getSecondSitting()) ?1:0);
-			participant.setThirdSitting("Y".equalsIgnoreCase(participantRequest.getThirdSitting()) ?1:0);
+			participant.setFirstSitting((null!=participantRequest.getFirstSitting() && "Y".equalsIgnoreCase(participantRequest.getFirstSitting())) ?1:0);
+			participant.setSecondSitting((null!=participantRequest.getSecondSitting() && "Y".equalsIgnoreCase(participantRequest.getSecondSitting())) ?1:0);
+			participant.setThirdSitting((null!=participantRequest.getThirdSitting() && "Y".equalsIgnoreCase(participantRequest.getThirdSitting())) ?1:0);
 		}
 		participantRepository.save(participant);
 		participantRequest.setSeqId(participant.getSeqId());
@@ -226,11 +226,11 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				participantRequest.setThirdSittingDate("");
 			}
 		}
-		participantRequest.setFirstSitting(1 == participant.getFirstSitting() ? PMPConstants.REQUIRED_YES
+		participantRequest.setFirstSitting((null!=participant.getFirstSitting() && 1 == participant.getFirstSitting())? PMPConstants.REQUIRED_YES
 				: PMPConstants.REQUIRED_NO);
-		participantRequest.setSecondSitting(1 == participant.getSecondSitting() ? PMPConstants.REQUIRED_YES
+		participantRequest.setSecondSitting((null!=participant.getSecondSitting() && 1 == participant.getSecondSitting()) ? PMPConstants.REQUIRED_YES
 				: PMPConstants.REQUIRED_NO);
-		participantRequest.setThirdSitting(1 == participant.getThirdSitting() ? PMPConstants.REQUIRED_YES
+		participantRequest.setThirdSitting((null!=participant.getThirdSitting() && 1 == participant.getThirdSitting()) ? PMPConstants.REQUIRED_YES
 				: PMPConstants.REQUIRED_NO);
 		
 		return participantRequest;
@@ -301,11 +301,11 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					participantRequest.setThirdSittingDate("");
 				}
 			}
-			participantRequest.setFirstSitting(1 == participant.getFirstSitting() ? PMPConstants.REQUIRED_YES
+			participantRequest.setFirstSitting((null!=participant.getFirstSitting() && 1 == participant.getFirstSitting())? PMPConstants.REQUIRED_YES
 					: PMPConstants.REQUIRED_NO);
-			participantRequest.setSecondSitting(1 == participant.getSecondSitting() ? PMPConstants.REQUIRED_YES
+			participantRequest.setSecondSitting((null!=participant.getSecondSitting() && 1 == participant.getSecondSitting()) ? PMPConstants.REQUIRED_YES
 					: PMPConstants.REQUIRED_NO);
-			participantRequest.setThirdSitting(1 == participant.getThirdSitting() ? PMPConstants.REQUIRED_YES
+			participantRequest.setThirdSitting((null!=participant.getThirdSitting() && 1 == participant.getThirdSitting()) ? PMPConstants.REQUIRED_YES
 					: PMPConstants.REQUIRED_NO);
 		} else {
 			participantRequest = new ParticipantRequest();
