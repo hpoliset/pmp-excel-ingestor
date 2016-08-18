@@ -244,11 +244,11 @@ public class ProgramServiceImpl implements ProgramService {
 						participantReq.setThirdSittingDate("");
 					}
 				}
-				participantReq.setFirstSitting(1 == participant.getFirstSitting() ? PMPConstants.REQUIRED_YES
+				participantReq.setFirstSitting((null!=participant.getFirstSitting() && 1 == participant.getFirstSitting())? PMPConstants.REQUIRED_YES
 						: PMPConstants.REQUIRED_NO);
-				participantReq.setSecondSitting(1 == participant.getSecondSitting() ? PMPConstants.REQUIRED_YES
+				participantReq.setSecondSitting((null!=participant.getSecondSitting() && 1 == participant.getSecondSitting()) ? PMPConstants.REQUIRED_YES
 						: PMPConstants.REQUIRED_NO);
-				participantReq.setThirdSitting(1 == participant.getThirdSitting() ? PMPConstants.REQUIRED_YES
+				participantReq.setThirdSitting((null!=participant.getThirdSitting() && 1 == participant.getThirdSitting()) ? PMPConstants.REQUIRED_YES
 						: PMPConstants.REQUIRED_NO);
 				participantReq.setAddressLine1(participant.getAddressLine1());
 				participantReq.setAddressLine2(participant.getAddressLine2());
