@@ -1,5 +1,7 @@
 package org.srcm.heartfulness.model.json.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * This class is the response for the api/v2/cities/ of MySRCM to fetch the city
  * name.
@@ -7,6 +9,7 @@ package org.srcm.heartfulness.model.json.response;
  * @author himasreev
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CitiesAPIResponse {
 
 	private String id;

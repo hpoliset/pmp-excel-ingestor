@@ -1,11 +1,14 @@
 package org.srcm.heartfulness.model.json.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * This class is the response state information of MySRCM cities API.
  * 
  * @author himasreev
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class State {
 
 	private String id;

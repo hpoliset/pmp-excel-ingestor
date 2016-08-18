@@ -481,7 +481,7 @@ public class ParticipantsController {
 											description = new ArrayList<String>();
 											description.add("Participant eWelcomeID : " + eWelcomeID);
 											response = new UpdateIntroductionResponse(participant.getSeqId(),
-													ErrorConstants.STATUS_SUCCESS, description);
+													ErrorConstants.STATUS_FAILED, description);
 										}
 										result.add(response);
 									}
@@ -495,11 +495,17 @@ public class ParticipantsController {
 									result.add(response);
 								}
 							} catch (HttpClientErrorException e) {
+							
 								description = new ArrayList<String>();
 								ObjectMapper mapper = new ObjectMapper();
 								EWelcomeIDErrorResponse eWelcomeIDErrorResponse = mapper.readValue(
 										e.getResponseBodyAsString(), EWelcomeIDErrorResponse.class);
-								description.add(eWelcomeIDErrorResponse.getEmail().get(0));
+								if ((null != eWelcomeIDErrorResponse.getEmail() && !eWelcomeIDErrorResponse.getEmail().isEmpty()) ) {
+									description.add(eWelcomeIDErrorResponse.getEmail().get(0));
+								}
+								if((null != eWelcomeIDErrorResponse.getValidation() && ! eWelcomeIDErrorResponse.getValidation().isEmpty() )){
+									description.add(eWelcomeIDErrorResponse.getValidation().get(0));
+								}
 								UpdateIntroductionResponse response = new UpdateIntroductionResponse(
 										participant.getSeqId(), ErrorConstants.STATUS_FAILED, description);
 								result.add(response);

@@ -2,6 +2,8 @@ package org.srcm.heartfulness.model.json.response;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * This class is the response for the updating introduced status for the
  * participants
@@ -9,6 +11,7 @@ import java.util.List;
  * @author himasreev
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UpdateIntroductionResponse {
 
 	private String seqId;
