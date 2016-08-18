@@ -1,18 +1,29 @@
 package org.srcm.heartfulness.webservice;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.http.ResponseEntity;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.mail.SendMail;
+import org.srcm.heartfulness.model.Coordinator;
+import org.srcm.heartfulness.model.CoordinatorEmail;
+import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
 import org.srcm.heartfulness.service.WelcomeMailService;
 
 /**
@@ -26,6 +37,9 @@ public class WelcomeMailController {
 
 	@Autowired
 	private WelcomeMailService WelcomeMailService;
+	
+	@Autowired
+	private SendMail sendMail;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WelcomeMailController.class);
 
@@ -61,17 +75,61 @@ public class WelcomeMailController {
 			LOGGER.error("Exception while uploading file - {} " + e.getMessage());
 		}
 	}
-	
+
 	/**
-	 * Controller is used to send email to the coordinators with event 
-	 * details about the participants who have received welcome
-	 * emails.It is  a crob job running at a scheduled time.
+	 * Controller is used to send email to the coordinators with event details
+	 * about the participants who have received welcome emails.It is a crob job
+	 * running at a scheduled time.
 	 */
 	/* @Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}") */
-	public void sendEmailToCoordinator(){
+	public void sendEmailToCoordinator() {
 		LOGGER.debug("START		:Cron job started to fetch participants to whom welcome mail already sent");
 		WelcomeMailService.getCoordinatorListAndSendMail();
 		LOGGER.debug("END		:Cron job completed to fetch participants to whom welcome mail already sent");
 	}
 	
+	
+	@RequestMapping(value = "test", method = RequestMethod.POST)
+	public String SendMail() {
+		
+		try {
+			CoordinatorEmail coordinator=new CoordinatorEmail();
+			coordinator.setCoordinatorEmail("ramesh.ramados@gmail.com");
+			coordinator.setCoordinatorName("Ramesh");
+			coordinator.setEventName("sdasGFGH");
+			coordinator.setPctptAlreadyRcvdWlcmMailCount("99999999");
+			coordinator.setPctptRcvdWlcmMailYstrdayCount("5565");
+			coordinator.setTotalParticipantCount("99999999999999");
+			sendMail.sendMailNotificationToCoordinator(coordinator);
+			return "Sent";
+		} catch (AddressException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			StringWriter stack = new StringWriter();
+			e.printStackTrace(new PrintWriter(stack));
+			LOGGER.error("Exception" + stack.toString());
+			LOGGER.error("Exception" + e.getMessage());
+			return "Exception";
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			StringWriter stack = new StringWriter();
+			e.printStackTrace(new PrintWriter(stack));
+			LOGGER.error("Exception" + stack.toString());
+			e.printStackTrace();
+			LOGGER.error("Exception" + e.getMessage());
+			return "Exception";
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			e.printStackTrace();
+			StringWriter stack = new StringWriter();
+			e.printStackTrace(new PrintWriter(stack));
+			LOGGER.error("Exception" + stack.toString());
+			LOGGER.error("Exception" + e.getMessage());
+			return "Exception";
+		}
+		
+	}
+
 }
