@@ -109,6 +109,7 @@ public class ParticipantsController {
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid authorization token");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.UNAUTHORIZED);
 		} catch (HttpClientErrorException e) {
+			e.printStackTrace();
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid client credentials");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.REQUEST_TIMEOUT);
@@ -118,16 +119,19 @@ public class ParticipantsController {
 					"Error while fetching profile from mysrcm");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (JsonMappingException e) {
+			e.printStackTrace();
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from mysrcm");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
+			e.printStackTrace();
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from mysrcm");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
+			e.printStackTrace();
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid request");
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
@@ -260,9 +264,9 @@ public class ParticipantsController {
 				ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
 				return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
 			}
-			if (null == participant.getPrintName()) {
+			if (null == participant.getPrintName() || participant.getPrintName().isEmpty()) {
 				Map<String, String> errors = new HashMap<>();
-				errors.put(ErrorConstants.STATUS_FAILED, "print name cannot be null");
+				errors.put(ErrorConstants.STATUS_FAILED, "print name is required ");
 				return new ResponseEntity<Map<String, String>>(errors, HttpStatus.PRECONDITION_FAILED);
 			}
 			ParticipantRequest newparticipant = participantService.createParticipant(participant);

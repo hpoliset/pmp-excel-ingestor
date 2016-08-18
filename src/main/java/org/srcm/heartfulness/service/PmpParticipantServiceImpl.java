@@ -26,7 +26,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 
 	@Autowired
 	ParticipantRepository participantRepository;
-	
+
 	@Autowired
 	ProgramRepository programrepository;
 
@@ -60,11 +60,11 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					&& participantRequest.getGender() != null
 					&& !participantRequest.getGender().isEmpty())
 				participantRequest
-						.setGender((participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE)
-								&& participantRequest.getGender() != null && !participantRequest.getGender().isEmpty()) ? PMPConstants.GENDER_MALE
+				.setGender((participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE)
+						&& participantRequest.getGender() != null && !participantRequest.getGender().isEmpty()) ? PMPConstants.GENDER_MALE
 								: PMPConstants.GENDER_FEMALE);
 			participant.setGender(participantRequest.getGender());
-			participant.setDateOfBirth(null != participantRequest.getDateOfBirth() ? sdf1.parse(sdf1.format(sdf
+			participant.setDateOfBirth((null != participantRequest.getDateOfBirth() && !participantRequest.getDateOfBirth().isEmpty())? sdf1.parse(sdf1.format(sdf
 					.parse(participantRequest.getDateOfBirth()))) : null);
 			participant.setAddressLine1(participantRequest.getAddressLine1());
 			participant.setAddressLine2(participantRequest.getAddressLine2());
@@ -75,9 +75,9 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setIntroducedBy(participantRequest.getIntroducedBy());
 			participant.setIntroduced((null != participantRequest.getIntroducedStatus() && PMPConstants.REQUIRED_YES
 					.equalsIgnoreCase(participantRequest.getIntroducedStatus())) ? 1 : 0);
-			participant.setIntroductionDate(null != participantRequest.getIntroductionDate() ? sdf1.parse(sdf1
+			participant.setIntroductionDate((null != participantRequest.getIntroductionDate()  && !participantRequest.getIntroductionDate().isEmpty())? sdf1.parse(sdf1
 					.format(sdf.parse(participantRequest.getIntroductionDate()))) : null);
-			
+
 			if (null == participantRequest.getFirstSittingDate()) {
 				participant.setFirstSittingDate(null);
 			} else {
@@ -116,16 +116,12 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setPrintName(participantRequest.getPrintName());
 			participant.setEmail(participantRequest.getEmail());
 			participant.setMobilePhone(participantRequest.getMobilePhone());
-			if ((participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE) || participantRequest.getGender()
-					.equalsIgnoreCase(PMPConstants.FEMALE))
-					&& participantRequest.getGender() != null
-					&& !participantRequest.getGender().isEmpty())
-				participantRequest
-						.setGender(participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE)
-								&& participantRequest.getGender() != null && !participantRequest.getGender().isEmpty() ? PMPConstants.GENDER_MALE
-								: PMPConstants.GENDER_FEMALE);
+			if ((null !=participantRequest.getGender()&& !participantRequest.getGender().isEmpty() && (participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE) || participantRequest.getGender()
+					.equalsIgnoreCase(PMPConstants.FEMALE))))
+				participantRequest.setGender(participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE)
+						? PMPConstants.GENDER_MALE : PMPConstants.GENDER_FEMALE);
 			participant.setGender(participantRequest.getGender());
-			participant.setDateOfBirth(null != participantRequest.getDateOfBirth() ? sdf1.parse(sdf1.format(sdf
+			participant.setDateOfBirth((null != participantRequest.getDateOfBirth() && !participantRequest.getDateOfBirth().isEmpty()) ? sdf1.parse(sdf1.format(sdf
 					.parse(participantRequest.getDateOfBirth()))) : null);
 			participant.setAddressLine1(participantRequest.getAddressLine1());
 			participant.setAddressLine2(participantRequest.getAddressLine2());
@@ -136,7 +132,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setIntroducedBy(participantRequest.getIntroducedBy());
 			participant.setIntroduced((null != participantRequest.getIntroducedStatus() && PMPConstants.REQUIRED_YES
 					.equalsIgnoreCase(participantRequest.getIntroducedStatus())) ? 1 : 0);
-			participant.setIntroductionDate(null != participantRequest.getIntroductionDate() ? sdf1.parse(sdf1
+			participant.setIntroductionDate((null != participantRequest.getIntroductionDate() && !participantRequest.getIntroductionDate().isEmpty())? sdf1.parse(sdf1
 					.format(sdf.parse(participantRequest.getIntroductionDate()))) : null);
 			if (null == participantRequest.getFirstSittingDate()) {
 				participant.setFirstSittingDate(null);
@@ -181,12 +177,12 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			if ((participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_FEMALE) || participant.getGender()
 					.equalsIgnoreCase(PMPConstants.GENDER_MALE)))
 				participant
-						.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) ? PMPConstants.MALE
-								: PMPConstants.FEMALE);
+				.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) ? PMPConstants.MALE
+						: PMPConstants.FEMALE);
 			participantRequest.setGender(participant.getGender());
 		}
 
-		participantRequest.setDateOfBirth(null != participant.getDateOfBirth() ? sdf.format(participant
+		participantRequest.setDateOfBirth((null != participant.getDateOfBirth()&& !participantRequest.getDateOfBirth().isEmpty()) ? sdf.format(participant
 				.getDateOfBirth()) : null);
 		participantRequest.setAddressLine1(participant.getAddressLine1());
 		participantRequest.setAddressLine2(participant.getAddressLine2());
@@ -195,7 +191,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 		participantRequest.setCountry(participant.getCountry());
 		participantRequest.setIntroducedStatus(0 != participant.getIntroduced() ? PMPConstants.REQUIRED_YES
 				: PMPConstants.REQUIRED_NO);
-		participantRequest.setIntroductionDate(null != participantRequest.getIntroductionDate() ? sdf
+		participantRequest.setIntroductionDate((null != participantRequest.getIntroductionDate() && !participantRequest.getIntroductionDate().isEmpty()) ? sdf
 				.format(participant.getIntroductionDate()) : null);
 		participantRequest.setAbhyasiId(participant.getAbhyasiId());
 		participantRequest.setIntroducedBy(participant.getIntroducedBy());
@@ -232,7 +228,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				: PMPConstants.REQUIRED_NO);
 		participantRequest.setThirdSitting((null!=participant.getThirdSitting() && 1 == participant.getThirdSitting()) ? PMPConstants.REQUIRED_YES
 				: PMPConstants.REQUIRED_NO);
-		
+
 		return participantRequest;
 	}
 
@@ -256,12 +252,12 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				if ((participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_FEMALE) || participant.getGender()
 						.equalsIgnoreCase(PMPConstants.GENDER_MALE)))
 					participant
-							.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) ? PMPConstants.MALE
-									: PMPConstants.FEMALE);
+					.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) ? PMPConstants.MALE
+							: PMPConstants.FEMALE);
 			}
 
 			participantRequest.setGender(participant.getGender());
-			participantRequest.setDateOfBirth(null != participant.getDateOfBirth() ? convertedsdf.format(participant
+			participantRequest.setDateOfBirth((null != participant.getDateOfBirth()) ? convertedsdf.format(participant
 					.getDateOfBirth()) : null);
 			participantRequest.setAddressLine1(participant.getAddressLine1());
 			participantRequest.setAddressLine2(participant.getAddressLine2());
@@ -270,7 +266,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participantRequest.setCountry(participant.getCountry());
 			participantRequest.setIntroducedStatus(0 != participant.getIntroduced() ? PMPConstants.REQUIRED_YES
 					: PMPConstants.REQUIRED_NO);
-			participantRequest.setIntroductionDate(null != participant.getIntroductionDate() ? convertedsdf.format(participant
+			participantRequest.setIntroductionDate((null != participant.getIntroductionDate() && !participantRequest.getIntroductionDate().isEmpty())  ? convertedsdf.format(participant
 					.getIntroductionDate()) : null);
 			participantRequest.setAbhyasiId(participant.getAbhyasiId());
 			participantRequest.setIntroducedBy(participant.getIntroducedBy());
