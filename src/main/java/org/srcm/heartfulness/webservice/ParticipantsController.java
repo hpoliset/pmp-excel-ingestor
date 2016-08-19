@@ -339,14 +339,14 @@ public class ParticipantsController {
 							description = new ArrayList<String>();
 							description.add("Invalid SeqID");
 							UpdateIntroductionResponse response = new UpdateIntroductionResponse(
-									participant.getSeqId(), ErrorConstants.STATUS_FAILED, description);
+									participant.getSeqId(),participant.getPrintName(), ErrorConstants.STATUS_FAILED, description);
 
 							result.add(response);
 						} else if (0 == programService.getProgramIdByEventId(participantRequest.getEventId())) {
 							description = new ArrayList<String>();
 							description.add("Invalid eventID");
 							UpdateIntroductionResponse response = new UpdateIntroductionResponse(
-									participantRequest.getEventId(), ErrorConstants.STATUS_FAILED, description);
+									participantRequest.getEventId(),participant.getPrintName(), ErrorConstants.STATUS_FAILED, description);
 							result.add(response);
 						} else if (0 != programService.getProgramIdByEventId(participantRequest.getEventId())
 								&& null == programService.findParticipantBySeqId(participant.getSeqId(),
@@ -354,7 +354,7 @@ public class ParticipantsController {
 							description = new ArrayList<String>();
 							description.add("Invalid seqId");
 							UpdateIntroductionResponse response = new UpdateIntroductionResponse(
-									participant.getSeqId(), ErrorConstants.STATUS_FAILED, description);
+									participant.getSeqId(),participant.getPrintName(), ErrorConstants.STATUS_FAILED, description);
 							result.add(response);
 						} else {
 							Participant deletedParticipant = programService.deleteParticipant(participant.getSeqId(),
@@ -363,7 +363,7 @@ public class ParticipantsController {
 							description.add("Participant deleted successfully");
 							programService.updateDeletedParticipant(deletedParticipant, userprofile.getEmail());
 							UpdateIntroductionResponse response = new UpdateIntroductionResponse(
-									participant.getSeqId(), ErrorConstants.STATUS_SUCCESS, description);
+									participant.getSeqId(),participant.getPrintName(), ErrorConstants.STATUS_SUCCESS, description);
 							result.add(response);
 						}
 					}
@@ -436,13 +436,13 @@ public class ParticipantsController {
 							description = new ArrayList<String>();
 							description.add("Seq Id is required.");
 							UpdateIntroductionResponse response = new UpdateIntroductionResponse(
-									participant.getSeqId(), ErrorConstants.STATUS_FAILED, description);
+									participant.getSeqId(), participant.getPrintName(), ErrorConstants.STATUS_FAILED, description);
 							result.add(response);
 						} else if (0 == programService.getProgramIdByEventId(participantRequest.getEventId())) {
 							description = new ArrayList<String>();
 							description.add("Invalid eventID");
 							UpdateIntroductionResponse response = new UpdateIntroductionResponse(
-									participantRequest.getEventId(), ErrorConstants.STATUS_FAILED, description);
+									participantRequest.getEventId(), participant.getPrintName(), ErrorConstants.STATUS_FAILED, description);
 							result.add(response);
 						} else if (0 != programService.getProgramIdByEventId(participantRequest.getEventId())
 								&& null == programService.findParticipantBySeqId(participant.getSeqId(),
@@ -450,21 +450,20 @@ public class ParticipantsController {
 							description = new ArrayList<String>();
 							description.add("Invalid seqId");
 							UpdateIntroductionResponse response = new UpdateIntroductionResponse(
-									participant.getSeqId(), ErrorConstants.STATUS_FAILED, description);
+									participant.getSeqId(), participant.getPrintName(), ErrorConstants.STATUS_FAILED, description);
 							result.add(response);
 						} else {
+							int programID = programService.getProgramIdByEventId(participantRequest
+									.getEventId());
+							Participant participantInput = programService.findParticipantBySeqId(
+									participant.getSeqId(), programID);
 							try {
 								if ("Y".equalsIgnoreCase(participantRequest.getIntroduced())) {
-
-									int programID = programService.getProgramIdByEventId(participantRequest
-											.getEventId());
-									Participant participantInput = programService.findParticipantBySeqId(
-											participant.getSeqId(), programID);
 									UpdateIntroductionResponse response = null;
 									List<String> errorResult = eventDashboardValidator
 											.checkParticipantIntroductionMandatoryFields(participantInput);
 									if (!errorResult.isEmpty()) {
-										response = new UpdateIntroductionResponse(participant.getSeqId(),
+										response = new UpdateIntroductionResponse(participant.getSeqId(),participantInput.getPrintName(),
 												ErrorConstants.STATUS_FAILED, errorResult);
 										result.add(response);
 									} else {
@@ -475,12 +474,12 @@ public class ParticipantsController {
 											description = new ArrayList<String>();
 											description.add("Participant eWelcomeID : "
 													+ participantInput.getWelcomeCardNumber());
-											response = new UpdateIntroductionResponse(participant.getSeqId(),
+											response = new UpdateIntroductionResponse(participant.getSeqId(),participantInput.getPrintName(),
 													ErrorConstants.STATUS_SUCCESS, description);
 										} else {
 											description = new ArrayList<String>();
 											description.add("Participant eWelcomeID : " + eWelcomeID);
-											response = new UpdateIntroductionResponse(participant.getSeqId(),
+											response = new UpdateIntroductionResponse(participant.getSeqId(),participantInput.getPrintName(),
 													ErrorConstants.STATUS_FAILED, description);
 										}
 										result.add(response);
@@ -491,23 +490,32 @@ public class ParticipantsController {
 									description = new ArrayList<String>();
 									description.add("Participant introduced status updated successfully.");
 									UpdateIntroductionResponse response = new UpdateIntroductionResponse(
-											participant.getSeqId(), ErrorConstants.STATUS_SUCCESS, description);
+											participant.getSeqId(),participantInput.getPrintName(),ErrorConstants.STATUS_SUCCESS, description);
 									result.add(response);
 								}
 							} catch (HttpClientErrorException e) {
-							
+
 								description = new ArrayList<String>();
 								ObjectMapper mapper = new ObjectMapper();
 								EWelcomeIDErrorResponse eWelcomeIDErrorResponse = mapper.readValue(
 										e.getResponseBodyAsString(), EWelcomeIDErrorResponse.class);
-								if ((null != eWelcomeIDErrorResponse.getEmail() && !eWelcomeIDErrorResponse.getEmail().isEmpty()) ) {
+								if ((null != eWelcomeIDErrorResponse.getEmail() && !eWelcomeIDErrorResponse.getEmail()
+										.isEmpty())) {
 									description.add(eWelcomeIDErrorResponse.getEmail().get(0));
 								}
-								if((null != eWelcomeIDErrorResponse.getValidation() && ! eWelcomeIDErrorResponse.getValidation().isEmpty() )){
+								if ((null != eWelcomeIDErrorResponse.getValidation() && !eWelcomeIDErrorResponse
+										.getValidation().isEmpty())) {
 									description.add(eWelcomeIDErrorResponse.getValidation().get(0));
 								}
+								if ((null != eWelcomeIDErrorResponse.getError() && !eWelcomeIDErrorResponse.getError()
+										.isEmpty())) {
+									description.add(eWelcomeIDErrorResponse.getError());
+								}
+								if (description.isEmpty()) {
+									description.add(e.getResponseBodyAsString());
+								}
 								UpdateIntroductionResponse response = new UpdateIntroductionResponse(
-										participant.getSeqId(), ErrorConstants.STATUS_FAILED, description);
+										participant.getSeqId(),participantInput.getPrintName(), ErrorConstants.STATUS_FAILED, description);
 								result.add(response);
 							}
 

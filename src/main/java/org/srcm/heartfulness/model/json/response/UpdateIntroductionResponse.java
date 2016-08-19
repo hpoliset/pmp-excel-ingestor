@@ -15,6 +15,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class UpdateIntroductionResponse {
 
 	private String seqId;
+	
+	private String participantName;
 
 	private String status;
 
@@ -26,6 +28,14 @@ public class UpdateIntroductionResponse {
 
 	public void setSeqId(String seqId) {
 		this.seqId = seqId;
+	}
+	
+	public String getParticipantName() {
+		return participantName;
+	}
+
+	public void setParticipantName(String participantName) {
+		this.participantName = participantName;
 	}
 
 	public String getStatus() {
@@ -44,9 +54,10 @@ public class UpdateIntroductionResponse {
 		this.description = description;
 	}
 
-	public UpdateIntroductionResponse(String seqId, String status, List<String> description) {
+	public UpdateIntroductionResponse(String seqId, String participantName, String status, List<String> description) {
 		super();
 		this.seqId = seqId;
+		this.participantName = participantName;
 		this.status = status;
 		this.description = description;
 	}
@@ -57,8 +68,8 @@ public class UpdateIntroductionResponse {
 
 	@Override
 	public String toString() {
-		return "UpdateIntroductionResponse [seqId=" + seqId + ", status=" + status + ", description=" + description
-				+ "]";
+		return "UpdateIntroductionResponse [seqId=" + seqId + ", participantName=" + participantName + ", status="
+				+ status + ", description=" + description + "]";
 	}
 
 }

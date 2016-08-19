@@ -10,6 +10,8 @@ public class EWelcomeIDErrorResponse {
 	private List<String> email;
 	
 	private List<String> validation;
+	
+	private String error;
 
 	public List<String> getEmail() {
 		return email;
@@ -26,10 +28,18 @@ public class EWelcomeIDErrorResponse {
 	public void setValidation(List<String> validation) {
 		this.validation = validation;
 	}
+	
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
+	}
 
 	@Override
 	public String toString() {
-		return "EWelcomeIDErrorResponse [email=" + email + ", validation=" + validation + "]";
+		return "EWelcomeIDErrorResponse [email=" + email + ", validation=" + validation + ", error=" + error + "]";
 	}
 
 }
