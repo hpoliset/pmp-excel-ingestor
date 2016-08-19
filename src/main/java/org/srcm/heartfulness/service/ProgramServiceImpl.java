@@ -719,7 +719,8 @@ public class ProgramServiceImpl implements ProgramService {
 			JsonMappingException, IOException {
 		if (participant.getId() > 0 && participant.getProgramId() > 0) {
 			if (participant.getSeqId() != null && participant.getSeqId().length() == 4) {
-				if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty() || EventConstants.EWELCOME_ID_REGEX.matches(participant.getWelcomeCardNumber())) {
+				if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty() ||
+						!participant.getWelcomeCardNumber().matches(EventConstants.EWELCOME_ID_REGEX)) {
 					if (null == participant.getProgram().getPrefectId()
 							|| participant.getProgram().getPrefectId().isEmpty()) {
 						if (null == participant.getProgram().getPreceptorIdCardNumber()
@@ -734,7 +735,6 @@ public class ProgramServiceImpl implements ProgramService {
 									if (true == userProfile.isIs_prefect() && 0 != userProfile.getPrefect_id()) {
 										Program program = participantRepository.findOnlyProgramById(participant
 												.getProgram().getProgramId());
-										System.out.println(participant.getProgram().getProgramId());
 										program.setAbyasiRefNo(participant.getProgram().getPreceptorIdCardNumber());
 										program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
 										programRepository.save(program);

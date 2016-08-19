@@ -591,7 +591,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 				Participant participant = participantRepository.getParticipantByIntroIdAndMobileNo(introId, seqNum);
 				if (participant.getId() > 0 && participant.getProgramId() > 0) {
 					if (seqNum != null && seqNum.length() == 4) {
-						if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty()  || EventConstants.EWELCOME_ID_REGEX.matches(participant.getWelcomeCardNumber())) {
+						if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty()  || !participant.getWelcomeCardNumber().matches(EventConstants.EWELCOME_ID_REGEX)) {
 							//participant.setWelcomeCardNumber(String.valueOf(SmsUtil.generateRandomNumber(9)));
 							try {
 								

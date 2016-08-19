@@ -415,7 +415,7 @@ public class ParticipantsController {
 	 *         comment.
 	 */
 	@RequestMapping(value = "/updateintroductionstatus", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> UpdateParticipantIntoroducedStatus(
+	public ResponseEntity<?> UpdateParticipantIntroducedStatus(
 			@RequestBody ParticipantIntroductionRequest participantRequest,
 			@RequestHeader(value = "Authorization") String token) {
 		List<String> description = null;
