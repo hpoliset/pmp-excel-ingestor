@@ -62,6 +62,7 @@ public class SendMail {
 	private String participantstemplatename;
 	private String crdntrmailsubject;
 	private String crdntrmailtemplatename;
+	private String frommail;
 
 
 	public String getUsername() {
@@ -207,6 +208,14 @@ public class SendMail {
 	public void setCrdntrmailtemplatename(String crdntrmailtemplatename) {
 		this.crdntrmailtemplatename = crdntrmailtemplatename;
 	}
+	
+	public String getFrommail() {
+		return frommail;
+	}
+
+	public void setFrommail(String frommail) {
+		this.frommail = frommail;
+	}
 
 	@Autowired
 	private AESEncryptDecrypt aesEncryptDecrypt;
@@ -243,7 +252,7 @@ public class SendMail {
 				}
 			});
 			SMTPMessage message = new SMTPMessage(session);
-			message.setFrom(new InternetAddress(username,name));
+			message.setFrom(new InternetAddress(frommail,name));
 			for (String toId : toIds) {
 				message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toId));
 			}
@@ -324,7 +333,7 @@ public class SendMail {
 		Properties props = System.getProperties();
 		Session session = Session.getDefaultInstance(props);
 		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(username,name));
+		message.setFrom(new InternetAddress(frommail,name));
 		for (String toemailID : toEmailIDs) {
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toemailID));
 		}
@@ -403,7 +412,7 @@ public class SendMail {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 		addParameter("DATE", sdf.format(cal.getTime()));
 		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(username,name));
+		message.setFrom(new InternetAddress(frommail,name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(crdntrEmail.getCoordinatorEmail()));
 		message.setSubject(crdntrmailsubject + sdf.format(cal.getTime()));
 		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename), "text/html");
