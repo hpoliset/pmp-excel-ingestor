@@ -24,6 +24,8 @@ import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
+import org.srcm.heartfulness.model.json.response.AbhyasiResult;
+import org.srcm.heartfulness.model.json.response.AbhyasiUserProfile;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.repository.ParticipantRepository;
@@ -727,10 +729,10 @@ public class ProgramServiceImpl implements ProgramService {
 								|| participant.getProgram().getPreceptorIdCardNumber().isEmpty()) {
 							return "Preceptor ID is required for the Event";
 						} else {
-							Result result = srcmRestTemplate.getAbyasiProfile(participant.getProgram()
+							AbhyasiResult result = srcmRestTemplate.getAbyasiProfile(participant.getProgram()
 									.getPreceptorIdCardNumber());
 							if (result.getUserProfile().length > 0) {
-								UserProfile userProfile = result.getUserProfile()[0];
+								AbhyasiUserProfile userProfile = result.getUserProfile()[0];
 								if (null != userProfile) {
 									if (true == userProfile.isIs_prefect() && 0 != userProfile.getPrefect_id()) {
 										Program program = participantRepository.findOnlyProgramById(participant

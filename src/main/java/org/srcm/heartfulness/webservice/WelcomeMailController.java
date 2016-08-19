@@ -88,47 +88,4 @@ public class WelcomeMailController {
 		LOGGER.debug("END		:Cron job completed to fetch participants to whom welcome mail already sent");
 	}
 	
-	
-	@RequestMapping(value = "test", method = RequestMethod.POST)
-	public String SendMail() {
-		
-		try {
-			CoordinatorEmail coordinator=new CoordinatorEmail();
-			coordinator.setCoordinatorEmail("ramesh.ramados@gmail.com");
-			coordinator.setCoordinatorName("Ramesh");
-			coordinator.setEventName("sdasGFGH");
-			coordinator.setPctptAlreadyRcvdWlcmMailCount("99999999");
-			coordinator.setPctptRcvdWlcmMailYstrdayCount("5565");
-			coordinator.setTotalParticipantCount("99999999999999");
-			sendMail.sendMailNotificationToCoordinator(coordinator);
-			return "Sent";
-		} catch (AddressException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			StringWriter stack = new StringWriter();
-			e.printStackTrace(new PrintWriter(stack));
-			LOGGER.error("Exception" + stack.toString());
-			LOGGER.error("Exception" + e.getMessage());
-			return "Exception";
-		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			StringWriter stack = new StringWriter();
-			e.printStackTrace(new PrintWriter(stack));
-			LOGGER.error("Exception" + stack.toString());
-			LOGGER.error("Exception" + e.getMessage());
-			return "Exception";
-		} catch (Exception e) {
-			
-			e.printStackTrace();
-			e.printStackTrace();
-			StringWriter stack = new StringWriter();
-			e.printStackTrace(new PrintWriter(stack));
-			LOGGER.error("Exception" + stack.toString());
-			LOGGER.error("Exception" + e.getMessage());
-			return "Exception";
-		}
-		
-	}
-
 }

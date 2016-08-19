@@ -21,11 +21,14 @@ import org.srcm.heartfulness.enumeration.ExcelType;
 import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractorFactory;
 import org.srcm.heartfulness.model.Organisation;
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.model.json.response.AbhyasiResult;
+import org.srcm.heartfulness.model.json.response.AbhyasiUserProfile;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.repository.OrganisationRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
+import org.srcm.heartfulness.rest.template.SrcmRestTemplate.AbyasiInfo;
 import org.srcm.heartfulness.service.response.ExcelUploadResponse;
 import org.srcm.heartfulness.util.ExcelParserUtils;
 import org.srcm.heartfulness.util.InvalidExcelFileException;
@@ -83,9 +86,9 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 						program.setCreatedSource("Excel");
 
 						if(	null != program.getPreceptorIdCardNumber() && !program.getPreceptorIdCardNumber().isEmpty()){
-							Result result = srcmRestTemplate.getAbyasiProfile(program.getPreceptorIdCardNumber());
+							AbhyasiResult result = srcmRestTemplate.getAbyasiProfile(program.getPreceptorIdCardNumber());
 							if (result.getUserProfile().length > 0) {
-								UserProfile userProfile = result.getUserProfile()[0];
+								AbhyasiUserProfile userProfile = result.getUserProfile()[0];
 								if (null != userProfile) {
 									if (true == userProfile.isIs_prefect()
 											&& 0 != userProfile.getPrefect_id()) {

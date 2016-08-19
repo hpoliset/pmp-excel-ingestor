@@ -21,6 +21,7 @@ import org.srcm.heartfulness.constants.RestTemplateConstants;
 import org.srcm.heartfulness.model.Aspirant;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
+import org.srcm.heartfulness.model.json.response.AbhyasiResult;
 import org.srcm.heartfulness.model.json.response.CitiesAPIResponse;
 import org.srcm.heartfulness.model.json.response.GeoSearchResponse;
 import org.srcm.heartfulness.model.json.response.Result;
@@ -219,7 +220,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public Result getAbyasiProfile(String refNo) throws HttpClientErrorException, JsonParseException,
+	public AbhyasiResult getAbyasiProfile(String refNo) throws HttpClientErrorException, JsonParseException,
 			JsonMappingException, IOException {
 		if (proxy)
 			setProxy();
@@ -242,7 +243,7 @@ public class SrcmRestTemplate extends RestTemplate {
 		httpEntity = new HttpEntity<Object>(bodyParams, httpHeaders);
 		ResponseEntity<String> response = this.exchange(abyasi.abyasiInfoUri + "&ref=" + refNo, HttpMethod.GET,
 				httpEntity, String.class);
-		return mapper.readValue(response.getBody(), Result.class);
+		return mapper.readValue(response.getBody(), AbhyasiResult.class);
 	}
 
 	/**
@@ -324,18 +325,20 @@ public class SrcmRestTemplate extends RestTemplate {
 	 */
 	private void setProxy() {
 
-	/*	CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
-				new UsernamePasswordCredentials(proxyUser, proxyPassword));
-		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-		clientBuilder.useSystemProperties();
-		clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
-		clientBuilder.setDefaultCredentialsProvider(credsProvider);
-		clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-		CloseableHttpClient client = clientBuilder.build();
-		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-		factory.setHttpClient(client);
-		this.setRequestFactory(factory);*/
+		/*
+		 * CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		 * credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST,
+		 * AuthScope.ANY_PORT), new UsernamePasswordCredentials(proxyUser,
+		 * proxyPassword)); HttpClientBuilder clientBuilder =
+		 * HttpClientBuilder.create(); clientBuilder.useSystemProperties();
+		 * clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
+		 * clientBuilder.setDefaultCredentialsProvider(credsProvider);
+		 * clientBuilder.setProxyAuthenticationStrategy(new
+		 * ProxyAuthenticationStrategy()); CloseableHttpClient client =
+		 * clientBuilder.build(); HttpComponentsClientHttpRequestFactory factory
+		 * = new HttpComponentsClientHttpRequestFactory();
+		 * factory.setHttpClient(client); this.setRequestFactory(factory);
+		 */
 
 	}
 
