@@ -143,7 +143,7 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 		if(coordinatorEmail.isEmpty()){
 			errorList.add(V2ProgramCols2.EVENT_COORDINATOR_MAIL.getHeader() + " is a mandatory field and cannot be empty at rownumber 8");
 		}else{
-			
+
 			if(coordinatorEmail.contains(";")){
 
 				String[] emails = coordinatorEmail.split(";");
@@ -278,6 +278,13 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 				if(!ptcpntEmail.matches(EventConstants.EMAIL_REGEX)){
 					errorList.add(V2ParticipantCols.EMAIL.getHeader() 
 							+ " is invalid at row number "+rowNumber);
+				}
+			}
+
+			String welcomeCardNumber = currentRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString();
+			if(!welcomeCardNumber.isEmpty()){
+				if(!welcomeCardNumber.matches(EventConstants.EWELCOME_ID_REGEX)){
+					errorList.add(V2ParticipantCols.WELCOME_CARD_NUMBER.getHeader() + "is invalid at row number "+rowNumber);
 				}
 			}
 

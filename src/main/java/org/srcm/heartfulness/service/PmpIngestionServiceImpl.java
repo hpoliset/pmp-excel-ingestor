@@ -78,40 +78,52 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 					response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 				} else {
 					// Persist the program
-					Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version);
-					program.setCreatedSource("Excel");
+					try{
+						Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version);
+						program.setCreatedSource("Excel");
 
-					if(	null != program.getPreceptorIdCardNumber() && !program.getPreceptorIdCardNumber().isEmpty()){
-						Result result = srcmRestTemplate.getAbyasiProfile(program.getPreceptorIdCardNumber());
-						if (result.getUserProfile().length > 0) {
-							UserProfile userProfile = result.getUserProfile()[0];
-							if (null != userProfile) {
-								if (true == userProfile.isIs_prefect()
-										&& 0 != userProfile.getPrefect_id()) {
-									program.setAbyasiRefNo(program.getPreceptorIdCardNumber());
-									program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
-									program.setSrcmGroup(String.valueOf(userProfile.getSrcm_group()));
-									programRepository.save(program);
-									response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
+						if(	null != program.getPreceptorIdCardNumber() && !program.getPreceptorIdCardNumber().isEmpty()){
+							Result result = srcmRestTemplate.getAbyasiProfile(program.getPreceptorIdCardNumber());
+							if (result.getUserProfile().length > 0) {
+								UserProfile userProfile = result.getUserProfile()[0];
+								if (null != userProfile) {
+									if (true == userProfile.isIs_prefect()
+											&& 0 != userProfile.getPrefect_id()) {
+										program.setAbyasiRefNo(program.getPreceptorIdCardNumber());
+										program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
+										program.setSrcmGroup(String.valueOf(userProfile.getSrcm_group()));
+										programRepository.save(program);
+										response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
+									} else {
+										errorResponse.add("Specified PreceptorId Card Number is not authorized.");
+										response.setErrorMsg(errorResponse);
+										response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
+									}
 								} else {
-									errorResponse.add("Specified PreceptorId Card Number is not authorized.");
+									errorResponse.add("Invalid PreceptorId Card Number.");
 									response.setErrorMsg(errorResponse);
 									response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 								}
-							} else {
+							}else{
 								errorResponse.add("Invalid PreceptorId Card Number.");
 								response.setErrorMsg(errorResponse);
 								response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 							}
-						}else{
-							errorResponse.add("Invalid PreceptorId Card Number.");
-							response.setErrorMsg(errorResponse);
-							response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
+						} else {
+							programRepository.save(program);
+							response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
 						}
-					} else {
-						programRepository.save(program);
-						response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
+					}catch(InvalidExcelFileException ex){
+						errorResponse.add(ex.getCause().getLocalizedMessage());
+						response.setErrorMsg(errorResponse);
+						response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
+					}catch(Exception ex){
+						errorResponse.add(ex.getCause().getLocalizedMessage());
+						response.setErrorMsg(errorResponse);
+						response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 					}
+
+
 				}
 			}else{
 				errorResponse.add("Invalid file contents.");
