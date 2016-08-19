@@ -12,6 +12,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.EventConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.constants.SMSConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
@@ -590,7 +591,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 				Participant participant = participantRepository.getParticipantByIntroIdAndMobileNo(introId, seqNum);
 				if (participant.getId() > 0 && participant.getProgramId() > 0) {
 					if (seqNum != null && seqNum.length() == 4) {
-						if (participant.getWelcomeCardNumber() == null) {
+						if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty()  || EventConstants.EWELCOME_ID_REGEX.matches(participant.getWelcomeCardNumber())) {
 							//participant.setWelcomeCardNumber(String.valueOf(SmsUtil.generateRandomNumber(9)));
 							try {
 								

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.ErrorConstants;
+import org.srcm.heartfulness.constants.EventConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.enumeration.EventSearchField;
 import org.srcm.heartfulness.helper.EWelcomeIDGenerationHelper;
@@ -259,6 +260,8 @@ public class ProgramServiceImpl implements ProgramService {
 				participantReq.setIntroducedBy(participant.getIntroducedBy());
 				participantReq.setIntroducedStatus(1 == participant.getIntroduced() ? PMPConstants.REQUIRED_YES
 						: PMPConstants.REQUIRED_NO);
+				participantReq.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
+						.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
 				participantReqList.add(participantReq);
 			}
 			return participantReqList;
@@ -716,7 +719,7 @@ public class ProgramServiceImpl implements ProgramService {
 			JsonMappingException, IOException {
 		if (participant.getId() > 0 && participant.getProgramId() > 0) {
 			if (participant.getSeqId() != null && participant.getSeqId().length() == 4) {
-				if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty()) {
+				if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty() || EventConstants.EWELCOME_ID_REGEX.matches(participant.getWelcomeCardNumber())) {
 					if (null == participant.getProgram().getPrefectId()
 							|| participant.getProgram().getPrefectId().isEmpty()) {
 						if (null == participant.getProgram().getPreceptorIdCardNumber()

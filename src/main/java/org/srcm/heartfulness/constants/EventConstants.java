@@ -18,4 +18,6 @@ public class EventConstants {
 	public static final String EVENT_ID_PREFIX="E";
 
 	public static final String INTRO_ID_PREFIX="I";
+	
+	public static final String EWELCOME_ID_REGEX="^[A-Z]\\d{8}$";
 }

@@ -64,6 +64,8 @@ public class ParticipantRequest {
 	private String introducedBy;
 
 	private String abhyasiId;
+	
+	private String eWelcomeID;
 
 	@JsonIgnore
 	private int excelSheetSequenceNumber;
@@ -275,44 +277,17 @@ public class ParticipantRequest {
 	public void setThirdSitting(String thirdSitting) {
 		this.thirdSitting = thirdSitting;
 	}
+	
+	public String geteWelcomeID() {
+		return eWelcomeID;
+	}
+
+	public void seteWelcomeID(String eWelcomeID) {
+		this.eWelcomeID = eWelcomeID;
+	}
 
 	public ParticipantRequest() {
 		super();
-	}
-
-	public ParticipantRequest(int id, int programId, String seqId, String eventId, String printName, String gender,
-			String dateOfBirth, String addressLine1, String addressLine2, String email, String mobilePhone,
-			String city, String state, String country, String introducedStatus, String introductionDate,
-			String firstSittingDate, String secondSittingDate, String thirdSittingDate, String firstSitting,
-			String secondSitting, String thirdSitting, int introduced, String introducedBy, String abhyasiId,
-			int excelSheetSequenceNumber) {
-		super();
-		this.id = id;
-		this.programId = programId;
-		this.seqId = seqId;
-		this.eventId = eventId;
-		this.printName = printName;
-		this.gender = gender;
-		this.dateOfBirth = dateOfBirth;
-		this.addressLine1 = addressLine1;
-		this.addressLine2 = addressLine2;
-		this.email = email;
-		this.mobilePhone = mobilePhone;
-		this.city = city;
-		this.state = state;
-		this.country = country;
-		this.introducedStatus = introducedStatus;
-		this.introductionDate = introductionDate;
-		this.firstSittingDate = firstSittingDate;
-		this.secondSittingDate = secondSittingDate;
-		this.thirdSittingDate = thirdSittingDate;
-		this.firstSitting = firstSitting;
-		this.secondSitting = secondSitting;
-		this.thirdSitting = thirdSitting;
-		this.introduced = introduced;
-		this.introducedBy = introducedBy;
-		this.abhyasiId = abhyasiId;
-		this.excelSheetSequenceNumber = excelSheetSequenceNumber;
 	}
 
 	@Override
@@ -325,8 +300,8 @@ public class ParticipantRequest {
 				+ ", firstSittingDate=" + firstSittingDate + ", secondSittingDate=" + secondSittingDate
 				+ ", thirdSittingDate=" + thirdSittingDate + ", firstSitting=" + firstSitting + ", secondSitting="
 				+ secondSitting + ", thirdSitting=" + thirdSitting + ", introduced=" + introduced + ", introducedBy="
-				+ introducedBy + ", abhyasiId=" + abhyasiId + ", excelSheetSequenceNumber=" + excelSheetSequenceNumber
-				+ "]";
+				+ introducedBy + ", abhyasiId=" + abhyasiId + ", eWelcomeID=" + eWelcomeID
+				+ ", excelSheetSequenceNumber=" + excelSheetSequenceNumber + "]";
 	}
 
 }
