@@ -166,7 +166,12 @@ public class ParticipantsController {
 				return new ResponseEntity<ErrorResponse>(error, HttpStatus.PRECONDITION_FAILED);
 			} else {
 				ParticipantRequest participant = participantService.getParticipantBySeqId(request);
-				return new ResponseEntity<ParticipantRequest>(participant, HttpStatus.OK);
+				if(null != participant){
+					return new ResponseEntity<ParticipantRequest>(participant, HttpStatus.OK);
+				}else{
+					ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Inavlid Seq Id");
+					return new ResponseEntity<ErrorResponse>(error, HttpStatus.PRECONDITION_FAILED);
+				}
 			}
 		} catch (HttpClientErrorException e) {
 			e.printStackTrace();

@@ -331,10 +331,11 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 
 			participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
 					.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
+			return participantRequest;
 		} else {
 			return null;
 		}
-		return participantRequest;
+		
 	}
 
 	/**
@@ -431,7 +432,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					participantRequest.getProgramId());
 			return newParticipant;
 		} else {
-			return new Participant();
+			return null;
 		}
 	}
 
