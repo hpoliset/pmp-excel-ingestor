@@ -34,9 +34,9 @@ public class AbhyasiUserProfile {
 
 	private FirstSittingBy first_sitting_by;
 
-	private String indiv_sittings_by;
+	private IndivSittingsBy indiv_sittings_by;
 
-	private String resp_prefect;
+	private RespPrefect resp_prefect;
 	
 	private boolean is_prefect;
 	
@@ -192,19 +192,19 @@ public class AbhyasiUserProfile {
 		this.first_sitting_by = first_sitting_by;
 	}
 
-	public String getIndiv_sittings_by() {
+	public IndivSittingsBy getIndiv_sittings_by() {
 		return indiv_sittings_by;
 	}
 
-	public void setIndiv_sittings_by(String indiv_sittings_by) {
+	public void setIndiv_sittings_by(IndivSittingsBy indiv_sittings_by) {
 		this.indiv_sittings_by = indiv_sittings_by;
 	}
 
-	public String getResp_prefect() {
+	public RespPrefect getResp_prefect() {
 		return resp_prefect;
 	}
 
-	public void setResp_prefect(String resp_prefect) {
+	public void setResp_prefect(RespPrefect resp_prefect) {
 		this.resp_prefect = resp_prefect;
 	}
 
