@@ -2,21 +2,12 @@ package org.srcm.heartfulness.rest.template;
 
 import java.io.IOException;
 
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -50,7 +41,7 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 	private String sendSmsUri;
 	private String DCS;
 
-	private boolean proxy = true;
+	private boolean proxy = false;
 	private String proxyHost = "10.1.28.12";
 	private int proxyPort = 8080;
 	private String proxyUser = "rramesh";
@@ -129,7 +120,7 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 	 */
 	private void setProxy() {
 
-		CredentialsProvider credsProvider = new BasicCredentialsProvider();
+	/*	CredentialsProvider credsProvider = new BasicCredentialsProvider();
 		credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 				new UsernamePasswordCredentials(proxyUser, proxyPassword));
 		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
@@ -141,7 +132,7 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
 		factory.setHttpClient(client);
 		this.setRequestFactory(factory);
-
+*/
 	}
 
 	public void setUsername(String username) {
