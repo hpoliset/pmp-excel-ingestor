@@ -169,7 +169,7 @@ public class ParticipantsController {
 				if(null != participant){
 					return new ResponseEntity<ParticipantRequest>(participant, HttpStatus.OK);
 				}else{
-					ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Inavlid Seq Id");
+					ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid Seq Id");
 					return new ResponseEntity<ErrorResponse>(error, HttpStatus.PRECONDITION_FAILED);
 				}
 			}
