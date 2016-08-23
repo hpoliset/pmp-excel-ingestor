@@ -57,6 +57,7 @@ public class Participant {
 	private String createdSource;
 
 	private int isCoOrdinatorInformed;
+	private Integer isEwelcomeIdInformed;
 	
 	public String getCreatedSource() {
 		return createdSource;
@@ -429,6 +430,13 @@ public class Participant {
 	public void setThirdSitting(Integer thirdSitting) {
 		this.thirdSitting = thirdSitting;
 	}
-	
+
+	public Integer getIsEwelcomeIdInformed() {
+		return isEwelcomeIdInformed;
+	}
+
+	public void setIsEwelcomeIdInformed(Integer isEwelcomeIdInformed) {
+		this.isEwelcomeIdInformed = isEwelcomeIdInformed;
+	}
 
 }

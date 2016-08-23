@@ -26,6 +26,7 @@ import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.model.json.response.AbhyasiResult;
 import org.srcm.heartfulness.model.json.response.AbhyasiUserProfile;
+import org.srcm.heartfulness.model.json.response.EWelcomeIDErrorResponse;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.repository.ParticipantRepository;
@@ -35,6 +36,7 @@ import org.srcm.heartfulness.validator.EventDashboardValidator;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class ProgramServiceImpl implements ProgramService {
@@ -718,49 +720,77 @@ public class ProgramServiceImpl implements ProgramService {
 	 */
 	@Override
 	public String generateeWelcomeID(Participant participant) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException {
-		if (participant.getId() > 0 && participant.getProgramId() > 0) {
-			if (participant.getSeqId() != null && participant.getSeqId().length() == 4) {
-				if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty() ||
-						!participant.getWelcomeCardNumber().matches(EventConstants.EWELCOME_ID_REGEX)) {
-					if (null == participant.getProgram().getPrefectId()
-							|| participant.getProgram().getPrefectId().isEmpty()) {
-						if (null == participant.getProgram().getPreceptorIdCardNumber()
-								|| participant.getProgram().getPreceptorIdCardNumber().isEmpty()) {
-							return "Preceptor ID is required for the Event";
-						} else {
-							AbhyasiResult result = srcmRestTemplate.getAbyasiProfile(participant.getProgram()
-									.getPreceptorIdCardNumber());
-							if (result.getUserProfile().length > 0) {
-								AbhyasiUserProfile userProfile = result.getUserProfile()[0];
-								if (null != userProfile) {
-									if (true == userProfile.isIs_prefect() && 0 != userProfile.getPrefect_id()) {
-										Program program = participantRepository.findOnlyProgramById(participant
-												.getProgram().getProgramId());
-										program.setAbyasiRefNo(participant.getProgram().getPreceptorIdCardNumber());
-										program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
-										programRepository.save(program);
+	JsonMappingException, IOException {
+		try{
+			if (participant.getId() > 0 && participant.getProgramId() > 0) {
+				if (participant.getSeqId() != null && participant.getSeqId().length() == 4) {
+					if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty() ||
+							!participant.getWelcomeCardNumber().matches(EventConstants.EWELCOME_ID_REGEX)) {
+						if (null == participant.getProgram().getPrefectId()
+								|| participant.getProgram().getPrefectId().isEmpty()) {
+							if (null == participant.getProgram().getPreceptorIdCardNumber()
+									|| participant.getProgram().getPreceptorIdCardNumber().isEmpty()) {
+								return "Preceptor ID is required for the Event";
+							} else {
+								AbhyasiResult result = srcmRestTemplate.getAbyasiProfile(participant.getProgram()
+										.getPreceptorIdCardNumber());
+								if (result.getUserProfile().length > 0) {
+									AbhyasiUserProfile userProfile = result.getUserProfile()[0];
+									if (null != userProfile) {
+										if (true == userProfile.isIs_prefect() && 0 != userProfile.getPrefect_id()) {
+											Program program = participantRepository.findOnlyProgramById(participant
+													.getProgram().getProgramId());
+											program.setAbyasiRefNo(participant.getProgram().getPreceptorIdCardNumber());
+											program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
+											programRepository.save(program);
+										}
+									} else {
+										return "Invalid preceptor ID";
 									}
 								} else {
 									return "Invalid preceptor ID";
 								}
-							} else {
-								return "Invalid preceptor ID";
 							}
 						}
+						eWelcomeIDGenerationHelper.generateEWelcomeId(participant);
+						participant.setIsEwelcomeIdInformed(0);
+						participantRepository.save(participant);
+						return "success";
+						
+					} else {
+						return "success";
 					}
-					eWelcomeIDGenerationHelper.generateEWelcomeId(participant);
-					participantRepository.save(participant);
-					return "success";
 				} else {
-					return "success";
+					return "Invalid SeqID";
 				}
 			} else {
-				return "Invalid SeqID";
+				return "Invalid SeqID/eventID";
 			}
-		} else {
-			return "Invalid SeqID/eventID";
+		} catch (HttpClientErrorException e) {
+			boolean errorMessageParsed=false;
+			ObjectMapper mapper = new ObjectMapper();
+			EWelcomeIDErrorResponse eWelcomeIDErrorResponse = mapper.readValue(
+					e.getResponseBodyAsString(), EWelcomeIDErrorResponse.class);
+			if ((null != eWelcomeIDErrorResponse.getEmail() && !eWelcomeIDErrorResponse.getEmail()
+					.isEmpty())) {
+				errorMessageParsed=true;
+				return eWelcomeIDErrorResponse.getEmail().get(0);
+			}
+			if ((null != eWelcomeIDErrorResponse.getValidation() && !eWelcomeIDErrorResponse
+					.getValidation().isEmpty())) {
+				errorMessageParsed=true;
+				return eWelcomeIDErrorResponse.getValidation().get(0);
+			}
+			if ((null != eWelcomeIDErrorResponse.getError() && !eWelcomeIDErrorResponse.getError()
+					.isEmpty())) {
+				errorMessageParsed=true;
+				return eWelcomeIDErrorResponse.getError();
+			}
+			if (!errorMessageParsed) {
+				return e.getResponseBodyAsString();
+			}
 		}
+		return null;
 	}
 
 }

@@ -94,7 +94,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 											&& 0 != userProfile.getPrefect_id()) {
 										program.setAbyasiRefNo(program.getPreceptorIdCardNumber());
 										program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
-										program.setSrcmGroup(String.valueOf(userProfile.getSrcm_group()));
+										//program.setSrcmGroup(String.valueOf(userProfile.getSrcm_group()));
 										programRepository.save(program);
 										response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
 									} else {

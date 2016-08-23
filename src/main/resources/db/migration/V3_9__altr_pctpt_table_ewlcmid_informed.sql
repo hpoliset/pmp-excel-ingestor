@@ -1,0 +1,1 @@
+ALTER TABLE participant ADD is_ewelcome_id_informed int(1)  DEFAULT NULL;

@@ -457,7 +457,7 @@ public class ParticipantsController {
 									.getEventId());
 							Participant participantInput = programService.findParticipantBySeqId(
 									participant.getSeqId(), programID);
-							try {
+						//	try {
 								if ("Y".equalsIgnoreCase(participantRequest.getIntroduced())) {
 									UpdateIntroductionResponse response = null;
 									List<String> errorResult = eventDashboardValidator
@@ -468,9 +468,9 @@ public class ParticipantsController {
 										result.add(response);
 									} else {
 										eWelcomeID = programService.generateeWelcomeID(participantInput);
-										programService.UpdateParticipantsStatus(participant.getSeqId(),
-												participantRequest.getEventId(), participantRequest.getIntroduced());
 										if ("success".equalsIgnoreCase(eWelcomeID)) {
+											programService.UpdateParticipantsStatus(participant.getSeqId(),
+													participantRequest.getEventId(), participantRequest.getIntroduced());
 											description = new ArrayList<String>();
 											description.add("Participant eWelcomeID : "
 													+ participantInput.getWelcomeCardNumber());
@@ -478,7 +478,7 @@ public class ParticipantsController {
 													ErrorConstants.STATUS_SUCCESS, description);
 										} else {
 											description = new ArrayList<String>();
-											description.add("Participant eWelcomeID : " + eWelcomeID);
+											description.add(eWelcomeID);
 											response = new UpdateIntroductionResponse(participant.getSeqId(),participantInput.getPrintName(),
 													ErrorConstants.STATUS_FAILED, description);
 										}
@@ -493,7 +493,7 @@ public class ParticipantsController {
 											participant.getSeqId(),participantInput.getPrintName(),ErrorConstants.STATUS_SUCCESS, description);
 									result.add(response);
 								}
-							} catch (HttpClientErrorException e) {
+							/*} catch (HttpClientErrorException e) {
 
 								description = new ArrayList<String>();
 								ObjectMapper mapper = new ObjectMapper();
@@ -517,7 +517,7 @@ public class ParticipantsController {
 								UpdateIntroductionResponse response = new UpdateIntroductionResponse(
 										participant.getSeqId(),participantInput.getPrintName(), ErrorConstants.STATUS_FAILED, description);
 								result.add(response);
-							}
+							}*/
 
 						}
 					}
