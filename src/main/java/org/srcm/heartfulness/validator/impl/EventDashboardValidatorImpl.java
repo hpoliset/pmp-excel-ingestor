@@ -299,6 +299,9 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	@Override
 	public List<String> checkParticipantIntroductionMandatoryFields(Participant participantInput) {
 		List<String> errors = new ArrayList<String>();
+		if (null == participantInput.getSeqId() || participantInput.getSeqId().isEmpty()) {
+			errors.add("Seq Id is required.");
+		}
 		if (null == participantInput.getCity() || participantInput.getCity().isEmpty()) {
 			errors.add("City is required.");
 		}

@@ -26,9 +26,6 @@ import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.model.json.response.AbhyasiResult;
 import org.srcm.heartfulness.model.json.response.AbhyasiUserProfile;
-import org.srcm.heartfulness.model.json.response.EWelcomeIDErrorResponse;
-import org.srcm.heartfulness.model.json.response.Result;
-import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
@@ -36,7 +33,6 @@ import org.srcm.heartfulness.validator.EventDashboardValidator;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class ProgramServiceImpl implements ProgramService {
@@ -721,7 +717,7 @@ public class ProgramServiceImpl implements ProgramService {
 	@Override
 	public String generateeWelcomeID(Participant participant) throws HttpClientErrorException, JsonParseException,
 	JsonMappingException, IOException {
-		try{
+		//try{
 			if (participant.getId() > 0 && participant.getProgramId() > 0) {
 				if (participant.getSeqId() != null && participant.getSeqId().length() == 4) {
 					if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty() ||
@@ -766,7 +762,7 @@ public class ProgramServiceImpl implements ProgramService {
 			} else {
 				return "Invalid SeqID/eventID";
 			}
-		} catch (HttpClientErrorException e) {
+		/*} catch (HttpClientErrorException e) {
 			boolean errorMessageParsed=false;
 			ObjectMapper mapper = new ObjectMapper();
 			EWelcomeIDErrorResponse eWelcomeIDErrorResponse = mapper.readValue(
@@ -789,8 +785,7 @@ public class ProgramServiceImpl implements ProgramService {
 			if (!errorMessageParsed) {
 				return e.getResponseBodyAsString();
 			}
-		}
-		return null;
+		}*/
 	}
 
 }

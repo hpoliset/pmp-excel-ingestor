@@ -32,7 +32,7 @@ public class AbhyasiUserProfile {
 
 	private String gender;
 
-	private String first_sitting_by;
+	private FirstSittingBy first_sitting_by;
 
 	private String indiv_sittings_by;
 
@@ -184,11 +184,11 @@ public class AbhyasiUserProfile {
 		this.gender = gender;
 	}
 
-	public String getFirst_sitting_by() {
+	public FirstSittingBy getFirst_sitting_by() {
 		return first_sitting_by;
 	}
 
-	public void setFirst_sitting_by(String first_sitting_by) {
+	public void setFirst_sitting_by(FirstSittingBy first_sitting_by) {
 		this.first_sitting_by = first_sitting_by;
 	}
 
