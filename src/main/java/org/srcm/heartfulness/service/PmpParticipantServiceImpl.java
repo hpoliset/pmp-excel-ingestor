@@ -332,7 +332,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
 					.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
 		} else {
-			participantRequest = new ParticipantRequest();
+			return null;
 		}
 		return participantRequest;
 	}
