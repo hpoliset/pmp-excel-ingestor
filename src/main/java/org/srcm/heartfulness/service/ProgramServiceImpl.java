@@ -347,8 +347,6 @@ public class ProgramServiceImpl implements ProgramService {
 								program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
 								program.setPreceptorIdCardNumber(event.getPreceptorIdCardNumber());
 								program.setPreceptorName(userProfile.getName());
-								//program.setSrcmGroup(String.valueOf(userProfile.getSrcm_group()));
-								programRepository.save(program);
 							} else {
 								errors.put("PreceptorId Card Number", "Specified PreceptorId Card Number is not authorized.");
 								event.setErrors(errors);
@@ -361,6 +359,8 @@ public class ProgramServiceImpl implements ProgramService {
 						errors.put("PreceptorId Card Number", "Invalid PreceptorId Card Number.");
 						event.setErrors(errors);
 					}
+				}else{
+					program.setPreceptorName(event.getPreceptorName());
 				}
 				
 				program.setWelcomeCardSignedByName(event.getWelcomeCardSignedByName());
