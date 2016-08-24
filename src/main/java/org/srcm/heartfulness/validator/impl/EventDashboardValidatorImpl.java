@@ -299,9 +299,6 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	@Override
 	public List<String> checkParticipantIntroductionMandatoryFields(Participant participantInput) {
 		List<String> errors = new ArrayList<String>();
-		if (null == participantInput.getSeqId() || participantInput.getSeqId().isEmpty()) {
-			errors.add("Seq Id is required.");
-		}
 		if (null == participantInput.getCity() || participantInput.getCity().isEmpty()) {
 			errors.add("City is required.");
 		}
@@ -317,22 +314,16 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if (null == participantInput.getProgram().getProgramStartDate()) {
 			errors.add("Program start date is required.");
 		}
-
-		if ((null == participantInput.getFirstSittingDate() || null == participantInput.getSecondSittingDate() || null == participantInput
-				.getThirdSittingDate())) {
-			if ((0 == participantInput.getFirstSitting() || 0 == participantInput.getSecondSitting() || 0 == participantInput
-					.getThirdSitting())) {
-				errors.add("Participant not completed 3 sittings.");
-			}
-		} else if ((0 == participantInput.getFirstSitting() || 0 == participantInput.getSecondSitting() || 0 == participantInput
-				.getThirdSitting())) {
-			if ((null == participantInput.getFirstSittingDate() || null == participantInput.getSecondSittingDate() || null == participantInput
-					.getThirdSittingDate())) {
-				errors.add("Participant not completed 3 sittings.");
-			}
-
+		
+		if((null == participantInput.getFirstSittingDate() )  && (null == participantInput.getFirstSitting() || 0 == participantInput.getFirstSitting())){
+			errors.add("Participant not completed his first sitting.");
 		}
-
+		if((null == participantInput.getSecondSittingDate())  && (null == participantInput.getSecondSitting() || 0 == participantInput.getSecondSitting())){
+			errors.add("Participant not completed his second sitting.");
+		}
+		if((null == participantInput.getThirdSittingDate() )  && (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())){
+			errors.add("Participant not completed his third sitting.");
+		}
 		return errors;
 	}
 

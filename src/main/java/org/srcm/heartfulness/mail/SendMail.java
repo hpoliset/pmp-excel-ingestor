@@ -485,7 +485,7 @@ public class SendMail {
 			message.setFrom(new InternetAddress(frommail,name));
 			message.addRecipients(Message.RecipientType.TO,
 					InternetAddress.parse(coordinatorEmail.getCoordinatorEmail()));
-			message.setSubject(crdntrmailforewlcmidsubject+" "+coordinatorEmail.getEventName());
+			message.setSubject(crdntrmailforewlcmidsubject+" - "+coordinatorEmail.getEventName());
 			message.setContent(getMessageContentbyTemplateName(crdntrewlcomeidmailtemplatename), "text/html");
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
