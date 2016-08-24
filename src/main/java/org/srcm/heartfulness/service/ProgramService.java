@@ -88,9 +88,13 @@ public interface ProgramService {
 	 * @param events List<Event> is sent to this service method as an argument against 
 	 * which mandatory,duplicate eventId and other  validations are performed. 
 	 * @return List<Event>
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
+	 * @throws HttpClientErrorException 
 	 * @throws InvalidDateException if the program_start_date is in invalid format.
 	 */
-	public List<Event> createOrUpdateEvent(List<Event> events);
+	public List<Event> createOrUpdateEvent(List<Event> events) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
 	
 	/**
 	 * Service to get the total number of available events count based on the user email and the user role

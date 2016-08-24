@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.EventConstants;
+import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.enumeration.EventSearchField;
 import org.srcm.heartfulness.helper.EWelcomeIDGenerationHelper;
@@ -277,11 +278,15 @@ public class ProgramServiceImpl implements ProgramService {
 	 *            against which mandatory,duplicate eventId and other
 	 *            validations are performed.
 	 * @return List<Event>
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
+	 * @throws HttpClientErrorException 
 	 * @throws InvalidDateException
 	 *             if the program_start_date is in invalid format.
 	 */
 	@Override
-	public List<Event> createOrUpdateEvent(List<Event> events) {
+	public List<Event> createOrUpdateEvent(List<Event> events) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
 		SimpleDateFormat initialsdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
 		for (Event event : events) {
 
@@ -330,53 +335,37 @@ public class ProgramServiceImpl implements ProgramService {
 				program.setOrganizationContactName(event.getOrganizationContactName());
 				program.setOrganizationContactEmail(event.getOrganizationContactEmail());
 				program.setOrganizationContactMobile(event.getOrganizationContactMobile());
-				program.setPreceptorName(event.getPreceptorName());
-				program.setPreceptorIdCardNumber(event.getPreceptorIdCardNumber());
+				
+				if(	null != event.getPreceptorIdCardNumber() && !event.getPreceptorIdCardNumber().isEmpty()){
+					AbhyasiResult result = srcmRestTemplate.getAbyasiProfile(event.getPreceptorIdCardNumber());
+					if (result.getUserProfile().length > 0) {
+						AbhyasiUserProfile userProfile = result.getUserProfile()[0];
+						if (null != userProfile) {
+							if (true == userProfile.isIs_prefect()
+									&& 0 != userProfile.getPrefect_id()) {
+								program.setAbyasiRefNo(program.getPreceptorIdCardNumber());
+								program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
+								program.setPreceptorIdCardNumber(event.getPreceptorIdCardNumber());
+								program.setPreceptorName(userProfile.getName());
+								//program.setSrcmGroup(String.valueOf(userProfile.getSrcm_group()));
+								programRepository.save(program);
+							} else {
+								errors.put("PreceptorId Card Number", "Specified PreceptorId Card Number is not authorized.");
+								event.setErrors(errors);
+							}
+						} else {
+							errors.put("PreceptorId Card Number", "Invalid PreceptorId Card Number.");
+							event.setErrors(errors);
+						}
+					}else{
+						errors.put("PreceptorId Card Number", "Invalid PreceptorId Card Number.");
+						event.setErrors(errors);
+					}
+				}
+				
 				program.setWelcomeCardSignedByName(event.getWelcomeCardSignedByName());
 				program.setWelcomeCardSignerIdCardNumber(event.getWelcomeCardSignerIdCardNumber());
 				program.setRemarks(event.getRemarks());
-
-				/*
-				 * if (null != event.getAbhyasiID() &&
-				 * !event.getAbhyasiID().isEmpty()) { try { Result result =
-				 * srcmRestTemplate.getAbyasiProfile(event.getAbhyasiID()); if
-				 * (result.getUserProfile().length > 0) { UserProfile
-				 * userProfile = result.getUserProfile()[0]; if (null !=
-				 * userProfile) { if (true == userProfile.isIs_prefect() && 0 !=
-				 * userProfile.getPrefect_id()) {
-				 * program.setAbyasiRefNo(event.getAbhyasiID());
-				 * program.setPrefectId
-				 * (String.valueOf(userProfile.getPrefect_id()));
-				 * program.setSrcmGroup
-				 * (String.valueOf(userProfile.getSrcm_group())); if (null ==
-				 * event.getCoordinatorEmail() ||
-				 * event.getCoordinatorEmail().isEmpty()) {
-				 * program.setCoordinatorEmail(userProfile.getUser_email()); }
-				 * if (null == event.getCoordinatorName() ||
-				 * event.getCoordinatorName().isEmpty()) {
-				 * program.setCoordinatorName(userProfile.getName()); } if (null
-				 * == event.getCoordinatorMobile() ||
-				 * event.getCoordinatorMobile().isEmpty()) { if (null !=
-				 * userProfile.getMobile() &&
-				 * !userProfile.getMobile().isEmpty()) {
-				 * program.setCoordinatorMobile(userProfile.getMobile()); } else
-				 * if (null != userProfile.getMobile2() &&
-				 * !userProfile.getMobile2().isEmpty()) {
-				 * program.setCoordinatorMobile(userProfile.getMobile2()); }
-				 * else if (null != userProfile.getPhone() &&
-				 * !userProfile.getPhone().isEmpty()) {
-				 * program.setCoordinatorMobile(userProfile.getPhone()); } else
-				 * if (null != userProfile.getPhone2() &&
-				 * !userProfile.getPhone2().isEmpty()) {
-				 * program.setCoordinatorMobile(userProfile.getPhone2()); } } }
-				 * else { errors.put("abhyasi_ID", "Invalid abhyasiID");
-				 * event.setErrors(errors); } } } else {
-				 * errors.put("abhyasi_ID", "Invalid abhyasiID");
-				 * event.setErrors(errors); } } catch (HttpClientErrorException
-				 * | IOException e) { e.printStackTrace();
-				 * errors.put("abhyasi_ID", "Invalid abhyasiID");
-				 * event.setErrors(errors); } }
-				 */
 
 				if (errors.isEmpty()) {
 					Program persistedPgrm = programRepository.saveProgram(program);
