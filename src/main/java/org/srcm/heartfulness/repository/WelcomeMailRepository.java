@@ -3,6 +3,7 @@ package org.srcm.heartfulness.repository;
 import java.util.List;
 import java.util.Map;
 
+import org.srcm.heartfulness.model.CoordinatorEmail;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
@@ -200,4 +201,8 @@ public interface WelcomeMailRepository {
 	int checkForMailIdInWelcomeLog(String email);
 
 	void updateVerificationStatus(String email, int status);
+	
+	Map<CoordinatorEmail, List<Participant>> getGeneratedEwelcomeIdDetails();
+
+	int updateEwelcomeIDInformedStatus(String key);
 }

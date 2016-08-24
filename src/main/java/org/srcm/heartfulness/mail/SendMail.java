@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.model.CoordinatorEmail;
+import org.srcm.heartfulness.model.Participant;
 
 import com.sun.mail.smtp.SMTPMessage;
 
@@ -63,6 +64,8 @@ public class SendMail {
 	private String crdntrmailsubject;
 	private String crdntrmailtemplatename;
 	private String frommail;
+	private String crdntrewlcomeidmailtemplatename;
+	private String crdntrmailforewlcmidsubject;
 
 
 	public String getUsername() {
@@ -216,6 +219,22 @@ public class SendMail {
 	public void setFrommail(String frommail) {
 		this.frommail = frommail;
 	}
+	
+	public String getCrdntrewlcomeidmailtemplatename() {
+		return crdntrewlcomeidmailtemplatename;
+	}
+
+	public void setCrdntrewlcomeidmailtemplatename(String crdntrewlcomeidmailtemplatename) {
+		this.crdntrewlcomeidmailtemplatename = crdntrewlcomeidmailtemplatename;
+	}
+
+	public String getCrdntrmailforewlcmidsubject() {
+		return crdntrmailforewlcmidsubject;
+	}
+
+	public void setCrdntrmailforewlcmidsubject(String crdntrmailforewlcmidsubject) {
+		this.crdntrmailforewlcmidsubject = crdntrmailforewlcmidsubject;
+	}
 
 	@Autowired
 	private AESEncryptDecrypt aesEncryptDecrypt;
@@ -294,7 +313,7 @@ public class SendMail {
 		String[] name = printName.split(" ");
 		if (name.length > 0) {
 			for (int i = 0; i < name.length; i++) {
-				if (name[i].length() > 2) {
+				if (name[i].length() > 2 && !name[i].equalsIgnoreCase("mrs") && !name[i].equalsIgnoreCase("smt")) {
 					return name[i].substring(0, 1).toUpperCase() + name[i].substring(1).toLowerCase();
 				}
 			}
@@ -420,5 +439,62 @@ public class SendMail {
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
 		Transport.send(message);
+	}
+	
+	public void sendGeneratedEwelcomeIdDetailslToCoordinator(CoordinatorEmail coordinatorEmail,
+			List<Participant> participants) throws AddressException, MessagingException, UnsupportedEncodingException {
+		try {
+			Properties props = System.getProperties();
+			props.put("mail.debug", "true");
+			props.put("mail.smtp.host",hostname);
+			props.put("mail.smtp.port",port);
+			props.put("mail.smtp.ssl.enable", "true");
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");
+
+			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
+				}
+			});
+
+			addParameter("COORDINATOR_NAME", coordinatorEmail.getCoordinatorName()!=null?getName(coordinatorEmail.getCoordinatorName()) : "");
+			addParameter("EVENT_NAME", coordinatorEmail.getEventName()!=null?coordinatorEmail.getEventName() : "");
+			StringBuilder sb = new StringBuilder();
+			int i = 1;
+			for (Participant participant : participants) {
+				sb.append("<tr><td>");
+				sb.append(i++);
+				sb.append("</td><td>");
+				sb.append(participant.getPrintName()!=null?participant.getPrintName() : "");
+				sb.append("</td><td>");
+				sb.append(participant.getEmail()!=null?participant.getEmail() : "");
+				sb.append("</td><td>");
+				sb.append(participant.getWelcomeCardNumber()!=null?participant.getWelcomeCardNumber() : "");
+				sb.append("</td></tr>");
+			}
+			addParameter("PARTICIPANTS_DETAILS", sb.toString());
+			System.out.println(" co ord details - " + coordinatorEmail.getEventName() + "--"
+					+ coordinatorEmail.getCoordinatorEmail());
+			System.out.println("PARTICIPANTS_DETAILS " + sb.toString());
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.DATE, -1);
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+			// addParameter("DATE", sdf.format(cal.getTime()));
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail,name));
+			message.addRecipients(Message.RecipientType.TO,
+					InternetAddress.parse(coordinatorEmail.getCoordinatorEmail()));
+			message.setSubject(crdntrmailforewlcmidsubject+" "+coordinatorEmail.getEventName());
+			message.setContent(getMessageContentbyTemplateName(crdntrewlcomeidmailtemplatename), "text/html");
+			message.setAllow8bitMIME(true);
+			message.setSentDate(new Date());
+			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+			Transport.send(message);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

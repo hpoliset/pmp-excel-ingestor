@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.mail.MessagingException;
@@ -158,18 +159,14 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	 * @return the salitatetd print name
 	 */
 	private String getName(String printName) {
-		if(null!=printName && !printName.isEmpty()){
-			printName = printName.replace(".", " ");
-			String[] name = printName.split(" ");
-			if (name.length > 0) {
-				for (int i = 0; i < name.length; i++) {
-					if (name[i].length() > 2) {
-						return name[i].substring(0, 1).toUpperCase() + name[i].substring(1);
-					}
+		printName = printName.replace(".", " ");
+		String[] name = printName.split(" ");
+		if (name.length > 0) {
+			for (int i = 0; i < name.length; i++) {
+				if (name[i].length() > 2 && !name[i].equalsIgnoreCase("mrs") && !name[i].equalsIgnoreCase("smt")) {
+					return name[i].substring(0, 1).toUpperCase() + name[i].substring(1).toLowerCase();
 				}
 			}
-		}else{
-			return "Friend";
 		}
 		return printName;
 	}
@@ -325,4 +322,60 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
             LOGGER.debug("EXCEPTION        :Failed to get the list of coordinators");
         }
     }
+	
+	@Override
+	public void getGeneratedEwelcomeIdAndSendToCoordinators() {
+
+        LOGGER.debug("Fetching co-ordinator details and e-welcomeID details.");
+        List<CoordinatorEmail> coordinatorEmails = new ArrayList<>();
+        List<Integer> listOfParticipantId = new ArrayList<>();
+        try{
+            Map<CoordinatorEmail, List<Participant>> eWelcomeIdDetails = welcomeMailRepository.getGeneratedEwelcomeIdDetails();
+            LOGGER.debug("Count of coordinators to send email - "+eWelcomeIdDetails.size());
+            if(!eWelcomeIdDetails.isEmpty()){
+                for(Entry<CoordinatorEmail, List<Participant>> map:eWelcomeIdDetails.entrySet()){
+                	//System.out.println("Iterating for - "+map.getKey().getCoordinatorEmail());
+                    if(null != map.getKey()){
+                            if(map.getKey().getCoordinatorEmail()!=null && !map.getKey().getCoordinatorEmail().isEmpty()){
+                                try{
+                                    CoordinatorEmail coordinatorEmail = new CoordinatorEmail();
+                                    coordinatorEmail.setEventName(map.getKey().getEventName());
+                                    coordinatorEmail.setCoordinatorName(map.getKey().getCoordinatorName());
+                                    coordinatorEmail.setCoordinatorEmail(map.getKey().getCoordinatorEmail());
+                                    
+                                    sendEmailNotification.sendGeneratedEwelcomeIdDetailslToCoordinator(coordinatorEmail,map.getValue());
+                                    for(Participant participant : map.getValue()){
+                                    	listOfParticipantId.add(participant.getId());
+                                    	//System.out.println("participant id "+participant.getId()+" inserted");
+                                    }
+                                    LOGGER.debug("E-mail sent to - "+map.getKey().getCoordinatorEmail());
+                                }catch(Exception ex){
+                                    LOGGER.debug("EXCEPTION - Failed to sent mail to" + map.getValue().get(3));
+                                    LOGGER.debug("ADDRESS_EXCEPTION - Looking for next coordinator if available");
+                                }
+                            }else{
+                            	LOGGER.debug("Coordinator email is empty. Hence email not triggered for the programID : "+map.getKey().getProgramId());
+                            }
+                    }
+                    try {
+						if (listOfParticipantId!=null && listOfParticipantId.size()>0) {
+							for (Integer id : listOfParticipantId) {
+								welcomeMailRepository.updateEwelcomeIDInformedStatus(id.toString());
+							}
+							LOGGER.debug("Details updated to participant table for {} participants." ,listOfParticipantId.size());
+						}
+					} catch (Exception e) {
+						LOGGER.debug("Error while updating the database for participant- "+e.getMessage());
+					}
+                }
+                LOGGER.debug("Completed sending eWelcome ID email notifications to the coordinator list.");
+            }else{
+                LOGGER.debug("No new e-welcome ID generated for participants.");
+            }
+        }catch(EmptyResultDataAccessException ex){
+            LOGGER.debug("EmptyResultDataAccessException - No new e-welcome ID generated for participants."+ex.getMessage());
+        }catch(Exception ex){
+            LOGGER.debug("Exception while processing - "+ex.getMessage());
+        }
+	}
 }

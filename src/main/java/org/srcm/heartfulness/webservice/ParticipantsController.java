@@ -434,8 +434,8 @@ public class ParticipantsController {
 				if (!map.isEmpty()) {
 					return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
 				} else {
-					List<UpdateIntroductionResponse> result = new ArrayList<UpdateIntroductionResponse>();
-					for (ParticipantRequest participant : participantRequest.getParticipantIds()) {
+					List<UpdateIntroductionResponse> result =participantService.introduceParticipants(participantRequest);
+					/*for (ParticipantRequest participant : participantRequest.getParticipantIds()) {
 						String eWelcomeID = null;
 						if (null == participant.getSeqId() || participant.getSeqId().isEmpty()) {
 							description = new ArrayList<String>();
@@ -499,33 +499,45 @@ public class ParticipantsController {
 									result.add(response);
 								}
 							} catch (HttpClientErrorException e) {
-
-								description = new ArrayList<String>();
-								ObjectMapper mapper = new ObjectMapper();
-								EWelcomeIDErrorResponse eWelcomeIDErrorResponse = mapper.readValue(
-										e.getResponseBodyAsString(), EWelcomeIDErrorResponse.class);
-								if ((null != eWelcomeIDErrorResponse.getEmail() && !eWelcomeIDErrorResponse.getEmail()
-										.isEmpty())) {
-									description.add(eWelcomeIDErrorResponse.getEmail().get(0));
+								try{
+									description = new ArrayList<String>();
+									ObjectMapper mapper = new ObjectMapper();
+									EWelcomeIDErrorResponse eWelcomeIDErrorResponse = mapper.readValue(
+											e.getResponseBodyAsString(), EWelcomeIDErrorResponse.class);
+									if ((null != eWelcomeIDErrorResponse.getEmail() && !eWelcomeIDErrorResponse.getEmail()
+											.isEmpty())) {
+										description.add(eWelcomeIDErrorResponse.getEmail().get(0));
+									}
+									if ((null != eWelcomeIDErrorResponse.getValidation() && !eWelcomeIDErrorResponse
+											.getValidation().isEmpty())) {
+										description.add(eWelcomeIDErrorResponse.getValidation().get(0));
+									}
+									if ((null != eWelcomeIDErrorResponse.getError() && !eWelcomeIDErrorResponse.getError()
+											.isEmpty())) {
+										description.add(eWelcomeIDErrorResponse.getError());
+									}
+									if (description.isEmpty()) {
+										description.add(e.getResponseBodyAsString());
+									}
+									UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+											participant.getSeqId(),participantInput.getPrintName(), ErrorConstants.STATUS_FAILED, description);
+									result.add(response);
+									
+								}catch (JsonMappingException ex) {
+									//ex.printStackTrace();
+									System.out.println(ex.getMessage());
+									description = new ArrayList<String>();
+									int startIndex = ex.getMessage().lastIndexOf("[") + 3;
+									int endIndex = ex.getMessage().lastIndexOf("]");
+									description.add(ex.getLocalizedMessage().substring(startIndex, endIndex));
+									UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+											participant.getSeqId(),participantInput.getPrintName(), ErrorConstants.STATUS_FAILED, description);
+									result.add(response);
 								}
-								if ((null != eWelcomeIDErrorResponse.getValidation() && !eWelcomeIDErrorResponse
-										.getValidation().isEmpty())) {
-									description.add(eWelcomeIDErrorResponse.getValidation().get(0));
-								}
-								if ((null != eWelcomeIDErrorResponse.getError() && !eWelcomeIDErrorResponse.getError()
-										.isEmpty())) {
-									description.add(eWelcomeIDErrorResponse.getError());
-								}
-								if (description.isEmpty()) {
-									description.add(e.getResponseBodyAsString());
-								}
-								UpdateIntroductionResponse response = new UpdateIntroductionResponse(
-										participant.getSeqId(),participantInput.getPrintName(), ErrorConstants.STATUS_FAILED, description);
-								result.add(response);
 							}
 
 						}
-					}
+					}*/
 					return new ResponseEntity<List<UpdateIntroductionResponse>>(result, HttpStatus.OK);
 				}
 			}

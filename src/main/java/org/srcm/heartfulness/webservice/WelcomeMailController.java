@@ -88,4 +88,18 @@ public class WelcomeMailController {
 		LOGGER.debug("END		:Cron job completed to fetch participants to whom welcome mail already sent");
 	}
 	
+	
+	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	/*@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}")*/
+	public String sendGeneratedEwelcomeIdToCoordinators() {
+		try {
+			LOGGER.debug("Sending mail to co-ordinator for e-welcome id generation called.");
+			WelcomeMailService.getGeneratedEwelcomeIdAndSendToCoordinators();
+			return "completed";
+		} catch (Exception e) {
+			LOGGER.error("Exception while sending file - {} " + e.getMessage());
+			return "Exception";
+		}
+	}
+	
 }

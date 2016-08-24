@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.srcm.heartfulness.model.CoordinatorEmail;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
@@ -488,5 +489,48 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		this.namedParameterJdbcTemplate
 		.update("UPDATE participant SET is_email_verified=:isEmailVerified,is_valid_email=:isValidEmail WHERE email=:email",
 				params);
+	}
+	
+	@Override
+	public Map<CoordinatorEmail, List<Participant>> getGeneratedEwelcomeIdDetails() {
+
+		return this.jdbcTemplate.query(
+				"SELECT p.program_channel,p.coordinator_name,p.coordinator_email,p.program_id,pr.print_name,pr.email,pr.welcome_card_number,pr.id FROM program p,participant pr"
+						+	" WHERE p.program_id = pr.program_id"
+						+	" AND pr.is_ewelcome_id_informed = 0",
+						new Object[] {}, new ResultSetExtractor<Map<CoordinatorEmail, List<Participant>>>() {
+							@Override
+							public Map<CoordinatorEmail, List<Participant>> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+								Map<CoordinatorEmail, List<Participant>> eWelcomeIdDetails = new HashMap<CoordinatorEmail, List<Participant>>();
+								while(resultSet.next()) {
+									CoordinatorEmail coordinatorEmail = new CoordinatorEmail();
+									Participant participant = new Participant();
+									coordinatorEmail.setEventName(resultSet.getString(1));
+									coordinatorEmail.setCoordinatorName(resultSet.getString(2));
+									coordinatorEmail.setCoordinatorEmail(resultSet.getString(3));
+									coordinatorEmail.setProgramId(resultSet.getString(4));
+									participant.setPrintName(resultSet.getString(5));
+									participant.setEmail(resultSet.getString(6));
+									participant.setWelcomeCardNumber(resultSet.getString(7));
+									participant.setId(Integer.parseInt(resultSet.getString(8)));
+									
+									if(eWelcomeIdDetails.containsKey(coordinatorEmail)){
+										eWelcomeIdDetails.get(coordinatorEmail).add(participant);
+									}else{
+										List<Participant> participants = new ArrayList<Participant>();
+										participants.add(participant);
+										eWelcomeIdDetails.put(coordinatorEmail, participants);
+									}
+								}
+								return eWelcomeIdDetails;
+							}
+						});
+	}
+
+	@Override
+	public int updateEwelcomeIDInformedStatus(String Id) {
+
+		return this.jdbcTemplate.update("UPDATE participant SET is_ewelcome_id_informed = 1 "
+				+  " WHERE id=? ", new Object[] {Id});
 	}
 }
