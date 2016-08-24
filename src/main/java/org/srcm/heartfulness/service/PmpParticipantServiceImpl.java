@@ -133,8 +133,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					.equalsIgnoreCase(participantRequest.getThirdSitting())) ? 1 : 0);
 			participant.setWelcomeCardNumber((null != participantRequest.geteWelcomeID() && !participantRequest
 					.geteWelcomeID().isEmpty()) ? participantRequest.geteWelcomeID() : null);
-			participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
-					.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
+		
+			participant.setCreatedSource("DASHBOARD");
 		} else {
 			participant = findBySeqId(participantRequest);
 			participant.setPrintName(participantRequest.getPrintName());
