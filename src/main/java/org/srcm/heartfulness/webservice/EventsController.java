@@ -636,7 +636,7 @@ public class EventsController {
 	 *         comment.
 	 */
 	@RequestMapping(value = "/geteventcountbycategory", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> getCount(@RequestHeader(value = "Authorization") String token,
+	public ResponseEntity<?> geteventCountByCategory(@RequestHeader(value = "Authorization") String token,
 			@Context HttpServletRequest httpRequest) throws ParseException {
 		String requestTime = DateUtils.getCurrentTimeInMilliSec();
 		UserProfile userProfile = null;
@@ -726,7 +726,8 @@ public class EventsController {
 		UserProfile userProfile = null;
 		try {
 			List<Event> eventList = new ArrayList<>();
-			if (null == eventDashboardValidator.validateToken(token)) {
+			userProfile=eventDashboardValidator.validateToken(token);
+			if (null == userProfile) {
 				ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
 				apiAccessLogService.createLogDetails((null == userProfile ? null : userProfile.getEmail()),
 						httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
