@@ -834,13 +834,14 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	 * @param introduced
 	 */
 	@Override
-	public void UpdateParticipantsStatus(String participantIds, String eventId, String introduced) {
+	public void UpdateParticipantsStatus(String participantIds, String eventId, String introduced,String userEmailID) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("introduced", PMPConstants.REQUIRED_YES.equalsIgnoreCase(introduced) ? 1 : 0);
+		params.put("introducedBy", userEmailID);
 		params.put("programId", getProgramIdByEventId(eventId));
 		params.put("seqId", participantIds);
 		this.namedParameterJdbcTemplate.update(
-				"UPDATE participant SET introduced=:introduced WHERE program_id=:programId AND seqId=:seqId ", params);
+				"UPDATE participant SET introduced=:introduced,introduced_by=:introducedBy WHERE program_id=:programId AND seqId=:seqId ", params);
 
 	}
 

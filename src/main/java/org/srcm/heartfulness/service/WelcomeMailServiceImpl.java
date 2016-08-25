@@ -211,7 +211,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		participants = welcomeMailRepository.getParticipantsToSendWelcomeEmails();
 		int validEmailSubscribersCount = 0;
 		StringBuilder sb = new StringBuilder();
-		LOGGER.debug("partcipant size {}" + participants.size());
+		LOGGER.debug("Total partcipant size {}" + participants.size());
 		if (null != participants && participants.size() >= 1) {
 			for (Participant participant : participants) {
 				if (null != participant.getEmail() && !participant.getEmail().isEmpty()
@@ -230,7 +230,8 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 					subscriberList.add(sendySubscriber);
 				}
 			}
-			LOGGER.debug("Valid email count- " + validEmailSubscribersCount);
+			LOGGER.debug("{} participants already received welcome mail.",participants.size()-validEmailSubscribersCount);
+			LOGGER.debug("{} new participants." + validEmailSubscribersCount);
 			if(validEmailSubscribersCount>0){
 				FileOutputStream fop = new FileOutputStream(welcomeMailidsLocalFilepath + currentDate + "_"
 						+ welcomeMailidsFileName);
@@ -326,7 +327,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	@Override
 	public void getGeneratedEwelcomeIdAndSendToCoordinators() {
 
-        LOGGER.debug("Fetching co-ordinator details and e-welcomeID details.");
+        LOGGER.debug("Fetching co-ordinator details and e-welcomeID details..!");
         List<CoordinatorEmail> coordinatorEmails = new ArrayList<>();
         List<Integer> listOfParticipantId = new ArrayList<>();
         try{

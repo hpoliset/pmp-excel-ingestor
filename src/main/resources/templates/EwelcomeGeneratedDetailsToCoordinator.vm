@@ -13,6 +13,8 @@ Dear ${COORDINATOR_NAME},
 <td style=" width: 2%;" align=middle><b>S.No</b></td>
 <td style=" width: 25%;" align=middle><b>Participant Name</b></td>
 <td style=" width: 25%;" align=middle><b>Participant mail ID</b></td>
+<td style=" width: 20%;" align=middle><b>Mobile</b>
+</td>
 <td style=" width: 20%;" align=middle><b>e-welcome ID</b></td>
 </tr>
 ${PARTICIPANTS_DETAILS}

@@ -1,8 +1,10 @@
 package org.srcm.heartfulness.webservice;
 
+import java.text.ParseException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.srcm.heartfulness.model.json.request.SubscriptionRequest;
 import org.srcm.heartfulness.model.json.response.Response;
+import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.SubscriptionService;
+import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.validator.SubscriptionValidator;
 
 /**
@@ -36,6 +40,9 @@ public class SubscriptionController {
 	@Autowired
 	private SubscriptionValidator subscriptionValidator;
 
+	@Autowired
+	APIAccessLogService apiAccessLogService;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionController.class);
 
 	/**
@@ -51,13 +58,22 @@ public class SubscriptionController {
 	 */
 	@RequestMapping(value = "/unsubscribemail", method = RequestMethod.POST)
 	public ResponseEntity<?> unSubscribeToMailAlerts(HttpServletRequest request, Model model,
-			@RequestBody SubscriptionRequest subscriptionRequest) {
+			@RequestBody SubscriptionRequest subscriptionRequest, @Context HttpServletRequest httpRequest)
+			throws ParseException {
+		String requestTime = DateUtils.getCurrentTimeInMilliSec();
 		LOGGER.debug("Unsubcribe user called.");
 		Map<String, String> map = subscriptionValidator.checkMandatoryFieldsinSubscriptionRequest(subscriptionRequest);
 		if (!map.isEmpty()) {
+			apiAccessLogService.createLogDetails(
+					(null == subscriptionRequest.getMailID() ? null : subscriptionRequest.getMailID()),
+					httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
 			return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
 		} else {
-			Response response = subscriptionService.unsubscribe(subscriptionRequest.getMailID(),subscriptionRequest.getName());
+			Response response = subscriptionService.unsubscribe(subscriptionRequest.getMailID(),
+					subscriptionRequest.getName());
+			apiAccessLogService.createLogDetails(
+					(null == subscriptionRequest.getMailID() ? null : subscriptionRequest.getMailID()),
+					httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
 		}
 	}
@@ -73,13 +89,21 @@ public class SubscriptionController {
 	 * @return
 	 */
 	@RequestMapping(value = "/subscribemail", method = RequestMethod.POST)
-	public ResponseEntity<?> subscribeToMailAlerts(@RequestBody SubscriptionRequest subscriptionRequest) {
+	public ResponseEntity<?> subscribeToMailAlerts(@RequestBody SubscriptionRequest subscriptionRequest,
+			@Context HttpServletRequest httpRequest) throws ParseException {
+		String requestTime = DateUtils.getCurrentTimeInMilliSec();
 		LOGGER.debug("subcribe user called.");
 		Map<String, String> map = subscriptionValidator.checkMandatoryFieldsinSubscriptionRequest(subscriptionRequest);
 		if (!map.isEmpty()) {
+			apiAccessLogService.createLogDetails(
+					(null == subscriptionRequest.getMailID() ? null : subscriptionRequest.getMailID()),
+					httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
 			return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
 		} else {
 			Response response = subscriptionService.subscribetoMailAlerts(subscriptionRequest);
+			apiAccessLogService.createLogDetails(
+					(null == subscriptionRequest.getMailID() ? null : subscriptionRequest.getMailID()),
+					httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
 		}
 	}

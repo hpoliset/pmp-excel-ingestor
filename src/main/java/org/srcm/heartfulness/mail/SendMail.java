@@ -470,6 +470,8 @@ public class SendMail {
 				sb.append("</td><td>");
 				sb.append(participant.getEmail()!=null?participant.getEmail() : "");
 				sb.append("</td><td>");
+				sb.append(participant.getMobilePhone()!=null?participant.getMobilePhone() : "");
+				sb.append("</td><td>");
 				sb.append(participant.getWelcomeCardNumber()!=null?participant.getWelcomeCardNumber() : "");
 				sb.append("</td></tr>");
 			}

@@ -70,7 +70,7 @@ public interface PmpParticipantService {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public List<UpdateIntroductionResponse> introduceParticipants(ParticipantIntroductionRequest participantRequest) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException ;
+	public List<UpdateIntroductionResponse> introduceParticipants(ParticipantIntroductionRequest participantRequest,String userEmailID) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException ;
 
 	public List<UpdateIntroductionResponse> deleteparticipantsBySeqID(ParticipantIntroductionRequest participantRequest,String userEmailID);
 

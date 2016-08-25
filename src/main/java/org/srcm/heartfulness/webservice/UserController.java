@@ -1,6 +1,10 @@
 package org.srcm.heartfulness.webservice;
 
 import java.io.IOException;
+import java.text.ParseException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -19,7 +23,9 @@ import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.UserProfile;
+import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.UserProfileService;
+import org.srcm.heartfulness.util.DateUtils;
 
 /**
  * 
@@ -39,20 +45,26 @@ public class UserController {
 	@Autowired
 	Environment env;
 
+	@Autowired
+	APIAccessLogService apiAccessLogService;
+
 	/**
-	 * Method to get the user profile from the MySRCM and persists user details in
-	 * PMP DB, if the user details is not available in PMP.
+	 * Method to get the user profile from the MySRCM and persists user details
+	 * in PMP DB, if the user details is not available in PMP.
 	 * 
 	 * @param accessToken
 	 * @param request
 	 * @return
 	 */
 	@RequestMapping(value = "/user", method = RequestMethod.GET)
-	public ResponseEntity<?> getUserProfile(@RequestHeader(value = "Authorization") String token) {
+	public ResponseEntity<?> getUserProfile(@RequestHeader(value = "Authorization") String token,
+			@Context HttpServletRequest httpRequest) throws ParseException {
+		String requestTime=DateUtils.getCurrentTimeInMilliSec();
+		UserProfile srcmProfile=null;
 		try {
 			Result result = userProfileService.getUserProfile(encryptDecryptAES.decrypt(token,
 					env.getProperty("security.encrypt.token")));
-			UserProfile srcmProfile = result.getUserProfile()[0];
+			srcmProfile = result.getUserProfile()[0];
 			User user = userProfileService.loadUserByEmail(srcmProfile.getEmail());
 			if (null == user) {
 				user = new User();
@@ -64,18 +76,26 @@ public class UserController {
 				userProfileService.save(user);
 			}
 			user.setMembershipId(String.valueOf(user.getAbyasiId()));
+			apiAccessLogService.createLogDetails((null == srcmProfile ? null : srcmProfile.getEmail()),
+					httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
+			apiAccessLogService.createLogDetails((null == srcmProfile ? null : srcmProfile.getEmail()),
+					httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
 			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
 		} catch (IOException e) {
 			ErrorResponse error = new ErrorResponse("Please try after some time.", "IOException occured.");
+			apiAccessLogService.createLogDetails((null == srcmProfile ? null : srcmProfile.getEmail()),
+					httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.REQUEST_TIMEOUT);
 		} catch (Exception e) {
 			ErrorResponse error = new ErrorResponse("Please try after some time.", e.getMessage());
+			apiAccessLogService.createLogDetails((null == srcmProfile ? null : srcmProfile.getEmail()),
+					httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
+
 	/**
 	 * Method to update the user details in PMP.
 	 * 
@@ -89,11 +109,14 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<?> updateUser(@PathVariable int id, @RequestBody User user,
-			@RequestHeader(value = "Authorization") String token) {
+			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest)
+			throws ParseException {
+		String requestTime=DateUtils.getCurrentTimeInMilliSec();
+		UserProfile srcmProfile=null;
 		try {
 			Result result = userProfileService.getUserProfile(encryptDecryptAES.decrypt(token,
 					env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
-			UserProfile srcmProfile = result.getUserProfile()[0];
+			srcmProfile = result.getUserProfile()[0];
 			User pmpUser = userProfileService.loadUserByEmail(srcmProfile.getEmail());
 			if (pmpUser != null && id == pmpUser.getId()) {
 				if (id == pmpUser.getId()) {
@@ -102,18 +125,25 @@ public class UserController {
 					userProfileService.save(user);
 				}
 			}
+			apiAccessLogService.createLogDetails((null == srcmProfile ? null : srcmProfile.getEmail()),
+					httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
+			apiAccessLogService.createLogDetails((null == srcmProfile ? null : srcmProfile.getEmail()),
+					httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
 			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
 		} catch (IOException e) {
+			apiAccessLogService.createLogDetails((null == srcmProfile ? null : srcmProfile.getEmail()),
+					httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
 			ErrorResponse error = new ErrorResponse("Please try after some time.", "IOException occured.");
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.REQUEST_TIMEOUT);
 		} catch (Exception e) {
+			apiAccessLogService.createLogDetails((null == srcmProfile ? null : srcmProfile.getEmail()),
+					httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
 			ErrorResponse error = new ErrorResponse("Please try after some time.", e.getMessage());
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
-
 
 }

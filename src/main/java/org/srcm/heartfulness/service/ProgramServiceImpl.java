@@ -440,8 +440,8 @@ public class ProgramServiceImpl implements ProgramService {
 	 * @param introduced
 	 */
 	@Override
-	public void UpdateParticipantsStatus(String participantIds, String eventId, String introduced) {
-		programRepository.UpdateParticipantsStatus(participantIds, eventId, introduced);
+	public void UpdateParticipantsStatus(String participantIds, String eventId, String introduced,String userEmailID) {
+		programRepository.UpdateParticipantsStatus(participantIds, eventId, introduced,userEmailID);
 	}
 
 	/**

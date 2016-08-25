@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.User;
-import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
 import org.srcm.heartfulness.model.json.response.Result;
-import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
 import org.srcm.heartfulness.repository.UserRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
 
@@ -45,15 +43,6 @@ public class UserProfileServiceImpl implements UserProfileService {
 	@Override
 	public User loadUserByEmail(String email) {
 		return userRepository.findByEmail(email);
-	}
-
-	/**
-	 * method to validate the user with srcm
-	 */
-	@Override
-	public SrcmAuthenticationResponse ValidateLogin(AuthenticationRequest authenticationRequest)
-			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
-		return srcmRest.authenticate(authenticationRequest);
 	}
 
 	/**
