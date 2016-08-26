@@ -63,7 +63,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 	public Result getUserProfile(String accessToken, int id)
 			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException, ParseException {
 		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.GET_USER_PROFILE,
-				DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		int accessdetailsID = apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
 		accessLogDetails.setId(accessdetailsID);
 		Result result = srcmRest.getUserProfile(accessToken);

@@ -5,7 +5,7 @@ CREATE TABLE pmp_api_access_log (
   api_name varchar(255) DEFAULT NULL,  
   total_requested_time varchar(50) DEFAULT NULL,
   total_response_time varchar(50) DEFAULT NULL,
-  status varchar(25) DEFAULT NULL,
+  status varchar(25) DEFAULT 'Failed',
   error_message varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -15,7 +15,7 @@ CREATE TABLE pmp_api_access_log_details (
     endpoint varchar(255) DEFAULT NULL,
     requested_time varchar(50) DEFAULT NULL,
     response_time varchar(50) DEFAULT NULL,
-    status varchar(25) DEFAULT NULL,
+    status varchar(25) DEFAULT'Failed',
     error_message varchar(500) DEFAULT NULL,
     CONSTRAINT `pmp_api_access_log_fk` FOREIGN KEY (`pmp_access_log_id`) REFERENCES `pmp_api_access_log`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -63,7 +63,7 @@ public class SubscriptionController {
 			@RequestBody SubscriptionRequest subscriptionRequest, @Context HttpServletRequest httpRequest)
 			throws ParseException {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(subscriptionRequest.getMailID(), httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		LOGGER.debug("Unsubcribe user called.");
 		Map<String, String> map = subscriptionValidator.checkMandatoryFieldsinSubscriptionRequest(subscriptionRequest);
@@ -98,7 +98,7 @@ public class SubscriptionController {
 			@Context HttpServletRequest httpRequest) throws ParseException {
 		LOGGER.debug("subcribe user called.");
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(subscriptionRequest.getMailID(), httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		Map<String, String> map = subscriptionValidator.checkMandatoryFieldsinSubscriptionRequest(subscriptionRequest);
 		if (!map.isEmpty()) {

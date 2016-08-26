@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.helper.AuthorizationHelper;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
@@ -69,29 +70,41 @@ public class AuthenticationController {
 	@RequestMapping(value = "authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest, HttpSession session,
 			ModelMap model, @Context HttpServletRequest httpRequest) throws ParseException {
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(authenticationRequest.getUsername(), httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		try {
 			LOGGER.debug("Trying to Authenticate :  {}", authenticationRequest.getUsername());
 			SrcmAuthenticationResponse authenticationResponse = authenticationService.validateLogin(
 					authenticationRequest, session, id);
 			model.addAttribute("Auth", session.getAttribute("Authentication"));
+			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<SrcmAuthenticationResponse>(authenticationResponse, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
 			LOGGER.error("Error occured while authenticating :{}", authenticationRequest.getUsername(), e);
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage(e.getResponseBodyAsString());
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			ErrorResponse error = new ErrorResponse("Invalid Credentials.", "");
-
 			return new ResponseEntity<ErrorResponse>(error, e.getStatusCode());
 		} catch (IOException e) {
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage("Input-Output Exception");
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			LOGGER.error("Error occured while authenticating :{}", authenticationRequest.getUsername(), e);
 			ErrorResponse error = new ErrorResponse("Please try after some time.", "");
-
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
 		} catch (Exception e) {
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage("Internal server error");
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			LOGGER.error("Error occured while authenticating :{}", authenticationRequest.getUsername(), e);
 			ErrorResponse error = new ErrorResponse("Please try after some time.", "Server Connection time out");
-
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

@@ -56,7 +56,7 @@ public class EWelcomeIDGenerationHelper {
 		
 		
 		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.GEOSEARCH_URI,
-				DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
 		GeoSearchResponse geoSearchResponse = srcmRestTemplate.geoSearch(participant.getCity() + ","
 				+ participant.getState() + "," + participant.getCountry());
@@ -66,7 +66,7 @@ public class EWelcomeIDGenerationHelper {
 		
 		
 		PMPAPIAccessLogDetails citiesAPIAccessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.CITIES_API,
-				DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		apiAccessLogService.createPmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 		CitiesAPIResponse citiesAPIResponse = srcmRestTemplate.getCityName(geoSearchResponse.getCityId());
 		citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -102,7 +102,7 @@ public class EWelcomeIDGenerationHelper {
 				.getAddressLine2() : null);
 		
 		PMPAPIAccessLogDetails aspirantAPIAccessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.CREATE_ASPIRANT_URI,
-				DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		apiAccessLogService.createPmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 		UserProfile userProfile = srcmRestTemplate.createAspirant(aspirant);
 		aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());

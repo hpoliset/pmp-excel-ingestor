@@ -342,7 +342,7 @@ public class ProgramServiceImpl implements ProgramService {
 				program.setOrganizationContactMobile(event.getOrganizationContactMobile());
 				
 				if(	null != event.getPreceptorIdCardNumber() && !event.getPreceptorIdCardNumber().isEmpty()){
-					accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.ABHYASI_INFO_URI,DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+					accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.ABHYASI_INFO_URI,DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 					int accessdetailsID = apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
 					accessLogDetails.setId(accessdetailsID);
 					AbhyasiResult result = srcmRestTemplate.getAbyasiProfile(event.getPreceptorIdCardNumber());
@@ -734,7 +734,7 @@ public class ProgramServiceImpl implements ProgramService {
 								return "Preceptor ID is required for the Event";
 							} else {
 								PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.ABHYASI_INFO_URI,
-										DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+										DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 								int accessdetailsID = apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
 								accessLogDetails.setId(accessdetailsID);
 								AbhyasiResult result = srcmRestTemplate.getAbyasiProfile(participant.getProgram()

@@ -29,7 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:dev.sms.gateway.properties", ignoreUnknownFields = false, prefix = "gateway")
+@ConfigurationProperties(locations = "classpath:prod.sms.gateway.properties", ignoreUnknownFields = false, prefix = "gateway")
 public class SmsGatewayRestTemplate extends RestTemplate {
 
 	private String username;
@@ -120,19 +120,21 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 	 */
 	private void setProxy() {
 
-	/*	CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
-				new UsernamePasswordCredentials(proxyUser, proxyPassword));
-		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-		clientBuilder.useSystemProperties();
-		clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
-		clientBuilder.setDefaultCredentialsProvider(credsProvider);
-		clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-		CloseableHttpClient client = clientBuilder.build();
-		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-		factory.setHttpClient(client);
-		this.setRequestFactory(factory);
-*/
+		/*
+		 * CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		 * credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST,
+		 * AuthScope.ANY_PORT), new UsernamePasswordCredentials(proxyUser,
+		 * proxyPassword)); HttpClientBuilder clientBuilder =
+		 * HttpClientBuilder.create(); clientBuilder.useSystemProperties();
+		 * clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
+		 * clientBuilder.setDefaultCredentialsProvider(credsProvider);
+		 * clientBuilder.setProxyAuthenticationStrategy(new
+		 * ProxyAuthenticationStrategy()); CloseableHttpClient client =
+		 * clientBuilder.build(); HttpComponentsClientHttpRequestFactory factory
+		 * = new HttpComponentsClientHttpRequestFactory();
+		 * factory.setHttpClient(client); this.setRequestFactory(factory);
+		 */
+
 	}
 
 	public void setUsername(String username) {

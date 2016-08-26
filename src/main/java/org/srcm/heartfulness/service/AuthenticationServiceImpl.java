@@ -53,7 +53,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	@Override
 	public SrcmAuthenticationResponse validateLogin(AuthenticationRequest authenticationRequest, HttpSession session, int id)
 			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException, ParseException {
-		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.AUTHENTICATION_TOKEN_URL,DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.AUTHENTICATION_TOKEN_URL,DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		int accessdetailsID = apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
 		accessLogDetails.setId(accessdetailsID);
 		SrcmAuthenticationResponse authenticationResponse = srcmRest.authenticate(authenticationRequest);

@@ -90,7 +90,7 @@ public class EventsController {
 	@RequestMapping(value = "/geteventdetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getEventDetails(@RequestHeader(value = "Authorization") String token,
 			@RequestBody Event event, @Context HttpServletRequest httpRequest) throws ParseException {
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,null,null);
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,ErrorConstants.STATUS_FAILED,null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile userProfile = null;
 		try {
@@ -208,7 +208,7 @@ public class EventsController {
 	@RequestMapping(value = "/geteventlist", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getEventList(@RequestHeader(value = "Authorization") String token,
 			@Context HttpServletRequest httpRequest) throws ParseException {
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,null,null);
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,ErrorConstants.STATUS_FAILED,null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		List<Event> eventList = new ArrayList<>();
 		boolean isAdmin = false;
@@ -325,7 +325,7 @@ public class EventsController {
 	public ResponseEntity<?> createProgram(@RequestBody Event event,
 			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest)
 			throws ParseException {
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,null,null);
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,ErrorConstants.STATUS_FAILED,null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile userProfile = null;
 		try {
@@ -428,7 +428,7 @@ public class EventsController {
 	public ResponseEntity<?> updateProgram(@RequestBody Event event,
 			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest)
 			throws ParseException {
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,null,null);
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,ErrorConstants.STATUS_FAILED,null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile userProfile = null;
 		try {
@@ -544,7 +544,7 @@ public class EventsController {
 	public ResponseEntity<?> updatePrograms(@RequestBody List<Event> events,
 			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest)
 			throws ParseException {
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,null,null);
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,ErrorConstants.STATUS_FAILED,null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile userProfile = null;
 		try {
@@ -644,7 +644,7 @@ public class EventsController {
 	public ResponseEntity<?> updateEventAdmin(@RequestHeader(value = "Authorization") String token,
 			@RequestBody EventAdminChangeRequest eventAdminChangeRequest, @Context HttpServletRequest httpRequest)
 			throws ParseException {
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,null,null);
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,ErrorConstants.STATUS_FAILED,null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile userProfile = null;
 		try {
@@ -744,7 +744,7 @@ public class EventsController {
 	@RequestMapping(value = "/geteventcountbycategory", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> geteventCountByCategory(@RequestHeader(value = "Authorization") String token,
 			@Context HttpServletRequest httpRequest) throws ParseException {
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,null,null);
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,ErrorConstants.STATUS_FAILED,null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile userProfile = null;
 		try {
@@ -845,7 +845,7 @@ public class EventsController {
 	@RequestMapping(value = "/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> searchEvents(@RequestHeader(value = "Authorization") String token,
 			@RequestBody SearchRequest searchRequest, @Context HttpServletRequest httpRequest) throws ParseException {
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,null,null);
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,ErrorConstants.STATUS_FAILED,null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile userProfile = null;
 		try {
@@ -924,7 +924,7 @@ public class EventsController {
 	@RequestMapping(value = "/fetcheventdetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getEventDetailsWithDecryptedID(@RequestHeader(value = "Authorization") String token,
 			@RequestBody Event event, @Context HttpServletRequest httpRequest) throws ParseException {
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,null,null);
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,ErrorConstants.STATUS_FAILED,null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile userProfile = null;
 		try {

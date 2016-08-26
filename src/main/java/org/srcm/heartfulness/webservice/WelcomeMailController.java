@@ -1,29 +1,18 @@
 package org.srcm.heartfulness.webservice;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.mail.SendMail;
-import org.srcm.heartfulness.model.Coordinator;
-import org.srcm.heartfulness.model.CoordinatorEmail;
-import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
 import org.srcm.heartfulness.service.WelcomeMailService;
 
 /**
@@ -37,7 +26,7 @@ public class WelcomeMailController {
 
 	@Autowired
 	private WelcomeMailService WelcomeMailService;
-	
+
 	@Autowired
 	private SendMail sendMail;
 
@@ -65,7 +54,7 @@ public class WelcomeMailController {
 		}
 	}
 
-	/* @Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") */
+	@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") 
 	public void uploadDailyWelcomeMailidsToFTP() {
 		try {
 			LOGGER.debug("Upload File to FTP called.");
@@ -81,25 +70,21 @@ public class WelcomeMailController {
 	 * about the participants who have received welcome emails.It is a crob job
 	 * running at a scheduled time.
 	 */
-	/* @Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}") */
+	@Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}") 
 	public void sendEmailToCoordinator() {
 		LOGGER.debug("START		:Cron job started to fetch participants to whom welcome mail already sent");
 		WelcomeMailService.getCoordinatorListAndSendMail();
 		LOGGER.debug("END		:Cron job completed to fetch participants to whom welcome mail already sent");
 	}
-	
-	
-	@RequestMapping(value = "/test", method = RequestMethod.GET)
-	/*@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}")*/
-	public String sendGeneratedEwelcomeIdToCoordinators() {
+
+	@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}") 
+	public void sendGeneratedEwelcomeIdToCoordinators() {
 		try {
 			LOGGER.debug("Sending mail to co-ordinator for e-welcome id generation called.");
 			WelcomeMailService.getGeneratedEwelcomeIdAndSendToCoordinators();
-			return "completed";
 		} catch (Exception e) {
 			LOGGER.error("Exception while sending file - {} " + e.getMessage());
-			return "Exception";
 		}
 	}
-	
+
 }

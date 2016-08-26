@@ -61,7 +61,7 @@ public class UserController {
 	@RequestMapping(value = "/user", method = RequestMethod.GET)
 	public ResponseEntity<?> getUserProfile(@RequestHeader(value = "Authorization") String token,
 			@Context HttpServletRequest httpRequest) throws ParseException {
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,null,null);
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,ErrorConstants.STATUS_FAILED,null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile srcmProfile=null;
 		try {
@@ -122,7 +122,7 @@ public class UserController {
 	public ResponseEntity<?> updateUser(@PathVariable int id, @RequestBody User user,
 			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest)
 			throws ParseException {
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,null,null);
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,ErrorConstants.STATUS_FAILED,null);
 		int accesslogId = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile srcmProfile=null;
 		try {

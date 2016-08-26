@@ -95,7 +95,7 @@ public class ParticipantsController {
 			@RequestBody(required = true) Event event, @Context HttpServletRequest httpRequest) throws ParseException {
 		LOGGER.debug("Fetching participant List.... " + DateUtils.getCurrentTimeInMilliSec());
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile userProfile = null;
 		List<ParticipantRequest> participantList = new ArrayList<ParticipantRequest>();
@@ -196,7 +196,7 @@ public class ParticipantsController {
 			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest)
 			throws ParseException {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile userProfile = null;
 		try {
@@ -303,7 +303,7 @@ public class ParticipantsController {
 			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest)
 			throws ParseException {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile userProfile = null;
 		try {
@@ -394,7 +394,7 @@ public class ParticipantsController {
 			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest)
 			throws ParseException {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile userProfile = null;
 		try {
@@ -487,7 +487,7 @@ public class ParticipantsController {
 			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest)
 			throws ParseException {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile userProfile = null;
 		try {
@@ -591,7 +591,7 @@ public class ParticipantsController {
 			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest)
 			throws ParseException {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile userProfile = null;
 		try {
@@ -690,7 +690,7 @@ public class ParticipantsController {
 	public ResponseEntity<?> searchEvents(@RequestHeader(value = "Authorization") String token,
 			@RequestBody SearchRequest searchRequest, @Context HttpServletRequest httpRequest) throws ParseException {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile userProfile = null;
 		try {
