@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.EventConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
@@ -64,7 +65,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	 * @return
 	 */
 	@Override
-	public Map<String, String> checkPartcicipantMandatoryFields(ParticipantRequest participant) {
+	public Map<String, String> checkParticicipantMandatoryFields(ParticipantRequest participant) {
 		Map<String, String> errors = new HashMap<>();
 		if (null == participant.getEventId()) {
 			errors.put("eventId", "program ID is required");
@@ -263,13 +264,14 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	 *             while parsing json data.
 	 * @throws JsonMappingException
 	 * @throws IOException
+	 * @throws ParseException
 	 */
 	@Override
-	public UserProfile validateToken(String token) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException, IllegalBlockSizeException, NumberFormatException, BadPaddingException {
-		System.out.println(token);
-		Result result = userProfileService.getUserProfile(encryptDecryptAES.decrypt(token,
-				env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
+	public UserProfile validateToken(String token, int id) throws HttpClientErrorException, JsonParseException,
+			JsonMappingException, IOException, IllegalBlockSizeException, NumberFormatException, BadPaddingException,
+			ParseException {
+		Result result = userProfileService.getUserProfile(
+				encryptDecryptAES.decrypt(token, env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)), id);
 		return result.getUserProfile()[0];
 	}
 
@@ -314,15 +316,30 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if (null == participantInput.getProgram().getProgramStartDate()) {
 			errors.add("Program start date is required.");
 		}
-		
-		if((null == participantInput.getFirstSittingDate() )  && (null == participantInput.getFirstSitting() || 0 == participantInput.getFirstSitting())){
+
+		if ((null == participantInput.getFirstSittingDate())
+				&& (null == participantInput.getFirstSitting() || 0 == participantInput.getFirstSitting())) {
 			errors.add("Participant not completed his first sitting.");
 		}
-		if((null == participantInput.getSecondSittingDate())  && (null == participantInput.getSecondSitting() || 0 == participantInput.getSecondSitting())){
+		if ((null == participantInput.getSecondSittingDate())
+				&& (null == participantInput.getSecondSitting() || 0 == participantInput.getSecondSitting())) {
 			errors.add("Participant not completed his second sitting.");
 		}
-		if((null == participantInput.getThirdSittingDate() )  && (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())){
+		if ((null == participantInput.getThirdSittingDate())
+				&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())) {
 			errors.add("Participant not completed his third sitting.");
+		}
+		return errors;
+	}
+
+	@Override
+	public Map<String, String> checkUpdateParticicipantMandatoryFields(ParticipantRequest participant) {
+		Map<String, String> errors = new HashMap<String, String>();
+		if (null == participant.getPrintName() || participant.getPrintName().isEmpty()) {
+			errors.put(ErrorConstants.STATUS_FAILED, "print name is required ");
+		}
+		if (null == participant.getSeqId() || participant.getSeqId().isEmpty()) {
+			errors.put(ErrorConstants.STATUS_FAILED, "SeqID is required ");
 		}
 		return errors;
 	}

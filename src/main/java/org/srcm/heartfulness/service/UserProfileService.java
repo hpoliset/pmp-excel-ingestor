@@ -1,6 +1,7 @@
 package org.srcm.heartfulness.service;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.User;
@@ -29,15 +30,17 @@ public interface UserProfileService {
 	 * method to get the user profile from MYSRCM
 	 * 
 	 * @param token
+	 * @param id 
 	 * @return Result object
 	 * @throws IOException
 	 * @throws JsonMappingException
 	 * @throws JsonParseException
 	 * @throws HttpClientErrorException
+	 * @throws ParseException 
 	 * @throws Exception
 	 */
-	Result getUserProfile(String token) throws HttpClientErrorException, JsonParseException, JsonMappingException,
-			IOException;
+	Result getUserProfile(String token, int id) throws HttpClientErrorException, JsonParseException, JsonMappingException,
+			IOException, ParseException;
 
 	/**
 	 * method to retrieve <code>User</code> from the data store by email.

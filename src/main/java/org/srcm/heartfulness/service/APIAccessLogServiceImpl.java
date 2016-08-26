@@ -1,12 +1,10 @@
 package org.srcm.heartfulness.service;
 
-import java.text.ParseException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.srcm.heartfulness.model.APIAccessLogDetails;
+import org.srcm.heartfulness.model.PMPAPIAccessLog;
+import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 import org.srcm.heartfulness.repository.APIAccesslogRepository;
-import org.srcm.heartfulness.util.DateUtils;
 
 @Service
 public class APIAccessLogServiceImpl implements APIAccessLogService {
@@ -14,20 +12,53 @@ public class APIAccessLogServiceImpl implements APIAccessLogService {
 	@Autowired
 	APIAccesslogRepository apiAccesslogRepository;
 
+	/**
+	 * Service to persist the API request and response
+	 * information<PMPAPIAccessLog> in the DB.
+	 * 
+	 * @param accessLog
+	 * @return accessLogId
+	 */
 	@Override
-	public void saveAccessLogData(APIAccessLogDetails logDetails) {
-		apiAccesslogRepository.saveAccessLogData(logDetails);
+	public int createPmpAPIAccessLog(PMPAPIAccessLog accessLog) {
+		return apiAccesslogRepository.createOrUpdatePmpAPIAccessLog(accessLog);
 	}
 
+	/**
+	 * Service to persist the MySRCM API request and response information
+	 * <PMPAPIAccessLog> in the DB.
+	 * 
+	 * @param accessLog
+	 * @return accessLogId
+	 */
 	@Override
-	public void createLogDetails(String username, String ipAddress, String apiName, String requestTime) throws ParseException {
-		APIAccessLogDetails logDetails = new APIAccessLogDetails();
-		logDetails.setRequestTime(requestTime);
-		logDetails.setApiName(apiName);
-		logDetails.setIpAddress(ipAddress);
-		logDetails.setUsername(username);
-		logDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-		saveAccessLogData(logDetails);
+	public int createPmpAPIAccesslogDetails(PMPAPIAccessLogDetails accessLogDetails) {
+		return apiAccesslogRepository.createOrUpdatePmpAPIAccesslogDetails(accessLogDetails);
+	}
+
+	/**
+	 * Service to update the PMP API request and response information
+	 * <PMPAPIAccessLog> in the DB.
+	 * 
+	 * @param accessLog
+	 * @return accessLogDetailsId
+	 */
+	@Override
+	public void updatePmpAPIAccessLog(PMPAPIAccessLog accessLog) {
+		apiAccesslogRepository.createOrUpdatePmpAPIAccessLog(accessLog);
+
+	}
+
+	/**
+	 * Service to update the MySRCM API request and response information
+	 * <PMPAPIAccessLog> in the DB.
+	 * 
+	 * @param accessLog
+	 * @return accessLogDetailsId
+	 */
+	@Override
+	public void updatePmpAPIAccesslogDetails(PMPAPIAccessLogDetails accessLogDetails) {
+		apiAccesslogRepository.createOrUpdatePmpAPIAccesslogDetails(accessLogDetails);
 	}
 
 }

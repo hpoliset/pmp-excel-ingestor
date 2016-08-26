@@ -1,6 +1,7 @@
 package org.srcm.heartfulness.validator;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public interface EventDashboardValidator {
 	 * @param participant
 	 * @return
 	 */
-	public Map<String, String> checkPartcicipantMandatoryFields(ParticipantRequest participant);
+	public Map<String, String> checkParticicipantMandatoryFields(ParticipantRequest participant);
 
 	/**
 	 * Method to validate the values given in
@@ -76,9 +77,10 @@ public interface EventDashboardValidator {
 	 *             while parsing JSON data.
 	 * @throws JsonMappingException
 	 * @throws IOException
+	 * @throws ParseException 
 	 */
-	public UserProfile validateToken(String token) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException, IllegalBlockSizeException, NumberFormatException, BadPaddingException;
+	public UserProfile validateToken(String token,int id) throws HttpClientErrorException, JsonParseException,
+			JsonMappingException, IOException, IllegalBlockSizeException, NumberFormatException, BadPaddingException, ParseException;
 
 	/**
 	 * Method to validate the values given in ParticipantIntroductionRequest
@@ -90,5 +92,7 @@ public interface EventDashboardValidator {
 	public Map<String, String> checkDeleteRequestMandatoryFields(ParticipantIntroductionRequest participantRequest);
 
 	public List<String> checkParticipantIntroductionMandatoryFields(Participant participantInput);
+
+	public Map<String, String> checkUpdateParticicipantMandatoryFields(ParticipantRequest participant);
 
 }

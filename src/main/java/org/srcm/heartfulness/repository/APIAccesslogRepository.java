@@ -3,8 +3,8 @@
  */
 package org.srcm.heartfulness.repository;
 
-import org.springframework.stereotype.Repository;
-import org.srcm.heartfulness.model.APIAccessLogDetails;
+import org.srcm.heartfulness.model.PMPAPIAccessLog;
+import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 
 /**
  * @author himasreev
@@ -13,6 +13,8 @@ import org.srcm.heartfulness.model.APIAccessLogDetails;
 
 public interface APIAccesslogRepository {
 
-	void saveAccessLogData(APIAccessLogDetails logDetails);
+	int createOrUpdatePmpAPIAccessLog(PMPAPIAccessLog accessLog);
+	
+	int createOrUpdatePmpAPIAccesslogDetails(PMPAPIAccessLogDetails accessLogDetails);
 
 }

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.srcm.heartfulness.constants.ErrorConstants;
+import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.json.request.SubscriptionRequest;
 import org.srcm.heartfulness.model.json.response.Response;
 import org.srcm.heartfulness.service.APIAccessLogService;
@@ -60,20 +62,23 @@ public class SubscriptionController {
 	public ResponseEntity<?> unSubscribeToMailAlerts(HttpServletRequest request, Model model,
 			@RequestBody SubscriptionRequest subscriptionRequest, @Context HttpServletRequest httpRequest)
 			throws ParseException {
-		String requestTime = DateUtils.getCurrentTimeInMilliSec();
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(subscriptionRequest.getMailID(), httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
+				DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		LOGGER.debug("Unsubcribe user called.");
 		Map<String, String> map = subscriptionValidator.checkMandatoryFieldsinSubscriptionRequest(subscriptionRequest);
 		if (!map.isEmpty()) {
-			apiAccessLogService.createLogDetails(
-					(null == subscriptionRequest.getMailID() ? null : subscriptionRequest.getMailID()),
-					httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage(map.toString());
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
 		} else {
 			Response response = subscriptionService.unsubscribe(subscriptionRequest.getMailID(),
 					subscriptionRequest.getName());
-			apiAccessLogService.createLogDetails(
-					(null == subscriptionRequest.getMailID() ? null : subscriptionRequest.getMailID()),
-					httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
+			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
 		}
 	}
@@ -91,19 +96,22 @@ public class SubscriptionController {
 	@RequestMapping(value = "/subscribemail", method = RequestMethod.POST)
 	public ResponseEntity<?> subscribeToMailAlerts(@RequestBody SubscriptionRequest subscriptionRequest,
 			@Context HttpServletRequest httpRequest) throws ParseException {
-		String requestTime = DateUtils.getCurrentTimeInMilliSec();
 		LOGGER.debug("subcribe user called.");
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(subscriptionRequest.getMailID(), httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
+				DateUtils.getCurrentTimeInMilliSec(), null, null, null);
+		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		Map<String, String> map = subscriptionValidator.checkMandatoryFieldsinSubscriptionRequest(subscriptionRequest);
 		if (!map.isEmpty()) {
-			apiAccessLogService.createLogDetails(
-					(null == subscriptionRequest.getMailID() ? null : subscriptionRequest.getMailID()),
-					httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage(map.toString());
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
 		} else {
 			Response response = subscriptionService.subscribetoMailAlerts(subscriptionRequest);
-			apiAccessLogService.createLogDetails(
-					(null == subscriptionRequest.getMailID() ? null : subscriptionRequest.getMailID()),
-					httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), requestTime);
+			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
 		}
 	}

@@ -451,8 +451,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	}
 
 	@Override
-	public List<UpdateIntroductionResponse> introduceParticipants(ParticipantIntroductionRequest participantRequest,String userEmailID)
-			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
+	public List<UpdateIntroductionResponse> introduceParticipants(ParticipantIntroductionRequest participantRequest,String userEmailID, int id)
+			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException, ParseException {
 		List<UpdateIntroductionResponse> result = new ArrayList<UpdateIntroductionResponse>();
 		List<String> description = null;
 		for (ParticipantRequest participant : participantRequest.getParticipantIds()) {
@@ -492,7 +492,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 									ErrorConstants.STATUS_FAILED, errorResult);
 							result.add(response);
 						} else {
-							eWelcomeID = programService.generateeWelcomeID(participantInput);
+							eWelcomeID = programService.generateeWelcomeID(participantInput,id);
 							if ("success".equalsIgnoreCase(eWelcomeID)) {
 								programService.UpdateParticipantsStatus(participant.getSeqId(),
 										participantRequest.getEventId(), participantRequest.getIntroduced(),userEmailID);
@@ -585,7 +585,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				description.add("Participant deleted successfully");
 				programService.updateDeletedParticipant(deletedParticipant, userEmailID);
 				UpdateIntroductionResponse response = new UpdateIntroductionResponse(
-						participant.getSeqId(), participant.getPrintName(), ErrorConstants.STATUS_SUCCESS,
+						participant.getSeqId(), deletedParticipant.getPrintName(), ErrorConstants.STATUS_SUCCESS,
 						description);
 				result.add(response);
 			}

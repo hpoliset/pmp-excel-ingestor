@@ -62,16 +62,24 @@ public interface PmpParticipantService {
 	public Participant findBySeqId(ParticipantRequest participantRequest);
 
 	/**
-	 * Service to update the participants in
+	 * Service to update the participants and generate eWelcomeID by calling MySRCM API.
 	 * @param participantRequest
+	 * @param id 
 	 * @return
 	 * @throws HttpClientErrorException
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
+	 * @throws ParseException 
 	 */
-	public List<UpdateIntroductionResponse> introduceParticipants(ParticipantIntroductionRequest participantRequest,String userEmailID) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException ;
+	public List<UpdateIntroductionResponse> introduceParticipants(ParticipantIntroductionRequest participantRequest,String userEmailID, int id) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException, ParseException ;
 
+	/**
+	 * Service to delete the participants from the Heartfulness backend.
+	 * @param participantRequest
+	 * @param userEmailID
+	 * @return List <code>UpdateIntroductionResponse</code>
+	 */
 	public List<UpdateIntroductionResponse> deleteparticipantsBySeqID(ParticipantIntroductionRequest participantRequest,String userEmailID);
 
 }

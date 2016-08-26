@@ -1,6 +1,7 @@
 package org.srcm.heartfulness.service;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 import javax.servlet.http.HttpSession;
 
@@ -19,14 +20,16 @@ public interface AuthenticationService {
 	 * 
 	 * @param authenticationRequest
 	 * @param session 
+	 * @param id 
 	 * @param model 
 	 * @return
 	 * @throws HttpClientErrorException
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
+	 * @throws ParseException 
 	 */
-	SrcmAuthenticationResponse validateLogin(AuthenticationRequest authenticationRequest, HttpSession session)
-			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
+	SrcmAuthenticationResponse validateLogin(AuthenticationRequest authenticationRequest, HttpSession session, int id)
+			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException, ParseException;
 
 }
