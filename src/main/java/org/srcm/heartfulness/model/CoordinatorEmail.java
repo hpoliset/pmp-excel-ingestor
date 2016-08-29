@@ -20,6 +20,8 @@ public class CoordinatorEmail {
 	private String eventName;
 	
 	private String coordinatorName;
+	
+	private String programId;
 
 	public String getCoordinatorEmail() {
 		return coordinatorEmail;
@@ -69,12 +71,44 @@ public class CoordinatorEmail {
 		this.coordinatorName = coordinatorName;
 	}
 
+	public String getProgramId() {
+		return programId;
+	}
+
+	public void setProgramId(String programId) {
+		this.programId = programId;
+	}
+
 	@Override
 	public String toString() {
 		return "CoordinatorEmail [coordinatorEmail=" + coordinatorEmail + ", totalParticipantCount="
 				+ totalParticipantCount + ", pctptAlreadyRcvdWlcmMailCount=" + pctptAlreadyRcvdWlcmMailCount
 				+ ", pctptRcvdWlcmMailYstrdayCount=" + pctptRcvdWlcmMailYstrdayCount + ", eventName=" + eventName
-				+ ", coordinatorName=" + coordinatorName + "]";
+				+ ", coordinatorName=" + coordinatorName + ", programId=" + programId + "]";
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((programId == null) ? 0 : programId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CoordinatorEmail other = (CoordinatorEmail) obj;
+		if (programId == null) {
+			if (other.programId != null)
+				return false;
+		} else if (!programId.equals(other.programId))
+			return false;
+		return true;
+	}
 }

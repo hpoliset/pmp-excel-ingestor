@@ -96,6 +96,9 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 		} catch (NumberFormatException | ClassCastException | IllegalStateException e) {
 			LOGGER.error("Participant mobile phone number is not numeric, trying as string");
 			participant.setMobilePhone(phoneCell.toString());
+		}catch(Exception ex){
+			LOGGER.error("Participant mobile phone number is not numeric, trying as string");
+			participant.setMobilePhone(String.valueOf(phoneCell));
 		}
 		participant.setProfession(currentRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString());
 		if (currentRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString().equals("YES")) {

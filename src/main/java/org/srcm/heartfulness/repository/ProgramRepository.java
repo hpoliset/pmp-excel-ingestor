@@ -177,7 +177,7 @@ public interface ProgramRepository {
 	 * @param eventId
 	 * @param introduced
 	 */
-	void UpdateParticipantsStatus(String participantIds, String eventId, String introduced);
+	void UpdateParticipantsStatus(String participantIds, String eventId, String introduced,String userEmailID);
 
 	/**
 	 * gets the all the available event categories from the database

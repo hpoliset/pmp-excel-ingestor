@@ -1,5 +1,6 @@
 package org.srcm.heartfulness.service;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,13 +8,23 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.enumeration.ParticipantSearchField;
 import org.srcm.heartfulness.model.Participant;
+import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
+import org.srcm.heartfulness.model.json.response.EWelcomeIDErrorResponse;
+import org.srcm.heartfulness.model.json.response.UpdateIntroductionResponse;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
+import org.srcm.heartfulness.validator.EventDashboardValidator;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class is service Implementation for the participant related actions.
@@ -26,12 +37,15 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 
 	@Autowired
 	ParticipantRepository participantRepository;
-	
+
 	@Autowired
 	ProgramRepository programrepository;
 
 	@Autowired
 	ProgramService programService;
+
+	@Autowired
+	EventDashboardValidator eventDashboardValidator;
 
 	/**
 	 * Service to create new participant or to update the existing participant
@@ -64,8 +78,10 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 								&& participantRequest.getGender() != null && !participantRequest.getGender().isEmpty()) ? PMPConstants.GENDER_MALE
 								: PMPConstants.GENDER_FEMALE);
 			participant.setGender(participantRequest.getGender());
-			participant.setDateOfBirth(null != participantRequest.getDateOfBirth() ? sdf1.parse(sdf1.format(sdf
-					.parse(participantRequest.getDateOfBirth()))) : null);
+			participant
+					.setDateOfBirth((null != participantRequest.getDateOfBirth() && !participantRequest
+							.getDateOfBirth().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest
+							.getDateOfBirth()))) : null);
 			participant.setAddressLine1(participantRequest.getAddressLine1());
 			participant.setAddressLine2(participantRequest.getAddressLine2());
 			participant.setCity(participantRequest.getCity());
@@ -75,24 +91,66 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setIntroducedBy(participantRequest.getIntroducedBy());
 			participant.setIntroduced((null != participantRequest.getIntroducedStatus() && PMPConstants.REQUIRED_YES
 					.equalsIgnoreCase(participantRequest.getIntroducedStatus())) ? 1 : 0);
-			participant.setIntroductionDate(null != participantRequest.getIntroductionDate() ? sdf1.parse(sdf1
-					.format(sdf.parse(participantRequest.getIntroductionDate()))) : null);
+			participant.setIntroductionDate((null != participantRequest.getIntroductionDate() && !participantRequest
+					.getIntroductionDate().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest
+					.getIntroductionDate()))) : null);
+
+			if (null == participantRequest.getFirstSittingDate()) {
+				participant.setFirstSittingDate(null);
+			} else {
+				try {
+					participant.setFirstSittingDate(sdf1.parse(sdf1.format(sdf.parse(participantRequest
+							.getFirstSittingDate()))));
+				} catch (Exception e) {
+					participant.setFirstSittingDate(null);
+				}
+			}
+			if (null == participantRequest.getSecondSittingDate()) {
+				participant.setSecondSittingDate(null);
+			} else {
+				try {
+					participant.setSecondSittingDate(sdf1.parse(sdf1.format(sdf.parse(participantRequest
+							.getSecondSittingDate()))));
+				} catch (Exception e) {
+					participant.setSecondSittingDate(null);
+				}
+			}
+			if (null == participantRequest.getThirdSittingDate()) {
+				participant.setThirdSittingDate(null);
+			} else {
+				try {
+					participant.setThirdSittingDate(sdf1.parse(sdf1.format(sdf.parse(participantRequest
+							.getThirdSittingDate()))));
+				} catch (Exception e) {
+					participant.setThirdSittingDate(null);
+				}
+			}
+			participant.setFirstSitting((null != participantRequest.getFirstSitting() && "Y"
+					.equalsIgnoreCase(participantRequest.getFirstSitting())) ? 1 : 0);
+			participant.setSecondSitting((null != participantRequest.getSecondSitting() && "Y"
+					.equalsIgnoreCase(participantRequest.getSecondSitting())) ? 1 : 0);
+			participant.setThirdSitting((null != participantRequest.getThirdSitting() && "Y"
+					.equalsIgnoreCase(participantRequest.getThirdSitting())) ? 1 : 0);
+			participant.setWelcomeCardNumber((null != participantRequest.geteWelcomeID() && !participantRequest
+					.geteWelcomeID().isEmpty()) ? participantRequest.geteWelcomeID() : null);
+		
+			participant.setCreatedSource("DASHBOARD");
 		} else {
 			participant = findBySeqId(participantRequest);
 			participant.setPrintName(participantRequest.getPrintName());
 			participant.setEmail(participantRequest.getEmail());
 			participant.setMobilePhone(participantRequest.getMobilePhone());
-			if ((participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE) || participantRequest.getGender()
-					.equalsIgnoreCase(PMPConstants.FEMALE))
-					&& participantRequest.getGender() != null
-					&& !participantRequest.getGender().isEmpty())
+			if ((null != participantRequest.getGender() && !participantRequest.getGender().isEmpty() && (participantRequest
+					.getGender().equalsIgnoreCase(PMPConstants.MALE) || participantRequest.getGender()
+					.equalsIgnoreCase(PMPConstants.FEMALE))))
 				participantRequest
-						.setGender(participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE)
-								&& participantRequest.getGender() != null && !participantRequest.getGender().isEmpty() ? PMPConstants.GENDER_MALE
+						.setGender(participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE) ? PMPConstants.GENDER_MALE
 								: PMPConstants.GENDER_FEMALE);
 			participant.setGender(participantRequest.getGender());
-			participant.setDateOfBirth(null != participantRequest.getDateOfBirth() ? sdf1.parse(sdf1.format(sdf
-					.parse(participantRequest.getDateOfBirth()))) : null);
+			participant
+					.setDateOfBirth((null != participantRequest.getDateOfBirth() && !participantRequest
+							.getDateOfBirth().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest
+							.getDateOfBirth()))) : null);
 			participant.setAddressLine1(participantRequest.getAddressLine1());
 			participant.setAddressLine2(participantRequest.getAddressLine2());
 			participant.setCity(participantRequest.getCity());
@@ -102,10 +160,50 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setIntroducedBy(participantRequest.getIntroducedBy());
 			participant.setIntroduced((null != participantRequest.getIntroducedStatus() && PMPConstants.REQUIRED_YES
 					.equalsIgnoreCase(participantRequest.getIntroducedStatus())) ? 1 : 0);
-			participant.setIntroductionDate(null != participantRequest.getIntroductionDate() ? sdf1.parse(sdf1
-					.format(sdf.parse(participantRequest.getIntroductionDate()))) : null);
+			participant.setIntroductionDate((null != participantRequest.getIntroductionDate() && !participantRequest
+					.getIntroductionDate().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest
+					.getIntroductionDate()))) : null);
+			if (null == participantRequest.getFirstSittingDate()) {
+				participant.setFirstSittingDate(null);
+			} else {
+				try {
+					participant.setFirstSittingDate(sdf1.parse(sdf1.format(sdf.parse(participantRequest
+							.getFirstSittingDate()))));
+				} catch (Exception e) {
+					participant.setFirstSittingDate(null);
+				}
+			}
+			if (null == participantRequest.getSecondSittingDate()) {
+				participant.setSecondSittingDate(null);
+			} else {
+				try {
+					participant.setSecondSittingDate(sdf1.parse(sdf1.format(sdf.parse(participantRequest
+							.getSecondSittingDate()))));
+				} catch (Exception e) {
+					participant.setSecondSittingDate(null);
+				}
+			}
+			if (null == participantRequest.getThirdSittingDate()) {
+				participant.setThirdSittingDate(null);
+			} else {
+				try {
+					participant.setThirdSittingDate(sdf1.parse(sdf1.format(sdf.parse(participantRequest
+							.getThirdSittingDate()))));
+				} catch (Exception e) {
+					participant.setThirdSittingDate(null);
+				}
+			}
+			participant.setFirstSitting((null != participantRequest.getFirstSitting() && "Y"
+					.equalsIgnoreCase(participantRequest.getFirstSitting())) ? 1 : 0);
+			participant.setSecondSitting((null != participantRequest.getSecondSitting() && "Y"
+					.equalsIgnoreCase(participantRequest.getSecondSitting())) ? 1 : 0);
+			participant.setThirdSitting((null != participantRequest.getThirdSitting() && "Y"
+					.equalsIgnoreCase(participantRequest.getThirdSitting())) ? 1 : 0);
+			participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
+					.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
 		}
 		participantRepository.save(participant);
+		System.out.println(participant.toString());
 		participantRequest.setSeqId(participant.getSeqId());
 		participantRequest.setPrintName(participant.getPrintName());
 		participantRequest.setEmail(participant.getEmail());
@@ -119,8 +217,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participantRequest.setGender(participant.getGender());
 		}
 
-		participantRequest.setDateOfBirth(null != participant.getDateOfBirth() ? sdf.format(participant
-				.getDateOfBirth()) : null);
+		participantRequest.setDateOfBirth((null != participant.getDateOfBirth() && !participantRequest.getDateOfBirth()
+				.isEmpty()) ? sdf.format(participant.getDateOfBirth()) : null);
 		participantRequest.setAddressLine1(participant.getAddressLine1());
 		participantRequest.setAddressLine2(participant.getAddressLine2());
 		participantRequest.setCity(participant.getCity());
@@ -128,10 +226,48 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 		participantRequest.setCountry(participant.getCountry());
 		participantRequest.setIntroducedStatus(0 != participant.getIntroduced() ? PMPConstants.REQUIRED_YES
 				: PMPConstants.REQUIRED_NO);
-		participantRequest.setIntroductionDate(null != participantRequest.getIntroductionDate() ? sdf
-				.format(participant.getIntroductionDate()) : null);
+		participantRequest.setIntroductionDate((null != participantRequest.getIntroductionDate() && !participantRequest
+				.getIntroductionDate().isEmpty()) ? sdf.format(participant.getIntroductionDate()) : null);
 		participantRequest.setAbhyasiId(participant.getAbhyasiId());
 		participantRequest.setIntroducedBy(participant.getIntroducedBy());
+		if (null == participant.getFirstSittingDate()) {
+			participantRequest.setFirstSittingDate("");
+		} else {
+			try {
+				participantRequest.setFirstSittingDate(sdf.format(participant.getFirstSittingDate()));
+			} catch (Exception e) {
+				participantRequest.setFirstSittingDate("");
+			}
+		}
+		if (null == participant.getSecondSittingDate()) {
+			participantRequest.setSecondSittingDate("");
+		} else {
+			try {
+				participantRequest.setSecondSittingDate(sdf.format(participant.getSecondSittingDate()));
+			} catch (Exception e) {
+				participantRequest.setSecondSittingDate("");
+			}
+		}
+		if (null == participant.getThirdSittingDate()) {
+			participantRequest.setThirdSittingDate("");
+		} else {
+			try {
+				participantRequest.setThirdSittingDate(sdf.format(participant.getThirdSittingDate()));
+			} catch (Exception e) {
+				participantRequest.setThirdSittingDate("");
+			}
+		}
+		participantRequest
+				.setFirstSitting((null != participant.getFirstSitting() && 1 == participant.getFirstSitting()) ? PMPConstants.REQUIRED_YES
+						: PMPConstants.REQUIRED_NO);
+		participantRequest.setSecondSitting((null != participant.getSecondSitting() && 1 == participant
+				.getSecondSitting()) ? PMPConstants.REQUIRED_YES : PMPConstants.REQUIRED_NO);
+		participantRequest
+				.setThirdSitting((null != participant.getThirdSitting() && 1 == participant.getThirdSitting()) ? PMPConstants.REQUIRED_YES
+						: PMPConstants.REQUIRED_NO);
+		participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
+				.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
+
 		return participantRequest;
 	}
 
@@ -145,7 +281,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	 */
 	@Override
 	public ParticipantRequest getParticipantBySeqId(ParticipantRequest participantRequest) {
-		SimpleDateFormat sdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
+		SimpleDateFormat convertedsdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
 		Participant participant = findBySeqId(participantRequest);
 		if (null != participant) {
 			participantRequest.setPrintName(participant.getPrintName());
@@ -160,7 +296,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			}
 
 			participantRequest.setGender(participant.getGender());
-			participantRequest.setDateOfBirth(null != participant.getDateOfBirth() ? sdf.format(participant
+			participantRequest.setDateOfBirth((null != participant.getDateOfBirth()) ? convertedsdf.format(participant
 					.getDateOfBirth()) : null);
 			participantRequest.setAddressLine1(participant.getAddressLine1());
 			participantRequest.setAddressLine2(participant.getAddressLine2());
@@ -169,14 +305,51 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participantRequest.setCountry(participant.getCountry());
 			participantRequest.setIntroducedStatus(0 != participant.getIntroduced() ? PMPConstants.REQUIRED_YES
 					: PMPConstants.REQUIRED_NO);
-			participantRequest.setIntroductionDate(null != participant.getIntroductionDate() ? sdf.format(participant
-					.getIntroductionDate()) : null);
+			participantRequest.setIntroductionDate((null != participant.getIntroductionDate()) ? convertedsdf
+					.format(participant.getIntroductionDate()) : null);
 			participantRequest.setAbhyasiId(participant.getAbhyasiId());
 			participantRequest.setIntroducedBy(participant.getIntroducedBy());
+			if (null == participant.getFirstSittingDate()) {
+				participantRequest.setFirstSittingDate("");
+			} else {
+				try {
+					participantRequest.setFirstSittingDate(convertedsdf.format(participant.getFirstSittingDate()));
+				} catch (Exception e) {
+					participantRequest.setFirstSittingDate("");
+				}
+			}
+			if (null == participant.getSecondSittingDate()) {
+				participantRequest.setSecondSittingDate("");
+			} else {
+				try {
+					participantRequest.setSecondSittingDate(convertedsdf.format(participant.getSecondSittingDate()));
+				} catch (Exception e) {
+					participantRequest.setSecondSittingDate("");
+				}
+			}
+			if (null == participant.getThirdSittingDate()) {
+				participantRequest.setThirdSittingDate("");
+			} else {
+				try {
+					participantRequest.setThirdSittingDate(convertedsdf.format(participant.getThirdSittingDate()));
+				} catch (Exception e) {
+					participantRequest.setThirdSittingDate("");
+				}
+			}
+			participantRequest.setFirstSitting((null != participant.getFirstSitting() && 1 == participant
+					.getFirstSitting()) ? PMPConstants.REQUIRED_YES : PMPConstants.REQUIRED_NO);
+			participantRequest.setSecondSitting((null != participant.getSecondSitting() && 1 == participant
+					.getSecondSitting()) ? PMPConstants.REQUIRED_YES : PMPConstants.REQUIRED_NO);
+			participantRequest.setThirdSitting((null != participant.getThirdSitting() && 1 == participant
+					.getThirdSitting()) ? PMPConstants.REQUIRED_YES : PMPConstants.REQUIRED_NO);
+
+			participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
+					.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
+			return participantRequest;
 		} else {
-			participantRequest = new ParticipantRequest();
+			return null;
 		}
-		return participantRequest;
+
 	}
 
 	/**
@@ -273,8 +446,151 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					participantRequest.getProgramId());
 			return newParticipant;
 		} else {
-			return new Participant();
+			return null;
 		}
+	}
+
+	@Override
+	public List<UpdateIntroductionResponse> introduceParticipants(ParticipantIntroductionRequest participantRequest,String userEmailID, int id)
+			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException, ParseException {
+		List<UpdateIntroductionResponse> result = new ArrayList<UpdateIntroductionResponse>();
+		List<String> description = null;
+		for (ParticipantRequest participant : participantRequest.getParticipantIds()) {
+			String eWelcomeID = null;
+			if (null == participant.getSeqId() || participant.getSeqId().isEmpty()) {
+				description = new ArrayList<String>();
+				description.add("Seq Id is required.");
+				UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+						participant.getSeqId(), participant.getPrintName(), ErrorConstants.STATUS_FAILED, description);
+				result.add(response);
+			} else if (0 == programService.getProgramIdByEventId(participantRequest.getEventId())) {
+				description = new ArrayList<String>();
+				description.add("Invalid eventID");
+				UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+						participantRequest.getEventId(), participant.getPrintName(), ErrorConstants.STATUS_FAILED, description);
+				result.add(response);
+			} else if (0 != programService.getProgramIdByEventId(participantRequest.getEventId())
+					&& null == programService.findParticipantBySeqId(participant.getSeqId(),
+							programService.getProgramIdByEventId(participantRequest.getEventId()))) {
+				description = new ArrayList<String>();
+				description.add("Invalid seqId");
+				UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+						participant.getSeqId(), participant.getPrintName(), ErrorConstants.STATUS_FAILED, description);
+				result.add(response);
+			} else {
+				int programID = programService.getProgramIdByEventId(participantRequest
+						.getEventId());
+				Participant participantInput = programService.findParticipantBySeqId(
+						participant.getSeqId(), programID);
+				try {
+					if ("Y".equalsIgnoreCase(participantRequest.getIntroduced())) {
+						UpdateIntroductionResponse response = null;
+						List<String> errorResult = eventDashboardValidator
+								.checkParticipantIntroductionMandatoryFields(participantInput);
+						if (!errorResult.isEmpty()) {
+							response = new UpdateIntroductionResponse(participant.getSeqId(),participantInput.getPrintName(),
+									ErrorConstants.STATUS_FAILED, errorResult);
+							result.add(response);
+						} else {
+							eWelcomeID = programService.generateeWelcomeID(participantInput,id);
+							if ("success".equalsIgnoreCase(eWelcomeID)) {
+								programService.UpdateParticipantsStatus(participant.getSeqId(),
+										participantRequest.getEventId(), participantRequest.getIntroduced(),userEmailID);
+								description = new ArrayList<String>();
+								description.add("Participant eWelcomeID : "
+										+ participantInput.getWelcomeCardNumber());
+								response = new UpdateIntroductionResponse(participant.getSeqId(),participantInput.getPrintName(),
+										ErrorConstants.STATUS_SUCCESS, description);
+							} else {
+								description = new ArrayList<String>();
+								description.add(eWelcomeID);
+								response = new UpdateIntroductionResponse(participant.getSeqId(),participantInput.getPrintName(),
+										ErrorConstants.STATUS_FAILED, description);
+							}
+							result.add(response);
+						}
+					} else {
+						programService.UpdateParticipantsStatus(participant.getSeqId(),
+								participantRequest.getEventId(), participantRequest.getIntroduced(),userEmailID);
+						description = new ArrayList<String>();
+						description.add("Participant introduced status updated successfully.");
+						UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+								participant.getSeqId(),participantInput.getPrintName(),ErrorConstants.STATUS_SUCCESS, description);
+						result.add(response);
+					}
+				} catch (HttpClientErrorException e) {
+						description = new ArrayList<String>();
+						ObjectMapper mapper = new ObjectMapper();
+						EWelcomeIDErrorResponse eWelcomeIDErrorResponse = mapper.readValue(
+								e.getResponseBodyAsString(), EWelcomeIDErrorResponse.class);
+						if ((null != eWelcomeIDErrorResponse.getEmail() && !eWelcomeIDErrorResponse.getEmail()
+								.isEmpty())) {
+							description.add(eWelcomeIDErrorResponse.getEmail().get(0));
+						}
+						if ((null != eWelcomeIDErrorResponse.getValidation() && !eWelcomeIDErrorResponse
+								.getValidation().isEmpty())) {
+							description.add(eWelcomeIDErrorResponse.getValidation().get(0));
+						}
+						if ((null != eWelcomeIDErrorResponse.getError() && !eWelcomeIDErrorResponse.getError()
+								.isEmpty())) {
+							description.add(eWelcomeIDErrorResponse.getError());
+						}
+						if (description.isEmpty()) {
+							description.add(e.getResponseBodyAsString());
+						}
+						UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+								participant.getSeqId(),participantInput.getPrintName(), ErrorConstants.STATUS_FAILED, description);
+						result.add(response);
+				}
+
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public List<UpdateIntroductionResponse> deleteparticipantsBySeqID(
+			ParticipantIntroductionRequest participantRequest, String userEmailID) {
+		List<UpdateIntroductionResponse> result = new ArrayList<UpdateIntroductionResponse>();
+		List<String> description = null;
+		for (ParticipantRequest participant : participantRequest.getParticipantIds()) {
+			if (null == participant.getSeqId() || participant.getSeqId().isEmpty()) {
+				description = new ArrayList<String>();
+				description.add("Invalid SeqID");
+				UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+						participant.getSeqId(), participant.getPrintName(), ErrorConstants.STATUS_FAILED,
+						description);
+
+				result.add(response);
+			} else if (0 == programService.getProgramIdByEventId(participantRequest.getEventId())) {
+				description = new ArrayList<String>();
+				description.add("Invalid eventID");
+				UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+						participantRequest.getEventId(), participant.getPrintName(),
+						ErrorConstants.STATUS_FAILED, description);
+				result.add(response);
+			} else if (0 != programService.getProgramIdByEventId(participantRequest.getEventId())
+					&& null == programService.findParticipantBySeqId(participant.getSeqId(),
+							programService.getProgramIdByEventId(participantRequest.getEventId()))) {
+				description = new ArrayList<String>();
+				description.add("Invalid seqId");
+				UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+						participant.getSeqId(), participant.getPrintName(), ErrorConstants.STATUS_FAILED,
+						description);
+				result.add(response);
+			} else {
+				Participant deletedParticipant = programService.deleteParticipant(participant.getSeqId(),
+						participantRequest.getEventId());
+				description = new ArrayList<String>();
+				description.add("Participant deleted successfully");
+				programService.updateDeletedParticipant(deletedParticipant, userEmailID);
+				UpdateIntroductionResponse response = new UpdateIntroductionResponse(
+						participant.getSeqId(), deletedParticipant.getPrintName(), ErrorConstants.STATUS_SUCCESS,
+						description);
+				result.add(response);
+			}
+		}
+		return result;
 	}
 
 }

@@ -52,5 +52,7 @@ public interface WelcomeMailService {
 	 * received welcome emails.
 	 */
 	public void getCoordinatorListAndSendMail();
+	
+	public void getGeneratedEwelcomeIdAndSendToCoordinators();
 
 }

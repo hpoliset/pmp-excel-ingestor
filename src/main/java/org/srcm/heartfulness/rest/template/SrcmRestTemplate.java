@@ -2,6 +2,7 @@ package org.srcm.heartfulness.rest.template;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.ParseException;
 
 import javax.validation.constraints.NotNull;
 
@@ -21,6 +22,8 @@ import org.srcm.heartfulness.constants.RestTemplateConstants;
 import org.srcm.heartfulness.model.Aspirant;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
+import org.srcm.heartfulness.model.json.response.AbhyasiResult;
+import org.srcm.heartfulness.model.json.response.CitiesAPIResponse;
 import org.srcm.heartfulness.model.json.response.GeoSearchResponse;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
@@ -31,7 +34,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * This class is template class and communicates with MySRCM by calling MySRCM API.
+ * This class is template class and communicates with MySRCM by calling MySRCM
+ * API.
  * 
  * @author HimaSree
  *
@@ -48,7 +52,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	private String userInfoUri;
 	private String createUserUri;
 	private boolean proxy = false;
-	private String proxyHost = "10.1.28.10";
+	private String proxyHost = "10.1.28.12";
 	private int proxyPort = 8080;
 	private String proxyUser = "rramesh";
 	private String proxyPassword = "123Welcome";
@@ -60,7 +64,6 @@ public class SrcmRestTemplate extends RestTemplate {
 
 	@NotNull
 	private AbyasiInfo abyasi;
-
 	/**
 	 * Class to hold the abyasi related information by reading from properties
 	 * file.
@@ -72,6 +75,8 @@ public class SrcmRestTemplate extends RestTemplate {
 		private String geosearch;
 
 		private String createAspirant;
+
+		private String citiesapi;
 
 		public String getAbyasiInfoUri() {
 			return abyasiInfoUri;
@@ -95,6 +100,14 @@ public class SrcmRestTemplate extends RestTemplate {
 
 		public void setCreateAspirant(String createAspirant) {
 			this.createAspirant = createAspirant;
+		}
+
+		public String getCitiesapi() {
+			return citiesapi;
+		}
+
+		public void setCitiesapi(String citiesapi) {
+			this.citiesapi = citiesapi;
 		}
 
 	}
@@ -139,14 +152,16 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * Method to get the user profile with token details by calling MySRCM API.
 	 * 
 	 * @param accessToken
+	 * @param id 
 	 * @return
 	 * @throws HttpClientErrorException
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
+	 * @throws ParseException 
 	 */
 	public Result getUserProfile(String accessToken) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException {
+			JsonMappingException, IOException, ParseException {
 		if (proxy)
 			setProxy();
 		MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<String, String>();
@@ -158,7 +173,6 @@ public class SrcmRestTemplate extends RestTemplate {
 		ResponseEntity<String> response = this.exchange(userInfoUri, HttpMethod.GET, httpEntity, String.class);
 		return mapper.readValue(response.getBody(), Result.class);
 	}
-
 
 	/**
 	 * Method to create the user profile in MySRCM and PMP by calling MySRCM
@@ -208,7 +222,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public Result getAbyasiProfile(String refNo) throws HttpClientErrorException, JsonParseException,
+	public AbhyasiResult getAbyasiProfile(String refNo) throws HttpClientErrorException, JsonParseException,
 			JsonMappingException, IOException {
 		if (proxy)
 			setProxy();
@@ -231,7 +245,7 @@ public class SrcmRestTemplate extends RestTemplate {
 		httpEntity = new HttpEntity<Object>(bodyParams, httpHeaders);
 		ResponseEntity<String> response = this.exchange(abyasi.abyasiInfoUri + "&ref=" + refNo, HttpMethod.GET,
 				httpEntity, String.class);
-		return mapper.readValue(response.getBody(), Result.class);
+		return mapper.readValue(response.getBody(), AbhyasiResult.class);
 	}
 
 	/**
@@ -295,6 +309,17 @@ public class SrcmRestTemplate extends RestTemplate {
 		ResponseEntity<String> Response = this.exchange(abyasi.createAspirant, HttpMethod.POST, httpEntity,
 				String.class);
 		return mapper.readValue(Response.getBody(), UserProfile.class);
+	}
+
+	public CitiesAPIResponse getCityName(int cityId) throws JsonParseException, JsonMappingException, IOException {
+		if (proxy)
+			setProxy();
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.add(RestTemplateConstants.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		HttpEntity<?> httpEntity = new HttpEntity<Object>(null, httpHeaders);
+		ResponseEntity<String> response = this.exchange(abyasi.citiesapi + cityId + "/?format=json", HttpMethod.GET,
+				httpEntity, String.class);
+		return mapper.readValue(response.getBody(), CitiesAPIResponse.class);
 	}
 
 	/**

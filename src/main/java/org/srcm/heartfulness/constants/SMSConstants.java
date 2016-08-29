@@ -93,6 +93,10 @@ public class SMSConstants {
 	
 	public static final String SMS_EWELCOME_RESPONSE_INVALID_FORMAT_2 =  " ) is not available. Please enter a valid event ID.";
 	
+	public static final String SMS_EWELCOME_RESPONSE_INVALID_FORMAT_3 =  "Abyasi ID not specified for the Event ";
+	
+	public static final String SMS_EWELCOME_RESPONSE_INVALID_FORMAT_4 =  " Abyasi ID specified for the event is invalid ";
+	
 	public static final String SMS_CREATE_PARTICIPANT_INVALID_FORMAT_1 =  "Invalid request format, please use, To create participant: ";
 	
 	public static final String SMS_CREATE_PARTICIPANT_INVALID_FORMAT_2 = " <event-ID> <participant-name> <email ID>. ";

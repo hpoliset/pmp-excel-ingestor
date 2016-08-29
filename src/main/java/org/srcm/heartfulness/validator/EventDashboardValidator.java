@@ -1,6 +1,8 @@
 package org.srcm.heartfulness.validator;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.List;
 import java.util.Map;
 
 import javax.crypto.BadPaddingException;
@@ -8,6 +10,7 @@ import javax.crypto.IllegalBlockSizeException;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
@@ -25,21 +28,28 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 public interface EventDashboardValidator {
 
 	/**
-	 * Method to validate mandatory fields in the participant request before creating participant.
+	 * Method to validate mandatory fields in the participant request before
+	 * creating participant.
+	 * 
 	 * @param participant
 	 * @return
 	 */
-	public Map<String, String> checkPartcicipantMandatoryFields(ParticipantRequest participant);
+	public Map<String, String> checkParticicipantMandatoryFields(ParticipantRequest participant);
 
 	/**
-	 * Method to validate the values given in <code>ParticipantIntroductionRequest</code> before updating introductory status.
+	 * Method to validate the values given in
+	 * <code>ParticipantIntroductionRequest</code> before updating introductory
+	 * status.
+	 * 
 	 * @param participantRequest
 	 * @return
 	 */
 	public Map<String, String> checkIntroductionRequestMandatoryFields(ParticipantIntroductionRequest participantRequest);
 
 	/**
-	 * Method to validate the values given in <code>EventAdminChangeRequest</code> before updating event admin.
+	 * Method to validate the values given in
+	 * <code>EventAdminChangeRequest</code> before updating event admin.
+	 * 
 	 * @param eventAdminChangeRequest
 	 * @return errors
 	 */
@@ -67,15 +77,22 @@ public interface EventDashboardValidator {
 	 *             while parsing JSON data.
 	 * @throws JsonMappingException
 	 * @throws IOException
+	 * @throws ParseException 
 	 */
-	public UserProfile validateToken(String token) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException, IllegalBlockSizeException, NumberFormatException, BadPaddingException;
+	public UserProfile validateToken(String token,int id) throws HttpClientErrorException, JsonParseException,
+			JsonMappingException, IOException, IllegalBlockSizeException, NumberFormatException, BadPaddingException, ParseException;
 
 	/**
-	 * Method to validate the values given in ParticipantIntroductionRequest before deleting the participant.
+	 * Method to validate the values given in ParticipantIntroductionRequest
+	 * before deleting the participant.
+	 * 
 	 * @param participantRequest
 	 * @return errors
 	 */
 	public Map<String, String> checkDeleteRequestMandatoryFields(ParticipantIntroductionRequest participantRequest);
+
+	public List<String> checkParticipantIntroductionMandatoryFields(Participant participantInput);
+
+	public Map<String, String> checkUpdateParticicipantMandatoryFields(ParticipantRequest participant);
 
 }

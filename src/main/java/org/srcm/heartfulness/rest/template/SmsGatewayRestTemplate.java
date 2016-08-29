@@ -42,7 +42,7 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 	private String DCS;
 
 	private boolean proxy = false;
-	private String proxyHost = "10.1.28.10";
+	private String proxyHost = "10.1.28.12";
 	private int proxyPort = 8080;
 	private String proxyUser = "rramesh";
 	private String proxyPassword = "123Welcome";
@@ -119,6 +119,7 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 	 * 
 	 */
 	private void setProxy() {
+
 		/*
 		 * CredentialsProvider credsProvider = new BasicCredentialsProvider();
 		 * credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST,
@@ -133,6 +134,7 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 		 * = new HttpComponentsClientHttpRequestFactory();
 		 * factory.setHttpClient(client); this.setRequestFactory(factory);
 		 */
+
 	}
 
 	public void setUsername(String username) {

@@ -167,9 +167,10 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 					+ "id_card_number=:idCardNumber," + "language=:language," + "introduction_date=:introductionDate,"
 					+ "introduced_by=:introducedBy," + "welcome_card_number=:welcomeCardNumber,"
 					+ "welcome_card_date=:welcomeCardDate," + "age_group=:ageGroup," + "upload_status=:uploadStatus,"
-					+ "first_sitting=:firstSittingTaken," + "second_sitting=:secondSittingTaken,"
-					+ "third_sitting=:thirdSittingTaken," + "first_sitting_date=:firstSittingDate, "
+					+ "first_sitting=:firstSitting," + "second_sitting=:secondSitting,"
+					+ "third_sitting=:thirdSitting," + "first_sitting_date=:firstSittingDate, "
 					+ "second_sitting_date=:secondSittingDate, " + "third_sitting_date=:thirdSittingDate, "
+					+ "is_ewelcome_id_informed=:isEwelcomeIdInformed, "
 					+ "batch=:batch, "+ "introduced=:introduced, "+"seqId=:seqId " + "WHERE id=:id", parameterSource);
 		}
 	}

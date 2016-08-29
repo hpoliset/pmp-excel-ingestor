@@ -1,11 +1,18 @@
 package org.srcm.heartfulness.service;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
+import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.Participant;
+import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
+import org.srcm.heartfulness.model.json.response.UpdateIntroductionResponse;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
  * This class is service provider for the participant related actions.
@@ -53,5 +60,26 @@ public interface PmpParticipantService {
 	 * @return <code>Participant</code>
 	 */
 	public Participant findBySeqId(ParticipantRequest participantRequest);
+
+	/**
+	 * Service to update the participants and generate eWelcomeID by calling MySRCM API.
+	 * @param participantRequest
+	 * @param id 
+	 * @return
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 * @throws ParseException 
+	 */
+	public List<UpdateIntroductionResponse> introduceParticipants(ParticipantIntroductionRequest participantRequest,String userEmailID, int id) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException, ParseException ;
+
+	/**
+	 * Service to delete the participants from the Heartfulness backend.
+	 * @param participantRequest
+	 * @param userEmailID
+	 * @return List <code>UpdateIntroductionResponse</code>
+	 */
+	public List<UpdateIntroductionResponse> deleteparticipantsBySeqID(ParticipantIntroductionRequest participantRequest,String userEmailID);
 
 }
