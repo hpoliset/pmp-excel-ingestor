@@ -41,9 +41,9 @@ public class Participant {
 	private String batch;
 	private int receiveUpdates;
 	private String printName;
-	private int firstSittingTaken;
-	private int secondSittingTaken;
-	private int thirdSittingTaken;
+	private Integer firstSitting;
+	private Integer secondSitting;
+	private Integer thirdSitting;
 	private String profession;
 	private String department;
 	private String language;
@@ -57,6 +57,7 @@ public class Participant {
 	private String createdSource;
 
 	private int isCoOrdinatorInformed;
+	private Integer isEwelcomeIdInformed;
 	
 	public String getCreatedSource() {
 		return createdSource;
@@ -350,17 +351,7 @@ public class Participant {
 		return printName;
 	}
 
-	public int getFirstSittingTaken() {
-		return firstSittingTaken;
-	}
-
-	public int getSecondSittingTaken() {
-		return secondSittingTaken;
-	}
-
-	public int getThirdSittingTaken() {
-		return thirdSittingTaken;
-	}
+	
 
 	public String getProfession() {
 		return profession;
@@ -378,18 +369,7 @@ public class Participant {
 		this.printName = printName;
 	}
 
-	public void setFirstSittingTaken(int firstSittingTaken) {
-		this.firstSittingTaken = firstSittingTaken;
-	}
-
-	public void setSecondSittingTaken(int secondSittingTaken) {
-		this.secondSittingTaken = secondSittingTaken;
-	}
-
-	public void setThirdSittingTaken(int thirdSittingTaken) {
-		this.thirdSittingTaken = thirdSittingTaken;
-	}
-
+	
 	public void setProfession(String profession) {
 		this.profession = profession;
 	}
@@ -426,5 +406,37 @@ public class Participant {
 	public void setIsCoOrdinatorInformed(int isCoOrdinatorInformed) {
 		this.isCoOrdinatorInformed = isCoOrdinatorInformed;
 	}
-	
+
+	public Integer getFirstSitting() {
+		return firstSitting;
+	}
+
+	public void setFirstSitting(Integer firstSitting) {
+		this.firstSitting = firstSitting;
+	}
+
+	public Integer getSecondSitting() {
+		return secondSitting;
+	}
+
+	public void setSecondSitting(Integer secondSitting) {
+		this.secondSitting = secondSitting;
+	}
+
+	public Integer getThirdSitting() {
+		return thirdSitting;
+	}
+
+	public void setThirdSitting(Integer thirdSitting) {
+		this.thirdSitting = thirdSitting;
+	}
+
+	public Integer getIsEwelcomeIdInformed() {
+		return isEwelcomeIdInformed;
+	}
+
+	public void setIsEwelcomeIdInformed(Integer isEwelcomeIdInformed) {
+		this.isEwelcomeIdInformed = isEwelcomeIdInformed;
+	}
+
 }

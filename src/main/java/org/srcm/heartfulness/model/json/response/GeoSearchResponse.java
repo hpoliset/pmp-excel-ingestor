@@ -1,5 +1,6 @@
 package org.srcm.heartfulness.model.json.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author himasreev
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GeoSearchResponse {
 
 	@JsonProperty("city_id")

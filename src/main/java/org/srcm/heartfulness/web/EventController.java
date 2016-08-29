@@ -7,8 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -35,7 +33,7 @@ import org.srcm.heartfulness.service.ProgramService;
 
 @Controller
 public class EventController {
-	
+
 	@Autowired
 	AuthorizationHelper authHelper;
 
@@ -50,11 +48,11 @@ public class EventController {
 
 	@Autowired
 	Environment env;
-	
+
 	@RequestMapping(value = "/updateevent", method = RequestMethod.GET)
 	public String showEventForm(@RequestParam(required = false, value = "id") String encryptedValue,
 			HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
-		return "redirect:"+SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL+"?id="+encryptedValue;
+		return "redirect:" + SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + encryptedValue;
 	}
 
 	@RequestMapping(value = "/saveevent", method = RequestMethod.POST)
@@ -66,60 +64,58 @@ public class EventController {
 		model.addAttribute("program", program);
 		return "programform_new";
 	}
-	
 
-   
-	
-	@RequestMapping(value="/eventForm",method= RequestMethod.GET)
-	public String showEventForm(Model model,HttpServletRequest request){
-		try{
+	@RequestMapping(value = "/eventForm", method = RequestMethod.GET)
+	public String showEventForm(Model model, HttpServletRequest request) {
+		try {
 			authHelper.setcurrentUsertoContext(request.getSession());
 			return pmpAuthService.showEventsForm();
-		}catch(AccessDeniedException e){
+		} catch (AccessDeniedException e) {
 			return "accessdenied";
-		}catch (NullPointerException e) {
+		} catch (NullPointerException e) {
 			return "redirect:/home";
 		}
 	}
 
-
-	@RequestMapping(value="/programForm",method = RequestMethod.GET)
-	public String showProgramForm(Model model,@RequestParam(required=false,name="programId") String encryptedProgramId,HttpServletRequest request ){
-		try{
+	@RequestMapping(value = "/programForm", method = RequestMethod.GET)
+	public String showProgramForm(Model model,
+			@RequestParam(required = false, name = "programId") String encryptedProgramId, HttpServletRequest request) {
+		try {
 			authHelper.setcurrentUsertoContext(request.getSession());
-			return pmpAuthService.showProgramForm(encryptedProgramId,model);
-		}catch(AccessDeniedException e){
+			return pmpAuthService.showProgramForm(encryptedProgramId, model);
+		} catch (AccessDeniedException e) {
 			return "accessdenied";
-		}catch (NullPointerException e) {
+		} catch (NullPointerException e) {
 			return "redirect:/home";
 		}
 	}
 
+	// @ResponseBody
+	@RequestMapping(value = "/createEvent", method = RequestMethod.POST)
+	public String createProgram(@Valid @ModelAttribute("program") Program program, BindingResult result, Model model) {
 
-	//@ResponseBody
-	@RequestMapping(value="/createEvent", method=RequestMethod.POST)
-	public String createProgram(@Valid @ModelAttribute("program") Program program, BindingResult result,Model model){
+		if (result.hasErrors()) {
 
-		if(result.hasErrors()){
+			if (!program.getEncryptedId().isEmpty()) {
 
-			if(!program.getEncryptedId().isEmpty()){
-
-				String decryptedProgramId = 
-						aesEncryptDecrypt.decrypt(program.getEncryptedId(), env.getProperty("security.encrypt.token"));
-				List<Participant> participantList = programService.getProgramById(Integer.valueOf(decryptedProgramId)).getParticipantList();
-				model.addAttribute("encryptedProgramId",program.getEncryptedId());
-				model.addAttribute("participantList",participantList);
+				String decryptedProgramId = aesEncryptDecrypt.decrypt(program.getEncryptedId(),
+						env.getProperty("security.encrypt.token"));
+				List<Participant> participantList = programService.getProgramById(Integer.valueOf(decryptedProgramId))
+						.getParticipantList();
+				model.addAttribute("encryptedProgramId", program.getEncryptedId());
+				model.addAttribute("participantList", participantList);
 			}
-			model.addAttribute("program",program);
+			model.addAttribute("program", program);
 			return "programform";
 		}
 
-		if(program != null && program.getProgramId() == 0 && program.getEncryptedId().isEmpty()){
+		if (program != null && program.getProgramId() == 0 && program.getEncryptedId().isEmpty()) {
 			programService.createProgram(program);
 			model.addAttribute("result", "Event has been successfully created");
 			return "eventresponse";
-		}else{
-			String decryptedProgramId = aesEncryptDecrypt.decrypt(program.getEncryptedId(), env.getProperty("security.encrypt.token"));
+		} else {
+			String decryptedProgramId = aesEncryptDecrypt.decrypt(program.getEncryptedId(),
+					env.getProperty("security.encrypt.token"));
 			program.setProgramId(Integer.valueOf(decryptedProgramId));
 			programService.createProgram(program);
 			model.addAttribute("result", "Event has been successfully updated");
@@ -127,31 +123,31 @@ public class EventController {
 		}
 	}
 
-
 	@ResponseBody
-	@RequestMapping(value="/getEventList",method = RequestMethod.POST)
-	public ResponseEntity<?> getEventList(HttpSession session,Model model){
-		try{
+	@RequestMapping(value = "/getEventList", method = RequestMethod.POST)
+	public ResponseEntity<?> getEventList(HttpSession session, Model model) {
+		try {
 			authHelper.setcurrentUsertoContext(session);
 			return pmpAuthService.getEventList();
-		}catch(AccessDeniedException e){
-			return new ResponseEntity<String> ("Accessdenied",HttpStatus.UNAUTHORIZED);
+		} catch (AccessDeniedException e) {
+			return new ResponseEntity<String>("Accessdenied", HttpStatus.UNAUTHORIZED);
 		}
 	}
-
 
 	@ResponseBody
-	@RequestMapping(value="/getParticipantList", method = RequestMethod.POST)
-	public ResponseEntity<?> loadParticipants(Model model,@RequestParam(required=false,name="programId") String encryptedProgramId ){
+	@RequestMapping(value = "/getParticipantList", method = RequestMethod.POST)
+	public ResponseEntity<?> loadParticipants(Model model,
+			@RequestParam(required = false, name = "programId") String encryptedProgramId) {
 		List<Participant> participantList = new ArrayList<Participant>();
-		if(!encryptedProgramId.isEmpty()){
-			String decryptedProgramId = aesEncryptDecrypt.decrypt(encryptedProgramId, env.getProperty("security.encrypt.token"));
+		if (!encryptedProgramId.isEmpty()) {
+			String decryptedProgramId = aesEncryptDecrypt.decrypt(encryptedProgramId,
+					env.getProperty("security.encrypt.token"));
 			participantList = programService.getParticipantByProgramId(Integer.valueOf(decryptedProgramId));
 		}
-		//model.addAttribute("participantListSize",participantList);
-		return new ResponseEntity<List<Participant>>(participantList,HttpStatus.OK);
+		// model.addAttribute("participantListSize",participantList);
+		return new ResponseEntity<List<Participant>>(participantList, HttpStatus.OK);
 	}
-	
+
 	/**
 	 * 
 	 * @param request
@@ -164,8 +160,7 @@ public class EventController {
 		model.addAttribute("newUser", new User());
 		return "home_new";
 	}
-	
-	
+
 	/**
 	 * To signout the current logged in user
 	 * 

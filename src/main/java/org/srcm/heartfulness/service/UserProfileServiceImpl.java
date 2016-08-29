@@ -1,16 +1,19 @@
 package org.srcm.heartfulness.service;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.EndpointConstants;
+import org.srcm.heartfulness.constants.ErrorConstants;
+import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 import org.srcm.heartfulness.model.User;
-import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
 import org.srcm.heartfulness.model.json.response.Result;
-import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
 import org.srcm.heartfulness.repository.UserRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
+import org.srcm.heartfulness.util.DateUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -28,6 +31,9 @@ public class UserProfileServiceImpl implements UserProfileService {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	APIAccessLogService apiAccessLogService;
 
 	/**
 	 * method to save the user details
@@ -48,22 +54,23 @@ public class UserProfileServiceImpl implements UserProfileService {
 	}
 
 	/**
-	 * method to validate the user with srcm
-	 */
-	@Override
-	public SrcmAuthenticationResponse ValidateLogin(AuthenticationRequest authenticationRequest)
-			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
-		return srcmRest.authenticate(authenticationRequest);
-	}
-
-	/**
 	 * method to get the user profile from srcm
+	 * 
+	 * @throws ParseException
 	 *
 	 */
 	@Override
-	public Result getUserProfile(String accessToken) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException {
-		return srcmRest.getUserProfile(accessToken);
+	public Result getUserProfile(String accessToken, int id)
+			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException, ParseException {
+		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.GET_USER_PROFILE,
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
+		int accessdetailsID = apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
+		accessLogDetails.setId(accessdetailsID);
+		Result result = srcmRest.getUserProfile(accessToken);
+		accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+		return result;
 	}
 
 }

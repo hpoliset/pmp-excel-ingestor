@@ -14,6 +14,8 @@ public class PMPConstants {
 
 	public static final String LOGIN_ROLE_ADMIN = "SYSTEM_ADMIN";
 	
+	public static final String LOGIN_REGIONAL_ADMIN = "REGIONAL_ADMIN";
+	
 	public static final String LOGIN_ACCESS_DENIED = "ACCESS_DENIED";
 
 	public static final String STATUS_NEW = "New";

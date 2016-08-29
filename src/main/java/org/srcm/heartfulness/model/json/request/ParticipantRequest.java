@@ -46,12 +46,26 @@ public class ParticipantRequest {
 
 	private String introductionDate;
 
+	private String firstSittingDate;
+
+	private String secondSittingDate;
+
+	private String thirdSittingDate;
+
+	private String firstSitting;
+
+	private String secondSitting;
+
+	private String thirdSitting;
+
 	@JsonIgnore
 	private int introduced;
 
 	private String introducedBy;
 
 	private String abhyasiId;
+	
+	private String eWelcomeID;
 
 	@JsonIgnore
 	private int excelSheetSequenceNumber;
@@ -216,35 +230,64 @@ public class ParticipantRequest {
 		this.introducedStatus = introducedStatus;
 	}
 
-	public ParticipantRequest() {
-		super();
+	public String getFirstSittingDate() {
+		return firstSittingDate;
 	}
 
-	public ParticipantRequest(int id, int programId, String seqId, String eventId, String printName, String gender,
-			String dateOfBirth, String addressLine1, String addressLine2, String email, String mobilePhone,
-			String city, String state, String country, String introducedStatus, String introductionDate,
-			int introduced, String introducedBy, String abhyasiId, int excelSheetSequenceNumber) {
+	public void setFirstSittingDate(String firstSittingDate) {
+		this.firstSittingDate = firstSittingDate;
+	}
+
+	public String getSecondSittingDate() {
+		return secondSittingDate;
+	}
+
+	public void setSecondSittingDate(String secondSittingDate) {
+		this.secondSittingDate = secondSittingDate;
+	}
+
+	public String getThirdSittingDate() {
+		return thirdSittingDate;
+	}
+
+	public void setThirdSittingDate(String thirdSittingDate) {
+		this.thirdSittingDate = thirdSittingDate;
+	}
+
+	public String getFirstSitting() {
+		return firstSitting;
+	}
+
+	public void setFirstSitting(String firstSitting) {
+		this.firstSitting = firstSitting;
+	}
+
+	public String getSecondSitting() {
+		return secondSitting;
+	}
+
+	public void setSecondSitting(String secondSitting) {
+		this.secondSitting = secondSitting;
+	}
+
+	public String getThirdSitting() {
+		return thirdSitting;
+	}
+
+	public void setThirdSitting(String thirdSitting) {
+		this.thirdSitting = thirdSitting;
+	}
+	
+	public String geteWelcomeID() {
+		return eWelcomeID;
+	}
+
+	public void seteWelcomeID(String eWelcomeID) {
+		this.eWelcomeID = eWelcomeID;
+	}
+
+	public ParticipantRequest() {
 		super();
-		this.id = id;
-		this.programId = programId;
-		this.seqId = seqId;
-		this.eventId = eventId;
-		this.printName = printName;
-		this.gender = gender;
-		this.dateOfBirth = dateOfBirth;
-		this.addressLine1 = addressLine1;
-		this.addressLine2 = addressLine2;
-		this.email = email;
-		this.mobilePhone = mobilePhone;
-		this.city = city;
-		this.state = state;
-		this.country = country;
-		this.introducedStatus = introducedStatus;
-		this.introductionDate = introductionDate;
-		this.introduced = introduced;
-		this.introducedBy = introducedBy;
-		this.abhyasiId = abhyasiId;
-		this.excelSheetSequenceNumber = excelSheetSequenceNumber;
 	}
 
 	@Override
@@ -252,9 +295,12 @@ public class ParticipantRequest {
 		return "ParticipantRequest [id=" + id + ", programId=" + programId + ", seqId=" + seqId + ", eventId="
 				+ eventId + ", printName=" + printName + ", gender=" + gender + ", dateOfBirth=" + dateOfBirth
 				+ ", addressLine1=" + addressLine1 + ", addressLine2=" + addressLine2 + ", email=" + email
-				+ ", mobile=" + mobilePhone + ", city=" + city + ", state=" + state + ", country=" + country
-				+ ", introducedStatus=" + introducedStatus + ", introductionDate=" + introductionDate + ", introduced="
-				+ introduced + ", introducedBy=" + introducedBy + ", abhyasiId=" + abhyasiId
+				+ ", mobilePhone=" + mobilePhone + ", city=" + city + ", state=" + state + ", country=" + country
+				+ ", introducedStatus=" + introducedStatus + ", introductionDate=" + introductionDate
+				+ ", firstSittingDate=" + firstSittingDate + ", secondSittingDate=" + secondSittingDate
+				+ ", thirdSittingDate=" + thirdSittingDate + ", firstSitting=" + firstSitting + ", secondSitting="
+				+ secondSitting + ", thirdSitting=" + thirdSitting + ", introduced=" + introduced + ", introducedBy="
+				+ introducedBy + ", abhyasiId=" + abhyasiId + ", eWelcomeID=" + eWelcomeID
 				+ ", excelSheetSequenceNumber=" + excelSheetSequenceNumber + "]";
 	}
 

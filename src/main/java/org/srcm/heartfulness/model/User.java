@@ -66,13 +66,16 @@ public class User {
 	@JsonIgnore
 	private String access_token;
 
+	@JsonIgnore
 	private String role;
 
 	@JsonProperty("message")
 	private String message;
 
+	@JsonIgnore
 	private String isPmpAllowed;
 
+	@JsonIgnore
 	private String isSahajmargAllowed;
 
 	@JsonIgnore
