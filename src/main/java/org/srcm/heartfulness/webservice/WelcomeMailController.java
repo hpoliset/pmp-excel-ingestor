@@ -8,8 +8,10 @@ import javax.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.mail.SendMail;
@@ -23,7 +25,7 @@ import org.srcm.heartfulness.service.WelcomeMailService;
 @RestController
 @RequestMapping("/api/welcomemail/")
 public class WelcomeMailController {
-
+	
 	@Autowired
 	private WelcomeMailService WelcomeMailService;
 
@@ -67,7 +69,7 @@ public class WelcomeMailController {
 
 	/**
 	 * Controller is used to send email to the coordinators with event details
-	 * about the participants who have received welcome emails.It is a crob job
+	 * about the participants who have received welcome emails.It is a cron job
 	 * running at a scheduled time.
 	 */
 	@Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}") 
@@ -86,5 +88,17 @@ public class WelcomeMailController {
 			LOGGER.error("Exception while sending file - {} " + e.getMessage());
 		}
 	}
-
+	
+	@RequestMapping(value ="sendmailtocoordinator",method= RequestMethod.POST)
+	public String sendMailGeneratedEwelcomeIdToCoordinators() {
+		try {
+			LOGGER.debug("Sending mail to co-ordinator for e-welcome id generation called.");
+			WelcomeMailService.getGeneratedEwelcomeIdAndSendToCoordinators();
+			return "Mail sent successfully to coordinators.";
+		} catch (Exception e) {
+			LOGGER.error("Exception while sending file - {} " + e.getMessage());
+			return "Exception while sending mail to coordinators.";
+		}
+	}
+	
 }

@@ -16,7 +16,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.ErrorConstants;
-import org.srcm.heartfulness.constants.EventConstants;
+import org.srcm.heartfulness.constants.RegularExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.model.Participant;
@@ -189,7 +189,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				errors.put("programStartDate", "Invalid date format,correct format is dd-MM-yyyy");
 			}
 
-			if (!event.getProgramStartDate().matches(EventConstants.DATE_REGEX)) {
+			if (!event.getProgramStartDate().matches(RegularExpressionConstants.DATE_REGEX)) {
 				errors.put("programStartDate", "Invalid date format,correct format is dd-MM-yyyy");
 			}
 		}
@@ -200,7 +200,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			} catch (ParseException e) {
 				errors.put("programEndDate", "Invalid date format,correct format is dd-MM-yyyy");
 			}
-			if (!event.getProgramEndDate().matches(EventConstants.DATE_REGEX)) {
+			if (!event.getProgramEndDate().matches(RegularExpressionConstants.DATE_REGEX)) {
 				errors.put("programEndDate", "Invalid date format,correct format is dd-MM-yyyy");
 			}
 		}
@@ -223,12 +223,12 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		}
 		if (null == event.getCoordinatorEmail() || event.getCoordinatorEmail().isEmpty()) {
 			errors.put("coordinatorEmail", "Coordinator email is required");
-		} else if (!event.getCoordinatorEmail().matches(EventConstants.EMAIL_REGEX)) {
+		} else if (!event.getCoordinatorEmail().matches(RegularExpressionConstants.EMAIL_REGEX)) {
 			errors.put("coordinatorEmail", "Invalid email format");
 		}
 		if (null == event.getCoordinatorMobile() || event.getCoordinatorMobile().isEmpty()) {
 			errors.put("coordinatorMobile", "Coordinator mobile is required");
-		} else if (!event.getCoordinatorMobile().matches(EventConstants.MOBILE_REGEX)) {
+		} else if (!event.getCoordinatorMobile().matches(RegularExpressionConstants.MOBILE_REGEX)) {
 			errors.put("coordinatorMobile", "Invalid mobile number format");
 		}
 
@@ -240,13 +240,13 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		}
 		if (null == event.getOrganizationContactMobile() || event.getOrganizationContactMobile().isEmpty()) {
 			errors.put("organizationContactMobile", "Organization contact mobile is required");
-		} else if (!event.getOrganizationContactMobile().matches(EventConstants.MOBILE_REGEX)) {
+		} else if (!event.getOrganizationContactMobile().matches(RegularExpressionConstants.MOBILE_REGEX)) {
 			errors.put("organizationContactMobile", "Invalid mobile number format");
 		}
 
 		if (null == event.getOrganizationContactEmail() || event.getOrganizationContactEmail().isEmpty()) {
 			errors.put("organizationContactEmail", "Organization contact email is required");
-		} else if (!event.getOrganizationContactEmail().matches(EventConstants.EMAIL_REGEX)) {
+		} else if (!event.getOrganizationContactEmail().matches(RegularExpressionConstants.EMAIL_REGEX)) {
 			errors.put("organizationContactEmail", "Invalid email format");
 		}
 

@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.srcm.heartfulness.constants.EventConstants;
+import org.srcm.heartfulness.constants.RegularExpressionConstants;
 import org.srcm.heartfulness.helper.FTPConnectionHelper;
 import org.srcm.heartfulness.mail.SendMail;
 import org.srcm.heartfulness.model.CoordinatorEmail;
@@ -98,7 +98,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 				participantCount = welcomeMailRepository.getIntroducedParticipantCount(participant.getPrintName(),
 						participant.getEmail());
 				if (participantCount < 1 && null != participant.getEmail() && !participant.getEmail().isEmpty() 
-						&& participant.getEmail().matches(EventConstants.EMAIL_REGEX)) {
+						&& participant.getEmail().matches(RegularExpressionConstants.EMAIL_REGEX)) {
 					sendySubscriber.setNameToSendMail(getName(participant.getPrintName()));
 					sendySubscriber.setUserName(participant.getPrintName());
 					sendySubscriber.setEmail(participant.getEmail());
@@ -144,7 +144,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			}
 		}
 		for (Participant participant : participants) {
-			if(participant.getEmail().matches(EventConstants.EMAIL_REGEX)){
+			if(participant.getEmail().matches(RegularExpressionConstants.EMAIL_REGEX)){
 				if(!invalidParticipantSet.contains(participant.getId()))
 					welcomeMailRepository.updateParticipantMailSentById(participant.getId());
 			}
@@ -215,7 +215,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		if (null != participants && participants.size() >= 1) {
 			for (Participant participant : participants) {
 				if (null != participant.getEmail() && !participant.getEmail().isEmpty()
-						&& participant.getEmail().matches(EventConstants.EMAIL_REGEX)) {
+						&& participant.getEmail().matches(RegularExpressionConstants.EMAIL_REGEX)) {
 					int countOfEmailAvailableInWelcomeLog = welcomeMailRepository.checkForMailIdInWelcomeLog(participant.getEmail());
 					sendySubscriber = new SendySubscriber();
 					sendySubscriber.setUserName(participant.getPrintName());
@@ -231,7 +231,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 				}
 			}
 			LOGGER.debug("{} participants already received welcome mail.",participants.size()-validEmailSubscribersCount);
-			LOGGER.debug("{} new participants." + validEmailSubscribersCount);
+			LOGGER.debug("{} new participants." , validEmailSubscribersCount);
 			if(validEmailSubscribersCount>0){
 				FileOutputStream fop = new FileOutputStream(welcomeMailidsLocalFilepath + currentDate + "_"
 						+ welcomeMailidsFileName);

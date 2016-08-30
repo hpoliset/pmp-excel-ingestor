@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
-import org.srcm.heartfulness.constants.EventConstants;
+import org.srcm.heartfulness.constants.RegularExpressionConstants;
 import org.srcm.heartfulness.model.json.request.SubscriptionRequest;
 import org.srcm.heartfulness.validator.SubscriptionValidator;
 
@@ -29,7 +29,7 @@ public class SubscriptionValidatorImpl implements SubscriptionValidator {
 		Map<String, String> errors = new HashMap<>();
 		if (null == subscriptionRequest.getMailID() || subscriptionRequest.getMailID().isEmpty()) {
 			errors.put("emailID", "Email ID cannot be empty.");
-		} else if (!subscriptionRequest.getMailID().matches(EventConstants.EMAIL_REGEX)) {
+		} else if (!subscriptionRequest.getMailID().matches(RegularExpressionConstants.EMAIL_REGEX)) {
 			errors.put("emailID", "Email ID is not valid.");
 		}
 		if (null == subscriptionRequest.getName() || subscriptionRequest.getName().isEmpty()) {

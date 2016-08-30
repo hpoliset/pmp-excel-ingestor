@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EndpointConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
-import org.srcm.heartfulness.constants.EventConstants;
+import org.srcm.heartfulness.constants.RegularExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.enumeration.EventSearchField;
 import org.srcm.heartfulness.helper.EWelcomeIDGenerationHelper;
@@ -726,7 +726,7 @@ public class ProgramServiceImpl implements ProgramService {
 			if (participant.getId() > 0 && participant.getProgramId() > 0) {
 				if (participant.getSeqId() != null && participant.getSeqId().length() == 4) {
 					if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty() ||
-							!participant.getWelcomeCardNumber().matches(EventConstants.EWELCOME_ID_REGEX)) {
+							!participant.getWelcomeCardNumber().matches(RegularExpressionConstants.EWELCOME_ID_REGEX)) {
 						if (null == participant.getProgram().getPrefectId()
 								|| participant.getProgram().getPrefectId().isEmpty()) {
 							if (null == participant.getProgram().getPreceptorIdCardNumber()

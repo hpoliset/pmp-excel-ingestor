@@ -41,7 +41,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:prod.srcm.api.properties", ignoreUnknownFields = false, prefix = "srcm.oauth2")
+@ConfigurationProperties(locations = "classpath:dev.srcm.api.properties", ignoreUnknownFields = false, prefix = "srcm.oauth2")
 public class SrcmRestTemplate extends RestTemplate {
 
 	private String clientId;
@@ -64,6 +64,7 @@ public class SrcmRestTemplate extends RestTemplate {
 
 	@NotNull
 	private AbyasiInfo abyasi;
+
 	/**
 	 * Class to hold the abyasi related information by reading from properties
 	 * file.
@@ -120,6 +121,76 @@ public class SrcmRestTemplate extends RestTemplate {
 		this.abyasi = abyasi;
 	}
 
+	@NotNull
+	private MobileCredentials mobile;
+
+	/**
+	 * Class to hold the abyasi related information by reading from properties
+	 * file.
+	 */
+	public static class MobileCredentials {
+
+		private String clientId;
+
+		private String clientSecret;
+
+		public String getClientId() {
+			return clientId;
+		}
+
+		public void setClientId(String clientId) {
+			this.clientId = clientId;
+		}
+
+		public String getClientSecret() {
+			return clientSecret;
+		}
+
+		public void setClientSecret(String clientSecret) {
+			this.clientSecret = clientSecret;
+		}
+
+	}
+
+	public MobileCredentials getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(MobileCredentials mobile) {
+		this.mobile = mobile;
+	}
+
+	/**
+	 * Method to authenticate the user with MySRCM and return the response with
+	 * token details.
+	 * 
+	 * @param authenticationRequest
+	 * @param userClientSecret
+	 * @param userClientId
+	 * @return
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	public SrcmAuthenticationResponse authenticate(AuthenticationRequest authenticationRequest, String userClientId,
+			String userClientSecret) throws HttpClientErrorException, JsonParseException, JsonMappingException,
+			IOException {
+		if (proxy)
+			setProxy();
+		MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<String, String>();
+		bodyParams.add(RestTemplateConstants.PARAMS_USERNAME, authenticationRequest.getUsername());
+		bodyParams.add(RestTemplateConstants.PARAMS_PASSWORD, authenticationRequest.getPassword());
+		bodyParams.add(RestTemplateConstants.GRANT_TYPE, tokenName);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.add(RestTemplateConstants.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		httpHeaders.set(RestTemplateConstants.AUTHORIZATION, RestTemplateConstants.BASIC_AUTHORIZATION
+				+ getBase64Credentials(userClientId, userClientSecret));
+		HttpEntity<?> httpEntity = new HttpEntity<Object>(bodyParams, httpHeaders);
+		ResponseEntity<String> response = this.exchange(accessTokenUri, HttpMethod.POST, httpEntity, String.class);
+		return mapper.readValue(response.getBody(), SrcmAuthenticationResponse.class);
+	}
+
 	/**
 	 * Method to authenticate the user with MySRCM and return the response with
 	 * token details.
@@ -131,7 +202,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public SrcmAuthenticationResponse authenticate(AuthenticationRequest authenticationRequest)
+	public SrcmAuthenticationResponse authenticateMobileUser(AuthenticationRequest authenticationRequest)
 			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
 		if (proxy)
 			setProxy();
@@ -142,7 +213,7 @@ public class SrcmRestTemplate extends RestTemplate {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add(RestTemplateConstants.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpHeaders.set(RestTemplateConstants.AUTHORIZATION, RestTemplateConstants.BASIC_AUTHORIZATION
-				+ getBase64Credentials(clientId, clientSecret));
+				+ getBase64Credentials(mobile.clientId, mobile.clientSecret));
 		HttpEntity<?> httpEntity = new HttpEntity<Object>(bodyParams, httpHeaders);
 		ResponseEntity<String> response = this.exchange(accessTokenUri, HttpMethod.POST, httpEntity, String.class);
 		return mapper.readValue(response.getBody(), SrcmAuthenticationResponse.class);
@@ -152,13 +223,13 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * Method to get the user profile with token details by calling MySRCM API.
 	 * 
 	 * @param accessToken
-	 * @param id 
+	 * @param id
 	 * @return
 	 * @throws HttpClientErrorException
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
-	 * @throws ParseException 
+	 * @throws ParseException
 	 */
 	public Result getUserProfile(String accessToken) throws HttpClientErrorException, JsonParseException,
 			JsonMappingException, IOException, ParseException {

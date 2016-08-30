@@ -5,7 +5,6 @@ import java.text.ParseException;
 
 import javax.servlet.http.HttpSession;
 
-import org.springframework.ui.ModelMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
 import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
@@ -16,20 +15,41 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 public interface AuthenticationService {
 
 	/**
-	 * method to validate the user based on username and password
+	 * Method to validate the user based on username and password.
 	 * 
 	 * @param authenticationRequest
-	 * @param session 
-	 * @param id 
-	 * @param model 
+	 * @param session
+	 * @param id
+	 * @param userAgent
+	 * @param model
 	 * @return
 	 * @throws HttpClientErrorException
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
-	 * @throws ParseException 
+	 * @throws ParseException
 	 */
-	SrcmAuthenticationResponse validateLogin(AuthenticationRequest authenticationRequest, HttpSession session, int id)
-			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException, ParseException;
+	SrcmAuthenticationResponse validateLogin(AuthenticationRequest authenticationRequest, HttpSession session, int id,
+			String userAgent) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException,
+			ParseException;
+	
+	/**
+	 * Method to validate the user based on username and password.
+	 * 
+	 * @param authenticationRequest
+	 * @param session
+	 * @param id
+	 * @param requestURI 
+	 * @param userAgent
+	 * @param model
+	 * @return
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	SrcmAuthenticationResponse validateUser(AuthenticationRequest authenticationRequest, HttpSession session, int id, String requestURI) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException,
+			ParseException;
 
 }
