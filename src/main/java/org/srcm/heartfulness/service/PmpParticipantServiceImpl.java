@@ -69,10 +69,10 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setPrintName(participantRequest.getPrintName());
 			participant.setEmail(participantRequest.getEmail());
 			participant.setMobilePhone(participantRequest.getMobilePhone());
-			if ((participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE) || participantRequest.getGender()
+			if ( participantRequest.getGender() != null
+					&& !participantRequest.getGender().isEmpty() && (participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE) || participantRequest.getGender()
 					.equalsIgnoreCase(PMPConstants.FEMALE))
-					&& participantRequest.getGender() != null
-					&& !participantRequest.getGender().isEmpty())
+				)
 				participantRequest
 						.setGender((participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE)
 								&& participantRequest.getGender() != null && !participantRequest.getGender().isEmpty()) ? PMPConstants.GENDER_MALE
