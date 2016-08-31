@@ -103,11 +103,11 @@ public class UserRepositoryImpl implements UserRepository {
 			}
 		}
 		if (null == user.getRole() && user.getId() == 0)
-			user.setRole(PMPConstants.LOGIN_REGIONAL_ADMIN);
+			user.setRole(PMPConstants.LOGIN_ROLE_SEEKER);
 		if (null == user.getIsPmpAllowed() && user.getId() == 0)
-			user.setIsPmpAllowed("Y");
+			user.setIsPmpAllowed(PMPConstants.REQUIRED_NO);
 		if (null == user.getIsSahajmargAllowed() && user.getId() == 0)
-			user.setIsSahajmargAllowed("N");
+			user.setIsSahajmargAllowed(PMPConstants.REQUIRED_NO);
 		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
 		if (user.getId() == 0) {
 			Number newId = this.insertUser.executeAndReturnKey(parameterSource);

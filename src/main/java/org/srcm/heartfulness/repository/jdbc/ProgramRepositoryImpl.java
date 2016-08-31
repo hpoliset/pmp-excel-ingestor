@@ -838,13 +838,13 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		Map<String, Object> params = new HashMap<>();
 		params.put("introduced", PMPConstants.REQUIRED_YES.equalsIgnoreCase(introduced) ? 1 : 0);
 		params.put("introducedBy", userEmailID);
+		params.put("introducedDate", new Date());
 		params.put("programId", getProgramIdByEventId(eventId));
 		params.put("seqId", participantIds);
 		this.namedParameterJdbcTemplate.update(
-				"UPDATE participant SET introduced=:introduced,introduced_by=:introducedBy WHERE program_id=:programId AND seqId=:seqId ", params);
+				"UPDATE participant SET introduced=:introduced,introduced_by=:introducedBy,introduction_date=:introducedDate WHERE program_id=:programId AND seqId=:seqId ", params);
 
 	}
-
 	/**
 	 * gets the count of un-catgorized events for the given email and based on
 	 * user role
