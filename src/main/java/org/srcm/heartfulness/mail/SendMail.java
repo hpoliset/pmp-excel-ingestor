@@ -429,7 +429,7 @@ public class SendMail {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
-		addParameter("DATE", sdf.format(cal.getTime()));
+		addParameter("PROGRAM_CREATE_DATE", sdf.format(crdntrEmail.getProgramCreateDate()));
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail,name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(crdntrEmail.getCoordinatorEmail()));
@@ -443,7 +443,7 @@ public class SendMail {
 	
 	public void sendGeneratedEwelcomeIdDetailslToCoordinator(CoordinatorEmail coordinatorEmail,
 			List<Participant> participants) throws AddressException, MessagingException, UnsupportedEncodingException {
-		try {
+		
 			Properties props = System.getProperties();
 			props.put("mail.debug", "true");
 			props.put("mail.smtp.host",hostname);
@@ -460,6 +460,7 @@ public class SendMail {
 
 			addParameter("COORDINATOR_NAME", coordinatorEmail.getCoordinatorName()!=null?getName(coordinatorEmail.getCoordinatorName()) : "");
 			addParameter("EVENT_NAME", coordinatorEmail.getEventName()!=null?coordinatorEmail.getEventName() : "");
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 			StringBuilder sb = new StringBuilder();
 			int i = 1;
 			for (Participant participant : participants) {
@@ -473,6 +474,8 @@ public class SendMail {
 				sb.append(participant.getMobilePhone()!=null?participant.getMobilePhone() : "");
 				sb.append("</td><td>");
 				sb.append(participant.getWelcomeCardNumber()!=null?participant.getWelcomeCardNumber() : "");
+				sb.append("</td><td>");
+				sb.append(participant.getIntroductionDate()!=null?sdf.format(participant.getIntroductionDate()) : "");
 				sb.append("</td></tr>");
 			}
 			addParameter("PARTICIPANTS_DETAILS", sb.toString());
@@ -481,7 +484,7 @@ public class SendMail {
 			System.out.println("PARTICIPANTS_DETAILS " + sb.toString());
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, -1);
-			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+			//SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 			// addParameter("DATE", sdf.format(cal.getTime()));
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(frommail,name));
@@ -493,10 +496,5 @@ public class SendMail {
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
 			Transport.send(message);
-		} catch (MessagingException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 }
