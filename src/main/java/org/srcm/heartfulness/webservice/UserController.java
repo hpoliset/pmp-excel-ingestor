@@ -22,6 +22,7 @@ import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.User;
+import org.srcm.heartfulness.model.json.request.CreateUserRequest;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.UserProfile;
@@ -61,12 +62,13 @@ public class UserController {
 	@RequestMapping(value = "/user", method = RequestMethod.GET)
 	public ResponseEntity<?> getUserProfile(@RequestHeader(value = "Authorization") String token,
 			@Context HttpServletRequest httpRequest) throws ParseException {
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,ErrorConstants.STATUS_FAILED,null);
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
-		UserProfile srcmProfile=null;
+		UserProfile srcmProfile = null;
 		try {
-			Result result = userProfileService.getUserProfile(encryptDecryptAES.decrypt(token,
-					env.getProperty("security.encrypt.token")),id);
+			Result result = userProfileService.getUserProfile(
+					encryptDecryptAES.decrypt(token, env.getProperty("security.encrypt.token")), id);
 			srcmProfile = result.getUserProfile()[0];
 			User user = userProfileService.loadUserByEmail(srcmProfile.getEmail());
 			if (null == user) {
@@ -75,10 +77,9 @@ public class UserController {
 				user.setFirst_name(srcmProfile.getFirst_name());
 				user.setLast_name(srcmProfile.getLast_name());
 				user.setEmail(srcmProfile.getEmail());
-				user.setAbyasiId(srcmProfile.getAbhyasi_id());
+				user.setAbyasiId(srcmProfile.getRef());
 				userProfileService.save(user);
 			}
-			user.setMembershipId(String.valueOf(user.getAbyasiId()));
 			accessLog.setUsername(srcmProfile.getEmail());
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -122,18 +123,17 @@ public class UserController {
 	public ResponseEntity<?> updateUser(@PathVariable int id, @RequestBody User user,
 			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest)
 			throws ParseException {
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null,httpRequest.getRemoteAddr(),httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(),null,ErrorConstants.STATUS_FAILED,null);
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
 		int accesslogId = apiAccessLogService.createPmpAPIAccessLog(accessLog);
-		UserProfile srcmProfile=null;
+		UserProfile srcmProfile = null;
 		try {
-			Result result = userProfileService.getUserProfile(encryptDecryptAES.decrypt(token,
-					env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)),accesslogId);
+			Result result = userProfileService.getUserProfile(
+					encryptDecryptAES.decrypt(token, env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)), accesslogId);
 			srcmProfile = result.getUserProfile()[0];
 			User pmpUser = userProfileService.loadUserByEmail(srcmProfile.getEmail());
 			if (pmpUser != null && id == pmpUser.getId()) {
 				if (id == pmpUser.getId()) {
-					user.setMembershipId(user.getMembershipId() == null ? "0" : user.getMembershipId());
-					user.setAbyasiId(user.getMembershipId() == null ? 0 : Integer.valueOf(user.getMembershipId()));
 					userProfileService.save(user);
 				}
 			}
@@ -164,6 +164,92 @@ public class UserController {
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
+	}
+
+	/**
+	 * Method to create new profile to the user by calling srcm api
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "users", method = RequestMethod.POST)
+	public ResponseEntity<?> createUser(@RequestBody CreateUserRequest user, @Context HttpServletRequest httpRequest)
+			throws ParseException {
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(user.getEmail(), httpRequest.getRemoteAddr(),
+				httpRequest.getRequestURI(), DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED,
+				null);
+		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		try {
+			user.setUserType("se");
+			User newUser = userProfileService.createUser(user, id, httpRequest.getRequestURI());
+			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			return new ResponseEntity<User>(newUser, HttpStatus.OK);
+		} catch (HttpClientErrorException e) {
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage(e.getResponseBodyAsString());
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
+		} catch (IOException e) {
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage("IOException");
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			ErrorResponse error = new ErrorResponse("Please try after some time.", e.getMessage());
+			return new ResponseEntity<ErrorResponse>(error, HttpStatus.REQUEST_TIMEOUT);
+		} catch (Exception e) {
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage("Internal server error");
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			ErrorResponse error = new ErrorResponse("Please try after some time.", e.getMessage());
+			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Method to create new profile to the user by calling srcm api
+	 * 
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "mobile/users", method = RequestMethod.POST)
+	public ResponseEntity<?> mobileAppUserCreate(@RequestBody CreateUserRequest user,
+			@Context HttpServletRequest httpRequest) throws ParseException {
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(user.getEmail(), httpRequest.getRemoteAddr(),
+				httpRequest.getRequestURI(), DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED,
+				null);
+		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		try {
+			user.setUserType("se");
+			User newUser = userProfileService.createUser(user, id, httpRequest.getRequestURI());
+			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			return new ResponseEntity<User>(newUser, HttpStatus.OK);
+		} catch (HttpClientErrorException e) {
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage(e.getResponseBodyAsString());
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
+		} catch (IOException e) {
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage("IOException");
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			ErrorResponse error = new ErrorResponse("Please try after some time.", e.getMessage());
+			return new ResponseEntity<ErrorResponse>(error, HttpStatus.REQUEST_TIMEOUT);
+		} catch (Exception e) {
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage("Internal server error");
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			ErrorResponse error = new ErrorResponse("Please try after some time.", e.getMessage());
+			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 }

@@ -115,7 +115,8 @@ public class UserRepositoryImpl implements UserRepository {
 		} else {
 			this.namedParameterJdbcTemplate.update("UPDATE user SET " + "name=:name, " + "first_name=:first_name, "
 					+ "last_name=:last_name, " + "gender=:gender, " + "abyasi_id=:abyasiId," + "address=:address, "
-					+ "user_type=:user_type, " + "email=:email, " + "mobile=:mobile, " + "city=:city, "
+					+ "user_type=:user_type, " + "email=:email, " + "mobile=:mobile, " + "age_group=:ageGroup, "
+					+ "language_preference=:languagePreference, " + "zipcode=:zipcode, " + "city=:city, "
 					+ "state=:state, " + "country=:country " + "WHERE id=:id", parameterSource);
 		}
 	}

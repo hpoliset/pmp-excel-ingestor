@@ -14,5 +14,9 @@ public class EndpointConstants {
 	
 	public static final String  CITIES_API = "http://profile.srcm.net/api/v2/cities/";
 	
+	public static final String  MOBILE_AUTHENTICATION_ENDPOINT = "/pmp/api/mobile/authenticate";
+	
+	public static final String  MOBILE_CREATE_USER_ENDPOINT = "/pmp/api/v1/mobile/users";
+	
 
 }
