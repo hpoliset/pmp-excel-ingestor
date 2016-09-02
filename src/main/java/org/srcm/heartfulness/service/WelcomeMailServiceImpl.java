@@ -386,8 +386,8 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 
 								sendEmailNotification.sendGeneratedEwelcomeIdDetailslToCoordinator(coordinatorEmail,map.getValue());
 								PMPMailLog pmpMailLog = 
-										new PMPMailLog(coordinatorEmail.getProgramId(),
-												coordinatorEmail.getCoordinatorEmail(),EmailLogConstants.WLCMID_EMAIL_DETAILS,
+										new PMPMailLog(map.getKey().getProgramId(),
+												map.getKey().getCoordinatorEmail(),EmailLogConstants.WLCMID_EMAIL_DETAILS,
 												EmailLogConstants.STATUS_SUCCESS,null);
 								mailLogRepository.createMailLog(pmpMailLog);
 								for(Participant participant : map.getValue()){
