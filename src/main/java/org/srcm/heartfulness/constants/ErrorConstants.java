@@ -30,5 +30,7 @@ public class ErrorConstants {
 	public static final String EMAIL_NOT_SENT = "Email Not Sent";
 	
 	public static final String INVALID_AUTH_TOKEN = "Invalid auth token";
+	
+	public static final String INVALID_CREDENTIALS= "Invalid credentials";
 
 }

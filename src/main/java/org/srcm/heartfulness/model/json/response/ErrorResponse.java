@@ -2,6 +2,7 @@ package org.srcm.heartfulness.model.json.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * This class is the response for the unauthorized login attempt from MYSRCM
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonPropertyOrder({ "error", "error_description"})
 public class ErrorResponse {
 
 	@JsonProperty("error_description")
