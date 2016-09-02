@@ -14,9 +14,8 @@ Dear ${COORDINATOR_NAME},
 <td style=" width: 15%;" align=middle><b>Participant Name</b></td>
 <td style=" width: 25%;" align=middle><b>Participant mail ID</b></td>
 <td style=" width: 15%;" align=middle><b>Mobile</b></td>
-<td style=" width: 27%;" align=middle><b>Introduced Date</b></td>
 <td style=" width: 15%;" align=middle><b>e-welcome ID</b></td>
-
+<td style=" width: 27%;" align=middle><b>Introduced Date</b></td>
 </tr>
 ${PARTICIPANTS_DETAILS}
 </table>
