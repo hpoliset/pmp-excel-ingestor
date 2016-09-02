@@ -293,13 +293,18 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 									coordinatorEmail.setPctptRcvdWlcmMailYstrdayCount(map.getValue().get(0));
 									coordinatorEmail.setProgramCreateDate(map.getValue().get(4));
 									sendEmailNotification.sendMailNotificationToCoordinator(coordinatorEmail);
-									LOGGER.debug("START        :Inserting mail log details in table");
-									PMPMailLog pmpMailLog = 
-											new PMPMailLog(map.getKey(),
-													map.getValue().get(3),EmailLogConstants.PCTPT_EMAIL_DETAILS,
-													EmailLogConstants.STATUS_SUCCESS,null);
-									mailLogRepository.createMailLog(pmpMailLog);
-									LOGGER.debug("END        :Completed inserting mail log details in table");
+									try{
+										LOGGER.debug("START        :Inserting mail log details in table");
+
+										PMPMailLog pmpMailLog = 
+												new PMPMailLog(map.getKey(),
+														map.getValue().get(3),EmailLogConstants.PCTPT_EMAIL_DETAILS,
+														EmailLogConstants.STATUS_SUCCESS,null);
+										mailLogRepository.createMailLog(pmpMailLog);
+										LOGGER.debug("END        :Completed inserting mail log details in table");
+									}catch(Exception ex){
+										LOGGER.debug("END        :Exception while inserting mail log details in table");
+									}
 									LOGGER.debug("END        :Completed sending email to "+map.getValue().get(3));
 								}catch(AddressException aex){
 									try{
@@ -385,11 +390,17 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								coordinatorEmail.setCoordinatorEmail(map.getKey().getCoordinatorEmail());
 
 								sendEmailNotification.sendGeneratedEwelcomeIdDetailslToCoordinator(coordinatorEmail,map.getValue());
-								PMPMailLog pmpMailLog = 
-										new PMPMailLog(map.getKey().getProgramId(),
-												map.getKey().getCoordinatorEmail(),EmailLogConstants.WLCMID_EMAIL_DETAILS,
-												EmailLogConstants.STATUS_SUCCESS,null);
-								mailLogRepository.createMailLog(pmpMailLog);
+								try{
+									LOGGER.debug("Inserting log details in table.");
+									PMPMailLog pmpMailLog = 
+											new PMPMailLog(map.getKey().getProgramId(),
+													map.getKey().getCoordinatorEmail(),EmailLogConstants.WLCMID_EMAIL_DETAILS,
+													EmailLogConstants.STATUS_SUCCESS,null);
+									mailLogRepository.createMailLog(pmpMailLog);
+									LOGGER.debug("Completed inserting log details in table.");
+								}catch(Exception ex){
+									LOGGER.debug("Exception while inserting log details in table.");
+								}
 								for(Participant participant : map.getValue()){
 									listOfParticipantId.add(participant.getId());
 									//System.out.println("participant id "+participant.getId()+" inserted");

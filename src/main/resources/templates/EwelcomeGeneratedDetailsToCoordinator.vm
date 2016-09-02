@@ -8,7 +8,7 @@ Dear ${COORDINATOR_NAME},
 <br/>
 <div style="padding-left: 10px;">
 <p>Please note that the following e-welcome ID’s have been generated for the below given participants of the event - ${EVENT_NAME},</p>
-<table border="1" style="width: 50%;border-collapse: collapse;">
+<table border="1" style="width: 60%;border-collapse: collapse;">
 <tr>
 <td style=" width: 2%;" align=middle><b>S.No</b></td>
 <td style=" width: 15%;" align=middle><b>Participant Name</b></td>
