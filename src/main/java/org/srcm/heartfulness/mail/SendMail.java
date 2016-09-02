@@ -2,6 +2,7 @@ package org.srcm.heartfulness.mail;
 
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -405,7 +406,7 @@ public class SendMail {
 	 * @throws MessagingException if not able to send email.
 	 * @throws UnsupportedEncodingException 
 	 */
-	public void sendMailNotificationToCoordinator(CoordinatorEmail crdntrEmail) throws AddressException, MessagingException, UnsupportedEncodingException {
+	public void sendMailNotificationToCoordinator(CoordinatorEmail crdntrEmail) throws AddressException, MessagingException, UnsupportedEncodingException, ParseException {
 
 		Properties props = System.getProperties();
 		props.put("mail.debug", "true");
@@ -428,12 +429,14 @@ public class SendMail {
 		addParameter("EVENT_NAME", crdntrEmail.getEventName());
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
-		addParameter("PROGRAM_CREATE_DATE", sdf.format(crdntrEmail.getProgramCreateDate()));
+		SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
+		Date pgrmCreateDate = inputsdf.parse(crdntrEmail.getProgramCreateDate());
+		addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail,name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(crdntrEmail.getCoordinatorEmail()));
-		message.setSubject(crdntrmailsubject + sdf.format(cal.getTime()));
+		message.setSubject(crdntrmailsubject + outputsdf.format(cal.getTime()));
 		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename), "text/html");
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
