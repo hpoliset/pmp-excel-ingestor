@@ -464,7 +464,7 @@ public class SendMail {
 
 			addParameter("COORDINATOR_NAME", coordinatorEmail.getCoordinatorName()!=null?getName(coordinatorEmail.getCoordinatorName()) : "");
 			addParameter("EVENT_NAME", coordinatorEmail.getEventName()!=null?coordinatorEmail.getEventName() : "");
-			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 			StringBuilder sb = new StringBuilder();
 			int i = 1;
 			for (Participant participant : participants) {
@@ -473,13 +473,13 @@ public class SendMail {
 				sb.append("</td><td>");
 				sb.append(participant.getPrintName()!=null?participant.getPrintName() : "");
 				sb.append("</td><td>");
-				sb.append(participant.getIntroductionDate()!=null?sdf.format(participant.getIntroductionDate()) : "");
+				sb.append(participant.getEmail()!=null?participant.getEmail() : "");
 				sb.append("</td><td>");
 				sb.append(participant.getMobilePhone()!=null?participant.getMobilePhone() : "");
 				sb.append("</td><td>");
 				sb.append(participant.getWelcomeCardNumber()!=null?participant.getWelcomeCardNumber() : "");
 				sb.append("</td><td>");
-				sb.append(participant.getEmail()!=null?participant.getEmail() : "");
+				sb.append(participant.getIntroductionDate()!=null?sdf.format(participant.getIntroductionDate()) : "");
 				sb.append("</td></tr>");
 			}
 			addParameter("PARTICIPANTS_DETAILS", sb.toString());
