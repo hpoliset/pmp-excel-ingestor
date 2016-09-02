@@ -468,17 +468,17 @@ public class SendMail {
 			StringBuilder sb = new StringBuilder();
 			int i = 1;
 			for (Participant participant : participants) {
-				sb.append("<tr><td>");
+				sb.append("<tr><td style=\"width:2%;\">");
 				sb.append(i++);
-				sb.append("</td><td>");
+				sb.append("</td><td style=\"width:15%;\">");
 				sb.append(participant.getPrintName()!=null?participant.getPrintName() : "");
-				sb.append("</td><td>");
+				sb.append("</td><td style=\"width:25%;\">");
 				sb.append(participant.getEmail()!=null?participant.getEmail() : "");
-				sb.append("</td><td>");
+				sb.append("</td><td style=\"width:15%;\">");
 				sb.append(participant.getMobilePhone()!=null?participant.getMobilePhone() : "");
-				sb.append("</td><td>");
+				sb.append("</td><td style=\"width:15%;\">");
 				sb.append(participant.getWelcomeCardNumber()!=null?participant.getWelcomeCardNumber() : "");
-				sb.append("</td><td>");
+				sb.append("</td><td style=\"width:27%;\">");
 				sb.append(participant.getIntroductionDate()!=null?sdf.format(participant.getIntroductionDate()) : "");
 				sb.append("</td></tr>");
 			}
