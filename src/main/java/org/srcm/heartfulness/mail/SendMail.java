@@ -433,6 +433,7 @@ public class SendMail {
 		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
 		Date pgrmCreateDate = inputsdf.parse(crdntrEmail.getProgramCreateDate());
 		addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
+		addParameter("WELCOME_MAIL_SENT_DATE", outputsdf.format(cal.getTime()));
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail,name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(crdntrEmail.getCoordinatorEmail()));

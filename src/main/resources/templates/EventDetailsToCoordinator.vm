@@ -7,7 +7,7 @@
 Dear ${COORDINATOR_NAME},
 <br/>
 <div style="padding-left: 10px;">
-<p>Welcome mail sent to the registered participants for the event - ${EVENT_NAME} on ${PROGRAM_CREATE_DATE}. </p>
+<p>Please note that the welcome mails sent to the registered participants for the event - ${EVENT_NAME} on ${PROGRAM_CREATE_DATE}. </p>
 <p>
 <table border="1" style="width: 100%;">
 <tr>
@@ -19,7 +19,7 @@ Dear ${COORDINATOR_NAME},
 <td style=" width: 20%;" align=middle >${WLCM_MAIL_ALRDY_RCVD_PARTICIPANT_COUNT}</td>
 </tr>
 <tr>
-<td style=" width: 80%;" >No. of participants to whom welcome email sent on ${PROGRAM_CREATE_DATE}</td>
+<td style=" width: 80%;" >No. of participants to whom welcome email sent on ${WELCOME_MAIL_SENT_DATE}</td>
 <td style=" width: 20%;" align=middle >${WLCM_MAIL_RCVD_YSTRDY_PARTICIPANT_COUNT}</td>
 </tr>
 </table>
