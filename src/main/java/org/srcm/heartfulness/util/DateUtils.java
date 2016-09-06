@@ -96,7 +96,7 @@ public class DateUtils {
 		return sqlDate;
 	}
 
-	public static String getCurrentTimeInMilliSec() throws ParseException {
+	public static String getCurrentTimeInMilliSec(){
 		Calendar cal = Calendar.getInstance();
 		return new java.sql.Timestamp(cal.getTimeInMillis()).toString();
 	}

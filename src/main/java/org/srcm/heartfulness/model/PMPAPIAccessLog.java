@@ -27,13 +27,17 @@ public class PMPAPIAccessLog {
 	private String status;
 
 	private String errorMessage;
+	
+	private String requestBody;
+	
+	private String responseBody;
 
 	public PMPAPIAccessLog() {
 		super();
 	}
-
+	
 	public PMPAPIAccessLog(String username, String ipAddress, String apiName, String totalRequestedTime,
-			String totalResponseTime, String status, String errorMessage) {
+			String totalResponseTime, String status, String errorMessage, String requestBody, String responseBody) {
 		super();
 		this.username = username;
 		this.ipAddress = ipAddress;
@@ -42,13 +46,21 @@ public class PMPAPIAccessLog {
 		this.totalResponseTime = totalResponseTime;
 		this.status = status;
 		this.errorMessage = errorMessage;
+		this.requestBody = requestBody;
+		this.responseBody = responseBody;
 	}
-
-	public PMPAPIAccessLog(String totalResponseTime, String status, String errorMessage) {
+	
+	public PMPAPIAccessLog(String username, String ipAddress, String apiName, String totalRequestedTime,
+			String totalResponseTime, String status, String errorMessage, String requestBody) {
 		super();
+		this.username = username;
+		this.ipAddress = ipAddress;
+		this.apiName = apiName;
+		this.totalRequestedTime = totalRequestedTime;
 		this.totalResponseTime = totalResponseTime;
 		this.status = status;
 		this.errorMessage = errorMessage;
+		this.requestBody = requestBody;
 	}
 
 	public int getId() {
@@ -114,12 +126,29 @@ public class PMPAPIAccessLog {
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
+	
+	public String getRequestBody() {
+		return requestBody;
+	}
+
+	public void setRequestBody(String requestBody) {
+		this.requestBody = requestBody;
+	}
+
+	public String getResponseBody() {
+		return responseBody;
+	}
+
+	public void setResponseBody(String responseBody) {
+		this.responseBody = responseBody;
+	}
 
 	@Override
 	public String toString() {
 		return "PMPAPIAccessLog [id=" + id + ", username=" + username + ", ipAddress=" + ipAddress + ", apiName="
 				+ apiName + ", totalRequestedTime=" + totalRequestedTime + ", totalResponseTime=" + totalResponseTime
-				+ ", status=" + status + ", errorMessage=" + errorMessage + "]";
+				+ ", status=" + status + ", errorMessage=" + errorMessage + ", requestBody=" + requestBody
+				+ ", responseBody=" + responseBody + "]";
 	}
 
 }

@@ -24,6 +24,7 @@ import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
 import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.SmsUtil;
+import org.srcm.heartfulness.util.StackTraceUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -36,7 +37,7 @@ public class EWelcomeIDGenerationHelper {
 
 	@Autowired
 	ProgramRepository programRepository;
-	
+
 	@Autowired
 	APIAccessLogService apiAccessLogService;
 
@@ -44,36 +45,38 @@ public class EWelcomeIDGenerationHelper {
 	 * Method to generate e-welcome ID by calling the SRCM API
 	 * 
 	 * @param participant
-	 * @param id 
+	 * @param id
 	 * @throws HttpClientErrorException
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
-	 * @throws ParseException 
+	 * @throws ParseException
 	 */
-	public void generateEWelcomeId(Participant participant, int id) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException, ParseException {
-		
-		
+	public void generateEWelcomeId(Participant participant, int id) throws HttpClientErrorException,
+			JsonParseException, JsonMappingException, IOException, ParseException {
+
 		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.GEOSEARCH_URI,
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
+				StackTraceUtils.convertPojoToJson(participant.getCity() + "," + participant.getState() + ","
+						+ participant.getCountry()), null);
 		apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
 		GeoSearchResponse geoSearchResponse = srcmRestTemplate.geoSearch(participant.getCity() + ","
 				+ participant.getState() + "," + participant.getCountry());
 		accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(geoSearchResponse));
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-		
-		
+
 		PMPAPIAccessLogDetails citiesAPIAccessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.CITIES_API,
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
+				StackTraceUtils.convertPojoToJson(geoSearchResponse.getCityId()), null);
 		apiAccessLogService.createPmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 		CitiesAPIResponse citiesAPIResponse = srcmRestTemplate.getCityName(geoSearchResponse.getCityId());
 		citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+		citiesAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(citiesAPIResponse));
 		citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
 		apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
-		
-		
+
 		Aspirant aspirant = new Aspirant();
 		aspirant.setCity(citiesAPIResponse.getName());
 		aspirant.setState(String.valueOf(geoSearchResponse.getStateId()));
@@ -100,34 +103,37 @@ public class EWelcomeIDGenerationHelper {
 				.getAddressLine1() : null);
 		aspirant.setStreet2((null != participant.getAddressLine2() && !participant.getAddressLine2().isEmpty()) ? participant
 				.getAddressLine2() : null);
-		
-		PMPAPIAccessLogDetails aspirantAPIAccessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.CREATE_ASPIRANT_URI,
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
+
+		PMPAPIAccessLogDetails aspirantAPIAccessLogDetails = new PMPAPIAccessLogDetails(id,
+				EndpointConstants.CREATE_ASPIRANT_URI, DateUtils.getCurrentTimeInMilliSec(), null,
+				ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(aspirant), null);
 		apiAccessLogService.createPmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 		UserProfile userProfile = srcmRestTemplate.createAspirant(aspirant);
 		aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+		aspirantAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(userProfile));
 		aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
 		apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
-		
+
 		participant.getProgram().setSrcmGroup(String.valueOf(geoSearchResponse.getNearestCenter()));
 		participant.setWelcomeCardNumber(userProfile.getRef());
 		participant.setWelcomeCardDate(new Date());
 	}
 
 	/**
-	 * Method to generate e-welcome ID by calling the SRCM API (SMS INTEGRATION WITHOUT LOG)
+	 * Method to generate e-welcome ID by calling the SRCM API (SMS INTEGRATION
+	 * WITHOUT LOG)
 	 * 
 	 * @param participant
-	 * @param id 
+	 * @param id
 	 * @throws HttpClientErrorException
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
-	 * @throws ParseException 
+	 * @throws ParseException
 	 */
 	public void generateEWelcomeId(Participant participant) throws HttpClientErrorException, JsonParseException,
 			JsonMappingException, IOException {
-		
+
 		GeoSearchResponse geoSearchResponse = srcmRestTemplate.geoSearch(participant.getCity() + ","
 				+ participant.getState() + "," + participant.getCountry());
 		CitiesAPIResponse citiesAPIResponse = srcmRestTemplate.getCityName(geoSearchResponse.getCityId());
@@ -163,7 +169,6 @@ public class EWelcomeIDGenerationHelper {
 		participant.setWelcomeCardDate(new Date());
 	}
 
-	
 	/**
 	 * Method to save the program details into the pmp database
 	 * 

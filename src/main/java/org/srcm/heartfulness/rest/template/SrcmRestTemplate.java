@@ -41,7 +41,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:prod.srcm.api.properties", ignoreUnknownFields = false, prefix = "srcm.oauth2")
+@ConfigurationProperties(locations = "classpath:dev.srcm.api.properties", ignoreUnknownFields = false, prefix = "srcm.oauth2")
 public class SrcmRestTemplate extends RestTemplate {
 
 	private String clientId;
@@ -64,6 +64,7 @@ public class SrcmRestTemplate extends RestTemplate {
 
 	@NotNull
 	private AbyasiInfo abyasi;
+
 	/**
 	 * Class to hold the abyasi related information by reading from properties
 	 * file.
@@ -152,13 +153,13 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * Method to get the user profile with token details by calling MySRCM API.
 	 * 
 	 * @param accessToken
-	 * @param id 
+	 * @param id
 	 * @return
 	 * @throws HttpClientErrorException
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
-	 * @throws ParseException 
+	 * @throws ParseException
 	 */
 	public Result getUserProfile(String accessToken) throws HttpClientErrorException, JsonParseException,
 			JsonMappingException, IOException, ParseException {

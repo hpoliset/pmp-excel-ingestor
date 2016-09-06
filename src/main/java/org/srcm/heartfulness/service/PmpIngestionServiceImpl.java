@@ -21,14 +21,9 @@ import org.srcm.heartfulness.enumeration.ExcelType;
 import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractorFactory;
 import org.srcm.heartfulness.model.Organisation;
 import org.srcm.heartfulness.model.Program;
-import org.srcm.heartfulness.model.json.response.AbhyasiResult;
-import org.srcm.heartfulness.model.json.response.AbhyasiUserProfile;
-import org.srcm.heartfulness.model.json.response.Result;
-import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.repository.OrganisationRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
-import org.srcm.heartfulness.rest.template.SrcmRestTemplate.AbyasiInfo;
 import org.srcm.heartfulness.service.response.ExcelUploadResponse;
 import org.srcm.heartfulness.util.ExcelParserUtils;
 import org.srcm.heartfulness.util.InvalidExcelFileException;
@@ -56,11 +51,12 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	SrcmRestTemplate srcmRestTemplate;
 
 	/**
-	 * This method is used to parse the excel file and populate the data into database.
+	 * This method is used to parse the excel file and populate the data into
+	 * database.
 	 * 
 	 * @param fileName
 	 * @param fileContent
-	 * @return the status and error messages. 
+	 * @return the status and error messages.
 	 */
 	@Override
 	@Transactional
@@ -74,66 +70,74 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			// Validate and Parse the excel file
 			ExcelType version = versionIdentifier.findVersion(workBook);
 			response.setExcelVersion(version);
-			if(version != version.INVALID){
+			if (version != version.INVALID) {
 				errorResponse = EventDetailsExcelValidatorFactory.validateExcel(workBook, version);
 				if (!errorResponse.isEmpty()) {
 					response.setErrorMsg(errorResponse);
 					response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 				} else {
 					// Persist the program
-					try{
+					try {
 						Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version);
 						program.setCreatedSource("Excel");
 
-						if(	null != program.getPreceptorIdCardNumber() && !program.getPreceptorIdCardNumber().isEmpty()){
-							AbhyasiResult result = srcmRestTemplate.getAbyasiProfile(program.getPreceptorIdCardNumber());
-							if (result.getUserProfile().length > 0) {
-								AbhyasiUserProfile userProfile = result.getUserProfile()[0];
-								if (null != userProfile) {
-									if (true == userProfile.isIs_prefect()
-											&& 0 != userProfile.getPrefect_id()) {
-										program.setAbyasiRefNo(program.getPreceptorIdCardNumber());
-										program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
-										//program.setSrcmGroup(String.valueOf(userProfile.getSrcm_group()));
-										programRepository.save(program);
-										response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
-									} else {
-										errorResponse.add("Specified PreceptorId Card Number is not authorized.");
-										response.setErrorMsg(errorResponse);
-										response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
-									}
-								} else {
-									errorResponse.add("Invalid PreceptorId Card Number.");
-									response.setErrorMsg(errorResponse);
-									response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
-								}
-							}else{
-								errorResponse.add("Invalid PreceptorId Card Number.");
-								response.setErrorMsg(errorResponse);
-								response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
-							}
-						} else {
-							programRepository.save(program);
-							response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
-						}
-					}catch(InvalidExcelFileException ex){
+						/*
+						 * if( null != program.getPreceptorIdCardNumber() &&
+						 * !program.getPreceptorIdCardNumber().isEmpty()){
+						 * AbhyasiResult result =
+						 * srcmRestTemplate.getAbyasiProfile
+						 * (program.getPreceptorIdCardNumber()); if
+						 * (result.getUserProfile().length > 0) {
+						 * AbhyasiUserProfile userProfile =
+						 * result.getUserProfile()[0]; if (null != userProfile)
+						 * { if (true == userProfile.isIs_prefect() && 0 !=
+						 * userProfile.getPrefect_id()) {
+						 * program.setAbyasiRefNo(
+						 * program.getPreceptorIdCardNumber());
+						 * program.setPrefectId
+						 * (String.valueOf(userProfile.getPrefect_id()));
+						 * //program
+						 * .setSrcmGroup(String.valueOf(userProfile.getSrcm_group
+						 * ())); programRepository.save(program);
+						 * response.setStatus
+						 * (EventDetailsUploadConstants.SUCCESS_STATUS); } else
+						 * { errorResponse.add(
+						 * "Specified PreceptorId Card Number is not authorized."
+						 * ); response.setErrorMsg(errorResponse);
+						 * response.setStatus
+						 * (EventDetailsUploadConstants.FAILURE_STATUS); } }
+						 * else {
+						 * errorResponse.add("Invalid PreceptorId Card Number."
+						 * ); response.setErrorMsg(errorResponse);
+						 * response.setStatus
+						 * (EventDetailsUploadConstants.FAILURE_STATUS); }
+						 * }else{
+						 * errorResponse.add("Invalid PreceptorId Card Number."
+						 * ); response.setErrorMsg(errorResponse);
+						 * response.setStatus
+						 * (EventDetailsUploadConstants.FAILURE_STATUS); } }
+						 * else {
+						 */
+						programRepository.save(program);
+						response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
+						// }
+					} catch (InvalidExcelFileException ex) {
 						errorResponse.add(ex.getCause().getLocalizedMessage());
 						response.setErrorMsg(errorResponse);
 						response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
-					}catch(Exception ex){
+					} catch (Exception ex) {
 						errorResponse.add(ex.getCause().getLocalizedMessage());
 						response.setErrorMsg(errorResponse);
 						response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 					}
 
-
 				}
-			}else{
+			} else {
 				errorResponse.add("Invalid file contents.");
 				response.setErrorMsg(errorResponse);
 				response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 			}
-		}catch (IOException | InvalidExcelFileException | POIXMLException ex) {
+		} catch (IOException | InvalidExcelFileException | POIXMLException ex) {
 			// To show the error message to the end user.
 			LOGGER.error(ex.getMessage());
 			errorResponse.add(ex.getMessage());
