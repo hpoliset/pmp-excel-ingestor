@@ -61,7 +61,6 @@ public class UserController {
 	 * @param accessToken
 	 * @param request
 	 * @return
-	 * @throws IOException
 	 */
 	@RequestMapping(value = "/user", method = RequestMethod.GET)
 	public ResponseEntity<?> getUserProfile(@RequestHeader(value = "Authorization") String token,
@@ -128,7 +127,6 @@ public class UserController {
 	 * @param token
 	 *            , Token to be validated against MYSRCM endpoint.
 	 * @return
-	 * @throws IOException
 	 */
 	@RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<?> updateUser(@PathVariable int id, @RequestBody User user,

@@ -62,7 +62,6 @@ public class SubscriptionController {
 	 * @param model
 	 * @param subscriptionRequest
 	 * @return
-	 * @throws IOException
 	 */
 	@RequestMapping(value = "/unsubscribemail", method = RequestMethod.POST)
 	public ResponseEntity<?> unSubscribeToMailAlerts(HttpServletRequest request, Model model,
@@ -100,7 +99,6 @@ public class SubscriptionController {
 	 * 
 	 * @param subscriptionRequest
 	 * @return
-	 * @throws IOException
 	 */
 	@RequestMapping(value = "/subscribemail", method = RequestMethod.POST)
 	public ResponseEntity<?> subscribeToMailAlerts(@RequestBody SubscriptionRequest subscriptionRequest,

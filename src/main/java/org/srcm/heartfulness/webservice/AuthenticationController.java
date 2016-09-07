@@ -70,7 +70,6 @@ public class AuthenticationController {
 	 * 
 	 * @param authenticationRequest
 	 * @return
-	 * @throws IOException
 	 */
 	@RequestMapping(value = "authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest, HttpSession session,
