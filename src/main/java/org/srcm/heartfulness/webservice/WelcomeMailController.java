@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.mail.SendMail;
@@ -55,9 +54,8 @@ public class WelcomeMailController {
 		}
 	}
 
-	/*@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") */
-	@RequestMapping(value="/uploadftp",method = RequestMethod.GET)
-	public String uploadDailyWelcomeMailidsToFTP() {
+	@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") 
+	public void uploadDailyWelcomeMailidsToFTP() {
 		try {
 			LOGGER.debug("Upload File to FTP called.");
 			WelcomeMailService.uploadParticipantEmailidsToFTP();
@@ -65,7 +63,6 @@ public class WelcomeMailController {
 		} catch (Exception e) {
 			LOGGER.error("Exception while uploading file - {} " + e.getMessage());
 		}
-		return "completed";
 	}
 
 	/**
@@ -73,25 +70,21 @@ public class WelcomeMailController {
 	 * about the participants who have received welcome emails.It is a crob job
 	 * running at a scheduled time.
 	 */
-	/*@Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}") */
-	@RequestMapping(value="/sendwlcmmail",method = RequestMethod.GET)
-	public String sendEmailToCoordinator() {
+	@Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}") 
+	public void sendEmailToCoordinator() {
 		LOGGER.debug("START		:Cron job started to fetch participants to whom welcome mail already sent");
 		WelcomeMailService.getCoordinatorListAndSendMail();
 		LOGGER.debug("END		:Cron job completed to fetch participants to whom welcome mail already sent");
-		return "completed";
 	}
 
-	/*@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}") */
-	@RequestMapping(value="/sendewlcmidmmail",method = RequestMethod.GET)
-	public String sendGeneratedEwelcomeIdToCoordinators() {
+	@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}") 
+	public void sendGeneratedEwelcomeIdToCoordinators() {
 		try {
 			LOGGER.debug("Sending mail to co-ordinator for e-welcome id generation called.");
 			WelcomeMailService.getGeneratedEwelcomeIdAndSendToCoordinators();
 		} catch (Exception e) {
 			LOGGER.error("Exception while sending file - {} " + e.getMessage());
 		}
-		return "completed";
 	}
 
 }

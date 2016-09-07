@@ -301,7 +301,7 @@ public class ProgramServiceImpl implements ProgramService {
 	 */
 	@Override
 	public List<Event> createOrUpdateEvent(List<Event> events, int id) throws HttpClientErrorException,
-			JsonParseException, JsonMappingException, IOException, ParseException {
+	JsonParseException, JsonMappingException, IOException, ParseException {
 		SimpleDateFormat initialsdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
 		for (Event event : events) {
 
@@ -741,7 +741,7 @@ public class ProgramServiceImpl implements ProgramService {
 	@SuppressWarnings("unused")
 	@Override
 	public String generateeWelcomeID(Participant participant, int id) throws HttpClientErrorException,
-			JsonParseException, JsonMappingException, IOException, ParseException {
+	JsonParseException, JsonMappingException, IOException, ParseException {
 		if (participant.getId() > 0 && participant.getProgramId() > 0) {
 			if (participant.getSeqId() != null && participant.getSeqId().length() == 4) {
 				if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty()
@@ -855,14 +855,12 @@ public class ProgramServiceImpl implements ProgramService {
 			} else {
 				try {
 					accessLogDetails = new PMPAPIAccessLogDetails(
-							id,
-							EndpointConstants.ABHYASI_INFO_URI,
+							id,EndpointConstants.ABHYASI_INFO_URI,
 							DateUtils.getCurrentTimeInMilliSec(),
 							null,
 							ErrorConstants.STATUS_FAILED,
 							null,
-							StackTraceUtils.convertPojoToJson(program.getPreceptorIdCardNumber()),
-							null);
+							StackTraceUtils.convertPojoToJson("Request : " + program.getPreceptorIdCardNumber() + " ,Event ID : "+participantRequest.getEventId()));
 					int accessdetailsID = apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
 					accessLogDetails.setId(accessdetailsID);
 					AbhyasiResult result;
@@ -913,8 +911,8 @@ public class ProgramServiceImpl implements ProgramService {
 						accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 						accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 						accessLogDetails
-								.setResponseBody(StackTraceUtils
-										.convertPojoToJson("Error while fetching abhyasi profile from MySRCM : parsing exception "));
+						.setResponseBody(StackTraceUtils
+								.convertPojoToJson("Error while fetching abhyasi profile from MySRCM : parsing exception "));
 						accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 						apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 					}
@@ -924,8 +922,8 @@ public class ProgramServiceImpl implements ProgramService {
 						accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 						accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 						accessLogDetails
-								.setResponseBody(StackTraceUtils
-										.convertPojoToJson("Error while fetching abhyasi profile from MySRCM : parsing exception "));
+						.setResponseBody(StackTraceUtils
+								.convertPojoToJson("Error while fetching abhyasi profile from MySRCM : parsing exception "));
 						accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 						apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 					}
@@ -936,8 +934,8 @@ public class ProgramServiceImpl implements ProgramService {
 						accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 						accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 						accessLogDetails
-								.setResponseBody(StackTraceUtils
-										.convertPojoToJson("Error while fetching abhyasi profile from MySRCM : parsing exception "));
+						.setResponseBody(StackTraceUtils
+								.convertPojoToJson("Error while fetching abhyasi profile from MySRCM : parsing exception "));
 						accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 						apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 					}
