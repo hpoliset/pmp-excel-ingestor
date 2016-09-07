@@ -39,76 +39,62 @@
 }
 </style>
 <script>
-$(document).ready(function(){
-    $(document).ajaxStart(function(){
-        $("#wait").css("display", "block");
-    });
-    $(document).ajaxComplete(function(){
-        $("#wait").css("display", "none");
-    });
-});
+	$(document).ready(function() {
+		$(document).ajaxStart(function() {
+			$("#wait").css("display", "block");
+		});
+		$(document).ajaxComplete(function() {
+			$("#wait").css("display", "none");
+		});
+	});
 </script>
 <script type="text/javascript" language="javascript">
-	$(document)
-			.ready(
-					function() {
-						var redirectUrl = '${redirecturl}';
-						if(redirectUrl != null){
-							$('#modal_trigger')[0].click();
+	$(document).ready(function() {
+		var redirectUrl = '${redirecturl}';
+		if (redirectUrl != null) {
+			$('#modal_trigger')[0].click();
+		}
+		var url = 'https://pmp.heartfulness.org/pmp/api/authenticate';
+		var getuserurl = 'https://pmp.heartfulness.org/pmp/api/v1/user';
+		var id;
+		$("#submit").click(function() {
+			$.ajax({
+				url : url,
+				contentType : "application/json",
+				dataType : "json",
+				type : "POST",
+				data : JSON.stringify(getFormData($("#loginform"))),
+				success : function(loginresponse) {
+					$.ajax({
+						url : getuserurl,
+						contentType : "application/json",
+						dataType : "json",
+						type : "GET",
+						headers : {
+							'Content-Type' : 'application/json',
+							'Authorization' : loginresponse.access_token
+						},
+						success : function(response) {
+							if (redirectUrl != null) {
+								window.location.href = "/pmp" + redirectUrl;
+							} else {
+								window.location.href = "/pmp/index";
+							}
+						},
+						error : function(loginresponse) {
 						}
-					 	var url = 'https://pmp.heartfulness.org/pmp/api/authenticate';
-						var getuserurl = 'https://pmp.heartfulness.org/pmp/api/v1/user';  
-						var id;
-						$("#submit")
-								.click(
-										function() {
-											$
-													.ajax({
-														url : url,
-														contentType : "application/json",
-														dataType : "json",
-														type : "POST",
-														data : JSON
-																.stringify(getFormData($("#loginform"))),
-														success : function(
-																loginresponse) {
-														 	$
-																	.ajax({
-																		url : getuserurl,
-																		contentType : "application/json",
-																		dataType : "json",
-																		type : "GET",
-																		headers : {
-																			'Content-Type' : 'application/json',
-																			'Authorization' : loginresponse.access_token
-																		},
-																		success : function(
-																				response) {
-																			if(redirectUrl != null){
-																				window.location.href = "/pmp" + redirectUrl;
-																			}else{
-																				window.location.href = "/pmp/index";
-																			}
-																		},
-																		error : function(
-																				loginresponse) {
-																		}
 
-																	});
-
-																	/* window.location.href = "/pmp/index"; */
-														},
-														error : function(
-																response) {
-															$("#changepassword")
-																	.html("");
-															$("#error")
-																	.html(
-																			"Invalid Username/Password");
-														}
-													});
-										});
 					});
+
+					/* window.location.href = "/pmp/index"; */
+				},
+				error : function(response) {
+					$("#changepassword").html("");
+					$("#error").html("Invalid Username/Password");
+				}
+			});
+		});
+	});
 	function getFormData($form) {
 		var unindexed_array = $form.serializeArray();
 		var indexed_array = {};
@@ -121,7 +107,7 @@ $(document).ready(function(){
 	}
 </script>
 </head>
-<body style="background-color:  #dee6ed;">
+<body style="background-color: #dee6ed;">
 	<div id="mainDiv" style="width: 100%; height: 100%;">
 		<div id="horizon">
 			<div id="content">
@@ -136,8 +122,9 @@ $(document).ready(function(){
 									<table width="280px;" border="0">
 										<tr>
 											<td style="font-size: medium;">
-											<!-- <input type="button" id="modal_trigger" class="button-primary" value="Login/Register" /> -->
-											Click <a id="modal_trigger" href="#modal" class="" > here</a> to Login/Register
+												<!-- <input type="button" id="modal_trigger" class="button-primary" value="Login/Register" /> -->
+												Click <a id="modal_trigger" href="#modal" class="">
+													here</a> to Login/Register
 											</td>
 										</tr>
 									</table>
@@ -149,47 +136,49 @@ $(document).ready(function(){
 			</div>
 		</div>
 		<div id="modal" class="popupContainer"
-				style="display: none; top: 10px">
-				<header class="popupHeader">
-					<span class="header_title">Login</span> 
-					<a class="modal_close" href="#"></a>
-				</header>
+			style="display: none; top: 10px">
+			<header class="popupHeader">
+				<span class="header_title">Login</span> <a class="modal_close"
+					href="#"></a>
+			</header>
 			<section class="popupBody">
-					<!-- Social Login -->
-					<div class="social_login">
-						<div align="center" class="row">
-							<h3>Login</h3>
-							<form:form method="post" action="/pmp/login" id="loginform">
-								<table width="400" height="100">
-									<tr>
-										<td colspan="2"><div id="error" align="center"
-												style="color: red"></div></td>
-									</tr>
-									<tr>
-										<td>User Name<span class="mandatory"> *</span></td>
-										<td><input id="username" name="username" type="email"
-											class="six columns" placeholder="Enter eMail"></td>
-									</tr>
-									<tr>
-										<td>Password<span class="mandatory"> *</span></td>
-										<td><input id="password" name="password" type="password"
-											class="six columns" placeholder="Enter Password"></td>
-									</tr>
-									<tr>
-										<td colspan="3" align="left"><input type="button"
-											value="Submit" id="submit" class="button-primary"></td>
-									</tr>
-								</table>
-							</form:form>
-						</div>
-						
-						<div id="wait" style="display:none;width:69px;height:89px;position:absolute;top:50%;left:50%;padding:2px;">
-						<img src='/pmp/images/wait.gif' width="64" height="64" /><br>Loading..</div>
-						
-						</div>
-				</section>
-			</div>
+				<!-- Social Login -->
+				<div class="social_login">
+					<div align="center" class="row">
+						<h3>Login</h3>
+						<form:form method="post" action="/pmp/login" id="loginform">
+							<table width="400" height="100">
+								<tr>
+									<td colspan="2"><div id="error" align="center"
+											style="color: red"></div></td>
+								</tr>
+								<tr>
+									<td>User Name<span class="mandatory"> *</span></td>
+									<td><input id="username" name="username" type="email"
+										class="six columns" placeholder="Enter eMail"></td>
+								</tr>
+								<tr>
+									<td>Password<span class="mandatory"> *</span></td>
+									<td><input id="password" name="password" type="password"
+										class="six columns" placeholder="Enter Password"></td>
+								</tr>
+								<tr>
+									<td colspan="3" align="left"><input type="button"
+										value="Submit" id="submit" class="button-primary"></td>
+								</tr>
+							</table>
+						</form:form>
+					</div>
+
+					<div id="wait"
+						style="display: none; width: 69px; height: 89px; position: absolute; top: 50%; left: 50%; padding: 2px;">
+						<img src='/pmp/images/wait.gif' width="64" height="64" /><br>Loading..
+					</div>
+
+				</div>
+			</section>
 		</div>
+	</div>
 	<script type="text/javascript">
 		//Plugin options and our code
 		$("#modal_trigger").leanModal({

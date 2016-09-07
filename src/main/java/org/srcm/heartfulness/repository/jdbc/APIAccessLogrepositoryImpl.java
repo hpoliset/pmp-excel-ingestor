@@ -54,7 +54,9 @@ public class APIAccessLogrepositoryImpl implements APIAccesslogRepository {
 					+  	"total_requested_time=:totalRequestedTime, " 
 					+  	"total_response_time=:totalResponseTime, "
 					+   "status=:status, "
-					+ 	"error_message=:errorMessage "
+					+ 	"error_message=:errorMessage, "
+					+ 	"request_body=:requestBody, "
+					+ 	"response_body=:responseBody "
 					+ 	"WHERE id=:id", parameterSource);
 		}
 		return accessLog.getId();
@@ -78,7 +80,9 @@ public class APIAccessLogrepositoryImpl implements APIAccesslogRepository {
 					+  	"requested_time=:requestedTime, " 
 					+  	"response_time=:responseTime, "
 					+   "status=:status, "
-					+ 	"error_message=:errorMessage "
+					+ 	"error_message=:errorMessage, "
+					+ 	"request_body=:requestBody, "
+					+ 	"response_body=:responseBody "
 					+ 	"WHERE id=:id", parameterSource);
 		}
 		return accessLogDetails.getId();

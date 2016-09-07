@@ -1,5 +1,7 @@
 package org.srcm.heartfulness.model.json.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * This class is the request for the login through MYSRCM
  * 
@@ -10,6 +12,8 @@ public class AuthenticationRequest {
 
 	private String username;
 	private String password;
+
+	@JsonIgnore
 	private String refreshToken;
 
 	public AuthenticationRequest() {

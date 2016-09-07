@@ -14,6 +14,7 @@ import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.repository.UserRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
 import org.srcm.heartfulness.util.DateUtils;
+import org.srcm.heartfulness.util.StackTraceUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -63,12 +64,13 @@ public class UserProfileServiceImpl implements UserProfileService {
 	public Result getUserProfile(String accessToken, int id)
 			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException, ParseException {
 		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.GET_USER_PROFILE,
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,StackTraceUtils.convertPojoToJson(accessToken),null);
 		int accessdetailsID = apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
 		accessLogDetails.setId(accessdetailsID);
 		Result result = srcmRest.getUserProfile(accessToken);
 		accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(result));
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 		return result;
 	}

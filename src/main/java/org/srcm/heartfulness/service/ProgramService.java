@@ -11,6 +11,7 @@ import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
+import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
 
@@ -277,5 +278,7 @@ public interface ProgramService {
 	 */
 	public String generateeWelcomeID(Participant participant, int id) throws HttpClientErrorException,
 			JsonParseException, JsonMappingException, IOException, ParseException;
+
+	public String validatePreceptorIDCardNumber(ParticipantIntroductionRequest participantRequest, int id);
 
 }

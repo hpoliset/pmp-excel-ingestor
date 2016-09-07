@@ -64,6 +64,7 @@ public class SrcmRestTemplate extends RestTemplate {
 
 	@NotNull
 	private AbyasiInfo abyasi;
+
 	/**
 	 * Class to hold the abyasi related information by reading from properties
 	 * file.
@@ -152,13 +153,13 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * Method to get the user profile with token details by calling MySRCM API.
 	 * 
 	 * @param accessToken
-	 * @param id 
+	 * @param id
 	 * @return
 	 * @throws HttpClientErrorException
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
-	 * @throws ParseException 
+	 * @throws ParseException
 	 */
 	public Result getUserProfile(String accessToken) throws HttpClientErrorException, JsonParseException,
 			JsonMappingException, IOException, ParseException {
@@ -327,20 +328,18 @@ public class SrcmRestTemplate extends RestTemplate {
 	 */
 	private void setProxy() {
 
-		/*
-		 * CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		 * credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST,
-		 * AuthScope.ANY_PORT), new UsernamePasswordCredentials(proxyUser,
-		 * proxyPassword)); HttpClientBuilder clientBuilder =
-		 * HttpClientBuilder.create(); clientBuilder.useSystemProperties();
-		 * clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
-		 * clientBuilder.setDefaultCredentialsProvider(credsProvider);
-		 * clientBuilder.setProxyAuthenticationStrategy(new
-		 * ProxyAuthenticationStrategy()); CloseableHttpClient client =
-		 * clientBuilder.build(); HttpComponentsClientHttpRequestFactory factory
-		 * = new HttpComponentsClientHttpRequestFactory();
-		 * factory.setHttpClient(client); this.setRequestFactory(factory);
-		 */
+		/*CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
+				new UsernamePasswordCredentials(proxyUser, proxyPassword));
+		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+		clientBuilder.useSystemProperties();
+		clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
+		clientBuilder.setDefaultCredentialsProvider(credsProvider);
+		clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
+		CloseableHttpClient client = clientBuilder.build();
+		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+		factory.setHttpClient(client);
+		this.setRequestFactory(factory);*/
 
 	}
 

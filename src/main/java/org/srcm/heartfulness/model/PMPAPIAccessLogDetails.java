@@ -12,25 +12,29 @@ package org.srcm.heartfulness.model;
 public class PMPAPIAccessLogDetails {
 
 	private int id;
-	
+
 	private int pmpAccessLogId;
-	
+
 	private String endpoint;
-	
+
 	private String requestedTime;
-	
+
 	private String responseTime;
-	
+
 	private String status;
-	
+
 	private String errorMessage;
+
+	private String requestBody;
+
+	private String responseBody;
 
 	public PMPAPIAccessLogDetails() {
 		super();
 	}
-
-	public PMPAPIAccessLogDetails(int pmpAccessLogId, String endpoint, String requestedTime, String responseTime,
-			String status, String errorMessage) {
+	
+	public PMPAPIAccessLogDetails(int pmpAccessLogId, String endpoint, String requestedTime,
+			String responseTime, String status, String errorMessage, String requestBody, String responseBody) {
 		super();
 		this.pmpAccessLogId = pmpAccessLogId;
 		this.endpoint = endpoint;
@@ -38,6 +42,20 @@ public class PMPAPIAccessLogDetails {
 		this.responseTime = responseTime;
 		this.status = status;
 		this.errorMessage = errorMessage;
+		this.requestBody = requestBody;
+		this.responseBody = responseBody;
+	}
+
+	public PMPAPIAccessLogDetails(int pmpAccessLogId, String endpoint, String requestedTime, String responseTime,
+			String status, String errorMessage, String requestBody) {
+		super();
+		this.pmpAccessLogId = pmpAccessLogId;
+		this.endpoint = endpoint;
+		this.requestedTime = requestedTime;
+		this.responseTime = responseTime;
+		this.status = status;
+		this.errorMessage = errorMessage;
+		this.requestBody = requestBody;
 	}
 
 	public int getId() {
@@ -96,11 +114,28 @@ public class PMPAPIAccessLogDetails {
 		this.errorMessage = errorMessage;
 	}
 
+	public String getRequestBody() {
+		return requestBody;
+	}
+
+	public void setRequestBody(String requestBody) {
+		this.requestBody = requestBody;
+	}
+
+	public String getResponseBody() {
+		return responseBody;
+	}
+
+	public void setResponseBody(String responseBody) {
+		this.responseBody = responseBody;
+	}
+
 	@Override
 	public String toString() {
 		return "PMPAPIAccessLogDetails [id=" + id + ", pmpAccessLogId=" + pmpAccessLogId + ", endpoint=" + endpoint
 				+ ", requestedTime=" + requestedTime + ", responseTime=" + responseTime + ", status=" + status
-				+ ", errorMessage=" + errorMessage + "]";
+				+ ", errorMessage=" + errorMessage + ", requestBody=" + requestBody + ", responseBody=" + responseBody
+				+ "]";
 	}
 
 }

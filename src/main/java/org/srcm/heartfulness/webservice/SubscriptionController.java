@@ -1,6 +1,6 @@
 package org.srcm.heartfulness.webservice;
 
-import java.text.ParseException;
+import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,7 +23,10 @@ import org.srcm.heartfulness.model.json.response.Response;
 import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.SubscriptionService;
 import org.srcm.heartfulness.util.DateUtils;
+import org.srcm.heartfulness.util.StackTraceUtils;
 import org.srcm.heartfulness.validator.SubscriptionValidator;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class holds the web service end points to handle Subscription and
@@ -47,6 +50,8 @@ public class SubscriptionController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionController.class);
 
+	ObjectMapper mapper = new ObjectMapper();
+
 	/**
 	 * Webservice endpoint to unsubscribe the user email ID.
 	 * 
@@ -60,16 +65,17 @@ public class SubscriptionController {
 	 */
 	@RequestMapping(value = "/unsubscribemail", method = RequestMethod.POST)
 	public ResponseEntity<?> unSubscribeToMailAlerts(HttpServletRequest request, Model model,
-			@RequestBody SubscriptionRequest subscriptionRequest, @Context HttpServletRequest httpRequest)
-			throws ParseException {
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(subscriptionRequest.getMailID(), httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
+			@RequestBody SubscriptionRequest subscriptionRequest, @Context HttpServletRequest httpRequest) {
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(subscriptionRequest.getMailID(), httpRequest.getRemoteAddr(),
+				httpRequest.getRequestURI(), DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED,
+				null, StackTraceUtils.convertPojoToJson(subscriptionRequest), null);
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
-		LOGGER.debug("Unsubcribe user called.");
+		LOGGER.debug("Unsubcribe user called - {} ", subscriptionRequest.getName());
 		Map<String, String> map = subscriptionValidator.checkMandatoryFieldsinSubscriptionRequest(subscriptionRequest);
 		if (!map.isEmpty()) {
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(map.toString());
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(map));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
@@ -77,6 +83,7 @@ public class SubscriptionController {
 			Response response = subscriptionService.unsubscribe(subscriptionRequest.getMailID(),
 					subscriptionRequest.getName());
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
@@ -84,8 +91,8 @@ public class SubscriptionController {
 	}
 
 	/**
-	 * Webservice endpoint to subscribe the user emailID to recieve the emails
-	 * from HFN.
+	 * Webservice endpoint to subscribe the user emailID to receive the email
+	 * ID's from HFN.
 	 * 
 	 * If the subscription is successful, the service returns an success
 	 * response body with HTTP status 200.
@@ -95,21 +102,24 @@ public class SubscriptionController {
 	 */
 	@RequestMapping(value = "/subscribemail", method = RequestMethod.POST)
 	public ResponseEntity<?> subscribeToMailAlerts(@RequestBody SubscriptionRequest subscriptionRequest,
-			@Context HttpServletRequest httpRequest) throws ParseException {
-		LOGGER.debug("subcribe user called.");
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(subscriptionRequest.getMailID(), httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null);
+			@Context HttpServletRequest httpRequest) {
+		LOGGER.debug("subcribe user called - {} ", subscriptionRequest.getName());
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(subscriptionRequest.getMailID(), httpRequest.getRemoteAddr(),
+				httpRequest.getRequestURI(), DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED,
+				null, StackTraceUtils.convertPojoToJson(subscriptionRequest), null);
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		Map<String, String> map = subscriptionValidator.checkMandatoryFieldsinSubscriptionRequest(subscriptionRequest);
 		if (!map.isEmpty()) {
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(map.toString());
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(map));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
 		} else {
 			Response response = subscriptionService.subscribetoMailAlerts(subscriptionRequest);
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<Response>(response, HttpStatus.OK);

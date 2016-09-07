@@ -8,7 +8,6 @@ import javax.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
@@ -25,29 +24,28 @@ public class SendyAPIController {
 
 	@Autowired
 	private WelcomeMailService sendyAPIService;
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendyAPIController.class);
 
-	/*@Scheduled(cron = "${welcome.mail.subscribe.cron.time}")*/
-	public void subscribeUser(){
+	/* @Scheduled(cron = "${welcome.mail.subscribe.cron.time}") */
+	public void subscribeUser() {
 		try {
-			LOGGER.debug("Scheduler started at - "+new Date());
+			LOGGER.debug("Scheduler started at - " + new Date());
 			sendyAPIService.addNewSubscriber();
 		} catch (HttpClientErrorException | IOException | MessagingException e) {
-			//e.printStackTrace();
-			LOGGER.error("Exception while Subscribe - {} "+ e.getMessage());
+			// e.printStackTrace();
+			LOGGER.error("Exception while Subscribe - {} " + e.getMessage());
 		}
 	}
-	
-	
-	/*@Scheduled(cron = "${welcome.mail.unsubscribe.cron.time}")*/
-	public void unsubscribeUser(){
+
+	/* @Scheduled(cron = "${welcome.mail.unsubscribe.cron.time}") */
+	public void unsubscribeUser() {
 		try {
 			LOGGER.debug("Unsubcribe user called.");
 			sendyAPIService.unsubscribeUsers();
 		} catch (HttpClientErrorException | IOException e) {
-			//e.printStackTrace();
-			LOGGER.error("Exception while Unsubscribe - {} "+ e.getMessage());
+			// e.printStackTrace();
+			LOGGER.error("Exception while Unsubscribe - {} " + e.getMessage());
 		}
 	}
 }
