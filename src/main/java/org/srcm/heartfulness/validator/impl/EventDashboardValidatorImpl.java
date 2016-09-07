@@ -334,13 +334,13 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 
 		if ((null == participantInput.getFirstSittingDate())
 				&& (null == participantInput.getFirstSitting() || 0 == participantInput.getFirstSitting())) {
-			errors.add("Participant not completed preliminary sitting.");
+			errors.add("Participant not completed preliminary sittings.");
 		} else if ((null == participantInput.getSecondSittingDate())
 				&& (null == participantInput.getSecondSitting() || 0 == participantInput.getSecondSitting())) {
-			errors.add("Participant not completed preliminary sitting.");
+			errors.add("Participant not completed preliminary sittings.");
 		} else if ((null == participantInput.getThirdSittingDate())
 				&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())) {
-			errors.add("Participant not completed preliminary sitting.");
+			errors.add("Participant not completed preliminary sittings.");
 		}
 		return errors;
 	}
