@@ -306,7 +306,7 @@ public class SendMail {
 			try{
 				LOGGER.debug("START        :Inserting mail log details in table");
 				PMPMailLog pmpMailLog = 
-						new PMPMailLog("",
+						new PMPMailLog(String.valueOf(0),
 								toIds[0],EmailLogConstants.FTP_UPLOAD_DETAILS,
 								EmailLogConstants.STATUS_SUCCESS,null);
 				mailLogRepository.createMailLog(pmpMailLog);
@@ -319,7 +319,7 @@ public class SendMail {
 			try{
 				LOGGER.debug("START        :Inserting mail log details in table");
 				PMPMailLog pmpMailLog = 
-						new PMPMailLog("",
+						new PMPMailLog(String.valueOf("0"),
 								toIds[0],EmailLogConstants.FTP_UPLOAD_DETAILS,
 								EmailLogConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(e));
 				mailLogRepository.createMailLog(pmpMailLog);
