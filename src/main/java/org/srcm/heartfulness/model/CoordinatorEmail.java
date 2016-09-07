@@ -22,6 +22,8 @@ public class CoordinatorEmail {
 	private String coordinatorName;
 	
 	private String programId;
+	
+	private String programCreateDate;
 
 	public String getCoordinatorEmail() {
 		return coordinatorEmail;
@@ -79,12 +81,22 @@ public class CoordinatorEmail {
 		this.programId = programId;
 	}
 
+	
+	public String getProgramCreateDate() {
+		return programCreateDate;
+	}
+
+	public void setProgramCreateDate(String programCreateDate) {
+		this.programCreateDate = programCreateDate;
+	}
+
 	@Override
 	public String toString() {
 		return "CoordinatorEmail [coordinatorEmail=" + coordinatorEmail + ", totalParticipantCount="
 				+ totalParticipantCount + ", pctptAlreadyRcvdWlcmMailCount=" + pctptAlreadyRcvdWlcmMailCount
 				+ ", pctptRcvdWlcmMailYstrdayCount=" + pctptRcvdWlcmMailYstrdayCount + ", eventName=" + eventName
-				+ ", coordinatorName=" + coordinatorName + ", programId=" + programId + "]";
+				+ ", coordinatorName=" + coordinatorName + ", programId=" + programId + ", programCreateDate="
+				+ programCreateDate + "]";
 	}
 
 	@Override

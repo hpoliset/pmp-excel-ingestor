@@ -246,8 +246,8 @@ public class EWelcomeIDGenerationHelper {
 		try {
 			accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.GEOSEARCH_URI,
 					DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-					StackTraceUtils.convertPojoToJson(participant.getCity() + "," + participant.getState() + ","
-							+ participant.getCountry()), null);
+					StackTraceUtils.convertPojoToJson("Request:"+ participant.getCity() + "," + participant.getState() + ","
+							+ participant.getCountry()+ ", Participant Id:"+participant.getId()+ ", Participant SeqId:"+participant.getSeqId()+ ", Participant emailID:"+participant.getEmail()), null);
 			apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
 			geoSearchResponse = srcmRestTemplate.geoSearch(participant.getCity() + "," + participant.getState() + ","
 					+ participant.getCountry());
@@ -323,12 +323,12 @@ public class EWelcomeIDGenerationHelper {
 		}
 	}
 
-	public Object getCitiesAPIResponse(GeoSearchResponse geoSearchResponse, int id) {
+	public Object getCitiesAPIResponse(GeoSearchResponse geoSearchResponse, int id, Participant participant) {
 		PMPAPIAccessLogDetails citiesAPIAccessLogDetails = null;
 		try {
 			citiesAPIAccessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.CITIES_API,
 					DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-					StackTraceUtils.convertPojoToJson(geoSearchResponse.getCityId()), null);
+					StackTraceUtils.convertPojoToJson("Request:"+geoSearchResponse.getCityId()+ ", Participant Id:"+participant.getId()+ ", Participant SeqId:"+participant.getSeqId()+ ", Participant emailID:"+participant.getEmail()));
 			apiAccessLogService.createPmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 			CitiesAPIResponse citiesAPIResponse = srcmRestTemplate.getCityName(geoSearchResponse.getCityId());
 			citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());

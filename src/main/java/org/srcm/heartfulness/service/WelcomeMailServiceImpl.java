@@ -22,16 +22,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.EmailLogConstants;
 import org.srcm.heartfulness.constants.EventConstants;
 import org.srcm.heartfulness.helper.FTPConnectionHelper;
 import org.srcm.heartfulness.mail.SendMail;
 import org.srcm.heartfulness.model.CoordinatorEmail;
+import org.srcm.heartfulness.model.PMPMailLog;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
+import org.srcm.heartfulness.repository.MailLogRepository;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.WelcomeMailRepository;
 import org.srcm.heartfulness.rest.template.SendyRestTemplate;
+import org.srcm.heartfulness.util.StackTraceUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -66,6 +70,9 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 
 	@Autowired
 	private ParticipantRepository participantRepository;
+	
+	@Autowired
+	private MailLogRepository mailLogRepository;
 
 
 	/**
@@ -262,103 +269,207 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	 *  coordinators with the details.
 	 */
 	@Override
-    public void getCoordinatorListAndSendMail() {
-        LOGGER.debug("START        :Getting coordinator list to send email noticafications");
-        try{
-            Map<String,List<String>> details = welcomeMailRepository.getCoordinatorWithEmailDetails();
-            LOGGER.debug("            Total number of coordinators to send email is : "+details.size());
-            if(!details.isEmpty()){
-                LOGGER.debug("START        :Sending email notifications to the coordinator list");
-                for(Map.Entry<String,List<String>> map:details.entrySet()){
-                    if(null != map.getKey()){
-                        if(!map.getKey().isEmpty()){
-                            if(map.getValue().get(3)!=null && !map.getValue().get(3).isEmpty()){
-                                try{
-                                    int pctptCount = welcomeMailRepository.getPctptCountByPgrmId(map.getKey());
-                                    int wlcmEmailRcvdPctptCount = welcomeMailRepository.wlcmMailRcvdPctptCount(map.getKey());
-                                    LOGGER.debug("              :Total count of participant for event id "+map.getValue().get(3)+" is "+pctptCount );
-                                    LOGGER.debug("              :Total count of participant who have received welcome email already "+wlcmEmailRcvdPctptCount);
-                                    LOGGER.debug("START        :Sending email to "+map.getValue().get(3));
-                                    CoordinatorEmail coordinatorEmail = new CoordinatorEmail();
-                                    coordinatorEmail.setCoordinatorEmail(map.getValue().get(3));
-                                    coordinatorEmail.setCoordinatorName(map.getValue().get(2));
-                                    coordinatorEmail.setEventName(map.getValue().get(1));
-                                    coordinatorEmail.setTotalParticipantCount(String.valueOf(pctptCount));
-                                    coordinatorEmail.setPctptAlreadyRcvdWlcmMailCount(String.valueOf(wlcmEmailRcvdPctptCount));
-                                    coordinatorEmail.setPctptRcvdWlcmMailYstrdayCount(map.getValue().get(0));
-                                    sendEmailNotification.sendMailNotificationToCoordinator(coordinatorEmail);
-                                    LOGGER.debug("END        :Completed sending email to "+map.getValue().get(3));
-                                }catch(AddressException aex){
-                                    LOGGER.debug("ADDRESS_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3));
-                                    LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
-                                }catch(MessagingException mex){
-                                    LOGGER.debug("MESSAGING_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3));
-                                    LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
-                                }catch(Exception ex){
-                                    LOGGER.debug("EXCEPTION  :Failed to sent mail to" + map.getValue().get(3));
-                                    LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
-                                }
-                            }else{
-                            	LOGGER.debug("MESSAGE: Coordinator email is empty. Since email not triggered for the programID : "+map.getKey());
-                            }
-                        }
-                           
-                    }
-                    LOGGER.debug("START        :Updating database column for the participants who have received welcome email for coordinator "+map.getValue().get(3));
-                    int upadateStatus = welcomeMailRepository.updateCoordinatorInformedStatus(map.getKey());
-                    if(upadateStatus > 0){
-                        LOGGER.debug("END        :Completed updating database column for the participant who have received welcome email for coordinator "+map.getValue().get(3));
-                    }else{
-                        LOGGER.debug("Failed to update database column for the participants who have received welcome email for coordinator"+map.getValue().get(3));
-                    }
-                }
-                LOGGER.debug("END        :Completed sending email notifications to the coordinator list");
-            }else{
-                LOGGER.debug("END        :No new participants found who have received welcome email");
-            }
+	public void getCoordinatorListAndSendMail() {
+		LOGGER.debug("START        :Getting coordinator list to send email noticafications");
+		try{
+			Map<String,List<String>> details = welcomeMailRepository.getCoordinatorWithEmailDetails();
+			LOGGER.debug("            Total number of coordinators to send email is : "+details.size());
+			if(!details.isEmpty()){
+				LOGGER.debug("START        :Sending email notifications to the coordinator list");
+				for(Map.Entry<String,List<String>> map:details.entrySet()){
+					if(null != map.getKey()){
+						if(!map.getKey().isEmpty()){
+							if(map.getValue().get(3)!=null && !map.getValue().get(3).isEmpty()){
+								try{
+									int pctptCount = welcomeMailRepository.getPctptCountByPgrmId(map.getKey());
+									int wlcmEmailRcvdPctptCount = welcomeMailRepository.wlcmMailRcvdPctptCount(map.getKey());
+									LOGGER.debug("              :Total count of participant for event id "+map.getValue().get(3)+" is "+pctptCount );
+									LOGGER.debug("              :Total count of participant who have received welcome email already "+wlcmEmailRcvdPctptCount);
+									LOGGER.debug("START        :Sending email to "+map.getValue().get(3));
+									CoordinatorEmail coordinatorEmail = new CoordinatorEmail();
+									coordinatorEmail.setCoordinatorEmail(map.getValue().get(3));
+									coordinatorEmail.setCoordinatorName(map.getValue().get(2));
+									coordinatorEmail.setEventName(map.getValue().get(1));
+									coordinatorEmail.setTotalParticipantCount(String.valueOf(pctptCount));
+									coordinatorEmail.setPctptAlreadyRcvdWlcmMailCount(String.valueOf(wlcmEmailRcvdPctptCount));
+									coordinatorEmail.setPctptRcvdWlcmMailYstrdayCount(map.getValue().get(0));
+									coordinatorEmail.setProgramCreateDate(map.getValue().get(4));
+									sendEmailNotification.sendMailNotificationToCoordinator(coordinatorEmail);
+									try{
+										LOGGER.debug("START        :Inserting mail log details in table");
+										PMPMailLog pmpMailLog = 
+												new PMPMailLog(map.getKey(),
+														map.getValue().get(3),EmailLogConstants.PCTPT_EMAIL_DETAILS,
+														EmailLogConstants.STATUS_SUCCESS,null);
+										mailLogRepository.createMailLog(pmpMailLog);
+										LOGGER.debug("END        :Completed inserting mail log details in table");
+									}catch(Exception ex){
+										LOGGER.debug("END        :Exception while inserting mail log details in table");
+									}
+									LOGGER.debug("END        :Completed sending email to "+map.getValue().get(3));
+								}catch(AddressException aex){
+									try{
+										PMPMailLog pmpMailLog = 
+												new PMPMailLog(map.getKey(),
+														map.getValue().get(3),EmailLogConstants.PCTPT_EMAIL_DETAILS,
+														EmailLogConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(aex));
+										mailLogRepository.createMailLog(pmpMailLog);
+									}catch(Exception ex){
+										LOGGER.debug("EXCEPTION  :Failed to update mail log table");
+									}
+									LOGGER.debug("ADDRESS_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3));
+									LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
+								}catch(MessagingException mex){
+									try{
+										PMPMailLog pmpMailLog = 
+												new PMPMailLog(map.getKey(),
+														map.getValue().get(3),EmailLogConstants.PCTPT_EMAIL_DETAILS,
+														EmailLogConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(mex));
+										mailLogRepository.createMailLog(pmpMailLog);
+									}catch(Exception ex){
+										LOGGER.debug("EXCEPTION  :Failed to update mail log table");
+									}
+									LOGGER.debug("MESSAGING_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3));
+									LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
+								}catch(Exception ex){
+									try{
+										PMPMailLog pmpMailLog = 
+												new PMPMailLog(map.getKey(),
+														map.getValue().get(3),EmailLogConstants.PCTPT_EMAIL_DETAILS,
+														EmailLogConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(ex));
+										mailLogRepository.createMailLog(pmpMailLog);
+									}catch(Exception exx){
+										LOGGER.debug("EXCEPTION  :Failed to update mail log table");
+									}
+									LOGGER.debug("EXCEPTION  :Failed to sent mail to" + map.getValue().get(3));
+									LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
+								}
+							}else{
+								LOGGER.debug("MESSAGE: Coordinator email is empty,so email not triggered for the given programID : "+map.getKey());
+							}
+						}
 
-        }catch(EmptyResultDataAccessException ex){
-            LOGGER.debug("EmptyResultDataAccessException        :No new participants found who have received welcome email");
-        }catch(Exception ex){
-            LOGGER.debug("EXCEPTION        :Failed to get the list of coordinators");
-        }
-    }
-	
+					}
+					LOGGER.debug("START        :Updating database column for the participants who have received welcome email for coordinator "+map.getValue().get(3));
+					int upadateStatus = welcomeMailRepository.updateCoordinatorInformedStatus(map.getKey());
+					if(upadateStatus > 0){
+						LOGGER.debug("END        :Completed updating database column for the participant who have received welcome email for coordinator "+map.getValue().get(3));
+					}else{
+						LOGGER.debug("Failed to update database column for the participants who have received welcome email for coordinator"+map.getValue().get(3));
+					}
+				}
+				LOGGER.debug("END        :Completed sending email notifications to the coordinator list");
+			}else{
+				LOGGER.debug("END        :No new participants found who have received welcome email");
+			}
+
+		}catch(EmptyResultDataAccessException ex){
+			LOGGER.debug("EmptyResultDataAccessException        :No new participants found who have received welcome email");
+			try{
+				LOGGER.debug("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = 
+						new PMPMailLog("",
+								"",EmailLogConstants.PCTPT_EMAIL_DETAILS,
+								EmailLogConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(ex));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.debug("END        :Completed inserting mail log details in table");
+			}catch(Exception e){
+				LOGGER.debug("END        :Exception while inserting mail log details in table");
+			}
+		}catch(Exception ex){
+			LOGGER.debug("EXCEPTION        :Failed to get the list of coordinators");
+			try{
+				LOGGER.debug("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = 
+						new PMPMailLog("",
+								"",EmailLogConstants.PCTPT_EMAIL_DETAILS,
+								EmailLogConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(ex));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.debug("END        :Completed inserting mail log details in table");
+			}catch(Exception e){
+				LOGGER.debug("END        :Exception while inserting mail log details in table");
+			}
+		}
+	}
+
 	@Override
 	public void getGeneratedEwelcomeIdAndSendToCoordinators() {
+		LOGGER.debug("Fetching co-ordinator details and e-welcomeID details..!");
+		List<CoordinatorEmail> coordinatorEmails = new ArrayList<>();
+		List<Integer> listOfParticipantId = new ArrayList<>();
+		try{
+			Map<CoordinatorEmail, List<Participant>> eWelcomeIdDetails = welcomeMailRepository.getGeneratedEwelcomeIdDetails();
+			LOGGER.debug("Count of coordinators to send email - "+eWelcomeIdDetails.size());
+			if(!eWelcomeIdDetails.isEmpty()){
+				for(Entry<CoordinatorEmail, List<Participant>> map:eWelcomeIdDetails.entrySet()){
+					//System.out.println("Iterating for - "+map.getKey().getCoordinatorEmail());
+					if(null != map.getKey()){
+						if(map.getKey().getCoordinatorEmail()!=null && !map.getKey().getCoordinatorEmail().isEmpty()){
+							try{
+								CoordinatorEmail coordinatorEmail = new CoordinatorEmail();
+								coordinatorEmail.setEventName(map.getKey().getEventName());
+								coordinatorEmail.setCoordinatorName(map.getKey().getCoordinatorName());
+								coordinatorEmail.setCoordinatorEmail(map.getKey().getCoordinatorEmail());
 
-        LOGGER.debug("Fetching co-ordinator details and e-welcomeID details..!");
-        List<CoordinatorEmail> coordinatorEmails = new ArrayList<>();
-        List<Integer> listOfParticipantId = new ArrayList<>();
-        try{
-            Map<CoordinatorEmail, List<Participant>> eWelcomeIdDetails = welcomeMailRepository.getGeneratedEwelcomeIdDetails();
-            LOGGER.debug("Count of coordinators to send email - "+eWelcomeIdDetails.size());
-            if(!eWelcomeIdDetails.isEmpty()){
-                for(Entry<CoordinatorEmail, List<Participant>> map:eWelcomeIdDetails.entrySet()){
-                	//System.out.println("Iterating for - "+map.getKey().getCoordinatorEmail());
-                    if(null != map.getKey()){
-                            if(map.getKey().getCoordinatorEmail()!=null && !map.getKey().getCoordinatorEmail().isEmpty()){
-                                try{
-                                    CoordinatorEmail coordinatorEmail = new CoordinatorEmail();
-                                    coordinatorEmail.setEventName(map.getKey().getEventName());
-                                    coordinatorEmail.setCoordinatorName(map.getKey().getCoordinatorName());
-                                    coordinatorEmail.setCoordinatorEmail(map.getKey().getCoordinatorEmail());
-                                    
-                                    sendEmailNotification.sendGeneratedEwelcomeIdDetailslToCoordinator(coordinatorEmail,map.getValue());
-                                    for(Participant participant : map.getValue()){
-                                    	listOfParticipantId.add(participant.getId());
-                                    	//System.out.println("participant id "+participant.getId()+" inserted");
-                                    }
-                                    LOGGER.debug("E-mail sent to - "+map.getKey().getCoordinatorEmail());
-                                }catch(Exception ex){
-                                    LOGGER.debug("EXCEPTION - Failed to sent mail to" + map.getValue().get(3));
-                                    LOGGER.debug("ADDRESS_EXCEPTION - Looking for next coordinator if available");
-                                }
-                            }else{
-                            	LOGGER.debug("Coordinator email is empty. Hence email not triggered for the programID : "+map.getKey().getProgramId());
-                            }
-                    }
-                    try {
+								sendEmailNotification.sendGeneratedEwelcomeIdDetailslToCoordinator(coordinatorEmail,map.getValue());
+								try{
+									LOGGER.debug("Inserting log details in table.");
+									PMPMailLog pmpMailLog = 
+											new PMPMailLog(map.getKey().getProgramId(),
+													map.getKey().getCoordinatorEmail(),EmailLogConstants.WLCMID_EMAIL_DETAILS,
+													EmailLogConstants.STATUS_SUCCESS,null);
+									mailLogRepository.createMailLog(pmpMailLog);
+									LOGGER.debug("Completed inserting log details in table.");
+								}catch(Exception ex){
+									LOGGER.debug("Exception while inserting log details in table.");
+								}
+								for(Participant participant : map.getValue()){
+									listOfParticipantId.add(participant.getId());
+									//System.out.println("participant id "+participant.getId()+" inserted");
+								}
+								LOGGER.debug("E-mail sent to - "+map.getKey().getCoordinatorEmail());
+							}catch(AddressException aex){
+								try{
+									PMPMailLog pmpMailLog = 
+											new PMPMailLog(map.getKey().getProgramId(),
+													map.getKey().getCoordinatorEmail(),EmailLogConstants.WLCMID_EMAIL_DETAILS,
+													EmailLogConstants.STATUS_FAILED,aex.toString());
+									mailLogRepository.createMailLog(pmpMailLog);
+								}catch(Exception ex){
+									LOGGER.debug("EXCEPTION  :Failed to update mail log table");
+								}
+								LOGGER.debug("ADDRESS_EXCEPTION  :Failed to sent mail to" + map.getKey().getCoordinatorEmail());
+								LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
+							}catch(MessagingException mex){
+								try{
+									PMPMailLog pmpMailLog = 
+											new PMPMailLog(map.getKey().getProgramId(),
+													map.getKey().getCoordinatorEmail(),EmailLogConstants.WLCMID_EMAIL_DETAILS,
+													EmailLogConstants.STATUS_FAILED,mex.toString());
+									mailLogRepository.createMailLog(pmpMailLog);
+								}catch(Exception ex){
+									LOGGER.debug("EXCEPTION  :Failed to update mail log table");
+								}
+								LOGGER.debug("MESSAGING_EXCEPTION  :Failed to sent mail to" + map.getKey().getCoordinatorEmail());
+								LOGGER.debug("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
+							}catch(Exception ex){
+								try{
+									PMPMailLog pmpMailLog = 
+											new PMPMailLog(map.getKey().getProgramId(),
+													map.getKey().getCoordinatorEmail(),EmailLogConstants.WLCMID_EMAIL_DETAILS,
+													EmailLogConstants.STATUS_FAILED,ex.toString());
+									mailLogRepository.createMailLog(pmpMailLog);
+								}catch(Exception exx){
+									LOGGER.debug("EXCEPTION  :Failed to update mail log table");
+								}
+								LOGGER.debug("EXCEPTION - Failed to sent mail to" + map.getKey().getCoordinatorEmail());
+								LOGGER.debug("ADDRESS_EXCEPTION - Looking for next coordinator if available");
+							}
+						}else{
+							LOGGER.debug("Coordinator email is empty. Hence email not triggered for the programID : "+map.getKey().getProgramId());
+						}
+					}
+					try {
 						if (listOfParticipantId!=null && listOfParticipantId.size()>0) {
 							for (Integer id : listOfParticipantId) {
 								welcomeMailRepository.updateEwelcomeIDInformedStatus(id.toString());
@@ -368,15 +479,38 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 					} catch (Exception e) {
 						LOGGER.debug("Error while updating the database for participant- "+e.getMessage());
 					}
-                }
-                LOGGER.debug("Completed sending eWelcome ID email notifications to the coordinator list.");
-            }else{
-                LOGGER.debug("No new e-welcome ID generated for participants.");
-            }
-        }catch(EmptyResultDataAccessException ex){
-            LOGGER.debug("EmptyResultDataAccessException - No new e-welcome ID generated for participants."+ex.getMessage());
-        }catch(Exception ex){
-            LOGGER.debug("Exception while processing - "+ex.getMessage());
-        }
+				}
+				LOGGER.debug("Completed sending eWelcome ID email notifications to the coordinator list.");
+			}else{
+				LOGGER.debug("No new e-welcome ID generated for participants.");
+			}
+		}catch(EmptyResultDataAccessException ex){
+			LOGGER.debug("EmptyResultDataAccessException - No new e-welcome ID generated for participants."+ex.getMessage());
+			try{
+				LOGGER.debug("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = 
+						new PMPMailLog("",
+								"",EmailLogConstants.WLCMID_EMAIL_DETAILS,
+								EmailLogConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(ex));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.debug("END        :Completed inserting mail log details in table");
+			}catch(Exception e){
+				LOGGER.debug("END        :Exception while inserting mail log details in table");
+			}
+		}catch(Exception ex){
+			LOGGER.debug("Exception while processing - "+ex.getMessage());
+			try{
+				LOGGER.debug("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = 
+						new PMPMailLog("",
+								"",EmailLogConstants.WLCMID_EMAIL_DETAILS,
+								EmailLogConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(ex));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.debug("END        :Completed inserting mail log details in table");
+			}catch(Exception e){
+				LOGGER.debug("END        :Exception while inserting mail log details in table");
+			}
+		}
 	}
+
 }

@@ -399,7 +399,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	public Map<String, List<String>> getCoordinatorWithEmailDetails() {
 
 		return this.jdbcTemplate.query(
-				"SELECT pgrm.coordinator_email,COUNT(pctpt.id),pgrm.program_channel,pgrm.coordinator_name,pgrm.program_id FROM program pgrm,participant pctpt"
+				"SELECT pgrm.coordinator_email,COUNT(pctpt.id),pgrm.program_channel,pgrm.coordinator_name,pgrm.program_id,pgrm.update_time FROM program pgrm,participant pctpt"
 						+	" WHERE pgrm.program_id = pctpt.program_id"
 						+	" AND pctpt.welcome_mail_sent = 1 AND pctpt.is_co_ordinator_informed = 0"
 						+	" GROUP BY pctpt.program_id ",
@@ -413,14 +413,17 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 									eventDetails.add(resultSet.getString(3));
 									eventDetails.add(resultSet.getString(4));
 									eventDetails.add(resultSet.getString(1));
+									eventDetails.add(String.valueOf(resultSet.getDate(6)));
 									details.put(resultSet.getString(5),eventDetails);
 								}
 								/*for(Map.Entry<String, List<String>> map : details.entrySet()){
 									System.out.println("-----------------------START------------------------------");
-									System.out.println("Coordinator email=="+map.getKey());
+									System.out.println("Program-id=="+map.getKey());
 									System.out.println("participant count=="+map.getValue().get(0));
-									System.out.println("event name=="+map.getValue().get(1));
+									System.out.println("program name=="+map.getValue().get(1));
 									System.out.println("coordinator name=="+map.getValue().get(2));
+									System.out.println("coordinator email=="+map.getValue().get(3));
+									System.out.println("update date=="+map.getValue().get(4));
 									System.out.println("----------------------- END------------------------------");
 								}*/
 								return details;
@@ -495,7 +498,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	public Map<CoordinatorEmail, List<Participant>> getGeneratedEwelcomeIdDetails() {
 
 		return this.jdbcTemplate.query(
-				"SELECT p.program_channel,p.coordinator_name,p.coordinator_email,p.program_id,pr.print_name,pr.email,pr.welcome_card_number,pr.id,pr.mobile_phone FROM program p,participant pr"
+				"SELECT p.program_channel,p.coordinator_name,p.coordinator_email,p.program_id,pr.print_name,pr.email,pr.welcome_card_number,pr.id,pr.mobile_phone,pr.introduction_date FROM program p,participant pr"
 						+	" WHERE p.program_id = pr.program_id"
 						+	" AND pr.is_ewelcome_id_informed = 0",
 						new Object[] {}, new ResultSetExtractor<Map<CoordinatorEmail, List<Participant>>>() {
@@ -514,7 +517,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 									participant.setWelcomeCardNumber(resultSet.getString(7));
 									participant.setId(Integer.parseInt(resultSet.getString(8)));
 									participant.setMobilePhone(resultSet.getString(9));
-									
+									participant.setIntroductionDate(resultSet.getDate(10));
 									if(eWelcomeIdDetails.containsKey(coordinatorEmail)){
 										eWelcomeIdDetails.get(coordinatorEmail).add(participant);
 									}else{

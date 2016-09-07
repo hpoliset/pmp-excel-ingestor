@@ -167,10 +167,19 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		}
 		if (null == eventAdminChangeRequest.getNewCoordinatorEmail()
 				|| eventAdminChangeRequest.getNewCoordinatorEmail().isEmpty()) {
-			errors.put("newCoOrdinatorEmail", "new co-Ordinator email is required");
+			errors.put("newCoOrdinatorEmail", "new co-ordinator email is required");
+		}else if (!eventAdminChangeRequest.getNewCoordinatorEmail().matches(EventConstants.EMAIL_REGEX)) {
+			errors.put("newCoOrdinatorEmail", "Invalid new co-ordinator email format");
 		}
+		if (null == eventAdminChangeRequest.getCoordinatorMobile() || eventAdminChangeRequest.getCoordinatorMobile().isEmpty()) {
+			errors.put("CoOrdinatorMobile", "Co-Ordinator mobile is required");
+		} else if (!eventAdminChangeRequest.getCoordinatorMobile().matches(EventConstants.MOBILE_REGEX)) {
+			errors.put("CoOrdinatorMobile", "Invalid Co-Ordinator mobile number format");
+		}
+		
 		return errors;
 	}
+
 
 	/**
 	 * Method is used to validate the mandatory parameters before persisting an
