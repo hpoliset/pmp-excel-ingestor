@@ -123,7 +123,8 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	 * @return
 	 */
 	@Override
-	public Map<String, String> checkIntroductionRequestMandatoryFields(ParticipantIntroductionRequest participantRequest) {
+	public Map<String, String> checkIntroductionRequestMandatoryFields(
+			ParticipantIntroductionRequest participantRequest, int id) {
 		Map<String, String> errors = new HashMap<>();
 		if (null == participantRequest.getEventId() || participantRequest.getEventId().isEmpty()) {
 			errors.put("eventId", "event Id is required");
@@ -131,6 +132,11 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			errors.put("eventId", "event Id invalid");
 		} else if (0 == programService.getProgramIdByEventId(participantRequest.getEventId())) {
 			errors.put("eventId", "Invalid EventId - No event exists for the given event Id");
+		} else {
+			String errorMessage = programService.validatePreceptorIDCardNumber(participantRequest, id);
+			if (null != errorMessage) {
+				errors.put("Preceptor ID card number", errorMessage);
+			}
 		}
 		if (null == participantRequest.getIntroduced() || participantRequest.getIntroduced().isEmpty()) {
 			errors.put("introduced", "Introduced status is required");
@@ -320,10 +326,10 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if ((null == participantInput.getFirstSittingDate())
 				&& (null == participantInput.getFirstSitting() || 0 == participantInput.getFirstSitting())) {
 			errors.add("Participant not completed preliminary sitting.");
-		}else if ((null == participantInput.getSecondSittingDate())
+		} else if ((null == participantInput.getSecondSittingDate())
 				&& (null == participantInput.getSecondSitting() || 0 == participantInput.getSecondSitting())) {
 			errors.add("Participant not completed preliminary sitting.");
-		}else if ((null == participantInput.getThirdSittingDate())
+		} else if ((null == participantInput.getThirdSittingDate())
 				&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())) {
 			errors.add("Participant not completed preliminary sitting.");
 		}

@@ -42,9 +42,10 @@ public interface EventDashboardValidator {
 	 * status.
 	 * 
 	 * @param participantRequest
+	 * @param id 
 	 * @return
 	 */
-	public Map<String, String> checkIntroductionRequestMandatoryFields(ParticipantIntroductionRequest participantRequest);
+	public Map<String, String> checkIntroductionRequestMandatoryFields(ParticipantIntroductionRequest participantRequest, int id);
 
 	/**
 	 * Method to validate the values given in

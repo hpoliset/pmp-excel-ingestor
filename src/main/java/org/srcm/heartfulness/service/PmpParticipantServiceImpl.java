@@ -18,7 +18,6 @@ import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
-import org.srcm.heartfulness.model.json.response.EWelcomeIDErrorResponse;
 import org.srcm.heartfulness.model.json.response.UpdateIntroductionResponse;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
@@ -26,7 +25,6 @@ import org.srcm.heartfulness.validator.EventDashboardValidator;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class is service Implementation for the participant related actions.
@@ -486,69 +484,76 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			} else {
 				int programID = programService.getProgramIdByEventId(participantRequest.getEventId());
 				Participant participantInput = programService.findParticipantBySeqId(participant.getSeqId(), programID);
-				try {
-					if ("Y".equalsIgnoreCase(participantRequest.getIntroduced())) {
-						UpdateIntroductionResponse response = null;
-						List<String> errorResult = eventDashboardValidator
-								.checkParticipantIntroductionMandatoryFields(participantInput);
-						if (!errorResult.isEmpty()) {
-							response = new UpdateIntroductionResponse(participant.getSeqId(),
-									participantInput.getPrintName(), ErrorConstants.STATUS_FAILED, errorResult);
-							result.add(response);
-						} else {
-							LOGGER.debug("START - {} : Generating eWelcomeID for the participant : {} ",participantInput.getSeqId(), participantInput.getEmail());
-							eWelcomeID = programService.generateeWelcomeID(participantInput, id);
-							if ("success".equalsIgnoreCase(eWelcomeID)) {
-								programService.UpdateParticipantsStatus(participant.getSeqId(),
-										participantRequest.getEventId(), participantRequest.getIntroduced(),
-										userEmailID);
-								description = new ArrayList<String>();
-								description.add("Participant eWelcomeID : " + participantInput.getWelcomeCardNumber());
-								response = new UpdateIntroductionResponse(participant.getSeqId(),
-										participantInput.getPrintName(), ErrorConstants.STATUS_SUCCESS, description);
-							} else {
-								description = new ArrayList<String>();
-								description.add(eWelcomeID);
-								response = new UpdateIntroductionResponse(participant.getSeqId(),
-										participantInput.getPrintName(), ErrorConstants.STATUS_FAILED, description);
-							}
-							result.add(response);
-							LOGGER.debug("END - {} : Response of eWelcomeID Generation for the participant : {} ",participantInput.getSeqId(),result.toString());
-						}
-					} else {
-						LOGGER.debug("START - {} : Updating participant Status : {} ",participantInput.getSeqId(), participantInput.getEmail());
-						programService.UpdateParticipantsStatus(participant.getSeqId(),
-								participantRequest.getEventId(), participantRequest.getIntroduced(), userEmailID);
-						description = new ArrayList<String>();
-						description.add("Participant introduced status updated successfully.");
-						UpdateIntroductionResponse response = new UpdateIntroductionResponse(participant.getSeqId(),
-								participantInput.getPrintName(), ErrorConstants.STATUS_SUCCESS, description);
+				// try {
+				if ("Y".equalsIgnoreCase(participantRequest.getIntroduced())) {
+					UpdateIntroductionResponse response = null;
+					List<String> errorResult = eventDashboardValidator
+							.checkParticipantIntroductionMandatoryFields(participantInput);
+					if (!errorResult.isEmpty()) {
+						response = new UpdateIntroductionResponse(participant.getSeqId(),
+								participantInput.getPrintName(), ErrorConstants.STATUS_FAILED, errorResult);
 						result.add(response);
-						LOGGER.debug("END - {} : Response of update introduction status for the participant : {} ",participantInput.getSeqId(),result.toString());
+					} else {
+						LOGGER.debug("START - {} : Generating eWelcomeID for the participant : {} ",
+								participantInput.getSeqId(), participantInput.getEmail());
+						eWelcomeID = programService.generateeWelcomeID(participantInput, id);
+						if ("success".equalsIgnoreCase(eWelcomeID)) {
+							programService.UpdateParticipantsStatus(participant.getSeqId(),
+									participantRequest.getEventId(), participantRequest.getIntroduced(), userEmailID);
+							description = new ArrayList<String>();
+							description.add("Participant eWelcomeID : " + participantInput.getWelcomeCardNumber());
+							response = new UpdateIntroductionResponse(participant.getSeqId(),
+									participantInput.getPrintName(), ErrorConstants.STATUS_SUCCESS, description);
+						} else {
+							description = new ArrayList<String>();
+							description.add(eWelcomeID);
+							response = new UpdateIntroductionResponse(participant.getSeqId(),
+									participantInput.getPrintName(), ErrorConstants.STATUS_FAILED, description);
+						}
+						result.add(response);
+						LOGGER.debug("END - {} : Response of eWelcomeID Generation for the participant : {} ",
+								participantInput.getSeqId(), result.toString());
 					}
-				} catch (HttpClientErrorException e) {
+				} else {
+					LOGGER.debug("START - {} : Updating participant Status : {} ", participantInput.getSeqId(),
+							participantInput.getEmail());
+					programService.UpdateParticipantsStatus(participant.getSeqId(), participantRequest.getEventId(),
+							participantRequest.getIntroduced(), userEmailID);
 					description = new ArrayList<String>();
-					ObjectMapper mapper = new ObjectMapper();
-					EWelcomeIDErrorResponse eWelcomeIDErrorResponse = mapper.readValue(e.getResponseBodyAsString(),
-							EWelcomeIDErrorResponse.class);
-					if ((null != eWelcomeIDErrorResponse.getEmail() && !eWelcomeIDErrorResponse.getEmail().isEmpty())) {
-						description.add(eWelcomeIDErrorResponse.getEmail().get(0));
-					}
-					if ((null != eWelcomeIDErrorResponse.getValidation() && !eWelcomeIDErrorResponse.getValidation()
-							.isEmpty())) {
-						description.add(eWelcomeIDErrorResponse.getValidation().get(0));
-					}
-					if ((null != eWelcomeIDErrorResponse.getError() && !eWelcomeIDErrorResponse.getError().isEmpty())) {
-						description.add(eWelcomeIDErrorResponse.getError());
-					}
-					if (description.isEmpty()) {
-						description.add(e.getResponseBodyAsString());
-					}
+					description.add("Participant introduced status updated successfully.");
 					UpdateIntroductionResponse response = new UpdateIntroductionResponse(participant.getSeqId(),
-							participantInput.getPrintName(), ErrorConstants.STATUS_FAILED, description);
+							participantInput.getPrintName(), ErrorConstants.STATUS_SUCCESS, description);
 					result.add(response);
-					LOGGER.debug("END - {} : Response of eWelcomeID Generation for the participant : {} ",participantInput.getSeqId(),result.toString());
+					LOGGER.debug("END - {} : Response of update introduction status for the participant : {} ",
+							participantInput.getSeqId(), result.toString());
 				}
+				/*
+				 * } catch (HttpClientErrorException e) { description = new
+				 * ArrayList<String>(); ObjectMapper mapper = new
+				 * ObjectMapper(); EWelcomeIDErrorResponse
+				 * eWelcomeIDErrorResponse =
+				 * mapper.readValue(e.getResponseBodyAsString(),
+				 * EWelcomeIDErrorResponse.class); if ((null !=
+				 * eWelcomeIDErrorResponse.getEmail() &&
+				 * !eWelcomeIDErrorResponse.getEmail().isEmpty())) { description
+				 * .add(eWelcomeIDErrorResponse.getEmail().get(0)); } if ((null
+				 * != eWelcomeIDErrorResponse.getValidation() &&
+				 * !eWelcomeIDErrorResponse.getValidation() .isEmpty())) {
+				 * description
+				 * .add(eWelcomeIDErrorResponse.getValidation().get(0)); } if
+				 * ((null != eWelcomeIDErrorResponse.getError() &&
+				 * !eWelcomeIDErrorResponse.getError().isEmpty())) {
+				 * description.add(eWelcomeIDErrorResponse.getError()); } if
+				 * (description.isEmpty()) {
+				 * description.add(e.getResponseBodyAsString()); }
+				 * UpdateIntroductionResponse response = new
+				 * UpdateIntroductionResponse(participant.getSeqId(),
+				 * participantInput.getPrintName(),
+				 * ErrorConstants.STATUS_FAILED, description);
+				 * result.add(response); LOGGER.debug(
+				 * "END - {} : Response of eWelcomeID Generation for the participant : {} "
+				 * ,participantInput.getSeqId(),result.toString()); }
+				 */
 
 			}
 		}

@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,10 +27,14 @@ import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
+import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.model.json.response.AbhyasiResult;
 import org.srcm.heartfulness.model.json.response.AbhyasiUserProfile;
+import org.srcm.heartfulness.model.json.response.CitiesAPIResponse;
+import org.srcm.heartfulness.model.json.response.EWelcomeIDErrorResponse;
+import org.srcm.heartfulness.model.json.response.GeoSearchResponse;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
@@ -37,9 +44,12 @@ import org.srcm.heartfulness.validator.EventDashboardValidator;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class ProgramServiceImpl implements ProgramService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProgramServiceImpl.class);
 
 	@Autowired
 	ProgramRepository programRepository;
@@ -728,89 +738,230 @@ public class ProgramServiceImpl implements ProgramService {
 	@Override
 	public String generateeWelcomeID(Participant participant, int id) throws HttpClientErrorException,
 			JsonParseException, JsonMappingException, IOException, ParseException {
-		// try{
-		if (participant.getId() > 0 && participant.getProgramId() > 0) {
-			if (participant.getSeqId() != null && participant.getSeqId().length() == 4) {
-				if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty()
-						|| !participant.getWelcomeCardNumber().matches(EventConstants.EWELCOME_ID_REGEX)) {
-					if (null == participant.getProgram().getPrefectId()
-							|| participant.getProgram().getPrefectId().isEmpty()) {
-						if (null == participant.getProgram().getPreceptorIdCardNumber()
-								|| participant.getProgram().getPreceptorIdCardNumber().isEmpty()) {
-							return "Preceptor ID is required for the Event";
-						} else {
-							PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id,
-									EndpointConstants.ABHYASI_INFO_URI, DateUtils.getCurrentTimeInMilliSec(), null,
-									ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(participant
-											.getProgram().getPreceptorIdCardNumber()), null);
-							int accessdetailsID = apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
-							accessLogDetails.setId(accessdetailsID);
-							AbhyasiResult result = srcmRestTemplate.getAbyasiProfile(participant.getProgram()
-									.getPreceptorIdCardNumber());
-							if (result.getUserProfile().length > 0) {
-								AbhyasiUserProfile userProfile = result.getUserProfile()[0];
-								if (null != userProfile) {
-									if (true == userProfile.isIs_prefect() && 0 != userProfile.getPrefect_id()) {
-										Program program = participantRepository.findOnlyProgramById(participant
-												.getProgram().getProgramId());
-										program.setAbyasiRefNo(participant.getProgram().getPreceptorIdCardNumber());
-										program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
-										programRepository.save(program);
-										accessLogDetails
-												.setResponseBody(StackTraceUtils.convertPojoToJson(userProfile));
-										accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-										accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
-										apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-									}
+		try {
+			if (participant.getId() > 0 && participant.getProgramId() > 0) {
+				if (participant.getSeqId() != null && participant.getSeqId().length() == 4) {
+					if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty()
+							|| !participant.getWelcomeCardNumber().matches(EventConstants.EWELCOME_ID_REGEX)) {
+						/*
+						 * if (null == participant.getProgram().getPrefectId()
+						 * || participant.getProgram().getPrefectId().isEmpty())
+						 * { if (null ==
+						 * participant.getProgram().getPreceptorIdCardNumber()
+						 * ||
+						 * participant.getProgram().getPreceptorIdCardNumber()
+						 * .isEmpty()) { return
+						 * "Preceptor ID is required for the Event"; } else {
+						 * PMPAPIAccessLogDetails accessLogDetails = new
+						 * PMPAPIAccessLogDetails(id,
+						 * EndpointConstants.ABHYASI_INFO_URI,
+						 * DateUtils.getCurrentTimeInMilliSec(), null,
+						 * ErrorConstants.STATUS_FAILED, null,
+						 * StackTraceUtils.convertPojoToJson
+						 * (participant.getProgram()
+						 * .getPreceptorIdCardNumber()), null); int
+						 * accessdetailsID = apiAccessLogService
+						 * .createPmpAPIAccesslogDetails(accessLogDetails);
+						 * accessLogDetails.setId(accessdetailsID);
+						 * AbhyasiResult result =
+						 * srcmRestTemplate.getAbyasiProfile
+						 * (participant.getProgram()
+						 * .getPreceptorIdCardNumber()); if
+						 * (result.getUserProfile().length > 0) {
+						 * AbhyasiUserProfile userProfile =
+						 * result.getUserProfile()[0]; if (null != userProfile)
+						 * { if (true == userProfile.isIs_prefect() && 0 !=
+						 * userProfile.getPrefect_id()) { Program program =
+						 * participantRepository.findOnlyProgramById(participant
+						 * .getProgram().getProgramId());
+						 * program.setAbyasiRefNo(
+						 * participant.getProgram().getPreceptorIdCardNumber());
+						 * program
+						 * .setPrefectId(String.valueOf(userProfile.getPrefect_id
+						 * ())); programRepository.save(program);
+						 * accessLogDetails.setResponseBody(StackTraceUtils
+						 * .convertPojoToJson(userProfile));
+						 * accessLogDetails.setResponseTime
+						 * (DateUtils.getCurrentTimeInMilliSec());
+						 * accessLogDetails
+						 * .setStatus(ErrorConstants.STATUS_SUCCESS);
+						 * apiAccessLogService
+						 * .updatePmpAPIAccesslogDetails(accessLogDetails); } }
+						 * else { accessLogDetails.setResponseTime(DateUtils.
+						 * getCurrentTimeInMilliSec());
+						 * accessLogDetails.setResponseBody
+						 * (StackTraceUtils.convertPojoToJson(result));
+						 * accessLogDetails
+						 * .setStatus(ErrorConstants.STATUS_FAILED);
+						 * accessLogDetails
+						 * .setErrorMessage("Invalid preceptor ID");
+						 * apiAccessLogService
+						 * .updatePmpAPIAccesslogDetails(accessLogDetails);
+						 * return "Invalid preceptor ID"; } } else {
+						 * accessLogDetails
+						 * .setResponseTime(DateUtils.getCurrentTimeInMilliSec
+						 * ());
+						 * accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED
+						 * ); accessLogDetails.setResponseBody(StackTraceUtils.
+						 * convertPojoToJson(result));
+						 * accessLogDetails.setErrorMessage
+						 * ("Invalid preceptor ID");
+						 * apiAccessLogService.updatePmpAPIAccesslogDetails
+						 * (accessLogDetails); return "Invalid preceptor ID"; }
+						 * } }
+						 */
+						GeoSearchResponse geoSearchResponse = eWelcomeIDGenerationHelper.getGeoSearchResponse(
+								participant, id);
+						if (null != geoSearchResponse) {
+							CitiesAPIResponse citiesAPIResponse = eWelcomeIDGenerationHelper.getCitiesAPIResponse(
+									geoSearchResponse, id);
+							if (null != citiesAPIResponse) {
+								String eWelcomeID = eWelcomeIDGenerationHelper.generateEWelcomeId(participant, id,
+										geoSearchResponse, citiesAPIResponse);
+								if (null != eWelcomeID) {
+									participant.getProgram().setSrcmGroup(
+											String.valueOf(geoSearchResponse.getNearestCenter()));
+									participant.setWelcomeCardNumber(eWelcomeID);
+									participant.setWelcomeCardDate(new Date());
+									participant.setIsEwelcomeIdInformed(0);
+									participantRepository.save(participant);
+									return "success";
 								} else {
-									accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-									accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(result));
-									accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-									accessLogDetails.setErrorMessage("Invalid preceptor ID");
-									apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-									return "Invalid preceptor ID";
+									return "Error While generating eWelcomeID";
 								}
 							} else {
-								accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-								accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-								accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(result));
-								accessLogDetails.setErrorMessage("Invalid preceptor ID");
-								apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-								return "Invalid preceptor ID";
+								return "Error While fetching cities api response";
 							}
+						} else {
+							return "Error While fetching geosearch response";
 						}
-					}
-					eWelcomeIDGenerationHelper.generateEWelcomeId(participant, id);
-					participant.setIsEwelcomeIdInformed(0);
-					participantRepository.save(participant);
-					return "success";
 
+					} else {
+						return "success";
+					}
 				} else {
-					return "success";
+					return "Invalid SeqID";
 				}
 			} else {
-				return "Invalid SeqID";
+				return "Invalid SeqID/eventID";
 			}
-		} else {
-			return "Invalid SeqID/eventID";
+
+		} catch (HttpClientErrorException e) {
+			LOGGER.debug("Update introduction status : HttpClientErrorException : {} ",	StackTraceUtils.convertStackTracetoString(e));
+			ObjectMapper mapper = new ObjectMapper();
+			EWelcomeIDErrorResponse eWelcomeIDErrorResponse = mapper.readValue(e.getResponseBodyAsString(),
+					EWelcomeIDErrorResponse.class);
+			if ((null != eWelcomeIDErrorResponse.getEmail() && !eWelcomeIDErrorResponse.getEmail().isEmpty())) {
+				return eWelcomeIDErrorResponse.getEmail().get(0);
+			}
+			if ((null != eWelcomeIDErrorResponse.getValidation() && !eWelcomeIDErrorResponse.getValidation().isEmpty())) {
+				return eWelcomeIDErrorResponse.getValidation().get(0);
+			}
+			if ((null != eWelcomeIDErrorResponse.getError() && !eWelcomeIDErrorResponse.getError().isEmpty())) {
+				return eWelcomeIDErrorResponse.getError();
+			}
+			return e.getResponseBodyAsString();
+		} catch (Exception e) {
+			LOGGER.debug("Update introduction status : Exception : {} ",	StackTraceUtils.convertStackTracetoString(e));
+			return "Error while generating eWelcomeID in MySRCM";
 		}
-		/*
-		 * } catch (HttpClientErrorException e) { boolean
-		 * errorMessageParsed=false; ObjectMapper mapper = new ObjectMapper();
-		 * EWelcomeIDErrorResponse eWelcomeIDErrorResponse = mapper.readValue(
-		 * e.getResponseBodyAsString(), EWelcomeIDErrorResponse.class); if
-		 * ((null != eWelcomeIDErrorResponse.getEmail() &&
-		 * !eWelcomeIDErrorResponse.getEmail() .isEmpty())) {
-		 * errorMessageParsed=true; return
-		 * eWelcomeIDErrorResponse.getEmail().get(0); } if ((null !=
-		 * eWelcomeIDErrorResponse.getValidation() && !eWelcomeIDErrorResponse
-		 * .getValidation().isEmpty())) { errorMessageParsed=true; return
-		 * eWelcomeIDErrorResponse.getValidation().get(0); } if ((null !=
-		 * eWelcomeIDErrorResponse.getError() &&
-		 * !eWelcomeIDErrorResponse.getError() .isEmpty())) {
-		 * errorMessageParsed=true; return eWelcomeIDErrorResponse.getError(); }
-		 * if (!errorMessageParsed) { return e.getResponseBodyAsString(); } }
-		 */
+
+	}
+
+	@Override
+	public String validatePreceptorIDCardNumber(ParticipantIntroductionRequest participantRequest, int id) {
+		PMPAPIAccessLogDetails accessLogDetails = null;
+		int programID = getProgramIdByEventId(participantRequest.getEventId());
+		Participant participantInput = findParticipantBySeqId(participantRequest.getParticipantIds().get(0).getSeqId(),
+				programID);
+		try {
+			if (null == participantInput.getProgram().getPrefectId()
+					|| participantInput.getProgram().getPrefectId().isEmpty()) {
+				if (null == participantInput.getProgram().getPreceptorIdCardNumber()
+						|| participantInput.getProgram().getPreceptorIdCardNumber().isEmpty()) {
+					return "Preceptor ID is required for the Event";
+				} else {
+					accessLogDetails = new PMPAPIAccessLogDetails(
+							id,
+							EndpointConstants.ABHYASI_INFO_URI,
+							DateUtils.getCurrentTimeInMilliSec(),
+							null,
+							ErrorConstants.STATUS_FAILED,
+							null,
+							StackTraceUtils.convertPojoToJson(participantInput.getProgram().getPreceptorIdCardNumber()),
+							null);
+					int accessdetailsID = apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
+					accessLogDetails.setId(accessdetailsID);
+					AbhyasiResult result;
+					result = srcmRestTemplate
+							.getAbyasiProfile(participantInput.getProgram().getPreceptorIdCardNumber());
+					if (result.getUserProfile().length > 0) {
+						AbhyasiUserProfile userProfile = result.getUserProfile()[0];
+						if (null != userProfile) {
+							if (true == userProfile.isIs_prefect() && 0 != userProfile.getPrefect_id()) {
+								Program program = participantRepository.findOnlyProgramById(participantInput
+										.getProgram().getProgramId());
+								program.setAbyasiRefNo(participantInput.getProgram().getPreceptorIdCardNumber());
+								program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
+								programRepository.save(program);
+								accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(userProfile));
+								accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+								accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+								apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+							}
+						} else {
+							accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+							accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(result));
+							accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+							accessLogDetails.setErrorMessage("Invalid preceptor ID");
+							apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+							return "Invalid preceptor ID";
+						}
+					} else {
+						accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+						accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+						accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(result));
+						accessLogDetails.setErrorMessage("Invalid preceptor ID");
+						apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+						return "Invalid preceptor ID";
+					}
+				}
+			}
+		} catch (HttpClientErrorException e) {
+			accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLogDetails.setResponseBody(StackTraceUtils
+					.convertPojoToJson("Error while fetching abhyasi profile from MySRCM : " + e.getMessage()));
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+			return "Error while fetching abhyasi profile from MySRCM : " + e.getMessage();
+		} catch (JsonParseException | JsonMappingException e) {
+			accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLogDetails.setResponseBody(StackTraceUtils
+					.convertPojoToJson("Error while fetching abhyasi profile from MySRCM : parsing exception "));
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+			return "Error while fetching abhyasi profile from MySRCM : parsing exception ";
+		} catch (IOException e) {
+			accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLogDetails.setResponseBody(StackTraceUtils
+					.convertPojoToJson("Error while fetching abhyasi profile from MySRCM : parsing exception "));
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+			e.printStackTrace();
+			return "Error while fetching abhyasi profile from MySRCM : IO exception ";
+		} catch (Exception e) {
+			accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLogDetails.setResponseBody(StackTraceUtils
+					.convertPojoToJson("Error while fetching abhyasi profile from MySRCM : parsing exception "));
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+			return "Error while fetching abhyasi profile from MySRCM : Internal server Error ";
+		}
+		return null;
 	}
 
 }

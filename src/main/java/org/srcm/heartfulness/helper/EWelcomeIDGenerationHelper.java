@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -32,6 +34,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 @Component
 public class EWelcomeIDGenerationHelper {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(EWelcomeIDGenerationHelper.class);
+
 	@Autowired
 	SrcmRestTemplate srcmRestTemplate;
 
@@ -46,16 +50,18 @@ public class EWelcomeIDGenerationHelper {
 	 * 
 	 * @param participant
 	 * @param id
+	 * @param citiesAPIResponse 
+	 * @param geoSearchResponse 
+	 * @return 
 	 * @throws HttpClientErrorException
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	public void generateEWelcomeId(Participant participant, int id) throws HttpClientErrorException,
-			JsonParseException, JsonMappingException, IOException, ParseException {
+	public String generateEWelcomeId(Participant participant, int id, GeoSearchResponse geoSearchResponse, CitiesAPIResponse citiesAPIResponse) {
 
-		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.GEOSEARCH_URI,
+		/*PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.GEOSEARCH_URI,
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
 				StackTraceUtils.convertPojoToJson(participant.getCity() + "," + participant.getState() + ","
 						+ participant.getCountry()), null);
@@ -65,9 +71,9 @@ public class EWelcomeIDGenerationHelper {
 		accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
 		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(geoSearchResponse));
-		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);*/
 
-		PMPAPIAccessLogDetails citiesAPIAccessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.CITIES_API,
+		/*PMPAPIAccessLogDetails citiesAPIAccessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.CITIES_API,
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
 				StackTraceUtils.convertPojoToJson(geoSearchResponse.getCityId()), null);
 		apiAccessLogService.createPmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
@@ -75,48 +81,64 @@ public class EWelcomeIDGenerationHelper {
 		citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 		citiesAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(citiesAPIResponse));
 		citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
-		apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
+		apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);*/
 
-		Aspirant aspirant = new Aspirant();
-		aspirant.setCity(citiesAPIResponse.getName());
-		aspirant.setState(String.valueOf(geoSearchResponse.getStateId()));
-		aspirant.setCountry(String.valueOf(geoSearchResponse.getCountryId()));
-		SimpleDateFormat sdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
-		aspirant.setDateOfBirth((null != participant.getDateOfBirth()) ? sdf.format(participant.getDateOfBirth())
-				: null);
-		aspirant.setDateOfJoining((null != participant.getProgram().getProgramStartDate()) ? sdf.format(participant
-				.getProgram().getProgramStartDate()) : null);
-		aspirant.setEmail((null != participant.getEmail() && !participant.getEmail().isEmpty()) ? participant
-				.getEmail() : null);
-		System.out.println(participant.getProgram().toString());
-		aspirant.setFirstSittingBy((null != participant.getProgram().getPrefectId() && !participant.getProgram()
-				.getPrefectId().isEmpty()) ? participant.getProgram().getPrefectId() : null);
-		aspirant.setSrcmGroup(0 != geoSearchResponse.getNearestCenter() ? String.valueOf(geoSearchResponse
-				.getNearestCenter()) : null);
-		aspirant.setMobile((null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty()) ? participant
-				.getMobilePhone() : null);
-		aspirant.setName((null != participant.getPrintName() && !participant.getPrintName().isEmpty()) ? participant
-				.getPrintName() : null);
-		aspirant.setFirstName((null != participant.getFirstName() && !participant.getFirstName().isEmpty()) ? participant
-				.getFirstName() : participant.getPrintName());
-		aspirant.setStreet((null != participant.getAddressLine1() && !participant.getAddressLine1().isEmpty()) ? participant
-				.getAddressLine1() : null);
-		aspirant.setStreet2((null != participant.getAddressLine2() && !participant.getAddressLine2().isEmpty()) ? participant
-				.getAddressLine2() : null);
+		PMPAPIAccessLogDetails aspirantAPIAccessLogDetails=null;
+		try {
+			Aspirant aspirant = new Aspirant();
+			aspirant.setCity(citiesAPIResponse.getName());
+			aspirant.setState(String.valueOf(geoSearchResponse.getStateId()));
+			aspirant.setCountry(String.valueOf(geoSearchResponse.getCountryId()));
+			SimpleDateFormat sdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
+			aspirant.setDateOfBirth((null != participant.getDateOfBirth()) ? sdf.format(participant.getDateOfBirth())
+					: null);
+			aspirant.setDateOfJoining((null != participant.getProgram().getProgramStartDate()) ? sdf.format(participant
+					.getProgram().getProgramStartDate()) : null);
+			aspirant.setEmail((null != participant.getEmail() && !participant.getEmail().isEmpty()) ? participant
+					.getEmail() : null);
+			System.out.println(participant.getProgram().toString());
+			aspirant.setFirstSittingBy((null != participant.getProgram().getPrefectId() && !participant.getProgram()
+					.getPrefectId().isEmpty()) ? participant.getProgram().getPrefectId() : null);
+			aspirant.setSrcmGroup(0 != geoSearchResponse.getNearestCenter() ? String.valueOf(geoSearchResponse
+					.getNearestCenter()) : null);
+			aspirant.setMobile((null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty()) ? participant
+					.getMobilePhone() : null);
+			aspirant.setName((null != participant.getPrintName() && !participant.getPrintName().isEmpty()) ? participant
+					.getPrintName() : null);
+			aspirant.setFirstName((null != participant.getFirstName() && !participant.getFirstName().isEmpty()) ? participant
+					.getFirstName() : participant.getPrintName());
+			aspirant.setStreet((null != participant.getAddressLine1() && !participant.getAddressLine1().isEmpty()) ? participant
+					.getAddressLine1() : null);
+			aspirant.setStreet2((null != participant.getAddressLine2() && !participant.getAddressLine2().isEmpty()) ? participant
+					.getAddressLine2() : null);
 
-		PMPAPIAccessLogDetails aspirantAPIAccessLogDetails = new PMPAPIAccessLogDetails(id,
-				EndpointConstants.CREATE_ASPIRANT_URI, DateUtils.getCurrentTimeInMilliSec(), null,
-				ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(aspirant), null);
-		apiAccessLogService.createPmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
-		UserProfile userProfile = srcmRestTemplate.createAspirant(aspirant);
-		aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-		aspirantAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(userProfile));
-		aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
-		apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
-
-		participant.getProgram().setSrcmGroup(String.valueOf(geoSearchResponse.getNearestCenter()));
-		participant.setWelcomeCardNumber(userProfile.getRef());
-		participant.setWelcomeCardDate(new Date());
+			aspirantAPIAccessLogDetails = new PMPAPIAccessLogDetails(id,
+					EndpointConstants.CREATE_ASPIRANT_URI, DateUtils.getCurrentTimeInMilliSec(), null,
+					ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(aspirant), null);
+			apiAccessLogService.createPmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
+			UserProfile userProfile;
+			userProfile = srcmRestTemplate.createAspirant(aspirant);
+			aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			aspirantAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(userProfile));
+			aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+			apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
+			return userProfile.getRef();
+		} catch (JsonParseException | JsonMappingException e) {
+			LOGGER.debug("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",	StackTraceUtils.convertStackTracetoString(e));
+			aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+			aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
+			return null;
+		} catch (IOException e) {
+			LOGGER.debug("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",	StackTraceUtils.convertStackTracetoString(e));
+			aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+			aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**
@@ -132,7 +154,7 @@ public class EWelcomeIDGenerationHelper {
 	 * @throws ParseException
 	 */
 	public void generateEWelcomeId(Participant participant) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException {
+	JsonMappingException, IOException {
 
 		GeoSearchResponse geoSearchResponse = srcmRestTemplate.geoSearch(participant.getCity() + ","
 				+ participant.getState() + "," + participant.getCountry());
@@ -188,6 +210,74 @@ public class EWelcomeIDGenerationHelper {
 		program.setCreatedSource("SMS");
 		programRepository.saveWithProgramName(program);
 		return program;
+
+	}
+
+	public GeoSearchResponse getGeoSearchResponse(Participant participant, int id) throws HttpClientErrorException {
+		GeoSearchResponse geoSearchResponse;
+		PMPAPIAccessLogDetails accessLogDetails = null;
+		try {
+			accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.GEOSEARCH_URI,
+					DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
+					StackTraceUtils.convertPojoToJson(participant.getCity() + "," + participant.getState() + ","
+							+ participant.getCountry()), null);
+			apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
+			geoSearchResponse = srcmRestTemplate.geoSearch(participant.getCity() + ","
+					+ participant.getState() + "," + participant.getCountry());
+			accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+			accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(geoSearchResponse));
+			apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+			return geoSearchResponse;
+		} catch (JsonParseException | JsonMappingException e) {
+			LOGGER.debug("Update introduction status : GeoSearchResponse : JsonParse/JsonMapping Exception : {} ",	StackTraceUtils.convertStackTracetoString(e));
+			e.printStackTrace();
+			accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+			return null;
+		} catch (IOException e) {
+			LOGGER.debug("Update introduction status : GeoSearchResponse : Exception : {} ",	StackTraceUtils.convertStackTracetoString(e));
+			accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public CitiesAPIResponse getCitiesAPIResponse(GeoSearchResponse geoSearchResponse, int id) throws HttpClientErrorException {
+		PMPAPIAccessLogDetails citiesAPIAccessLogDetails = null ;
+		try {
+			citiesAPIAccessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.CITIES_API,
+					DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
+					StackTraceUtils.convertPojoToJson(geoSearchResponse.getCityId()), null);
+			apiAccessLogService.createPmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
+			CitiesAPIResponse citiesAPIResponse = srcmRestTemplate.getCityName(geoSearchResponse.getCityId());
+			citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			citiesAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(citiesAPIResponse));
+			citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+			apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
+			return citiesAPIResponse;
+		} catch (JsonParseException | JsonMappingException e) {
+			e.printStackTrace();
+			LOGGER.debug("Update introduction status : CitiesAPIResponse : JsonParse/JsonMapping Exception : {} ",	StackTraceUtils.convertStackTracetoString(e));
+			citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+			citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
+			return null;
+		} catch (IOException e) {
+			LOGGER.debug("Update introduction status : CitiesAPIResponse : IOException : {} ",	StackTraceUtils.convertStackTracetoString(e));
+			citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+			citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
+			e.printStackTrace();
+			return null;
+		}
 
 	}
 

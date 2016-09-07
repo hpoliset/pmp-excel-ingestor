@@ -659,7 +659,7 @@ public class ParticipantsController {
 						participantRequest.getParticipantIds().size());
 				accessLog.setUsername(userProfile.getEmail());
 				Map<String, String> map = eventDashboardValidator
-						.checkIntroductionRequestMandatoryFields(participantRequest);
+						.checkIntroductionRequestMandatoryFields(participantRequest,id);
 				if (!map.isEmpty()) {
 					accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 					accessLog.setResponseBody(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map));
