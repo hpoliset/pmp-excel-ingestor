@@ -19,6 +19,7 @@ import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.response.CitiesAPIResponse;
+import org.srcm.heartfulness.model.json.response.EWelcomeIDErrorResponse;
 import org.srcm.heartfulness.model.json.response.GeoSearchResponse;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.repository.ProgramRepository;
@@ -30,6 +31,7 @@ import org.srcm.heartfulness.util.StackTraceUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class EWelcomeIDGenerationHelper {
@@ -50,40 +52,18 @@ public class EWelcomeIDGenerationHelper {
 	 * 
 	 * @param participant
 	 * @param id
-	 * @param citiesAPIResponse 
-	 * @param geoSearchResponse 
-	 * @return 
+	 * @param citiesAPIResponse
+	 * @param geoSearchResponse
+	 * @return
 	 * @throws HttpClientErrorException
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	public String generateEWelcomeId(Participant participant, int id, GeoSearchResponse geoSearchResponse, CitiesAPIResponse citiesAPIResponse) {
-
-		/*PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.GEOSEARCH_URI,
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-				StackTraceUtils.convertPojoToJson(participant.getCity() + "," + participant.getState() + ","
-						+ participant.getCountry()), null);
-		apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
-		GeoSearchResponse geoSearchResponse = srcmRestTemplate.geoSearch(participant.getCity() + ","
-				+ participant.getState() + "," + participant.getCountry());
-		accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
-		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(geoSearchResponse));
-		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);*/
-
-		/*PMPAPIAccessLogDetails citiesAPIAccessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.CITIES_API,
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-				StackTraceUtils.convertPojoToJson(geoSearchResponse.getCityId()), null);
-		apiAccessLogService.createPmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
-		CitiesAPIResponse citiesAPIResponse = srcmRestTemplate.getCityName(geoSearchResponse.getCityId());
-		citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-		citiesAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(citiesAPIResponse));
-		citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
-		apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);*/
-
-		PMPAPIAccessLogDetails aspirantAPIAccessLogDetails=null;
+	public Object generateEWelcomeId(Participant participant, int id, GeoSearchResponse geoSearchResponse,
+			CitiesAPIResponse citiesAPIResponse) {
+		PMPAPIAccessLogDetails aspirantAPIAccessLogDetails = null;
 		try {
 			Aspirant aspirant = new Aspirant();
 			aspirant.setCity(citiesAPIResponse.getName());
@@ -112,9 +92,9 @@ public class EWelcomeIDGenerationHelper {
 			aspirant.setStreet2((null != participant.getAddressLine2() && !participant.getAddressLine2().isEmpty()) ? participant
 					.getAddressLine2() : null);
 
-			aspirantAPIAccessLogDetails = new PMPAPIAccessLogDetails(id,
-					EndpointConstants.CREATE_ASPIRANT_URI, DateUtils.getCurrentTimeInMilliSec(), null,
-					ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(aspirant), null);
+			aspirantAPIAccessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.CREATE_ASPIRANT_URI,
+					DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
+					StackTraceUtils.convertPojoToJson(aspirant), null);
 			apiAccessLogService.createPmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 			UserProfile userProfile;
 			userProfile = srcmRestTemplate.createAspirant(aspirant);
@@ -123,20 +103,67 @@ public class EWelcomeIDGenerationHelper {
 			aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
 			apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 			return userProfile.getRef();
+		} catch (HttpClientErrorException e) {
+			LOGGER.debug("Update introduction status : HttpClientErrorException : {} ",
+					StackTraceUtils.convertStackTracetoString(e));
+			ObjectMapper mapper = new ObjectMapper();
+			EWelcomeIDErrorResponse eWelcomeIDErrorResponse;
+			try {
+				eWelcomeIDErrorResponse = mapper.readValue(e.getResponseBodyAsString(), EWelcomeIDErrorResponse.class);
+				aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				aspirantAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(eWelcomeIDErrorResponse));
+				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
+				return eWelcomeIDErrorResponse;
+			} catch (JsonParseException | JsonMappingException e1) {
+				LOGGER.debug("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
+				return null;
+			} catch (IOException e1) {
+				LOGGER.debug("Update introduction status : CreateAspirant : IOException : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
+				return null;
+			} catch (Exception e1) {
+				LOGGER.debug("Update introduction status : CreateAspirant : Exception : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
+				return null;
+			}
 		} catch (JsonParseException | JsonMappingException e) {
-			LOGGER.debug("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",	StackTraceUtils.convertStackTracetoString(e));
+			LOGGER.debug("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",
+					StackTraceUtils.convertStackTracetoString(e));
 			aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 			aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 			return null;
 		} catch (IOException e) {
-			LOGGER.debug("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",	StackTraceUtils.convertStackTracetoString(e));
+			LOGGER.debug("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",
+					StackTraceUtils.convertStackTracetoString(e));
 			aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 			aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
-			e.printStackTrace();
+			return null;
+		} catch (Exception e) {
+			LOGGER.debug("Update introduction status : CreateAspirant : Exception : {} ",
+					StackTraceUtils.convertStackTracetoString(e));
+			aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+			aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 			return null;
 		}
 	}
@@ -154,7 +181,7 @@ public class EWelcomeIDGenerationHelper {
 	 * @throws ParseException
 	 */
 	public void generateEWelcomeId(Participant participant) throws HttpClientErrorException, JsonParseException,
-	JsonMappingException, IOException {
+			JsonMappingException, IOException {
 
 		GeoSearchResponse geoSearchResponse = srcmRestTemplate.geoSearch(participant.getCity() + ","
 				+ participant.getState() + "," + participant.getCountry());
@@ -213,7 +240,7 @@ public class EWelcomeIDGenerationHelper {
 
 	}
 
-	public GeoSearchResponse getGeoSearchResponse(Participant participant, int id) throws HttpClientErrorException {
+	public Object getGeoSearchResponse(Participant participant, int id) {
 		GeoSearchResponse geoSearchResponse;
 		PMPAPIAccessLogDetails accessLogDetails = null;
 		try {
@@ -222,34 +249,82 @@ public class EWelcomeIDGenerationHelper {
 					StackTraceUtils.convertPojoToJson(participant.getCity() + "," + participant.getState() + ","
 							+ participant.getCountry()), null);
 			apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
-			geoSearchResponse = srcmRestTemplate.geoSearch(participant.getCity() + ","
-					+ participant.getState() + "," + participant.getCountry());
+			geoSearchResponse = srcmRestTemplate.geoSearch(participant.getCity() + "," + participant.getState() + ","
+					+ participant.getCountry());
 			accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
 			accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(geoSearchResponse));
 			apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 			return geoSearchResponse;
+		} catch (HttpClientErrorException e) {
+			LOGGER.debug("Update introduction status : HttpClientErrorException : {} ",
+					StackTraceUtils.convertStackTracetoString(e));
+			ObjectMapper mapper = new ObjectMapper();
+			EWelcomeIDErrorResponse eWelcomeIDErrorResponse;
+			try {
+				eWelcomeIDErrorResponse = mapper.readValue(e.getResponseBodyAsString(), EWelcomeIDErrorResponse.class);
+				accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(eWelcomeIDErrorResponse));
+				accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+				return eWelcomeIDErrorResponse;
+			} catch (JsonParseException | JsonMappingException e1) {
+				LOGGER.debug("Update introduction status : GeoSearchResponse : JsonParse/JsonMapping Exception : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+				return null;
+			} catch (IOException e1) {
+				LOGGER.debug("Update introduction status : GeoSearchResponse : IOException : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+				e.printStackTrace();
+				return null;
+			} catch (Exception e1) {
+				LOGGER.debug("Update introduction status : GeoSearchResponse : Exception : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+				e.printStackTrace();
+				return null;
+			}
 		} catch (JsonParseException | JsonMappingException e) {
-			LOGGER.debug("Update introduction status : GeoSearchResponse : JsonParse/JsonMapping Exception : {} ",	StackTraceUtils.convertStackTracetoString(e));
-			e.printStackTrace();
+			LOGGER.debug("Update introduction status : GeoSearchResponse : JsonParse/JsonMapping Exception : {} ",
+					StackTraceUtils.convertStackTracetoString(e));
 			accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 			return null;
 		} catch (IOException e) {
-			LOGGER.debug("Update introduction status : GeoSearchResponse : Exception : {} ",	StackTraceUtils.convertStackTracetoString(e));
+			LOGGER.debug("Update introduction status : GeoSearchResponse : Exception : {} ",
+					StackTraceUtils.convertStackTracetoString(e));
 			accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-			e.printStackTrace();
+			return null;
+		} catch (Exception e) {
+			LOGGER.debug("Update introduction status : GeoSearchResponse : Exception : {} ",
+					StackTraceUtils.convertStackTracetoString(e));
+			accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 			return null;
 		}
 	}
 
-	public CitiesAPIResponse getCitiesAPIResponse(GeoSearchResponse geoSearchResponse, int id) throws HttpClientErrorException {
-		PMPAPIAccessLogDetails citiesAPIAccessLogDetails = null ;
+	public Object getCitiesAPIResponse(GeoSearchResponse geoSearchResponse, int id) {
+		PMPAPIAccessLogDetails citiesAPIAccessLogDetails = null;
 		try {
 			citiesAPIAccessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.CITIES_API,
 					DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
@@ -261,21 +336,69 @@ public class EWelcomeIDGenerationHelper {
 			citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
 			apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 			return citiesAPIResponse;
+		} catch (HttpClientErrorException e) {
+			LOGGER.debug("Update introduction status : HttpClientErrorException : {} ",
+					StackTraceUtils.convertStackTracetoString(e));
+			ObjectMapper mapper = new ObjectMapper();
+			EWelcomeIDErrorResponse eWelcomeIDErrorResponse;
+			try {
+				eWelcomeIDErrorResponse = mapper.readValue(e.getResponseBodyAsString(), EWelcomeIDErrorResponse.class);
+				citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				citiesAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(eWelcomeIDErrorResponse));
+				citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
+				return eWelcomeIDErrorResponse;
+			} catch (JsonParseException | JsonMappingException e1) {
+				LOGGER.debug("Update introduction status : CitiesAPIResponse : JsonParse/JsonMapping Exception : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				e.printStackTrace();
+				citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
+				return null;
+			} catch (IOException e1) {
+				LOGGER.debug("Update introduction status : CitiesAPIResponse : IOException : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
+				return null;
+			} catch (Exception e1) {
+				LOGGER.debug("Update introduction status : CitiesAPIResponse : Exception : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
+				return null;
+			}
 		} catch (JsonParseException | JsonMappingException e) {
 			e.printStackTrace();
-			LOGGER.debug("Update introduction status : CitiesAPIResponse : JsonParse/JsonMapping Exception : {} ",	StackTraceUtils.convertStackTracetoString(e));
+			LOGGER.debug("Update introduction status : CitiesAPIResponse : JsonParse/JsonMapping Exception : {} ",
+					StackTraceUtils.convertStackTracetoString(e));
 			citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 			citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 			return null;
 		} catch (IOException e) {
-			LOGGER.debug("Update introduction status : CitiesAPIResponse : IOException : {} ",	StackTraceUtils.convertStackTracetoString(e));
+			LOGGER.debug("Update introduction status : CitiesAPIResponse : IOException : {} ",
+					StackTraceUtils.convertStackTracetoString(e));
 			citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 			citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
-			e.printStackTrace();
+			return null;
+		} catch (Exception e) {
+			LOGGER.debug("Update introduction status : CitiesAPIResponse : Exception : {} ",
+					StackTraceUtils.convertStackTracetoString(e));
+			citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+			citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 			return null;
 		}
 
