@@ -12,7 +12,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
-import org.srcm.heartfulness.constants.EventConstants;
+import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.constants.SMSConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
@@ -24,7 +24,6 @@ import org.srcm.heartfulness.model.json.googleapi.response.AddressComponents;
 import org.srcm.heartfulness.model.json.googleapi.response.GoogleResponse;
 import org.srcm.heartfulness.model.json.response.AbhyasiResult;
 import org.srcm.heartfulness.model.json.response.AbhyasiUserProfile;
-import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
@@ -593,7 +592,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 				Participant participant = participantRepository.getParticipantByIntroIdAndMobileNo(introId, seqNum);
 				if (participant.getId() > 0 && participant.getProgramId() > 0) {
 					if (seqNum != null && seqNum.length() == 4) {
-						if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty()  || !participant.getWelcomeCardNumber().matches(EventConstants.EWELCOME_ID_REGEX)) {
+						if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty()  || !participant.getWelcomeCardNumber().matches(ExpressionConstants.EWELCOME_ID_REGEX)) {
 							//participant.setWelcomeCardNumber(String.valueOf(SmsUtil.generateRandomNumber(9)));
 							try {
 								

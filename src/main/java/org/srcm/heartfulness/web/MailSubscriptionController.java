@@ -12,7 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.srcm.heartfulness.constants.EventConstants;
+import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.service.SubscriptionService;
@@ -42,7 +42,7 @@ public class MailSubscriptionController {
 	public String subscribeToMailAlerts(@RequestParam(required = false, value = "id") String id, Model model) {
 		try {
 			String mailID = getMailIDfromEncryptedID(id);
-			if (null == mailID || mailID.isEmpty() || !mailID.matches(EventConstants.EMAIL_REGEX)) {
+			if (null == mailID || mailID.isEmpty() || !mailID.matches(ExpressionConstants.EMAIL_REGEX)) {
 				LOGGER.debug("Invalid ID. - id : {}", id);
 				model.addAttribute("message", "Invalid ID.");
 				return "eventsuccess";
@@ -107,7 +107,7 @@ public class MailSubscriptionController {
 	public String UpdateConfirmationMailStatus(@RequestParam(required = false, value = "id") String id, Model model) {
 		try {
 			String mailID = getMailIDfromEncryptedID(id);
-			if (null == mailID || mailID.isEmpty() || !mailID.matches(EventConstants.EMAIL_REGEX)) {
+			if (null == mailID || mailID.isEmpty() || !mailID.matches(ExpressionConstants.EMAIL_REGEX)) {
 				LOGGER.debug("Invalid ID. - id : {}", id);
 				model.addAttribute("message", "Invalid ID.");
 				return "eventsuccess";

@@ -22,7 +22,7 @@ import com.jcraft.jsch.SftpATTRS;
 import com.jcraft.jsch.SftpException;
 
 @Component
-@ConfigurationProperties(locations = "classpath:prod.ftpserver.properties", ignoreUnknownFields = false, prefix = "ftp.sahajmarginfo")
+@ConfigurationProperties(locations = "classpath:dev.ftpserver.properties", ignoreUnknownFields = false, prefix = "ftp.sahajmarginfo")
 public class FTPConnectionHelper {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FTPConnectionHelper.class);

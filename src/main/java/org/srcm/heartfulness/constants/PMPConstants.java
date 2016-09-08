@@ -1,7 +1,14 @@
 package org.srcm.heartfulness.constants;
 
+/**
+ * Constant class to hold the user roles, status and states used for data
+ * validations in PMP.
+ * 
+ * @author himasreev
+ *
+ */
 public class PMPConstants {
-	
+
 	public static final String ROLE_PREFIX = "ROLE_";
 
 	public static final String LOGIN_ROLE_SEEKER = "SEEKER";
@@ -13,9 +20,9 @@ public class PMPConstants {
 	public static final String REGISTRATION = "Registration";
 
 	public static final String LOGIN_ROLE_ADMIN = "SYSTEM_ADMIN";
-	
+
 	public static final String LOGIN_REGIONAL_ADMIN = "REGIONAL_ADMIN";
-	
+
 	public static final String LOGIN_ACCESS_DENIED = "ACCESS_DENIED";
 
 	public static final String STATUS_NEW = "New";
@@ -57,15 +64,15 @@ public class PMPConstants {
 	public static final String STATE_SEEMANDHRA = "SEEMANDHRA";
 
 	public static final String STATE_WESTBENGAL = "WESTBENGAL";
-	
+
 	public static final String SECURITY_TOKEN_KEY = "security.encrypt.token";
-	
+
 	public static final String TOTAL_EVENTS = "Total Events";
 
 	public static final String UN_CATEGORIZED = "Un-Categorized";
 
 	public static final String MISCELLANEOUS = "Miscellaneous";
-	
+
 	public static final String DATE_FORMAT = "dd-MM-yyyy";
 
 	public static final String SQL_DATE_FORMAT = "yyyy-MM-dd";
@@ -77,7 +84,7 @@ public class PMPConstants {
 	public static final String GENDER_MALE = "M";
 
 	public static final String GENDER_FEMALE = "F";
-	
+
 	public static final String STATUS_OK = "OK";
 
 }

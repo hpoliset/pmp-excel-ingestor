@@ -1,13 +1,12 @@
-/**
- * 
- */
 package org.srcm.heartfulness.constants;
 
 /**
- * @author KOustav Dutta
+ * Constant class to hold the regular expressions used for data validations in PMP. 
+ * 
+ * @author himasreev
  *
  */
-public class EventConstants {
+public class ExpressionConstants {
 
 	public static final String  DATE_REGEX = "^\\d{2}-\\d{2}-\\d{4}$";
 
@@ -20,4 +19,6 @@ public class EventConstants {
 	public static final String INTRO_ID_PREFIX="I";
 	
 	public static final String EWELCOME_ID_REGEX="^[A-Z]\\d{8}$";
+	
+	public static final String ZIPCODE_REGEX="^[1-9][0-9]{5}$";
 }
