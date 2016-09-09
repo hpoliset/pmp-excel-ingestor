@@ -130,10 +130,7 @@ public class ParticipantsController {
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(participantList));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			
-			System.out.println(participantRepository.getParticipantListToGenerateEWelcomeID());
 			return new ResponseEntity<List<ParticipantRequest>>(participantList, HttpStatus.OK);
-
 		} catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
 			LOGGER.error("Exception    :" + e.getMessage());
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid authorization token");
