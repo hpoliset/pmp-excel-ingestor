@@ -31,6 +31,7 @@ import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.UpdateIntroductionResponse;
 import org.srcm.heartfulness.model.json.response.UserProfile;
+import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.PmpParticipantService;
 import org.srcm.heartfulness.service.ProgramService;
@@ -69,6 +70,9 @@ public class ParticipantsController {
 
 	@Autowired
 	APIAccessLogService apiAccessLogService;
+	
+	@Autowired
+	ParticipantRepository participantRepository;
 
 	/**
 	 * Web service endpoint to fetch list of participants.
@@ -126,6 +130,8 @@ public class ParticipantsController {
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(participantList));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			
+			System.out.println(participantRepository.getParticipantListToGenerateEWelcomeID());
 			return new ResponseEntity<List<ParticipantRequest>>(participantList, HttpStatus.OK);
 
 		} catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
@@ -343,6 +349,7 @@ public class ParticipantsController {
 					accessLog.setErrorMessage(map.toString());
 					accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+					map.put("status", ErrorConstants.STATUS_FAILED);
 					return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
 				} else {
 					ParticipantRequest newparticipant = participantService.createParticipant(participant);
@@ -443,6 +450,7 @@ public class ParticipantsController {
 				accessLog.setErrorMessage(errors.toString());
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+				errors.put( "status", ErrorConstants.STATUS_FAILED);
 				return new ResponseEntity<Map<String, String>>(errors, HttpStatus.PRECONDITION_FAILED);
 			}
 			ParticipantRequest newparticipant = participantService.createParticipant(participant);
@@ -543,6 +551,7 @@ public class ParticipantsController {
 					accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(map));
 					accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+					map.put("status", ErrorConstants.STATUS_FAILED);
 					return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
 				} else {
 					List<UpdateIntroductionResponse> result = participantService.deleteparticipantsBySeqID(
@@ -659,6 +668,7 @@ public class ParticipantsController {
 					accessLog.setErrorMessage(map.toString());
 					accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+					map.put("status", ErrorConstants.STATUS_FAILED);
 					LOGGER.debug("END : Update introduction status call : Partcicipants count - {} ",
 							participantRequest.getParticipantIds().size());
 					return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
