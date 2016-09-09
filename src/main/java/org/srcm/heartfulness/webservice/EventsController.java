@@ -262,7 +262,7 @@ public class EventsController {
 			LOGGER.debug("Trying to get event list for logged in user");
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eventList));
+			accessLog.setResponseBody(null);
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<List<Event>>(eventList, HttpStatus.OK);
 		} catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
@@ -720,6 +720,7 @@ public class EventsController {
 					accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 					accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(map));
 					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+					map.put("status", ErrorConstants.STATUS_FAILED);
 					return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
 				} else {
 					eventAdminChangeRequest.setCreatedBy(userProfile.getEmail());
