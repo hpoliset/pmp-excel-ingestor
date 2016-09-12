@@ -576,7 +576,7 @@ public class SendMail {
 		message.setFrom(new InternetAddress(frommail,name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
 		//message.addRecipients(Message.RecipientType.TO, InternetAddress.parse("himasree.vemuru@htcindia.com"));
-		message.setSubject(coordinatormailforupdatingeventsubject);
+		message.setSubject(coordinatormailforupdatingeventsubject +" - "+ coordinator.getEventName());
 		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent), "text/html");
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());

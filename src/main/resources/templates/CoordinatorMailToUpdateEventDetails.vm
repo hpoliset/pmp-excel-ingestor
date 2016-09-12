@@ -7,10 +7,9 @@
 Dear ${COORDINATOR_NAME},
 <br/>
 <div style="padding-left: 10px;">
-<p>Please note that the excelsheet uploaded for the event <b>${EVENT_NAME}</b> on ${PROGRAM_CREATE_DATE} seems to have an invalid preceptorID.</p>
-<p>Request you to kindly access the following <u><a href="${UPDATE_EVENT_LINK}">URL</a></u> to update the valid preceptorID.</p>
-<br/>
-<p><b>Note:</b> Kindly note that a valid preceptorID is required to generate ewelcomeID's for all the participants.</p>
+<p>Please note that the excelsheet uploaded for the event <b>${EVENT_NAME}</b> on ${PROGRAM_CREATE_DATE} seems to have an invalid Preceptor ID.</p>
+<p>Request you to kindly access the following <u><a href="${UPDATE_EVENT_LINK}">URL</a></u> to update the valid Preceptor ID.</p>
+<p><u><b>Note:</b></u> Kindly note that a valid Preceptor ID is required to generate ewelcomeID's for all the participants.</p>
 <br/>
 </div>
 <div style="font-style: italic; font-weight: bold;">
