@@ -582,5 +582,6 @@ public class SendMail {
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
 		Transport.send(message);
+		LOGGER.debug("Mail sent successfully to Coordinator : {} ",coordinator.getCoordinatorEmail());
 	}
 }
