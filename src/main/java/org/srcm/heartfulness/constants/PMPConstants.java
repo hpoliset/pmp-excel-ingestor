@@ -87,4 +87,16 @@ public class PMPConstants {
 
 	public static final String STATUS_OK = "OK";
 
+	public static final String EWELCOMEID_TO_BE_CREATED_STATE = "T";
+
+	public static final String EWELCOMEID_FAILED_STATE = "F";
+
+	public static final String EWELCOMEID_COMPLETED_STATE = "C";
+
+	public static final String CREATED_SOURCE_EXCEL = "EXCEL";
+
+	public static final String CREATED_SOURCE_SMS = "SMS";
+
+	public static final String CREATED_SOURCE_DASHBOARD = "DASHBOARD";
+
 }

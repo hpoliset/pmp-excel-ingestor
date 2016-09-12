@@ -20,6 +20,7 @@ import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.model.Participant;
+import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
@@ -130,12 +131,16 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			errors.put("eventId", "event Id is required");
 		} else if (null != participantRequest.getEventId() && !participantRequest.getEventId().matches("^E[0-9]{6}$")) {
 			errors.put("eventId", "event Id invalid");
-		} else if (0 == programService.getProgramIdByEventId(participantRequest.getEventId())) {
-			errors.put("eventId", "Invalid EventId - No event exists for the given event Id");
-		} else {
-			String errorMessage = programService.validatePreceptorIDCardNumber(participantRequest, id);
-			if (null != errorMessage) {
-				errors.put("Preceptor ID card number", errorMessage);
+		} else{
+			int programID=programService.getProgramIdByEventId(participantRequest.getEventId());
+			if (0 == programID) {
+				errors.put("eventId", "Invalid EventId - No event exists for the given event Id");
+			} else {
+				Program program=programService.getProgramById(programID);
+				String errorMessage = programService.validatePreceptorIDCardNumber(program, id);
+				if (null != errorMessage) {
+					errors.put("Preceptor ID card number", errorMessage);
+				}
 			}
 		}
 		if (null == participantRequest.getIntroduced() || participantRequest.getIntroduced().isEmpty()) {
@@ -331,18 +336,26 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if (null == participantInput.getProgram().getProgramStartDate()) {
 			errors.add("Program start date is required.");
 		}
-
-		if ((null == participantInput.getFirstSittingDate())
-				&& (null == participantInput.getFirstSitting() || 0 == participantInput.getFirstSitting())) {
-			errors.add("Participant not completed preliminary sittings.");
-		} else if ((null == participantInput.getSecondSittingDate())
-				&& (null == participantInput.getSecondSitting() || 0 == participantInput.getSecondSitting())) {
-			errors.add("Participant not completed preliminary sittings.");
-		} else if ((null == participantInput.getThirdSittingDate())
-				&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())) {
+		
+		if(!validateParticipantCompletedPreliminarySittings(participantInput)){
 			errors.add("Participant not completed preliminary sittings.");
 		}
+		
 		return errors;
+	}
+	
+	public boolean validateParticipantCompletedPreliminarySittings(Participant participantInput){
+		if ((null == participantInput.getFirstSittingDate())
+				&& (null == participantInput.getFirstSitting() || 0 == participantInput.getFirstSitting())) {
+			return false;
+		} else if ((null == participantInput.getSecondSittingDate())
+				&& (null == participantInput.getSecondSitting() || 0 == participantInput.getSecondSitting())) {
+			return false;
+		} else if ((null == participantInput.getThirdSittingDate())
+				&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
