@@ -137,6 +137,11 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			errorResponse.add(ex.getMessage());
 			response.setErrorMsg(errorResponse);
 			response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
+		} catch(Exception ex){
+			LOGGER.error(ex.getMessage());
+			errorResponse.add("Error while uploading excel file.Please contact Administrator");
+			response.setErrorMsg(errorResponse);
+			response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 		}
 		return response;
 	}

@@ -199,7 +199,9 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 		int rowCount = participantSheet.getPhysicalNumberOfRows();
 		for (int i = 1; i < rowCount; i++) {
 			Row currentRow = participantSheet.getRow(i);
-			errorList.addAll(parseParticipantData(currentRow, i + 1));
+			if (!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()) {
+				errorList.addAll(parseParticipantData(currentRow, i + 1));
+			}
 		}
 		LOGGER.debug("Participation Details sheet mandatory fields validation completed for v2.1 template.");
 	}
