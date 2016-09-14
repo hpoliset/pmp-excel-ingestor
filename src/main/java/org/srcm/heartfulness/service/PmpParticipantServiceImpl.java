@@ -16,6 +16,7 @@ import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.enumeration.ParticipantSearchField;
 import org.srcm.heartfulness.model.Participant;
+import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
@@ -606,17 +607,18 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	@Override
 	public void updatePartcipantEWelcomeIDStatuswithParticipantID(int programId, String eWelcomeIDStatus, String remarks) {
 		List<Participant> participants = participantRepository.findByProgramId(programId);
+		Program program=programrepository.findById(programId);
 		for (Participant participant : participants) {
 			if (null != participant.getWelcomeCardNumber() && !participant.getWelcomeCardNumber().isEmpty()) {
 				participant.setEwelcomeIdRemarks(null);
 				participant.setIntroduced(1);
-				if(null == participant.getWelcomeCardDate()){
+				if(null != participant.getWelcomeCardDate()){
+					participant.setIntroductionDate(participant.getWelcomeCardDate());
+				}else{
 					participant.setWelcomeCardDate(new Date());
 					participant.setIntroductionDate(new Date());
-				}else{
-					participant.setIntroductionDate(participant.getWelcomeCardDate());
 				}
-				participant.setIntroducedBy(participant.getProgram().getCoordinatorEmail());
+				participant.setIntroducedBy(program.getCoordinatorEmail());
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
 			} else if (!eventDashboardValidator.validateParticipantCompletedPreliminarySittings(participant)) {
 				participant.setEwelcomeIdRemarks((null != remarks && !remarks.isEmpty()) ? remarks :"Participant not completed preliminary sittings.");
