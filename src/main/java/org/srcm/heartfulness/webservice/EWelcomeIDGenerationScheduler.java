@@ -63,7 +63,7 @@ public class EWelcomeIDGenerationScheduler {
 				Program program= programService.getProgramById(participant.getProgramId());
 				participant.setProgram(program);
 				eWelcomeIDGenerationHelper.generateEWelcomeId(participant);
-				participant.setIntroducedBy("CRON");
+				participant.setIntroducedBy(program.getCoordinatorEmail());
 				participant.setIntroductionDate(new Date());
 				participant.setIntroduced(1);
 				participant.setEwelcomeIdRemarks(null);
