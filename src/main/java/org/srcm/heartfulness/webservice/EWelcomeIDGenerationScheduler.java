@@ -7,7 +7,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,7 +63,11 @@ public class EWelcomeIDGenerationScheduler {
 				Program program= programService.getProgramById(participant.getProgramId());
 				participant.setProgram(program);
 				eWelcomeIDGenerationHelper.generateEWelcomeId(participant);
+				participant.setIntroducedBy("CRON");
+				participant.setIntroductionDate(new Date());
+				participant.setIntroduced(1);
 				participant.setEwelcomeIdRemarks(null);
+				participant.setIsEwelcomeIdInformed(0);
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
 				participantRepository.save(participant);
 				LOGGER.debug(

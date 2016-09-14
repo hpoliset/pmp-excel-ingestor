@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -608,9 +609,16 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 		for (Participant participant : participants) {
 			if (null != participant.getWelcomeCardNumber() && !participant.getWelcomeCardNumber().isEmpty()) {
 				participant.setEwelcomeIdRemarks(null);
+				participant.setIntroduced(1);
+				if(null == participant.getWelcomeCardDate()){
+					participant.setWelcomeCardDate(new Date());
+					participant.setIntroductionDate(new Date());
+				}else{
+					participant.setIntroductionDate(participant.getWelcomeCardDate());
+				}
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
 			} else if (!eventDashboardValidator.validateParticipantCompletedPreliminarySittings(participant)) {
-				participant.setEwelcomeIdRemarks((null != remarks) ? remarks :"Participant not completed preliminary sittings.");
+				participant.setEwelcomeIdRemarks((null != remarks && !remarks.isEmpty()) ? remarks :"Participant not completed preliminary sittings.");
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
 			} else {
 				participant.setEwelcomeIdRemarks(remarks);
