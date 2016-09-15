@@ -280,6 +280,7 @@ public class ProgramServiceImpl implements ProgramService {
 						: PMPConstants.REQUIRED_NO);
 				participantReq.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
 						.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
+				participantReq.setEwelcomeIdRemarks(participant.getEwelcomeIdRemarks());
 				participantReqList.add(participantReq);
 			}
 			return participantReqList;

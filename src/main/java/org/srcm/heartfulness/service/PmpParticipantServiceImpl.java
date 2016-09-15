@@ -139,6 +139,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					.geteWelcomeID().isEmpty()) ? participantRequest.geteWelcomeID() : null);
 			participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE);
 			participant.setCreatedSource(PMPConstants.CREATED_SOURCE_DASHBOARD);
+			participant.setEwelcomeIdRemarks(participantRequest.getEwelcomeIdRemarks());
 		} else {
 			participant = findBySeqId(participantRequest);
 			participant.setPrintName(participantRequest.getPrintName());
@@ -167,6 +168,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setIntroductionDate((null != participantRequest.getIntroductionDate() && !participantRequest
 					.getIntroductionDate().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest
 					.getIntroductionDate()))) : null);
+			participant.setEwelcomeIdRemarks(participantRequest.getEwelcomeIdRemarks());
 			if (null == participantRequest.getFirstSittingDate()) {
 				participant.setFirstSittingDate(null);
 			} else {
@@ -272,7 +274,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 						: PMPConstants.REQUIRED_NO);
 		participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
 				.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
-
+		participantRequest.setEwelcomeIdRemarks(participant.getEwelcomeIdRemarks());
 		return participantRequest;
 	}
 
@@ -350,6 +352,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 
 			participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
 					.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
+			participantRequest.setEwelcomeIdRemarks(participant.getEwelcomeIdRemarks());
 			return participantRequest;
 		} else {
 			return null;
