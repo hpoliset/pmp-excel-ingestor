@@ -284,8 +284,8 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	@Override
 	public Integer getCountOfEWelcomeIdGenerationFailedPartcicipants(String programId) {
 		return this.jdbcTemplate.queryForObject("SELECT COUNT(id) from participant WHERE create_time <= CURRENT_TIMESTAMP" 
-				+ " AND ewelcome_id_state = 'F' AND ("
-						+ "welcome_card_number IS NULL" + " OR welcome_card_number = '')",null,
+				+ "AND program_id=? AND ewelcome_id_state = 'F' AND ("
+						+ "welcome_card_number IS NULL" + " OR welcome_card_number = '')",new Object[] { programId },
 						 Integer.class);
 		
 	}
