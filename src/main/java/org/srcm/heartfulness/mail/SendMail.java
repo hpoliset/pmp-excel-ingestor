@@ -501,7 +501,7 @@ public class SendMail {
 	}
 
 	public void sendGeneratedEwelcomeIdDetailslToCoordinator(CoordinatorEmail coordinatorEmail,
-			List<Participant> participants, int participantCount) throws AddressException, MessagingException, UnsupportedEncodingException {
+			List<Participant> participants, List<Participant> failedParticipants) throws AddressException, MessagingException, UnsupportedEncodingException {
 
 		Properties props = System.getProperties();
 		props.put("mail.debug", "true");
@@ -542,7 +542,20 @@ public class SendMail {
 		System.out.println(" co ord details - " + coordinatorEmail.getEventName() + "--"
 				+ coordinatorEmail.getCoordinatorEmail());
 		System.out.println("PARTICIPANTS_DETAILS " + sb.toString());
-		addParameter("PARTICIPANT_COUNT",String.valueOf( participantCount));
+		for (Participant failedParticipant : failedParticipants) {
+			sb.append("<tr><td>");
+			sb.append(i++);
+			sb.append("</td><td>");
+			sb.append(failedParticipant.getPrintName() != null ? failedParticipant.getPrintName() : "");
+			sb.append("</td><td>");
+			sb.append(failedParticipant.getEmail() != null ? failedParticipant.getEmail() : "");
+			sb.append("</td><td>");
+			sb.append(failedParticipant.getMobilePhone() != null ? failedParticipant.getMobilePhone() : "");
+			sb.append("</td><td>");
+			sb.append(failedParticipant.getEwelcomeIdRemarks() != null ?failedParticipant.getEwelcomeIdRemarks() : "");
+			sb.append("</td></tr>");
+		}
+		addParameter("FAILED_PARTICIPANTS_DETAILS", sb.toString());
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
 		// SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");

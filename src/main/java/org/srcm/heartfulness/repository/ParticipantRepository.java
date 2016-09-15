@@ -81,6 +81,6 @@ public interface ParticipantRepository {
 	
 	List<Participant> getParticipantListToGenerateEWelcomeID();
 
-	Integer getCountOfEWelcomeIdGenerationFailedPartcicipants(String programId);
+	List<Participant> getEWelcomeIdGenerationFailedPartcicipants(String programId);
 
 }
