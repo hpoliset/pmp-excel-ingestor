@@ -42,7 +42,7 @@ public class User {
 	@JsonProperty("mobile")
 	private String mobile;
 
-	@JsonProperty("user_type")
+	@JsonIgnore
 	private String user_type;
 
 	@NotEmpty(message = "Please enter the password.")
@@ -78,11 +78,14 @@ public class User {
 	@JsonIgnore
 	private String isSahajmargAllowed;
 
-	@JsonIgnore
-	private int abyasiId;
-
 	@JsonProperty("abyasi_id")
-	private String membershipId;
+	private String abyasiId;
+	
+	private String ageGroup;
+
+	private String zipcode;
+
+	private String languagePreference;
 
 	public User() {
 		super();
@@ -91,7 +94,7 @@ public class User {
 	public User(int id, String name, String first_name, String last_name, String gender, String email, String mobile,
 			String user_type, String password, String confirmPassword, String address, String country, String state,
 			String city, String access_token, String role, String message, String isPmpAllowed,
-			String isSahajmargAllowed, int abyasiId, String membershipId) {
+			String isSahajmargAllowed, String abyasiId, String ageGroup, String zipcode, String languagePreference) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -113,7 +116,9 @@ public class User {
 		this.isPmpAllowed = isPmpAllowed;
 		this.isSahajmargAllowed = isSahajmargAllowed;
 		this.abyasiId = abyasiId;
-		this.membershipId = membershipId;
+		this.ageGroup = ageGroup;
+		this.zipcode = zipcode;
+		this.languagePreference = languagePreference;
 	}
 
 	public int getId() {
@@ -268,20 +273,36 @@ public class User {
 		this.isSahajmargAllowed = isSahajmargAllowed;
 	}
 
-	public int getAbyasiId() {
+	public String getAbyasiId() {
 		return abyasiId;
 	}
 
-	public void setAbyasiId(int abyasiId) {
+	public void setAbyasiId(String abyasiId) {
 		this.abyasiId = abyasiId;
 	}
 
-	public String getMembershipId() {
-		return membershipId;
+	public String getAgeGroup() {
+		return ageGroup;
 	}
 
-	public void setMembershipId(String membershipId) {
-		this.membershipId = membershipId;
+	public void setAgeGroup(String ageGroup) {
+		this.ageGroup = ageGroup;
+	}
+
+	public String getZipcode() {
+		return zipcode;
+	}
+
+	public void setZipcode(String zipcode) {
+		this.zipcode = zipcode;
+	}
+
+	public String getLanguagePreference() {
+		return languagePreference;
+	}
+
+	public void setLanguagePreference(String languagePreference) {
+		this.languagePreference = languagePreference;
 	}
 
 	@Override
@@ -290,9 +311,9 @@ public class User {
 				+ ", gender=" + gender + ", email=" + email + ", mobile=" + mobile + ", user_type=" + user_type
 				+ ", password=" + password + ", confirmPassword=" + confirmPassword + ", address=" + address
 				+ ", country=" + country + ", state=" + state + ", city=" + city + ", access_token=" + access_token
-				+ ", role=" + role + ", message=" + message + ", ispmpAllowed=" + isPmpAllowed
-				+ ", isSahajmargAllowed=" + isSahajmargAllowed + ", abyasiId=" + abyasiId + ", membershipId="
-				+ membershipId + "]";
+				+ ", role=" + role + ", message=" + message + ", isPmpAllowed=" + isPmpAllowed
+				+ ", isSahajmargAllowed=" + isSahajmargAllowed + ", abyasiId=" + abyasiId + ", ageGroup=" + ageGroup
+				+ ", zipcode=" + zipcode + ", languagePreference=" + languagePreference + "]";
 	}
 
 }

@@ -16,10 +16,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.ErrorConstants;
-import org.srcm.heartfulness.constants.EventConstants;
+import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.model.Participant;
+import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
@@ -130,12 +131,16 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			errors.put("eventId", "event Id is required");
 		} else if (null != participantRequest.getEventId() && !participantRequest.getEventId().matches("^E[0-9]{6}$")) {
 			errors.put("eventId", "event Id invalid");
-		} else if (0 == programService.getProgramIdByEventId(participantRequest.getEventId())) {
-			errors.put("eventId", "Invalid EventId - No event exists for the given event Id");
-		} else {
-			String errorMessage = programService.validatePreceptorIDCardNumber(participantRequest, id);
-			if (null != errorMessage) {
-				errors.put("Preceptor ID card number", errorMessage);
+		} else{
+			int programID=programService.getProgramIdByEventId(participantRequest.getEventId());
+			if (0 == programID) {
+				errors.put("eventId", "Invalid EventId - No event exists for the given event Id");
+			} else {
+				Program program=programService.getProgramById(programID);
+				String errorMessage = programService.validatePreceptorIDCardNumber(program, id);
+				if (null != errorMessage) {
+					errors.put("Preceptor ID card number", errorMessage);
+				}
 			}
 		}
 		if (null == participantRequest.getIntroduced() || participantRequest.getIntroduced().isEmpty()) {
@@ -168,18 +173,18 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if (null == eventAdminChangeRequest.getNewCoordinatorEmail()
 				|| eventAdminChangeRequest.getNewCoordinatorEmail().isEmpty()) {
 			errors.put("newCoOrdinatorEmail", "new co-ordinator email is required");
-		}else if (!eventAdminChangeRequest.getNewCoordinatorEmail().matches(EventConstants.EMAIL_REGEX)) {
+		} else if (!eventAdminChangeRequest.getNewCoordinatorEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
 			errors.put("newCoOrdinatorEmail", "Invalid new co-ordinator email format");
 		}
-		if (null == eventAdminChangeRequest.getCoordinatorMobile() || eventAdminChangeRequest.getCoordinatorMobile().isEmpty()) {
+		if (null == eventAdminChangeRequest.getCoordinatorMobile()
+				|| eventAdminChangeRequest.getCoordinatorMobile().isEmpty()) {
 			errors.put("CoOrdinatorMobile", "Co-Ordinator mobile is required");
-		} else if (!eventAdminChangeRequest.getCoordinatorMobile().matches(EventConstants.MOBILE_REGEX)) {
+		} else if (!eventAdminChangeRequest.getCoordinatorMobile().matches(ExpressionConstants.MOBILE_REGEX)) {
 			errors.put("CoOrdinatorMobile", "Invalid Co-Ordinator mobile number format");
 		}
-		
+
 		return errors;
 	}
-
 
 	/**
 	 * Method is used to validate the mandatory parameters before persisting an
@@ -204,7 +209,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				errors.put("programStartDate", "Invalid date format,correct format is dd-MM-yyyy");
 			}
 
-			if (!event.getProgramStartDate().matches(EventConstants.DATE_REGEX)) {
+			if (!event.getProgramStartDate().matches(ExpressionConstants.DATE_REGEX)) {
 				errors.put("programStartDate", "Invalid date format,correct format is dd-MM-yyyy");
 			}
 		}
@@ -215,7 +220,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			} catch (ParseException e) {
 				errors.put("programEndDate", "Invalid date format,correct format is dd-MM-yyyy");
 			}
-			if (!event.getProgramEndDate().matches(EventConstants.DATE_REGEX)) {
+			if (!event.getProgramEndDate().matches(ExpressionConstants.DATE_REGEX)) {
 				errors.put("programEndDate", "Invalid date format,correct format is dd-MM-yyyy");
 			}
 		}
@@ -238,12 +243,12 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		}
 		if (null == event.getCoordinatorEmail() || event.getCoordinatorEmail().isEmpty()) {
 			errors.put("coordinatorEmail", "Coordinator email is required");
-		} else if (!event.getCoordinatorEmail().matches(EventConstants.EMAIL_REGEX)) {
+		} else if (!event.getCoordinatorEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
 			errors.put("coordinatorEmail", "Invalid email format");
 		}
 		if (null == event.getCoordinatorMobile() || event.getCoordinatorMobile().isEmpty()) {
 			errors.put("coordinatorMobile", "Coordinator mobile is required");
-		} else if (!event.getCoordinatorMobile().matches(EventConstants.MOBILE_REGEX)) {
+		} else if (!event.getCoordinatorMobile().matches(ExpressionConstants.MOBILE_REGEX)) {
 			errors.put("coordinatorMobile", "Invalid mobile number format");
 		}
 
@@ -255,13 +260,13 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		}
 		if (null == event.getOrganizationContactMobile() || event.getOrganizationContactMobile().isEmpty()) {
 			errors.put("organizationContactMobile", "Organization contact mobile is required");
-		} else if (!event.getOrganizationContactMobile().matches(EventConstants.MOBILE_REGEX)) {
+		} else if (!event.getOrganizationContactMobile().matches(ExpressionConstants.MOBILE_REGEX)) {
 			errors.put("organizationContactMobile", "Invalid mobile number format");
 		}
 
 		if (null == event.getOrganizationContactEmail() || event.getOrganizationContactEmail().isEmpty()) {
 			errors.put("organizationContactEmail", "Organization contact email is required");
-		} else if (!event.getOrganizationContactEmail().matches(EventConstants.EMAIL_REGEX)) {
+		} else if (!event.getOrganizationContactEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
 			errors.put("organizationContactEmail", "Invalid email format");
 		}
 
@@ -331,18 +336,26 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if (null == participantInput.getProgram().getProgramStartDate()) {
 			errors.add("Program start date is required.");
 		}
-
-		if ((null == participantInput.getFirstSittingDate())
-				&& (null == participantInput.getFirstSitting() || 0 == participantInput.getFirstSitting())) {
-			errors.add("Participant not completed preliminary sittings.");
-		} else if ((null == participantInput.getSecondSittingDate())
-				&& (null == participantInput.getSecondSitting() || 0 == participantInput.getSecondSitting())) {
-			errors.add("Participant not completed preliminary sittings.");
-		} else if ((null == participantInput.getThirdSittingDate())
-				&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())) {
+		
+		if(!validateParticipantCompletedPreliminarySittings(participantInput)){
 			errors.add("Participant not completed preliminary sittings.");
 		}
+		
 		return errors;
+	}
+	
+	public boolean validateParticipantCompletedPreliminarySittings(Participant participantInput){
+		if ((null == participantInput.getFirstSittingDate())
+				&& (null == participantInput.getFirstSitting() || 0 == participantInput.getFirstSitting())) {
+			return false;
+		} else if ((null == participantInput.getSecondSittingDate())
+				&& (null == participantInput.getSecondSitting() || 0 == participantInput.getSecondSitting())) {
+			return false;
+		} else if ((null == participantInput.getThirdSittingDate())
+				&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

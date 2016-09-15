@@ -1,6 +1,10 @@
 package org.srcm.heartfulness.service;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -8,17 +12,24 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
 import org.apache.poi.POIXMLException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
+import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.enumeration.ExcelType;
 import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractorFactory;
+import org.srcm.heartfulness.mail.SendMail;
+import org.srcm.heartfulness.model.CoordinatorEmail;
 import org.srcm.heartfulness.model.Organisation;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.repository.OrganisationRepository;
@@ -27,6 +38,7 @@ import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
 import org.srcm.heartfulness.service.response.ExcelUploadResponse;
 import org.srcm.heartfulness.util.ExcelParserUtils;
 import org.srcm.heartfulness.util.InvalidExcelFileException;
+import org.srcm.heartfulness.util.StackTraceUtils;
 import org.srcm.heartfulness.util.VersionIdentifier;
 import org.srcm.heartfulness.validator.EventDetailsExcelValidatorFactory;
 
@@ -49,6 +61,15 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 
 	@Autowired
 	SrcmRestTemplate srcmRestTemplate;
+
+	@Autowired
+	SendMail sendMail;
+
+	@Autowired
+	private ProgramService programService;
+	
+	@Autowired
+	private PmpParticipantService participantService;
 
 	/**
 	 * This method is used to parse the excel file and populate the data into
@@ -80,53 +101,26 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 					try {
 						Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version);
 						program.setCreatedSource("Excel");
-
-						/*
-						 * if( null != program.getPreceptorIdCardNumber() &&
-						 * !program.getPreceptorIdCardNumber().isEmpty()){
-						 * AbhyasiResult result =
-						 * srcmRestTemplate.getAbyasiProfile
-						 * (program.getPreceptorIdCardNumber()); if
-						 * (result.getUserProfile().length > 0) {
-						 * AbhyasiUserProfile userProfile =
-						 * result.getUserProfile()[0]; if (null != userProfile)
-						 * { if (true == userProfile.isIs_prefect() && 0 !=
-						 * userProfile.getPrefect_id()) {
-						 * program.setAbyasiRefNo(
-						 * program.getPreceptorIdCardNumber());
-						 * program.setPrefectId
-						 * (String.valueOf(userProfile.getPrefect_id()));
-						 * //program
-						 * .setSrcmGroup(String.valueOf(userProfile.getSrcm_group
-						 * ())); programRepository.save(program);
-						 * response.setStatus
-						 * (EventDetailsUploadConstants.SUCCESS_STATUS); } else
-						 * { errorResponse.add(
-						 * "Specified PreceptorId Card Number is not authorized."
-						 * ); response.setErrorMsg(errorResponse);
-						 * response.setStatus
-						 * (EventDetailsUploadConstants.FAILURE_STATUS); } }
-						 * else {
-						 * errorResponse.add("Invalid PreceptorId Card Number."
-						 * ); response.setErrorMsg(errorResponse);
-						 * response.setStatus
-						 * (EventDetailsUploadConstants.FAILURE_STATUS); }
-						 * }else{
-						 * errorResponse.add("Invalid PreceptorId Card Number."
-						 * ); response.setErrorMsg(errorResponse);
-						 * response.setStatus
-						 * (EventDetailsUploadConstants.FAILURE_STATUS); } }
-						 * else {
-						 */
 						programRepository.save(program);
+						// preceptor ID card number validation
+						try {
+							if (null != programService.validatePreceptorIDCardNumber(program, 0)) {
+								sendMailToCoordinatorToUpdatePreceptorID(program);
+								participantService.updatePartcipantEWelcomeIDStatuswithParticipantID(program.getProgramId(),PMPConstants.EWELCOMEID_FAILED_STATE,"Invalid PreceptorID");
+							}else{
+								participantService.updatePartcipantEWelcomeIDStatuswithParticipantID(program.getProgramId(),PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE,null);
+							}
+						} catch (Exception ex) {
+							LOGGER.debug("Error while validating preceptor ID : {}",program.getPreceptorIdCardNumber());
+							LOGGER.debug("Error while validating preceptor ID : Exception: {}",StackTraceUtils.convertStackTracetoString(ex));
+						}
 						response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
-						// }
 					} catch (InvalidExcelFileException ex) {
-						errorResponse.add(ex.getCause().getLocalizedMessage());
+						errorResponse.add(ex.getMessage());
 						response.setErrorMsg(errorResponse);
 						response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 					} catch (Exception ex) {
-						errorResponse.add(ex.getCause().getLocalizedMessage());
+						errorResponse.add(ex.getMessage());
 						response.setErrorMsg(errorResponse);
 						response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 					}
@@ -143,8 +137,42 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			errorResponse.add(ex.getMessage());
 			response.setErrorMsg(errorResponse);
 			response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
+		} catch(Exception ex){
+			LOGGER.error(ex.getMessage());
+			errorResponse.add("Error while uploading excel file.Please contact Administrator");
+			response.setErrorMsg(errorResponse);
+			response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 		}
 		return response;
+	}
+
+	@Async
+	private void sendMailToCoordinatorToUpdatePreceptorID(Program program) {
+		try {
+			CoordinatorEmail coordinatorEmail = new CoordinatorEmail();
+			coordinatorEmail.setCoordinatorEmail(program.getCoordinatorEmail());
+			coordinatorEmail.setCoordinatorName(program.getCoordinatorName());
+			coordinatorEmail.setEventName(program.getProgramChannel());
+			SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
+			coordinatorEmail.setProgramCreateDate(inputsdf.format(program.getProgramStartDate()));
+			coordinatorEmail.setEventID(program.getAutoGeneratedEventId());
+			sendMail.sendMailToCoordinatorToUpdatePreceptorID(coordinatorEmail);
+		} catch (AddressException e) {
+			LOGGER.debug("Address Exception : Coordinator Email : {} ",program.getCoordinatorEmail());
+			LOGGER.debug("Address Exception : Coordinator Email : Exception : {} ",program.getCoordinatorEmail());
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.debug("UnsupportedEncodingException : Coordinator Email : {} ",program.getCoordinatorEmail());
+			LOGGER.debug("UnsupportedEncodingException : Coordinator Email : Exception : {} ",program.getCoordinatorEmail());
+		} catch (MessagingException e) {
+			LOGGER.debug("MessagingException : Coordinator Email : {} ",program.getCoordinatorEmail());
+			LOGGER.debug("MessagingException : Coordinator Email : Exception : {} ",program.getCoordinatorEmail());
+		} catch (ParseException e) {
+			LOGGER.debug("ParseException : Coordinator Email : {} : Error while parsing date : {}  ",program.getCoordinatorEmail(),program.getProgramStartDate());
+			LOGGER.debug("ParseException : Error while parsing date  : Exception : {} ",program.getCoordinatorEmail());
+		} catch (Exception e) {
+			LOGGER.debug("Exception : Coordinator Email : {} ",program.getCoordinatorEmail(),program.getProgramStartDate());
+			LOGGER.debug("Exception : Error while sending mail to coordinator : Exception : {} ",program.getCoordinatorEmail());
+		}
 	}
 
 	@Override

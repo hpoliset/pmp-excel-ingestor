@@ -69,7 +69,9 @@ public class ParticipantRequest {
 
 	@JsonIgnore
 	private int excelSheetSequenceNumber;
-
+	
+	private String ewelcomeIdRemarks;
+	
 	public int getExcelSheetSequenceNumber() {
 		return excelSheetSequenceNumber;
 	}
@@ -285,6 +287,14 @@ public class ParticipantRequest {
 	public void seteWelcomeID(String eWelcomeID) {
 		this.eWelcomeID = eWelcomeID;
 	}
+	
+	public String getEwelcomeIdRemarks() {
+		return ewelcomeIdRemarks;
+	}
+
+	public void setEwelcomeIdRemarks(String ewelcomeIdRemarks) {
+		this.ewelcomeIdRemarks = ewelcomeIdRemarks;
+	}
 
 	public ParticipantRequest() {
 		super();
@@ -301,7 +311,8 @@ public class ParticipantRequest {
 				+ ", thirdSittingDate=" + thirdSittingDate + ", firstSitting=" + firstSitting + ", secondSitting="
 				+ secondSitting + ", thirdSitting=" + thirdSitting + ", introduced=" + introduced + ", introducedBy="
 				+ introducedBy + ", abhyasiId=" + abhyasiId + ", eWelcomeID=" + eWelcomeID
-				+ ", excelSheetSequenceNumber=" + excelSheetSequenceNumber + "]";
+				+ ", excelSheetSequenceNumber=" + excelSheetSequenceNumber + ", ewelcomeIdRemarks=" + ewelcomeIdRemarks
+				+ "]";
 	}
 
 }

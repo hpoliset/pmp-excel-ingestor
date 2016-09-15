@@ -5,6 +5,8 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -22,14 +24,13 @@ import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
+import org.srcm.heartfulness.model.json.response.Response;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.UserProfileService;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * 
@@ -39,6 +40,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
 	@Autowired
 	private UserProfileService userProfileService;
@@ -51,9 +54,7 @@ public class UserController {
 
 	@Autowired
 	APIAccessLogService apiAccessLogService;
-
-	ObjectMapper mapper = new ObjectMapper();
-
+	
 	/**
 	 * Method to get the user profile from the MySRCM and persists user details
 	 * in PMP DB, if the user details is not available in PMP.
@@ -67,7 +68,7 @@ public class UserController {
 			@Context HttpServletRequest httpRequest) {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-				StackTraceUtils.convertPojoToJson(token), null);
+				StackTraceUtils.convertPojoToJson(token));
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile srcmProfile = null;
 		try {
@@ -81,10 +82,9 @@ public class UserController {
 				user.setFirst_name(srcmProfile.getFirst_name());
 				user.setLast_name(srcmProfile.getLast_name());
 				user.setEmail(srcmProfile.getEmail());
-				user.setAbyasiId(srcmProfile.getAbhyasi_id());
+				user.setAbyasiId(srcmProfile.getRef());
 				userProfileService.save(user);
 			}
-			user.setMembershipId(String.valueOf(user.getAbyasiId()));
 			accessLog.setUsername(srcmProfile.getEmail());
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(user));
@@ -92,28 +92,29 @@ public class UserController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
+			Response error = new Response(ErrorConstants.STATUS_FAILED,"Invalid auth token.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(e.getResponseBodyAsString()));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
+			return new ResponseEntity<Response>(error, e.getStatusCode());
 		} catch (IOException e) {
-			ErrorResponse error = new ErrorResponse("Please try after some time.", "IOException occured.");
+			Response error = new Response(ErrorConstants.STATUS_FAILED,"IOException occured.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(error, HttpStatus.REQUEST_TIMEOUT);
+			return new ResponseEntity<Response>(error, HttpStatus.REQUEST_TIMEOUT);
 		} catch (Exception e) {
-			ErrorResponse error = new ErrorResponse("Please try after some time.", e.getMessage());
+			Response error = new Response(ErrorConstants.STATUS_FAILED, "Internal Server Error.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<Response>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -143,8 +144,6 @@ public class UserController {
 			User pmpUser = userProfileService.loadUserByEmail(srcmProfile.getEmail());
 			if (pmpUser != null && id == pmpUser.getId()) {
 				if (id == pmpUser.getId()) {
-					user.setMembershipId(user.getMembershipId() == null ? "0" : user.getMembershipId());
-					user.setAbyasiId(user.getMembershipId() == null ? 0 : Integer.valueOf(user.getMembershipId()));
 					userProfileService.save(user);
 				}
 			}
@@ -162,7 +161,7 @@ public class UserController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
 		} catch (IOException e) {
-			ErrorResponse error = new ErrorResponse("Please try after some time.", "IOException occured.");
+			ErrorResponse error = new ErrorResponse("IOException occured.",ErrorConstants.STATUS_FAILED);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
@@ -180,5 +179,5 @@ public class UserController {
 		}
 
 	}
-
+	
 }

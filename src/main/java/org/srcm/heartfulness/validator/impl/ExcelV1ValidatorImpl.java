@@ -8,17 +8,15 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.srcm.heartfulness.constants.EventConstants;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
+import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.enumeration.V1ParticipantCols;
 import org.srcm.heartfulness.enumeration.V1ProgramCols;
-import org.srcm.heartfulness.enumeration.V2ProgramCols2;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.validator.EventDetailsExcelValidator;
 
@@ -117,7 +115,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 				String[] emails = coordinatorEmail.split(";");
 				if(emails != null && emails.length > 0){
 					for(String email:emails){
-						if(!email.matches(EventConstants.EMAIL_REGEX)){
+						if(!email.matches(ExpressionConstants.EMAIL_REGEX)){
 							eventErrorList.add(V1ProgramCols.EVENT_COORDINATOR_MAIL.getHeader() + " is invalid at row number 6");
 						}
 					}
@@ -147,7 +145,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 			
 			String ptncptEmail = currentRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString();
 			if(null != ptncptEmail && !ptncptEmail.isEmpty()){
-				if(!ptncptEmail.matches(EventConstants.EMAIL_REGEX)){
+				if(!ptncptEmail.matches(ExpressionConstants.EMAIL_REGEX)){
 					errorList.add(V1ParticipantCols.EMAIL_ADDRESS.getHeader() + "is invalid at row number "+rowNumber);
 				}
 			}

@@ -66,7 +66,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			Row currentRow = participantsSheet.getRow(i);
 			Participant participant = parseParticipantRow(currentRow);
 			// this will go away
-			if(!participant.getPrintName().isEmpty()){
+			if(!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()){
 				if (participant.getExcelSheetSequenceNumber() == 0) {
 					participant.setExcelSheetSequenceNumber(j);
 				}
@@ -80,94 +80,95 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 
 	private Participant parseParticipantRow(Row participantRow) throws InvalidExcelFileException {
 		Participant participant = new Participant();
-		participant.setPrintName(participantRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString());
+		if(!participantRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()){		
+			participant.setPrintName(participantRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString());
 
-		String firstSittingStr = participantRow.getCell(1,
-				Row.CREATE_NULL_AS_BLANK).toString();
-		if (!"Y".equals(firstSittingStr) && !"N".equals(firstSittingStr)) {
-			try {
-				Date firstSittingDate = DateUtils.parseDate(firstSittingStr);
-				participant.setFirstSittingDate(firstSittingDate);
-			} catch (ParseException e) {
-				throw new InvalidExcelFileException("Not able to parse first sitting date:[" + firstSittingStr + "]");
+			String firstSittingStr = participantRow.getCell(1,
+					Row.CREATE_NULL_AS_BLANK).toString();
+			if (!"Y".equals(firstSittingStr) && !"N".equals(firstSittingStr)) {
+				try {
+					Date firstSittingDate = DateUtils.parseDate(firstSittingStr);
+					participant.setFirstSittingDate(firstSittingDate);
+				} catch (ParseException e) {
+					throw new InvalidExcelFileException("Not able to parse first sitting date:[" + firstSittingStr + "]");
+				}
+			}else if("Y".equals(firstSittingStr)){
+				participant.setFirstSitting(1);
+			}else if("N".equals(firstSittingStr)){
+				participant.setFirstSitting(0);
 			}
-		}else if("Y".equals(firstSittingStr)){
-			participant.setFirstSitting(1);
-		}else if("N".equals(firstSittingStr)){
-			participant.setFirstSitting(0);
-		}
 
-		String secondSittingStr = participantRow.getCell(2,
-				Row.CREATE_NULL_AS_BLANK).toString();
-		if (!"Y".equals(secondSittingStr) && !"N".equals(secondSittingStr)) {
-			try {
-				Date secondSittingDate = DateUtils.parseDate(secondSittingStr);
-				participant.setSecondSittingDate(secondSittingDate);
-			} catch (ParseException e) {
-				throw new InvalidExcelFileException("Not able to parse second sitting date:[" + secondSittingStr + "]");
+			String secondSittingStr = participantRow.getCell(2,
+					Row.CREATE_NULL_AS_BLANK).toString();
+			if (!"Y".equals(secondSittingStr) && !"N".equals(secondSittingStr)) {
+				try {
+					Date secondSittingDate = DateUtils.parseDate(secondSittingStr);
+					participant.setSecondSittingDate(secondSittingDate);
+				} catch (ParseException e) {
+					throw new InvalidExcelFileException("Not able to parse second sitting date:[" + secondSittingStr + "]");
+				}
+			} else if("Y".equals(secondSittingStr)){
+				participant.setSecondSitting(1);
+			}else if("N".equals(secondSittingStr)){
+				participant.setSecondSitting(0);
 			}
-		} else if("Y".equals(secondSittingStr)){
-			participant.setSecondSitting(1);
-		}else if("N".equals(secondSittingStr)){
-			participant.setSecondSitting(0);
-		}
 
-		String thirdSittingStr = participantRow.getCell(3,
-				Row.CREATE_NULL_AS_BLANK).toString();
-		if (!"Y".equals(thirdSittingStr) && !"N".equals(thirdSittingStr)) {
-			try {
-				Date thirdSittingDate = DateUtils.parseDate(thirdSittingStr);
-				participant.setThirdSittingDate(thirdSittingDate);
-			} catch (ParseException e) {
-				throw new InvalidExcelFileException("Not able to parse third sitting date:[" + thirdSittingStr + "]");
+			String thirdSittingStr = participantRow.getCell(3,
+					Row.CREATE_NULL_AS_BLANK).toString();
+			if (!"Y".equals(thirdSittingStr) && !"N".equals(thirdSittingStr)) {
+				try {
+					Date thirdSittingDate = DateUtils.parseDate(thirdSittingStr);
+					participant.setThirdSittingDate(thirdSittingDate);
+				} catch (ParseException e) {
+					throw new InvalidExcelFileException("Not able to parse third sitting date:[" + thirdSittingStr + "]");
+				}
+			} else if("Y".equals(thirdSittingStr)){
+				participant.setThirdSitting(1);
+			}else if("N".equals(thirdSittingStr)){
+				participant.setThirdSitting(0);
 			}
-		} else if("Y".equals(thirdSittingStr)){
-			participant.setThirdSitting(1);
-		}else if("N".equals(thirdSittingStr)){
-			participant.setThirdSitting(0);
-		}
 
-		participant.setCountry(participantRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString());
-		participant.setState(participantRow.getCell(5, Row.CREATE_NULL_AS_BLANK).toString());
-		participant.setCity(participantRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString());
-		participant.setEmail(participantRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString());
-		Cell mobilePhoneCell = participantRow.getCell(8, Row.CREATE_NULL_AS_BLANK);
-		try {
-			Double numbericMobilePhone = mobilePhoneCell.getNumericCellValue();
-			participant.setMobilePhone(String.valueOf(numbericMobilePhone.longValue()));
-		} catch (NumberFormatException | ClassCastException | IllegalStateException  e) {
-			LOGGER.info("Participant mobile phone number is not numeric, trying as string");
-			participant.setMobilePhone(String.valueOf(mobilePhoneCell));
-		} catch (Exception e) {
-			LOGGER.info("Participant mobile phone number is not numeric, trying as string");
-			participant.setMobilePhone(String.valueOf(mobilePhoneCell));
-		}
-		participant.setProfession(participantRow.getCell(9, Row.CREATE_NULL_AS_BLANK).toString());
-		participant.setDepartment(participantRow.getCell(10, Row.CREATE_NULL_AS_BLANK).toString());
-		participant.setBatch(participantRow.getCell(11, Row.CREATE_NULL_AS_BLANK).toString());
-		String receiveUpdateStr = participantRow.getCell(12, Row.CREATE_NULL_AS_BLANK).toString();
-		if ("Y".equalsIgnoreCase(receiveUpdateStr)) {
-			participant.setReceiveUpdates(1);
-		} else {
-			participant.setReceiveUpdates(0);
-		}
+			participant.setCountry(participantRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString());
+			participant.setState(participantRow.getCell(5, Row.CREATE_NULL_AS_BLANK).toString());
+			participant.setCity(participantRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString());
+			participant.setEmail(participantRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString());
+			Cell mobilePhoneCell = participantRow.getCell(8, Row.CREATE_NULL_AS_BLANK);
+			try {
+				Double numbericMobilePhone = mobilePhoneCell.getNumericCellValue();
+				participant.setMobilePhone(String.valueOf(numbericMobilePhone.longValue()));
+			} catch (NumberFormatException | ClassCastException | IllegalStateException  e) {
+				LOGGER.info("Participant mobile phone number is not numeric, trying as string");
+				participant.setMobilePhone(String.valueOf(mobilePhoneCell));
+			} catch (Exception e) {
+				LOGGER.info("Participant mobile phone number is not numeric, trying as string");
+				participant.setMobilePhone(String.valueOf(mobilePhoneCell));
+			}
+			participant.setProfession(participantRow.getCell(9, Row.CREATE_NULL_AS_BLANK).toString());
+			participant.setDepartment(participantRow.getCell(10, Row.CREATE_NULL_AS_BLANK).toString());
+			participant.setBatch(participantRow.getCell(11, Row.CREATE_NULL_AS_BLANK).toString());
+			String receiveUpdateStr = participantRow.getCell(12, Row.CREATE_NULL_AS_BLANK).toString();
+			if ("Y".equalsIgnoreCase(receiveUpdateStr)) {
+				participant.setReceiveUpdates(1);
+			} else {
+				participant.setReceiveUpdates(0);
+			}
 
-		participant.setGender(participantRow.getCell(13, Row.CREATE_NULL_AS_BLANK).toString());
-		participant.setAgeGroup(participantRow.getCell(14, Row.CREATE_NULL_AS_BLANK).toString());
-		participant.setLanguage(participantRow.getCell(15, Row.CREATE_NULL_AS_BLANK).toString());
-		participant.setWelcomeCardNumber(participantRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString());
-		String welcomeCardDateStr = participantRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString();
-		Date welcomeCardDate = null;
-		try {
-			welcomeCardDate = DateUtils.parseDate(welcomeCardDateStr);
-		} catch (ParseException e) {
-			throw new InvalidExcelFileException(
-					"Unable to part v2 file: welcome card date: [" + welcomeCardDateStr + "]");
+			participant.setGender(participantRow.getCell(13, Row.CREATE_NULL_AS_BLANK).toString());
+			participant.setAgeGroup(participantRow.getCell(14, Row.CREATE_NULL_AS_BLANK).toString());
+			participant.setLanguage(participantRow.getCell(15, Row.CREATE_NULL_AS_BLANK).toString());
+			participant.setWelcomeCardNumber(participantRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString());
+			String welcomeCardDateStr = participantRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString();
+			Date welcomeCardDate = null;
+			try {
+				welcomeCardDate = DateUtils.parseDate(welcomeCardDateStr);
+			} catch (ParseException e) {
+				throw new InvalidExcelFileException(
+						"Unable to part v2 file: welcome card date: [" + welcomeCardDateStr + "]");
+			}
+
+			participant.setWelcomeCardDate(welcomeCardDate);
+			participant.setRemarks(participantRow.getCell(18, Row.CREATE_NULL_AS_BLANK).toString());
 		}
-
-		participant.setWelcomeCardDate(welcomeCardDate);
-		participant.setRemarks(participantRow.getCell(18, Row.CREATE_NULL_AS_BLANK).toString());
-
 		return participant;
 	}
 

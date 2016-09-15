@@ -17,36 +17,41 @@ import org.srcm.heartfulness.vo.ReportVO;
 public interface PmpAuthorizationService {
 
 	/**
-	 * method which authorizes based on role and shows reports form
-	 * @param modelMap 
+	 * Method which authorizes based on role and shows reports form.
+	 * 
+	 * @param modelMap
 	 * @return
 	 */
 	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN')")
 	String showReportsForm(ModelMap modelMap);
 
 	/**
-	 * method which authorizes based on role and shows ingestion form
+	 * Method which authorizes based on role and shows ingestion form.
+	 * 
 	 * @return
 	 */
 	@PreAuthorize("hasAnyRole('ROLE_REGIONAL_ADMIN','ROLE_PRECEPTOR','ROLE_SYSTEM_ADMIN')")
 	String showInputForm();
 
 	/**
-	 * method which authorizes based on role and shows bulk upload form
+	 * Method which authorizes based on role and shows bulk upload form.
+	 * 
 	 * @return
 	 */
 	@PreAuthorize("hasAnyRole('ROLE_REGIONAL_ADMIN','ROLE_PRECEPTOR','ROLE_SYSTEM_ADMIN')")
 	String showBulkUploadForm();
 
 	/**
-	 * method which authorizes based on role and shows update profile page
+	 * Method which authorizes based on role and shows update profile page.
+	 * 
 	 * @return
 	 */
 	@PreAuthorize("hasAnyRole('ROLE_SEEKER','ROLE_PRECEPTOR')")
 	String showUserProfile();
 
 	/**
-	 * method which authorizes based on role and get the participants
+	 * Method which authorizes based on role and get the participants.
+	 * 
 	 * @param reportVO
 	 * @return
 	 */
@@ -54,8 +59,9 @@ public interface PmpAuthorizationService {
 	public Collection<ParticipantFullDetails> getParticipants(ReportVO reportVO);
 
 	/**
-	 *  method which authorizes based on role and shows index form
-	 * @return
+	 * Method which authorizes based on role and shows index form.
+	 * 
+	 * @return Index page
 	 */
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR','ROLE_SEEKER')")
 	String showIndexForm();
@@ -65,8 +71,8 @@ public interface PmpAuthorizationService {
 
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')")
 	String showProgramForm(String encryptedProgramId, Model model);
-	
-	/*@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')")*/
+
+	/* @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')") */
 	ResponseEntity<?> getEventList();
 
-	}
+}
