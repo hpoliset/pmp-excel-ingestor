@@ -32,7 +32,6 @@ import org.srcm.heartfulness.model.json.response.AbhyasiUserProfile;
 import org.srcm.heartfulness.model.json.response.CitiesAPIResponse;
 import org.srcm.heartfulness.model.json.response.EWelcomeIDErrorResponse;
 import org.srcm.heartfulness.model.json.response.GeoSearchResponse;
-import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;

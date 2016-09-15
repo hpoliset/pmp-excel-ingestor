@@ -5,7 +5,6 @@ import java.text.ParseException;
 
 import javax.servlet.http.HttpSession;
 
-import org.springframework.ui.ModelMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
 import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
