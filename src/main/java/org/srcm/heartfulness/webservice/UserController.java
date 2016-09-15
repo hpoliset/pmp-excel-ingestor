@@ -28,6 +28,7 @@ import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.CreateUserRequest;
 import org.srcm.heartfulness.model.json.response.CreateUserErrorResponse;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
+import org.srcm.heartfulness.model.json.response.Response;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.service.APIAccessLogService;
@@ -103,28 +104,29 @@ public class UserController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
+			Response error = new Response(ErrorConstants.STATUS_FAILED,"Invalid auth token.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(e.getResponseBodyAsString()));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
+			return new ResponseEntity<Response>(error, e.getStatusCode());
 		} catch (IOException e) {
-			ErrorResponse error = new ErrorResponse("Please try after some time.", "IOException occured.");
+			Response error = new Response(ErrorConstants.STATUS_FAILED,"IOException occured.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(error, HttpStatus.REQUEST_TIMEOUT);
+			return new ResponseEntity<Response>(error, HttpStatus.REQUEST_TIMEOUT);
 		} catch (Exception e) {
-			ErrorResponse error = new ErrorResponse("Please try after some time.", e.getMessage());
+			Response error = new Response(ErrorConstants.STATUS_FAILED, "Internal Server Error.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<Response>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -171,7 +173,7 @@ public class UserController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
 		} catch (IOException e) {
-			ErrorResponse error = new ErrorResponse("Please try after some time.", "IOException occured.");
+			ErrorResponse error = new ErrorResponse("IOException occured.",ErrorConstants.STATUS_FAILED);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
@@ -325,25 +327,26 @@ public class UserController {
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			LOGGER.debug("User profile created - {} ", user.getEmail());
-			return new ResponseEntity<User>(newUser, HttpStatus.OK);
+			LOGGER.debug("User profile created - {} ", newUser.getEmail());
+			Response response = new Response(ErrorConstants.STATUS_SUCCESS, "User created successfully");
+			return new ResponseEntity<Response>(response, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
 			ObjectMapper mapper = new ObjectMapper();
 			try {
-				ErrorResponse error = null;
+				Response error = null;
 				CreateUserErrorResponse createUserErrorResponse = mapper.readValue(e.getResponseBodyAsString(),
 						CreateUserErrorResponse.class);
 				if (null != createUserErrorResponse.getNon_field_errors()
 						&& !createUserErrorResponse.getNon_field_errors().isEmpty()) {
-					error = new ErrorResponse(createUserErrorResponse.getNon_field_errors().get(0),
+					error = new Response(createUserErrorResponse.getNon_field_errors().get(0),
 							ErrorConstants.STATUS_FAILED);
 				} else if (null != createUserErrorResponse.getEmail() && !createUserErrorResponse.getEmail().isEmpty()) {
-					error = new ErrorResponse(createUserErrorResponse.getEmail().get(0), ErrorConstants.STATUS_FAILED);
+					error = new Response(createUserErrorResponse.getEmail().get(0), ErrorConstants.STATUS_FAILED);
 				} else if (null != createUserErrorResponse.getDetail()
 						&& !createUserErrorResponse.getDetail().isEmpty()) {
-					error = new ErrorResponse(createUserErrorResponse.getDetail(), ErrorConstants.STATUS_FAILED);
+					error = new Response(createUserErrorResponse.getDetail(), ErrorConstants.STATUS_FAILED);
 				} else {
-					error = new ErrorResponse(e.getResponseBodyAsString(), ErrorConstants.STATUS_FAILED);
+					error = new Response(e.getResponseBodyAsString(), ErrorConstants.STATUS_FAILED);
 				}
 				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				//e.printStackTrace();
@@ -352,7 +355,7 @@ public class UserController {
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 				LOGGER.debug("Error while creating user profile - {} ", e.getMessage());
-				return new ResponseEntity<ErrorResponse>(error, e.getStatusCode());
+				return new ResponseEntity<Response>(error, e.getStatusCode());
 			} catch (JsonParseException | JsonMappingException e1) {
 				LOGGER.debug("Error while creating user profile - {} ", e1.getMessage());
 				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -360,46 +363,46 @@ public class UserController {
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 				LOGGER.debug("Error while creating user profile - {} ", e1.getMessage());
-				ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, "JsonException occured.");
-				return new ResponseEntity<ErrorResponse>(error, HttpStatus.REQUEST_TIMEOUT);
+				Response error = new Response(ErrorConstants.STATUS_FAILED, "JsonException occured.");
+				return new ResponseEntity<Response>(error, HttpStatus.REQUEST_TIMEOUT);
 			} catch (IOException e1) {
 				LOGGER.debug("Error while creating user profile - {} ", e1.getMessage());
-				ErrorResponse error = new ErrorResponse("Please try after some time.", "IOException occured.");
+				Response error = new Response(ErrorConstants.STATUS_FAILED,  "IOException occured.");
 				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e1));
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-				return new ResponseEntity<ErrorResponse>(error, HttpStatus.REQUEST_TIMEOUT);
+				return new ResponseEntity<Response>(error, HttpStatus.REQUEST_TIMEOUT);
 			} catch (Exception e1) {
 				LOGGER.debug("Error while creating user profile - {} ", e1.getMessage());
-				ErrorResponse error = new ErrorResponse("Internal Server Error.", e1.getMessage());
+				Response error = new Response(ErrorConstants.STATUS_FAILED, "Internal Server Error.");
 				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e1));
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-				return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+				return new ResponseEntity<Response>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 
 		} catch (IOException e) {
 			LOGGER.debug("Error while creating user profile - {} ", e.getMessage());
-			ErrorResponse error = new ErrorResponse("Please try after some time.", "IOException occured.");
+			Response error = new Response(ErrorConstants.STATUS_FAILED,  "IOException occured.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(error, HttpStatus.REQUEST_TIMEOUT);
+			return new ResponseEntity<Response>(error, HttpStatus.REQUEST_TIMEOUT);
 		} catch (Exception e) {
 			LOGGER.debug("Error while creating user profile - {} ", e.getMessage());
-			ErrorResponse error = new ErrorResponse("Internal Server Error.", e.getMessage());
+			Response error = new Response(ErrorConstants.STATUS_FAILED, "Internal Server Error.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<Response>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}
