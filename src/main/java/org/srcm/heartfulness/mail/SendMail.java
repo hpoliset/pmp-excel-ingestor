@@ -542,20 +542,21 @@ public class SendMail {
 		System.out.println(" co ord details - " + coordinatorEmail.getEventName() + "--"
 				+ coordinatorEmail.getCoordinatorEmail());
 		System.out.println("PARTICIPANTS_DETAILS " + sb.toString());
+		StringBuilder sb1 = new StringBuilder();
 		for (Participant failedParticipant : failedParticipants) {
-			sb.append("<tr><td>");
-			sb.append(i++);
-			sb.append("</td><td>");
-			sb.append(failedParticipant.getPrintName() != null ? failedParticipant.getPrintName() : "");
-			sb.append("</td><td>");
-			sb.append(failedParticipant.getEmail() != null ? failedParticipant.getEmail() : "");
-			sb.append("</td><td>");
-			sb.append(failedParticipant.getMobilePhone() != null ? failedParticipant.getMobilePhone() : "");
-			sb.append("</td><td>");
-			sb.append(failedParticipant.getEwelcomeIdRemarks() != null ?failedParticipant.getEwelcomeIdRemarks() : "");
-			sb.append("</td></tr>");
+			sb1.append("<tr><td>");
+			sb1.append(i++);
+			sb1.append("</td><td>");
+			sb1.append(failedParticipant.getPrintName() != null ? failedParticipant.getPrintName() : "");
+			sb1.append("</td><td>");
+			sb1.append(failedParticipant.getEmail() != null ? failedParticipant.getEmail() : "");
+			sb1.append("</td><td>");
+			sb1.append(failedParticipant.getMobilePhone() != null ? failedParticipant.getMobilePhone() : "");
+			sb1.append("</td><td>");
+			sb1.append(failedParticipant.getEwelcomeIdRemarks() != null ?failedParticipant.getEwelcomeIdRemarks() : "");
+			sb1.append("</td></tr>");
 		}
-		addParameter("FAILED_PARTICIPANTS_DETAILS", sb.toString());
+		addParameter("FAILED_PARTICIPANTS_DETAILS", sb1.toString());
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
 		// SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
