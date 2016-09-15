@@ -501,7 +501,7 @@ public class SendMail {
 	}
 
 	public void sendGeneratedEwelcomeIdDetailslToCoordinator(CoordinatorEmail coordinatorEmail,
-			List<Participant> participants) throws AddressException, MessagingException, UnsupportedEncodingException {
+			List<Participant> participants, int participantCount) throws AddressException, MessagingException, UnsupportedEncodingException {
 
 		Properties props = System.getProperties();
 		props.put("mail.debug", "true");
@@ -542,6 +542,7 @@ public class SendMail {
 		System.out.println(" co ord details - " + coordinatorEmail.getEventName() + "--"
 				+ coordinatorEmail.getCoordinatorEmail());
 		System.out.println("PARTICIPANTS_DETAILS " + sb.toString());
+		addParameter("PARTICIPANT_COUNT",String.valueOf( participantCount));
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
 		// SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");

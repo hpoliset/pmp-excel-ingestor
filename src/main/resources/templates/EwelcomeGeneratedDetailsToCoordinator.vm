@@ -20,6 +20,7 @@ Dear ${COORDINATOR_NAME},
 ${PARTICIPANTS_DETAILS}
 </table>
 </p>
+<p><u><b>Note:</b></u> No. of participants who haven't received e-welcome ID: ${PARTICIPANT_COUNT} </p>
 <br/>
 </div>
 <div style="font-style: italic; font-weight: bold;">

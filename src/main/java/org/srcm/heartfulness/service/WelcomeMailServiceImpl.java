@@ -410,8 +410,8 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								coordinatorEmail.setEventName(map.getKey().getEventName());
 								coordinatorEmail.setCoordinatorName(map.getKey().getCoordinatorName());
 								coordinatorEmail.setCoordinatorEmail(map.getKey().getCoordinatorEmail());
-
-								sendEmailNotification.sendGeneratedEwelcomeIdDetailslToCoordinator(coordinatorEmail,map.getValue());
+								int participantCount = participantRepository.getCountOfEWelcomeIdGenerationFailedPartcicipants(map.getKey().getProgramId());
+								sendEmailNotification.sendGeneratedEwelcomeIdDetailslToCoordinator(coordinatorEmail,map.getValue(),participantCount);
 								try{
 									LOGGER.debug("Inserting log details in table.");
 									PMPMailLog pmpMailLog = 
