@@ -523,8 +523,9 @@ public class SendMail {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 		StringBuilder sb = new StringBuilder();
 		if (!participants.isEmpty()) {
-			sb.append("<p>Please note that the following e-welcome ID's has been generated for the below given participants of the event - "
-					+ coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" + ",</p>");
+			sb.append("<p>Please note that the following e-welcome ID's has been generated for the below given participants of the event - " );
+			sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
+			sb.append("</p>");
 			sb.append("<table border=\"1\" style=\"width: 100%;border-collapse: collapse;\">");
 			sb.append("<tr>");
 			sb.append("<td  align=middle><b>S.No</b></td>");
@@ -554,8 +555,9 @@ public class SendMail {
 			if (!failedParticipants.isEmpty()) {
 				sb.append("</table>");
 				sb.append("</p>");
-				sb.append("<p>The following participant's haven't received e-welcome ID for the event - "
-						+ coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" + ",</p>");
+				sb.append("<p>Please note that the following participant's haven't received e-welcome ID for the event - " );
+				sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
+				sb.append("</p>");
 				sb.append("<table border=\"1\" style=\"width: 100%;border-collapse: collapse;\">");
 				sb.append("<tr>");
 				sb.append("<td  align=middle><b>S.No</b></td>");
@@ -586,8 +588,9 @@ public class SendMail {
 				sb.append("</p>");
 			}
 		} else if (!failedParticipants.isEmpty()) {
-			sb.append("<p>Please note that the following participant's haven't received e-welcome ID for the event - "
-					+ coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" + ",</p>");
+			sb.append("<p>Please note that the following participant's haven't received e-welcome ID for the event - " );
+			sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
+			sb.append("</p>");
 			sb.append("<table border=\"1\" style=\"width: 100%;border-collapse: collapse;\">");
 			sb.append("<tr>");
 			sb.append("<td  align=middle><b>S.No</b></td>");
