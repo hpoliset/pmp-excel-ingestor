@@ -623,9 +623,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					participant.setWelcomeCardDate(new Date());
 					participant.setIntroductionDate(new Date());
 				}
-				if(participant.getIsEwelcomeIdInformed()!= 1){
-					participant.setIsEwelcomeIdInformed(0);
-				}
+				participant.setIsEwelcomeIdInformed((null !=participant.getIsEwelcomeIdInformed() && participant.getIsEwelcomeIdInformed() == 1)?1:0);
 				participant.setIntroducedBy(program.getCoordinatorEmail());
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
 			} else if (!eventDashboardValidator.validateParticipantCompletedPreliminarySittings(participant)) {
@@ -634,9 +632,9 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
 			} else {
 				participant.setEwelcomeIdRemarks(remarks);
+				participant.setEwelcomeIdState(eWelcomeIDStatus);
 				if(!PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE.equalsIgnoreCase(participant.getEwelcomeIdState()))
 				participant.setIsEwelcomeIdInformed(0);
-				participant.setEwelcomeIdState(eWelcomeIDStatus);
 			}
 				
 			participantRepository.save(participant);
