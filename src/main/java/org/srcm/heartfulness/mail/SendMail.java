@@ -544,7 +544,7 @@ public class SendMail {
 				sb.append("</td><td>");
 				sb.append(participant.getEmail() != null ? participant.getEmail() : "");
 				sb.append("</td><td>");
-				sb.append(participant.getMobilePhone() != null ? participant.getMobilePhone() : "");
+				sb.append((participant.getMobilePhone() != null && participant.getMobilePhone() !="0") ? participant.getMobilePhone() : "");
 				sb.append("</td><td>");
 				sb.append(participant.getWelcomeCardNumber() != null ? participant.getWelcomeCardNumber() : "");
 				sb.append("</td><td>");
@@ -555,7 +555,7 @@ public class SendMail {
 			if (!failedParticipants.isEmpty()) {
 				sb.append("</table>");
 				sb.append("</p>");
-				sb.append("<p>Please note that the following participant's haven't received e-welcome ID for the event - " );
+				sb.append("<p>The following participant's haven't received e-welcome ID for the event - " );
 				sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
 				sb.append("</p>");
 				sb.append("<table border=\"1\" style=\"width: 100%;border-collapse: collapse;\">");
@@ -575,7 +575,7 @@ public class SendMail {
 					sb.append("</td><td>");
 					sb.append(failedParticipant.getEmail() != null ? failedParticipant.getEmail() : "");
 					sb.append("</td><td>");
-					sb.append(failedParticipant.getMobilePhone() != null ? failedParticipant.getMobilePhone() : "");
+					sb.append((failedParticipant.getMobilePhone() != null && failedParticipant.getMobilePhone() !="0") ? failedParticipant.getMobilePhone() : "");
 					sb.append("</td><td>");
 					sb.append(failedParticipant.getEwelcomeIdRemarks() != null ? failedParticipant
 							.getEwelcomeIdRemarks() : "");
@@ -588,7 +588,7 @@ public class SendMail {
 				sb.append("</p>");
 			}
 		} else if (!failedParticipants.isEmpty()) {
-			sb.append("<p>Please note that the following participant's haven't received e-welcome ID for the event - " );
+			sb.append("<p>Please note that the following participants haven't received e-welcome ID for the event - " );
 			sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
 			sb.append("</p>");
 			sb.append("<table border=\"1\" style=\"width: 100%;border-collapse: collapse;\">");
@@ -608,7 +608,7 @@ public class SendMail {
 				sb.append("</td><td>");
 				sb.append(failedParticipant.getEmail() != null ? failedParticipant.getEmail() : "");
 				sb.append("</td><td>");
-				sb.append(failedParticipant.getMobilePhone() != null ? failedParticipant.getMobilePhone() : "");
+				sb.append((failedParticipant.getMobilePhone() != null && failedParticipant.getMobilePhone() !="0") ? failedParticipant.getMobilePhone() : "");
 				sb.append("</td><td>");
 				sb.append(failedParticipant.getEwelcomeIdRemarks() != null ? failedParticipant.getEwelcomeIdRemarks()
 						: "");

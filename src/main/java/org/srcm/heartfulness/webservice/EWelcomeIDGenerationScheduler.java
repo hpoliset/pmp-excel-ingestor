@@ -92,6 +92,7 @@ public class EWelcomeIDGenerationScheduler {
 						participant.setEwelcomeIdRemarks(e.getResponseBodyAsString());
 					}
 					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
+					participant.setIsEwelcomeIdInformed(0);
 					participantRepository.save(participant);
 				} catch (JsonParseException | JsonMappingException e1) {
 					LOGGER.debug(
@@ -103,6 +104,7 @@ public class EWelcomeIDGenerationScheduler {
 							StackTraceUtils.convertStackTracetoString(e));
 					participant.setEwelcomeIdRemarks(e1.getMessage());
 					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
+					participant.setIsEwelcomeIdInformed(0);
 					participantRepository.save(participant);
 				} catch (IOException e1) {
 					LOGGER.debug(
@@ -113,6 +115,7 @@ public class EWelcomeIDGenerationScheduler {
 							StackTraceUtils.convertStackTracetoString(e));
 					participant.setEwelcomeIdRemarks(e1.getMessage());
 					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
+					participant.setIsEwelcomeIdInformed(0);
 					participantRepository.save(participant);
 				} catch (Exception e1) {
 					e1.printStackTrace();
@@ -124,6 +127,7 @@ public class EWelcomeIDGenerationScheduler {
 							StackTraceUtils.convertStackTracetoString(e));
 					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
 					participant.setEwelcomeIdRemarks(e1.getMessage());
+					participant.setIsEwelcomeIdInformed(0);
 					participantRepository.save(participant);
 				}
 			} catch (JsonParseException | JsonMappingException e) {
@@ -136,6 +140,7 @@ public class EWelcomeIDGenerationScheduler {
 				participant.setEwelcomeIdRemarks(e.getMessage());
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
 				System.out.println(participant.toString());
+				participant.setIsEwelcomeIdInformed(0);
 				participantRepository.save(participant);
 			} catch (IOException e) {
 				LOGGER.debug(
@@ -146,7 +151,7 @@ public class EWelcomeIDGenerationScheduler {
 						StackTraceUtils.convertStackTracetoString(e));
 				participant.setEwelcomeIdRemarks(e.getMessage());
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
-				System.out.println(participant.toString());
+				participant.setIsEwelcomeIdInformed(0);
 				participantRepository.save(participant);
 			} catch (Exception e) {
 				LOGGER.debug(
@@ -157,7 +162,7 @@ public class EWelcomeIDGenerationScheduler {
 						StackTraceUtils.convertStackTracetoString(e));
 				participant.setEwelcomeIdRemarks(e.getMessage());
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
-				System.out.println(participant.toString());
+				participant.setIsEwelcomeIdInformed(0);
 				participantRepository.save(participant);
 			}
 		}
