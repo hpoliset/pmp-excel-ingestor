@@ -634,9 +634,11 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
 			} else {
 				participant.setEwelcomeIdRemarks(remarks);
+				if(!PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE.equalsIgnoreCase(participant.getEwelcomeIdState()))
 				participant.setIsEwelcomeIdInformed(0);
 				participant.setEwelcomeIdState(eWelcomeIDStatus);
 			}
+				
 			participantRepository.save(participant);
 		}
 	}
