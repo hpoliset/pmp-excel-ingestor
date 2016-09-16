@@ -359,7 +359,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	}
 
 	@Override
-	public Map<String, String> checkUpdateParticicipantMandatoryFields(ParticipantRequest participant) {
+	public Map<String, String> checkUpdateParticipantMandatoryFields(ParticipantRequest participant) {
 		Map<String, String> errors = new HashMap<String, String>();
 		if (null == participant.getPrintName() || participant.getPrintName().isEmpty()) {
 			errors.put(ErrorConstants.STATUS_FAILED, "print name is required ");

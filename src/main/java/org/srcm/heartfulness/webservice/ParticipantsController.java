@@ -437,7 +437,7 @@ public class ParticipantsController {
 			}
 			accessLog.setUsername(userProfile.getEmail());
 
-			Map<String, String> errors = eventDashboardValidator.checkUpdateParticicipantMandatoryFields(participant);
+			Map<String, String> errors = eventDashboardValidator.checkUpdateParticipantMandatoryFields(participant);
 			if (!errors.isEmpty()) {
 				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(errors));

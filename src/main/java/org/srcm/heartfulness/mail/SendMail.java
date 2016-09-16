@@ -390,7 +390,7 @@ public class SendMail {
 	 */
 	public void sendMail(List<String> toEmailIDs, List<String> ccEmailIDs, String messageContent)
 			throws MessagingException, UnsupportedEncodingException {
-		
+
 		Properties props = System.getProperties();
 		props.put("mail.debug", "true");
 		props.put("mail.smtp.host", hostname);
@@ -501,7 +501,8 @@ public class SendMail {
 	}
 
 	public void sendGeneratedEwelcomeIdDetailslToCoordinator(CoordinatorEmail coordinatorEmail,
-			List<Participant> participants, List<Participant> failedParticipants) throws AddressException, MessagingException, UnsupportedEncodingException {
+			List<Participant> participants, List<Participant> failedParticipants) throws AddressException,
+			MessagingException, UnsupportedEncodingException {
 
 		Properties props = System.getProperties();
 		props.put("mail.debug", "true");
@@ -519,44 +520,106 @@ public class SendMail {
 
 		addParameter("COORDINATOR_NAME",
 				coordinatorEmail.getCoordinatorName() != null ? getName(coordinatorEmail.getCoordinatorName()) : "");
-		addParameter("EVENT_NAME", coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "");
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 		StringBuilder sb = new StringBuilder();
-		int i = 1;
-		for (Participant participant : participants) {
-			sb.append("<tr><td>");
-			sb.append(i++);
-			sb.append("</td><td>");
-			sb.append(participant.getPrintName() != null ? participant.getPrintName() : "");
-			sb.append("</td><td>");
-			sb.append(participant.getEmail() != null ? participant.getEmail() : "");
-			sb.append("</td><td>");
-			sb.append(participant.getMobilePhone() != null ? participant.getMobilePhone() : "");
-			sb.append("</td><td>");
-			sb.append(participant.getWelcomeCardNumber() != null ? participant.getWelcomeCardNumber() : "");
-			sb.append("</td><td>");
-			sb.append(participant.getIntroductionDate() != null ? sdf.format(participant.getIntroductionDate()) : "");
-			sb.append("</td></tr>");
+		if (!participants.isEmpty()) {
+			sb.append("<p>Please note that the following e-welcome ID's has been generated for the below given participants of the event - "
+					+ coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" + ",</p>");
+			sb.append("<table border=\"1\" style=\"width: 100%;border-collapse: collapse;\">");
+			sb.append("<tr>");
+			sb.append("<td  align=middle><b>S.No</b></td>");
+			sb.append("<td  align=middle><b>Participant Name</b></td>");
+			sb.append("<td  align=middle><b>Participant mail ID</b></td>");
+			sb.append("<td  align=middle><b>Mobile</b></td>");
+			sb.append("<td  align=middle><b>e-welcome ID</b></td>");
+			sb.append("<td  align=middle><b>Introduced Date</b></td>");
+			sb.append("</tr>");
+			int i = 1;
+			for (Participant participant : participants) {
+				sb.append("<tr><td>");
+				sb.append(i++);
+				sb.append("</td><td>");
+				sb.append(participant.getPrintName() != null ? participant.getPrintName() : "");
+				sb.append("</td><td>");
+				sb.append(participant.getEmail() != null ? participant.getEmail() : "");
+				sb.append("</td><td>");
+				sb.append(participant.getMobilePhone() != null ? participant.getMobilePhone() : "");
+				sb.append("</td><td>");
+				sb.append(participant.getWelcomeCardNumber() != null ? participant.getWelcomeCardNumber() : "");
+				sb.append("</td><td>");
+				sb.append(participant.getIntroductionDate() != null ? sdf.format(participant.getIntroductionDate())
+						: "");
+				sb.append("</td></tr>");
+			}
+			if (!failedParticipants.isEmpty()) {
+				sb.append("</table>");
+				sb.append("</p>");
+				sb.append("<p>The following participant's haven't received e-welcome ID for the event - "
+						+ coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" + ",</p>");
+				sb.append("<table border=\"1\" style=\"width: 100%;border-collapse: collapse;\">");
+				sb.append("<tr>");
+				sb.append("<td  align=middle><b>S.No</b></td>");
+				sb.append("<td  align=middle><b>Participant Name</b></td>");
+				sb.append("<td  align=middle><b>Participant mail ID</b></td>");
+				sb.append("<td  align=middle><b>Mobile</b></td>");
+				sb.append("<td  align=middle><b>e-welcome ID Remarks</b></td>");
+				sb.append("	</tr>");
+				int j = 1;
+				for (Participant failedParticipant : failedParticipants) {
+					sb.append("<tr><td>");
+					sb.append(j++);
+					sb.append("</td><td>");
+					sb.append(failedParticipant.getPrintName() != null ? failedParticipant.getPrintName() : "");
+					sb.append("</td><td>");
+					sb.append(failedParticipant.getEmail() != null ? failedParticipant.getEmail() : "");
+					sb.append("</td><td>");
+					sb.append(failedParticipant.getMobilePhone() != null ? failedParticipant.getMobilePhone() : "");
+					sb.append("</td><td>");
+					sb.append(failedParticipant.getEwelcomeIdRemarks() != null ? failedParticipant
+							.getEwelcomeIdRemarks() : "");
+					sb.append("</td></tr>");
+				}
+				sb.append("</table>");
+				sb.append("</p>");
+			} else {
+				sb.append("</table>");
+				sb.append("</p>");
+			}
+		} else if (!failedParticipants.isEmpty()) {
+			sb.append("<p>Please note that the following participant's haven't received e-welcome ID for the event - "
+					+ coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" + ",</p>");
+			sb.append("<table border=\"1\" style=\"width: 100%;border-collapse: collapse;\">");
+			sb.append("<tr>");
+			sb.append("<td  align=middle><b>S.No</b></td>");
+			sb.append("<td  align=middle><b>Participant Name</b></td>");
+			sb.append("<td  align=middle><b>Participant mail ID</b></td>");
+			sb.append("<td  align=middle><b>Mobile</b></td>");
+			sb.append("<td  align=middle><b>e-welcome ID Remarks</b></td>");
+			sb.append("	</tr>");
+			int j = 1;
+			for (Participant failedParticipant : failedParticipants) {
+				sb.append("<tr><td>");
+				sb.append(j++);
+				sb.append("</td><td>");
+				sb.append(failedParticipant.getPrintName() != null ? failedParticipant.getPrintName() : "");
+				sb.append("</td><td>");
+				sb.append(failedParticipant.getEmail() != null ? failedParticipant.getEmail() : "");
+				sb.append("</td><td>");
+				sb.append(failedParticipant.getMobilePhone() != null ? failedParticipant.getMobilePhone() : "");
+				sb.append("</td><td>");
+				sb.append(failedParticipant.getEwelcomeIdRemarks() != null ? failedParticipant.getEwelcomeIdRemarks()
+						: "");
+				sb.append("</td></tr>");
+			}
+			sb.append("</table>");
+			sb.append("</p>");
+
 		}
+
 		addParameter("PARTICIPANTS_DETAILS", sb.toString());
 		System.out.println(" co ord details - " + coordinatorEmail.getEventName() + "--"
 				+ coordinatorEmail.getCoordinatorEmail());
 		System.out.println("PARTICIPANTS_DETAILS " + sb.toString());
-		StringBuilder sb1 = new StringBuilder();
-		for (Participant failedParticipant : failedParticipants) {
-			sb1.append("<tr><td>");
-			sb1.append(i++);
-			sb1.append("</td><td>");
-			sb1.append(failedParticipant.getPrintName() != null ? failedParticipant.getPrintName() : "");
-			sb1.append("</td><td>");
-			sb1.append(failedParticipant.getEmail() != null ? failedParticipant.getEmail() : "");
-			sb1.append("</td><td>");
-			sb1.append(failedParticipant.getMobilePhone() != null ? failedParticipant.getMobilePhone() : "");
-			sb1.append("</td><td>");
-			sb1.append(failedParticipant.getEwelcomeIdRemarks() != null ?failedParticipant.getEwelcomeIdRemarks() : "");
-			sb1.append("</td></tr>");
-		}
-		addParameter("FAILED_PARTICIPANTS_DETAILS", sb1.toString());
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
 		// SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
@@ -600,8 +663,6 @@ public class SendMail {
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
-		// message.addRecipients(Message.RecipientType.TO,
-		// InternetAddress.parse("himasree.vemuru@htcindia.com"));
 		message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
 		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent), "text/html");
 		message.setAllow8bitMIME(true);

@@ -96,6 +96,6 @@ public interface EventDashboardValidator {
 	
 	public boolean validateParticipantCompletedPreliminarySittings(Participant participantInput);
 
-	public Map<String, String> checkUpdateParticicipantMandatoryFields(ParticipantRequest participant);
+	public Map<String, String> checkUpdateParticipantMandatoryFields(ParticipantRequest participant);
 
 }

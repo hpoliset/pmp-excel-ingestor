@@ -287,12 +287,25 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 		params.put("programId", programId);
 		List<Participant> participants = this.namedParameterJdbcTemplate.query(
 				"SELECT * from participant WHERE create_time <= CURRENT_TIMESTAMP AND program_id=:programId AND "
-				+ "ewelcome_id_state = 'F' AND ( welcome_card_number IS NULL OR welcome_card_number = '')"
+				+ "ewelcome_id_state = 'F' AND ( welcome_card_number IS NULL OR welcome_card_number = '') AND  is_ewelcome_id_informed=0"
 						,params,
 						BeanPropertyRowMapper.newInstance(Participant.class));
 		
 		return participants;
 		
+	}
+
+	@Override
+	public List<Participant> getEWelcomeIdGeneratedPartcicipants(String programId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("programId", programId);
+		List<Participant> participants = this.namedParameterJdbcTemplate.query(
+				"SELECT * from participant WHERE create_time <= CURRENT_TIMESTAMP AND program_id=:programId AND "
+				+ "ewelcome_id_state = 'C' AND ( welcome_card_number IS NOT NULL OR welcome_card_number <> '') AND  is_ewelcome_id_informed=0"
+						,params,
+						BeanPropertyRowMapper.newInstance(Participant.class));
+		
+		return participants;
 	}
 
 }
