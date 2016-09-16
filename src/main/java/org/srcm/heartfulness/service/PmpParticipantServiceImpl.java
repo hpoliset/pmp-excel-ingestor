@@ -142,8 +142,9 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setEwelcomeIdRemarks(participantRequest.getEwelcomeIdRemarks());
 		} else {
 			participant = findBySeqId(participantRequest);
-			if(null != participant.getWelcomeCardNumber() && !participant.getWelcomeCardNumber().isEmpty()){
+			if(null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()){
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE);
+				participant.setIsEwelcomeIdInformed(0);
 			}
 			participant.setPrintName(participantRequest.getPrintName());
 			participant.setEmail(participantRequest.getEmail());
@@ -623,7 +624,9 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					participant.setWelcomeCardDate(new Date());
 					participant.setIntroductionDate(new Date());
 				}
-				participant.setIsEwelcomeIdInformed((null !=participant.getIsEwelcomeIdInformed() && participant.getIsEwelcomeIdInformed() == 1)?1:0);
+				participant.setIsEwelcomeIdInformed(
+						(null !=participant.getIsEwelcomeIdInformed() && participant.getIsEwelcomeIdInformed() == 1)
+						?1:0);
 				participant.setIntroducedBy(program.getCoordinatorEmail());
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
 			} else if (!eventDashboardValidator.validateParticipantCompletedPreliminarySittings(participant)) {
@@ -633,7 +636,6 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			} else {
 				participant.setEwelcomeIdRemarks(remarks);
 				participant.setEwelcomeIdState(eWelcomeIDStatus);
-				if(!PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE.equalsIgnoreCase(participant.getEwelcomeIdState()))
 				participant.setIsEwelcomeIdInformed(0);
 			}
 				
