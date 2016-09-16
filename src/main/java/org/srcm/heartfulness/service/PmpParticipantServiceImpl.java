@@ -142,6 +142,9 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setEwelcomeIdRemarks(participantRequest.getEwelcomeIdRemarks());
 		} else {
 			participant = findBySeqId(participantRequest);
+			if(null != participant.getWelcomeCardNumber() && !participant.getWelcomeCardNumber().isEmpty()){
+				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE);
+			}
 			participant.setPrintName(participantRequest.getPrintName());
 			participant.setEmail(participantRequest.getEmail());
 			participant.setMobilePhone(participantRequest.getMobilePhone());
@@ -205,7 +208,6 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					.equalsIgnoreCase(participantRequest.getSecondSitting())) ? 1 : 0);
 			participant.setThirdSitting((null != participantRequest.getThirdSitting() && PMPConstants.REQUIRED_YES
 					.equalsIgnoreCase(participantRequest.getThirdSitting())) ? 1 : 0);
-			participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE);
 			participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
 					.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
 		}
@@ -621,15 +623,20 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					participant.setWelcomeCardDate(new Date());
 					participant.setIntroductionDate(new Date());
 				}
+				participant.setIsEwelcomeIdInformed((null !=participant.getIsEwelcomeIdInformed() && participant.getIsEwelcomeIdInformed() == 1)?1:0);
 				participant.setIntroducedBy(program.getCoordinatorEmail());
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
 			} else if (!eventDashboardValidator.validateParticipantCompletedPreliminarySittings(participant)) {
 				participant.setEwelcomeIdRemarks((null != remarks && !remarks.isEmpty()) ? remarks :"Participant not completed preliminary sittings.");
+				participant.setIsEwelcomeIdInformed(0);
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
 			} else {
 				participant.setEwelcomeIdRemarks(remarks);
 				participant.setEwelcomeIdState(eWelcomeIDStatus);
+				if(!PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE.equalsIgnoreCase(participant.getEwelcomeIdState()))
+				participant.setIsEwelcomeIdInformed(0);
 			}
+				
 			participantRepository.save(participant);
 		}
 	}

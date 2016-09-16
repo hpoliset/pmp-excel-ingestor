@@ -7,7 +7,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.PMPConstants;
@@ -39,7 +40,7 @@ public class EWelcomeIDGenerationScheduler {
 	PmpParticipantService participantService;
 
 	@Autowired
-	ParticipantRepository participantRepository;	
+	ParticipantRepository participantRepository;
 
 	@Autowired
 	EWelcomeIDGenerationHelper eWelcomeIDGenerationHelper;
@@ -50,7 +51,8 @@ public class EWelcomeIDGenerationScheduler {
 	/**
 	 * Cron to generate EWelcomeIDs for the participants.
 	 */
-	@Scheduled(cron = "${welcome.mailids.cron.time}")
+	// @Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}")
+	@RequestMapping(value = "generateewelcomeid", method = RequestMethod.POST)
 	public void generateEWelcomeIDsForTheParticipants() {
 		LOGGER.debug("START : Scheduler to generate EwelcomeID's for the participants started at - " + new Date());
 		List<Participant> participants = participantService.getParticipantListToGenerateEWelcomeID();
@@ -90,6 +92,7 @@ public class EWelcomeIDGenerationScheduler {
 						participant.setEwelcomeIdRemarks(e.getResponseBodyAsString());
 					}
 					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
+					participant.setIsEwelcomeIdInformed(0);
 					participantRepository.save(participant);
 				} catch (JsonParseException | JsonMappingException e1) {
 					LOGGER.debug(
@@ -101,6 +104,7 @@ public class EWelcomeIDGenerationScheduler {
 							StackTraceUtils.convertStackTracetoString(e));
 					participant.setEwelcomeIdRemarks(e1.getMessage());
 					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
+					participant.setIsEwelcomeIdInformed(0);
 					participantRepository.save(participant);
 				} catch (IOException e1) {
 					LOGGER.debug(
@@ -111,6 +115,7 @@ public class EWelcomeIDGenerationScheduler {
 							StackTraceUtils.convertStackTracetoString(e));
 					participant.setEwelcomeIdRemarks(e1.getMessage());
 					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
+					participant.setIsEwelcomeIdInformed(0);
 					participantRepository.save(participant);
 				} catch (Exception e1) {
 					e1.printStackTrace();
@@ -122,6 +127,7 @@ public class EWelcomeIDGenerationScheduler {
 							StackTraceUtils.convertStackTracetoString(e));
 					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
 					participant.setEwelcomeIdRemarks(e1.getMessage());
+					participant.setIsEwelcomeIdInformed(0);
 					participantRepository.save(participant);
 				}
 			} catch (JsonParseException | JsonMappingException e) {
@@ -134,6 +140,7 @@ public class EWelcomeIDGenerationScheduler {
 				participant.setEwelcomeIdRemarks(e.getMessage());
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
 				System.out.println(participant.toString());
+				participant.setIsEwelcomeIdInformed(0);
 				participantRepository.save(participant);
 			} catch (IOException e) {
 				LOGGER.debug(
@@ -144,7 +151,7 @@ public class EWelcomeIDGenerationScheduler {
 						StackTraceUtils.convertStackTracetoString(e));
 				participant.setEwelcomeIdRemarks(e.getMessage());
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
-				System.out.println(participant.toString());
+				participant.setIsEwelcomeIdInformed(0);
 				participantRepository.save(participant);
 			} catch (Exception e) {
 				LOGGER.debug(
@@ -155,7 +162,7 @@ public class EWelcomeIDGenerationScheduler {
 						StackTraceUtils.convertStackTracetoString(e));
 				participant.setEwelcomeIdRemarks(e.getMessage());
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
-				System.out.println(participant.toString());
+				participant.setIsEwelcomeIdInformed(0);
 				participantRepository.save(participant);
 			}
 		}

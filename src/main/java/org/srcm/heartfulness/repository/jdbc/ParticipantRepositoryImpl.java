@@ -282,13 +282,30 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	}
 
 	@Override
-	public Integer getCountOfEWelcomeIdGenerationFailedPartcicipants(String programId) {
-		return this.jdbcTemplate.queryForObject(
-				"SELECT COUNT(id) from participant WHERE create_time <= CURRENT_TIMESTAMP AND program_id=? AND "
-				+ "ewelcome_id_state = 'F' AND ( welcome_card_number IS NULL OR welcome_card_number = '')"
-						,new Object[] { Integer.parseInt(programId) },
-						 Integer.class);
+	public List<Participant> getEWelcomeIdGenerationFailedPartcicipants(String programId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("programId", programId);
+		List<Participant> participants = this.namedParameterJdbcTemplate.query(
+				"SELECT * from participant WHERE create_time <= CURRENT_TIMESTAMP AND program_id=:programId AND "
+				+ "ewelcome_id_state = 'F' AND ( welcome_card_number IS NULL OR welcome_card_number = '') AND  is_ewelcome_id_informed=0"
+						,params,
+						BeanPropertyRowMapper.newInstance(Participant.class));
 		
+		return participants;
+		
+	}
+
+	@Override
+	public List<Participant> getEWelcomeIdGeneratedPartcicipants(String programId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("programId", programId);
+		List<Participant> participants = this.namedParameterJdbcTemplate.query(
+				"SELECT * from participant WHERE create_time <= CURRENT_TIMESTAMP AND program_id=:programId AND "
+				+ "ewelcome_id_state = 'C' AND ( welcome_card_number IS NOT NULL OR welcome_card_number <> '') AND  is_ewelcome_id_informed=0"
+						,params,
+						BeanPropertyRowMapper.newInstance(Participant.class));
+		
+		return participants;
 	}
 
 }

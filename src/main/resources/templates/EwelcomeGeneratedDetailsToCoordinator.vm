@@ -7,20 +7,7 @@
 Dear ${COORDINATOR_NAME},
 <br/>
 <div style="padding-left: 10px;">
-<p>Please note that the following e-welcome ID’s have been generated for the below given participants of the event - ${EVENT_NAME},</p>
-<table border="1" style="width: 100%;border-collapse: collapse;">
-<tr>
-<td  align=middle><b>S.No</b></td>
-<td  align=middle><b>Participant Name</b></td>
-<td  align=middle><b>Participant mail ID</b></td>
-<td  align=middle><b>Mobile</b></td>
-<td  align=middle><b>e-welcome ID</b></td>
-<td  align=middle><b>Introduced Date</b></td>
-</tr>
 ${PARTICIPANTS_DETAILS}
-</table>
-</p>
-<p><u><b>Note:</b></u> No. of participants who haven't received e-welcome ID: ${PARTICIPANT_COUNT} </p>
 <br/>
 </div>
 <div style="font-style: italic; font-weight: bold;">

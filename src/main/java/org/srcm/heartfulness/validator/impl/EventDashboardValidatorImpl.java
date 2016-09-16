@@ -66,7 +66,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	 * @return
 	 */
 	@Override
-	public Map<String, String> checkParticicipantMandatoryFields(ParticipantRequest participant) {
+	public Map<String, String> checkParticipantMandatoryFields(ParticipantRequest participant) {
 		Map<String, String> errors = new HashMap<>();
 		if (null == participant.getEventId()) {
 			errors.put("eventId", "program ID is required");
@@ -359,7 +359,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	}
 
 	@Override
-	public Map<String, String> checkUpdateParticicipantMandatoryFields(ParticipantRequest participant) {
+	public Map<String, String> checkUpdateParticipantMandatoryFields(ParticipantRequest participant) {
 		Map<String, String> errors = new HashMap<String, String>();
 		if (null == participant.getPrintName() || participant.getPrintName().isEmpty()) {
 			errors.put(ErrorConstants.STATUS_FAILED, "print name is required ");
