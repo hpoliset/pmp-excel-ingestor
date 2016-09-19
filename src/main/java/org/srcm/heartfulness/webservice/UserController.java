@@ -198,7 +198,7 @@ public class UserController {
 	 * @param user
 	 * @return
 	 */
-	@RequestMapping(value = "mobile/users", method = RequestMethod.POST)
+	@RequestMapping(value = "/mobile/users", method = RequestMethod.POST)
 	public ResponseEntity<?> userCreate(@RequestBody CreateUserRequest user,
 			@Context HttpServletRequest httpRequest) throws ParseException {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
