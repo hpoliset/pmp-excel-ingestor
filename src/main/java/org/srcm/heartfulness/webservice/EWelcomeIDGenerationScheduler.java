@@ -1,6 +1,5 @@
 package org.srcm.heartfulness.webservice;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -10,21 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.helper.EWelcomeIDGenerationHelper;
+import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
-import org.srcm.heartfulness.model.json.response.EWelcomeIDErrorResponse;
 import org.srcm.heartfulness.repository.ParticipantRepository;
+import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.PmpIngestionServiceImpl;
 import org.srcm.heartfulness.service.PmpParticipantService;
 import org.srcm.heartfulness.service.ProgramService;
+import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * 
@@ -47,6 +44,9 @@ public class EWelcomeIDGenerationScheduler {
 
 	@Autowired
 	ProgramService programService;
+	
+	@Autowired
+	APIAccessLogService apiAccessLogService;
 
 	/**
 	 * Cron to generate EWelcomeIDs for the participants.
@@ -58,11 +58,44 @@ public class EWelcomeIDGenerationScheduler {
 		List<Participant> participants = participantService.getParticipantListToGenerateEWelcomeID();
 		LOGGER.debug("Scheduler to generate EwelcomeID's : Total no. of partcipants to generate eWelcomeID : {} ",
 				participants.size());
+		PMPAPIAccessLog accessLog =null;
 		for (Participant participant : participants) {
 			try {
 				Program program= programService.getProgramById(participant.getProgramId());
 				participant.setProgram(program);
-				eWelcomeIDGenerationHelper.generateEWelcomeId(participant);
+				accessLog = new PMPAPIAccessLog(null, null, "cron-to-generate-ewelcomeID",
+						DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
+						StackTraceUtils.convertPojoToJson(participant), null);
+				int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+				String eWelcomeID = programService.generateeWelcomeID(participant, id);
+				if ("success".equalsIgnoreCase(eWelcomeID)) {
+					participant.setIntroducedBy(program.getCoordinatorEmail());
+					participant.setIntroductionDate(new Date());
+					participant.setIntroduced(1);
+					participant.setEwelcomeIdRemarks(null);
+					participant.setIsEwelcomeIdInformed(0);
+					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
+					participantRepository.save(participant);
+					LOGGER.debug(
+							"Scheduler to generate EwelcomeID's : eWelcomeID generated successfully to the participant : {} ",
+							participant.getPrintName());
+					accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+					accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(participant));
+					accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+				}else{
+					participant.setEwelcomeIdRemarks(eWelcomeID);
+					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
+					participant.setIsEwelcomeIdInformed(0);
+					participantRepository.save(participant);
+					accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+					accessLog.setErrorMessage(eWelcomeID);
+					accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(participant));
+					accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+				}
+				
+			/*	eWelcomeIDGenerationHelper.generateEWelcomeId(participant);
 				participant.setIntroducedBy(program.getCoordinatorEmail());
 				participant.setIntroductionDate(new Date());
 				participant.setIntroduced(1);
@@ -72,8 +105,8 @@ public class EWelcomeIDGenerationScheduler {
 				participantRepository.save(participant);
 				LOGGER.debug(
 						"Scheduler to generate EwelcomeID's : eWelcomeID generated successfully to the participant : {} ",
-						participant.getPrintName());
-			} catch (HttpClientErrorException e) {
+						participant.getPrintName());*/
+		/*	} catch (HttpClientErrorException e) {
 				System.out.println(e.getResponseBodyAsString());
 				LOGGER.debug("Scheduler to generate EwelcomeID's : HttpClientErrorException :  {} ",StackTraceUtils.convertStackTracetoString(e));
 				ObjectMapper mapper = new ObjectMapper();
@@ -152,7 +185,7 @@ public class EWelcomeIDGenerationScheduler {
 				participant.setEwelcomeIdRemarks(e.getMessage());
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
 				participant.setIsEwelcomeIdInformed(0);
-				participantRepository.save(participant);
+				participantRepository.save(participant);*/
 			} catch (Exception e) {
 				LOGGER.debug(
 						"Scheduler to generate EwelcomeID's : Error while generating EWelcomeID for the participant :"
@@ -164,6 +197,11 @@ public class EWelcomeIDGenerationScheduler {
 				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
 				participant.setIsEwelcomeIdInformed(0);
 				participantRepository.save(participant);
+				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+				accessLog.setErrorMessage(StackTraceUtils.convertPojoToJson(e));
+				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(participant));
+				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			}
 		}
 		LOGGER.debug("END : Scheduler to generate EwelcomeID's for the participants completed at - " + new Date());
