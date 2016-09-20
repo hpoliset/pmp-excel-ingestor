@@ -60,7 +60,7 @@ public class AbhyasiUserProfile {
 
 	private String city;
 	
-	private String city_id;
+	private AbhaysiCityID city_id;
 	
 	private AbhyasiState state;
 	
@@ -288,11 +288,11 @@ public class AbhyasiUserProfile {
 		this.city = city;
 	}
 
-	public String getCity_id() {
+	public AbhaysiCityID getCity_id() {
 		return city_id;
 	}
 
-	public void setCity_id(String city_id) {
+	public void setCity_id(AbhaysiCityID city_id) {
 		this.city_id = city_id;
 	}
 
@@ -490,5 +490,5 @@ public class AbhyasiUserProfile {
 				+ last_update_user + ", last_update_app=" + last_update_app + ", email2=" + email2
 				+ ", address_last_validated_on=" + address_last_validated_on + "]";
 	}
-	
+
 }
