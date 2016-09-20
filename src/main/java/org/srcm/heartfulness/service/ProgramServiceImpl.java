@@ -823,6 +823,10 @@ public class ProgramServiceImpl implements ProgramService {
 												.getError().isEmpty())) {
 											return eWelcomeIDErrorResponse.getError();
 										}
+										if ((null != eWelcomeIDErrorResponse.getMobile() && !eWelcomeIDErrorResponse
+												.getMobile().isEmpty())) {
+											return eWelcomeIDErrorResponse.getMobile().get(0);
+										}
 										return "Error While parsing error response from MySRCM";
 									} else {
 										return "Error While generating eWelcomeID";
@@ -844,6 +848,10 @@ public class ProgramServiceImpl implements ProgramService {
 										.isEmpty())) {
 									return eWelcomeIDErrorResponse.getError();
 								}
+								if ((null != eWelcomeIDErrorResponse.getMobile() && !eWelcomeIDErrorResponse
+										.getMobile().isEmpty())) {
+									return eWelcomeIDErrorResponse.getMobile().get(0);
+								}
 								return "Error While parsing error response from MySRCM";
 							} else {
 								return "Error While fetching cities api response";
@@ -864,6 +872,10 @@ public class ProgramServiceImpl implements ProgramService {
 						if ((null != eWelcomeIDErrorResponse.getError() && !eWelcomeIDErrorResponse.getError()
 								.isEmpty())) {
 							return eWelcomeIDErrorResponse.getError();
+						}
+						if ((null != eWelcomeIDErrorResponse.getMobile() && !eWelcomeIDErrorResponse
+								.getMobile().isEmpty())) {
+							return eWelcomeIDErrorResponse.getMobile().get(0);
 						}
 						return "Error While parsing error response from MySRCM";
 					} else {
