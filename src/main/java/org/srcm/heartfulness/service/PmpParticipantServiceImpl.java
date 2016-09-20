@@ -514,6 +514,10 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 							response = new UpdateIntroductionResponse(participant.getSeqId(),
 									participantInput.getPrintName(), ErrorConstants.STATUS_SUCCESS, description);
 						} else {
+							participantInput.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
+							participantInput.setIsEwelcomeIdInformed(0);
+							participantInput.setEwelcomeIdRemarks(eWelcomeID);
+							participantRepository.save(participantInput);
 							description = new ArrayList<String>();
 							description.add(eWelcomeID);
 							response = new UpdateIntroductionResponse(participant.getSeqId(),
