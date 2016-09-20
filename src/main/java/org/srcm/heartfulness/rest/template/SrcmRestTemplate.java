@@ -149,7 +149,7 @@ public class SrcmRestTemplate extends RestTemplate {
 		ResponseEntity<String> response = this.exchange(accessTokenUri, HttpMethod.POST, httpEntity, String.class);
 		return mapper.readValue(response.getBody(), SrcmAuthenticationResponse.class);
 	}
-	
+
 	/**
 	 * Method to authenticate the user with MySRCM and return the response with
 	 * token details.
@@ -243,7 +243,7 @@ public class SrcmRestTemplate extends RestTemplate {
 				String.class);
 		return mapper.readValue(createUserResponse.getBody(), User.class);
 	}
-	
+
 	/**
 	 * Method to create the user profile in MySRCM and PMP by calling MySRCM
 	 * API.
@@ -356,6 +356,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	 */
 	public UserProfile createAspirant(Aspirant aspirant) throws HttpClientErrorException, JsonParseException,
 			JsonMappingException, IOException {
+		System.out.println("------------------------> Aspirant -------------> " + aspirant);
 		if (proxy)
 			setProxy();
 		MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<String, String>();
@@ -365,7 +366,7 @@ public class SrcmRestTemplate extends RestTemplate {
 		httpHeaders.set(RestTemplateConstants.AUTHORIZATION, RestTemplateConstants.BASIC_AUTHORIZATION
 				+ getBase64Credentials(clientIdToCreateProfile, clientSecretToCreateProfile));
 		HttpEntity<?> httpEntity = new HttpEntity<Object>(bodyParams, httpHeaders);
-		//System.out.println(httpEntity.toString());
+		// System.out.println(httpEntity.toString());
 		ResponseEntity<String> response = this.exchange(accessTokenUri, HttpMethod.POST, httpEntity, String.class);
 		SrcmAuthenticationResponse tokenResponse = mapper.readValue(response.getBody(),
 				SrcmAuthenticationResponse.class);
@@ -376,7 +377,7 @@ public class SrcmRestTemplate extends RestTemplate {
 		httpHeaders.add(RestTemplateConstants.AUTHORIZATION,
 				RestTemplateConstants.BEARER_TOKEN + tokenResponse.getAccess_token());
 		httpEntity = new HttpEntity<Object>(mapper.writeValueAsString(aspirant), httpHeaders);
-		//System.out.println(httpEntity.toString());
+		// System.out.println(httpEntity.toString());
 		ResponseEntity<String> Response = this.exchange(abyasi.createAspirant, HttpMethod.POST, httpEntity,
 				String.class);
 		return mapper.readValue(Response.getBody(), UserProfile.class);
@@ -409,8 +410,8 @@ public class SrcmRestTemplate extends RestTemplate {
 		CloseableHttpClient client = clientBuilder.build();
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
 		factory.setHttpClient(client);
-		this.setRequestFactory(factory);*/
-
+		this.setRequestFactory(factory);
+*/
 	}
 
 	/**
