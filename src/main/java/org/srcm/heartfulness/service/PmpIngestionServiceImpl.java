@@ -23,6 +23,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.srcm.heartfulness.constants.EmailLogConstants;
+import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.enumeration.ExcelType;
@@ -30,11 +32,15 @@ import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractorFactory;
 import org.srcm.heartfulness.mail.SendMail;
 import org.srcm.heartfulness.model.CoordinatorEmail;
 import org.srcm.heartfulness.model.Organisation;
+import org.srcm.heartfulness.model.PMPAPIAccessLog;
+import org.srcm.heartfulness.model.PMPMailLog;
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.repository.MailLogRepository;
 import org.srcm.heartfulness.repository.OrganisationRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
 import org.srcm.heartfulness.service.response.ExcelUploadResponse;
+import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.ExcelParserUtils;
 import org.srcm.heartfulness.util.InvalidExcelFileException;
 import org.srcm.heartfulness.util.StackTraceUtils;
@@ -66,9 +72,15 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 
 	@Autowired
 	private ProgramService programService;
-	
+
 	@Autowired
 	private PmpParticipantService participantService;
+
+	@Autowired
+	private MailLogRepository mailLogRepository;
+
+	@Autowired
+	APIAccessLogService apiAccessLogService;
 
 	/**
 	 * This method is used to parse the excel file and populate the data into
@@ -102,17 +114,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 						program.setCreatedSource("Excel");
 						programRepository.save(program);
 						// preceptor ID card number validation
-						try {
-							if (null != programService.validatePreceptorIDCardNumber(program, 0)) {
-								sendMailToCoordinatorToUpdatePreceptorID(program);
-								participantService.updatePartcipantEWelcomeIDStatuswithParticipantID(program.getProgramId(),PMPConstants.EWELCOMEID_FAILED_STATE,"Invalid PreceptorID");
-							}else{
-								participantService.updatePartcipantEWelcomeIDStatuswithParticipantID(program.getProgramId(),PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE,null);
-							}
-						} catch (Exception ex) {
-							LOGGER.debug("Error while validating preceptor ID : {}",program.getPreceptorIdCardNumber());
-							LOGGER.debug("Error while validating preceptor ID : Exception: {}",StackTraceUtils.convertStackTracetoString(ex));
-						}
+						validatePreceptorID(program);
 						response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
 					} catch (InvalidExcelFileException ex) {
 						errorResponse.add(ex.getMessage());
@@ -136,13 +138,81 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			errorResponse.add(ex.getMessage());
 			response.setErrorMsg(errorResponse);
 			response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
-		} catch(Exception ex){
+		} catch (Exception ex) {
 			LOGGER.error(ex.getMessage());
 			errorResponse.add("Error while uploading excel file.Please contact Administrator");
 			response.setErrorMsg(errorResponse);
 			response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 		}
 		return response;
+	}
+
+	/**
+	 * Method to validate preceptor ID by calling MySRCM API.
+	 * 
+	 * @param program
+	 */
+	private void validatePreceptorID(Program program) {
+		PMPAPIAccessLog accessLog = null;
+		int id = 0;
+		LOGGER.debug("Inserting PMP API log details in table");
+		try {
+			accessLog = new PMPAPIAccessLog(null, null, "EXCEL UPLOAD", DateUtils.getCurrentTimeInMilliSec(), null,
+					ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(program), null);
+			id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		} catch (Exception e) {
+			LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+					StackTraceUtils.convertPojoToJson(e));
+		}
+		try {
+			if (null != programService.validatePreceptorIDCardNumber(program, id)) {
+				sendMailToCoordinatorToUpdatePreceptorID(program);
+				participantService.updatePartcipantEWelcomeIDStatuswithParticipantID(program.getProgramId(),
+						PMPConstants.EWELCOMEID_FAILED_STATE, "Invalid PreceptorID");
+				try {
+					if (null != accessLog) {
+						accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+						accessLog.setResponseBody(StackTraceUtils.convertPojoToJson("Invalid PreceptorID"));
+						accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+						apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+					}
+				} catch (Exception e) {
+					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+							StackTraceUtils.convertPojoToJson(e));
+				}
+
+			} else {
+				try {
+					if (null != accessLog) {
+						accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+						accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(null));
+						accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+						apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+					}
+				} catch (Exception e) {
+					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+							StackTraceUtils.convertPojoToJson(e));
+				}
+				participantService.updatePartcipantEWelcomeIDStatuswithParticipantID(program.getProgramId(),
+						PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, null);
+			}
+		} catch (Exception ex) {
+			LOGGER.debug("Error while validating preceptor ID : {}", program.getPreceptorIdCardNumber());
+			LOGGER.debug("Error while validating preceptor ID : Exception: {}",
+					StackTraceUtils.convertStackTracetoString(ex));
+			try {
+				if (null != accessLog) {
+					accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+					accessLog.setResponseBody(StackTraceUtils.convertPojoToJson("Error while validating preceptor ID"));
+					accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+				}
+			} catch (Exception e) {
+				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+						StackTraceUtils.convertPojoToJson(e));
+			}
+		}
+
 	}
 
 	@Async
@@ -156,21 +226,76 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			coordinatorEmail.setProgramCreateDate(inputsdf.format(program.getProgramStartDate()));
 			coordinatorEmail.setEventID(program.getAutoGeneratedEventId());
 			sendMail.sendMailToCoordinatorToUpdatePreceptorID(coordinatorEmail);
+			try {
+				LOGGER.debug("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(program.getProgramId()),
+						program.getCoordinatorEmail(), EmailLogConstants.PCTPT_EMAIL_DETAILS,
+						EmailLogConstants.STATUS_SUCCESS, null);
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.debug("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.debug("END        :Exception while inserting mail log details in table");
+			}
+			LOGGER.debug("END        :Completed sending email to " + program.getCoordinatorEmail());
 		} catch (AddressException e) {
-			LOGGER.debug("Address Exception : Coordinator Email : {} ",program.getCoordinatorEmail());
-			LOGGER.debug("Address Exception : Coordinator Email : Exception : {} ",program.getCoordinatorEmail());
+			LOGGER.debug("Address Exception : Coordinator Email : {} ", program.getCoordinatorEmail());
+			LOGGER.debug("Address Exception : Coordinator Email : Exception : {} ", program.getCoordinatorEmail());
+			try {
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(program.getProgramId()),
+						program.getCoordinatorEmail(), EmailLogConstants.PCTPT_EMAIL_DETAILS,
+						EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+			} catch (Exception ex) {
+				LOGGER.debug("EXCEPTION  :Failed to update mail log table");
+			}
 		} catch (UnsupportedEncodingException e) {
-			LOGGER.debug("UnsupportedEncodingException : Coordinator Email : {} ",program.getCoordinatorEmail());
-			LOGGER.debug("UnsupportedEncodingException : Coordinator Email : Exception : {} ",program.getCoordinatorEmail());
+			LOGGER.debug("UnsupportedEncodingException : Coordinator Email : {} ", program.getCoordinatorEmail());
+			LOGGER.debug("UnsupportedEncodingException : Coordinator Email : Exception : {} ",
+					program.getCoordinatorEmail());
+			try {
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(program.getProgramId()),
+						program.getCoordinatorEmail(), EmailLogConstants.PCTPT_EMAIL_DETAILS,
+						EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+			} catch (Exception ex) {
+				LOGGER.debug("EXCEPTION  :Failed to update mail log table");
+			}
 		} catch (MessagingException e) {
-			LOGGER.debug("MessagingException : Coordinator Email : {} ",program.getCoordinatorEmail());
-			LOGGER.debug("MessagingException : Coordinator Email : Exception : {} ",program.getCoordinatorEmail());
+			LOGGER.debug("MessagingException : Coordinator Email : {} ", program.getCoordinatorEmail());
+			LOGGER.debug("MessagingException : Coordinator Email : Exception : {} ", program.getCoordinatorEmail());
+			try {
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(program.getProgramId()),
+						program.getCoordinatorEmail(), EmailLogConstants.PCTPT_EMAIL_DETAILS,
+						EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+			} catch (Exception ex) {
+				LOGGER.debug("EXCEPTION  :Failed to update mail log table");
+			}
 		} catch (ParseException e) {
-			LOGGER.debug("ParseException : Coordinator Email : {} : Error while parsing date : {}  ",program.getCoordinatorEmail(),program.getProgramStartDate());
-			LOGGER.debug("ParseException : Error while parsing date  : Exception : {} ",program.getCoordinatorEmail());
+			LOGGER.debug("ParseException : Coordinator Email : {} : Error while parsing date : {}  ",
+					program.getCoordinatorEmail(), program.getProgramStartDate());
+			LOGGER.debug("ParseException : Error while parsing date  : Exception : {} ", program.getCoordinatorEmail());
+			try {
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(program.getProgramId()),
+						program.getCoordinatorEmail(), EmailLogConstants.PCTPT_EMAIL_DETAILS,
+						EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+			} catch (Exception ex) {
+				LOGGER.debug("EXCEPTION  :Failed to update mail log table");
+			}
 		} catch (Exception e) {
-			LOGGER.debug("Exception : Coordinator Email : {} ",program.getCoordinatorEmail(),program.getProgramStartDate());
-			LOGGER.debug("Exception : Error while sending mail to coordinator : Exception : {} ",program.getCoordinatorEmail());
+			LOGGER.debug("Exception : Coordinator Email : {} ", program.getCoordinatorEmail(),
+					program.getProgramStartDate());
+			LOGGER.debug("Exception : Error while sending mail to coordinator : Exception : {} ",
+					program.getCoordinatorEmail());
+			try {
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(program.getProgramId()),
+						program.getCoordinatorEmail(), EmailLogConstants.PCTPT_EMAIL_DETAILS,
+						EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+			} catch (Exception ex) {
+				LOGGER.debug("EXCEPTION  :Failed to update mail log table");
+			}
 		}
 	}
 

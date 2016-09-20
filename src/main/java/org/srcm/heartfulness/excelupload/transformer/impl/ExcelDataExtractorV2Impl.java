@@ -65,7 +65,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			Row currentRow = participantsSheet.getRow(i);
 			Participant participant = parseParticipantRow(currentRow);
 			// this will go away
-			if(!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()){
+			if(!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
 				if (participant.getExcelSheetSequenceNumber() == 0) {
 					participant.setExcelSheetSequenceNumber(j);
 				}
@@ -79,11 +79,11 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 
 	private Participant parseParticipantRow(Row participantRow) throws InvalidExcelFileException {
 		Participant participant = new Participant();
-		if(!participantRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()){		
-			participant.setPrintName(participantRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString());
+		if(!participantRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){		
+			participant.setPrintName(participantRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim());
 
 			String firstSittingStr = participantRow.getCell(1,
-					Row.CREATE_NULL_AS_BLANK).toString();
+					Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if (!"Y".equals(firstSittingStr) && !"N".equals(firstSittingStr)) {
 				try {
 					Date firstSittingDate = DateUtils.parseDate(firstSittingStr);
@@ -98,7 +98,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			}
 
 			String secondSittingStr = participantRow.getCell(2,
-					Row.CREATE_NULL_AS_BLANK).toString();
+					Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if (!"Y".equals(secondSittingStr) && !"N".equals(secondSittingStr)) {
 				try {
 					Date secondSittingDate = DateUtils.parseDate(secondSittingStr);
@@ -113,7 +113,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			}
 
 			String thirdSittingStr = participantRow.getCell(3,
-					Row.CREATE_NULL_AS_BLANK).toString();
+					Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if (!"Y".equals(thirdSittingStr) && !"N".equals(thirdSittingStr)) {
 				try {
 					Date thirdSittingDate = DateUtils.parseDate(thirdSittingStr);
@@ -127,36 +127,36 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 				participant.setThirdSitting(0);
 			}
 
-			participant.setCountry(participantRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString());
-			participant.setState(participantRow.getCell(5, Row.CREATE_NULL_AS_BLANK).toString());
-			participant.setCity(participantRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString());
-			participant.setEmail(participantRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString());
+			participant.setCountry(participantRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString().trim());
+			participant.setState(participantRow.getCell(5, Row.CREATE_NULL_AS_BLANK).toString().trim());
+			participant.setCity(participantRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString().trim());
+			participant.setEmail(participantRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString().trim());
 			Cell mobilePhoneCell = participantRow.getCell(8, Row.CREATE_NULL_AS_BLANK);
 			try {
 				Double numbericMobilePhone = mobilePhoneCell.getNumericCellValue();
-				participant.setMobilePhone(String.valueOf(numbericMobilePhone.longValue()));
+				participant.setMobilePhone(String.valueOf(numbericMobilePhone.longValue()).trim());
 			} catch (NumberFormatException | ClassCastException | IllegalStateException  e) {
 				LOGGER.info("Participant mobile phone number is not numeric, trying as string");
-				participant.setMobilePhone(String.valueOf(mobilePhoneCell));
+				participant.setMobilePhone(String.valueOf(mobilePhoneCell).trim());
 			} catch (Exception e) {
 				LOGGER.info("Participant mobile phone number is not numeric, trying as string");
-				participant.setMobilePhone(String.valueOf(mobilePhoneCell));
+				participant.setMobilePhone(String.valueOf(mobilePhoneCell).trim());
 			}
-			participant.setProfession(participantRow.getCell(9, Row.CREATE_NULL_AS_BLANK).toString());
-			participant.setDepartment(participantRow.getCell(10, Row.CREATE_NULL_AS_BLANK).toString());
-			participant.setBatch(participantRow.getCell(11, Row.CREATE_NULL_AS_BLANK).toString());
-			String receiveUpdateStr = participantRow.getCell(12, Row.CREATE_NULL_AS_BLANK).toString();
+			participant.setProfession(participantRow.getCell(9, Row.CREATE_NULL_AS_BLANK).toString().trim());
+			participant.setDepartment(participantRow.getCell(10, Row.CREATE_NULL_AS_BLANK).toString().trim());
+			participant.setBatch(participantRow.getCell(11, Row.CREATE_NULL_AS_BLANK).toString().trim());
+			String receiveUpdateStr = participantRow.getCell(12, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if ("Y".equalsIgnoreCase(receiveUpdateStr)) {
 				participant.setReceiveUpdates(1);
 			} else {
 				participant.setReceiveUpdates(0);
 			}
 
-			participant.setGender(participantRow.getCell(13, Row.CREATE_NULL_AS_BLANK).toString());
-			participant.setAgeGroup(participantRow.getCell(14, Row.CREATE_NULL_AS_BLANK).toString());
-			participant.setLanguage(participantRow.getCell(15, Row.CREATE_NULL_AS_BLANK).toString());
-			participant.setWelcomeCardNumber(participantRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString());
-			String welcomeCardDateStr = participantRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString();
+			participant.setGender(participantRow.getCell(13, Row.CREATE_NULL_AS_BLANK).toString().trim());
+			participant.setAgeGroup(participantRow.getCell(14, Row.CREATE_NULL_AS_BLANK).toString().trim());
+			participant.setLanguage(participantRow.getCell(15, Row.CREATE_NULL_AS_BLANK).toString().trim());
+			participant.setWelcomeCardNumber(participantRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString().trim());
+			String welcomeCardDateStr = participantRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			Date welcomeCardDate = null;
 			try {
 				welcomeCardDate = DateUtils.parseDate(welcomeCardDateStr);
@@ -166,7 +166,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			}
 
 			participant.setWelcomeCardDate(welcomeCardDate);
-			participant.setRemarks(participantRow.getCell(18, Row.CREATE_NULL_AS_BLANK).toString());
+			participant.setRemarks(participantRow.getCell(18, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		}
 		return participant;
 	}
@@ -174,33 +174,33 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 	private Program parseProgram(Sheet eventSheet) throws InvalidExcelFileException {
 
 		Program program = new Program();
-		program.setProgramChannel(eventSheet.getRow(2).getCell(1, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setEventPlace(eventSheet.getRow(3).getCell(1, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setProgramName(eventSheet.getRow(3).getCell(1, Row.CREATE_NULL_AS_BLANK).toString());
+		program.setProgramChannel(eventSheet.getRow(2).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setEventPlace(eventSheet.getRow(3).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setProgramName(eventSheet.getRow(3).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		program.setEventCountry(eventSheet.getRow(4).getCell(1, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setEventCity(eventSheet.getRow(5).getCell(1, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setCoordinatorName(eventSheet.getRow(6).getCell(1, Row.CREATE_NULL_AS_BLANK).toString());
+		program.setEventCity(eventSheet.getRow(5).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setCoordinatorName(eventSheet.getRow(6).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		Cell coordinatorMobileNumber = eventSheet.getRow(7).getCell(1, Row.CREATE_NULL_AS_BLANK);
 		try{
 			Double numericCoorntrMobNbr = coordinatorMobileNumber.getNumericCellValue();
-			program.setCoordinatorMobile(String.valueOf(numericCoorntrMobNbr.longValue()));
+			program.setCoordinatorMobile(String.valueOf(numericCoorntrMobNbr.longValue()).trim());
 		}catch (NumberFormatException | ClassCastException | IllegalStateException  e) {
 			LOGGER.info("Coordinator mobile number is not numeric, trying as string");
-			program.setCoordinatorMobile(String.valueOf(coordinatorMobileNumber));
+			program.setCoordinatorMobile(String.valueOf(coordinatorMobileNumber).trim());
 		}catch(Exception ex){
 			LOGGER.info("Coordinator mobile number is not numeric, trying as string");
-			program.setCoordinatorMobile(String.valueOf(coordinatorMobileNumber));
+			program.setCoordinatorMobile(String.valueOf(coordinatorMobileNumber).trim());
 		}
 
-		program.setOrganizationName(eventSheet.getRow(9).getCell(1, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setOrganizationWebSite(eventSheet.getRow(10).getCell(1, Row.CREATE_NULL_AS_BLANK).toString());
+		program.setOrganizationName(eventSheet.getRow(9).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setOrganizationWebSite(eventSheet.getRow(10).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
 
-		program.setPreceptorName(eventSheet.getRow(13).getCell(1, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setPreceptorIdCardNumber(eventSheet.getRow(14).getCell(1, Row.CREATE_NULL_AS_BLANK).toString());
+		program.setPreceptorName(eventSheet.getRow(13).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setPreceptorIdCardNumber(eventSheet.getRow(14).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
 
-		program.setRemarks(eventSheet.getRow(17).getCell(0, Row.CREATE_NULL_AS_BLANK).toString());
+		program.setRemarks(eventSheet.getRow(17).getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim());
 
-		String eventDateStr = eventSheet.getRow(3).getCell(3, Row.CREATE_NULL_AS_BLANK).toString();
+		String eventDateStr = eventSheet.getRow(3).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim();
 		Date eventDate = null;
 		try {
 			eventDate = DateUtils.parseDate(eventDateStr);
@@ -209,24 +209,24 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		}
 		program.setProgramStartDate(eventDate);
 
-		program.setEventState(eventSheet.getRow(4).getCell(3, Row.CREATE_NULL_AS_BLANK).toString());
+		program.setEventState(eventSheet.getRow(4).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim());
 
-		program.setCoordinatorEmail(eventSheet.getRow(7).getCell(3, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setOrganizationContactName(eventSheet.getRow(9).getCell(3, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setOrganizationContactEmail(eventSheet.getRow(10).getCell(3, Row.CREATE_NULL_AS_BLANK).toString());
+		program.setCoordinatorEmail(eventSheet.getRow(7).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setOrganizationContactName(eventSheet.getRow(9).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setOrganizationContactEmail(eventSheet.getRow(10).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		Cell organizationContactMobile = eventSheet.getRow(11).getCell(3, Row.CREATE_NULL_AS_BLANK);
 		try {
 			Double numbericPhoneNumber = organizationContactMobile.getNumericCellValue();
-			program.setOrganizationContactMobile(String.valueOf(numbericPhoneNumber.longValue()));
+			program.setOrganizationContactMobile(String.valueOf(numbericPhoneNumber.longValue()).trim());
 		} catch (NumberFormatException | ClassCastException | IllegalStateException  e) {
 			LOGGER.info("OrganizationPhoneNumber is not numeric, trying as string");
-			program.setOrganizationContactMobile(String.valueOf(organizationContactMobile));
+			program.setOrganizationContactMobile(String.valueOf(organizationContactMobile).trim());
 		} catch (Exception e) {
 			LOGGER.info("OrganizationPhoneNumber is not numeric, trying as string");
-			program.setOrganizationContactMobile(String.valueOf(organizationContactMobile));
+			program.setOrganizationContactMobile(String.valueOf(organizationContactMobile).trim());
 		}
-		program.setWelcomeCardSignedByName(eventSheet.getRow(13).getCell(3, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setWelcomeCardSignerIdCardNumber(eventSheet.getRow(14).getCell(3, Row.CREATE_NULL_AS_BLANK).toString());
+		program.setWelcomeCardSignedByName(eventSheet.getRow(13).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setWelcomeCardSignerIdCardNumber(eventSheet.getRow(14).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim());
 
 		return program;
 	}

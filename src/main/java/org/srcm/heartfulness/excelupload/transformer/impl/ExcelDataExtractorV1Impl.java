@@ -80,33 +80,33 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 	 */
 	private Participant parseParticipantRow(Row currentRow) throws InvalidExcelFileException {
 		Participant participant = new Participant();
-		if (!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()) {
-			double seqNo = Double.valueOf(currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString());
+		if (!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()) {
+			double seqNo = Double.valueOf(currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim());
 			int integerSeq = (int) seqNo;
 			participant.setExcelSheetSequenceNumber(integerSeq);
 		}
-		participant.setPrintName(currentRow.getCell(1, Row.CREATE_NULL_AS_BLANK).toString());
-		participant.setCity(currentRow.getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
-		participant.setState(currentRow.getCell(3, Row.CREATE_NULL_AS_BLANK).toString());
-		participant.setEmail(currentRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString());
+		participant.setPrintName(currentRow.getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		participant.setCity(currentRow.getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		participant.setState(currentRow.getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		participant.setEmail(currentRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		Cell phoneCell = currentRow.getCell(5, Row.CREATE_NULL_AS_BLANK);
 		try {
 			Double numbericMobilePhone = phoneCell.getNumericCellValue();
-			participant.setMobilePhone(String.valueOf(numbericMobilePhone.longValue()));
+			participant.setMobilePhone(String.valueOf(numbericMobilePhone.longValue()).trim());
 		} catch (NumberFormatException | ClassCastException | IllegalStateException e) {
 			LOGGER.error("Participant mobile phone number is not numeric, trying as string");
-			participant.setMobilePhone(phoneCell.toString());
+			participant.setMobilePhone(String.valueOf(phoneCell).trim());
 		}catch(Exception ex){
 			LOGGER.error("Participant mobile phone number is not numeric, trying as string");
-			participant.setMobilePhone(String.valueOf(phoneCell));
+			participant.setMobilePhone(String.valueOf(phoneCell).trim());
 		}
-		participant.setProfession(currentRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString());
-		if (currentRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString().equals("YES")) {
+		participant.setProfession(currentRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		if (currentRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString().trim().equals("YES")) {
 			participant.setIntroduced(1);
 		} else {
 			participant.setIntroduced(0);
 		}
-		String introducedDateStr = currentRow.getCell(8, Row.CREATE_NULL_AS_BLANK).toString();
+		String introducedDateStr = currentRow.getCell(8, Row.CREATE_NULL_AS_BLANK).toString().trim();
 		Date introducedDate = null;
 		try {
 			introducedDate = DateUtils.parseDate(introducedDateStr);
@@ -115,8 +115,8 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 			throw new InvalidExcelFileException("Not able to parse program event date:[" + introducedDateStr + "]");
 		}
 		participant.setIntroductionDate(introducedDate);
-		participant.setIntroducedBy(currentRow.getCell(9, Row.CREATE_NULL_AS_BLANK).toString());
-		participant.setRemarks(currentRow.getCell(10, Row.CREATE_NULL_AS_BLANK).toString());
+		participant.setIntroducedBy(currentRow.getCell(9, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		participant.setRemarks(currentRow.getCell(10, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		return participant;
 	}
 
@@ -130,16 +130,16 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 	private Program parseProgram(Sheet sheet) throws InvalidExcelFileException {
 		LOGGER.debug("Started to parse program data for altered 1.0 template.");
 		Program program = new Program();
-		program.setProgramChannel(sheet.getRow(3).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setCoordinatorName(sheet.getRow(4).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setCoordinatorEmail(sheet.getRow(5).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setEventPlace(sheet.getRow(6).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setProgramName(sheet.getRow(6).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setEventState(sheet.getRow(7).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setEventCountry(sheet.getRow(8).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setOrganizationName(sheet.getRow(9).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
-		program.setOrganizationWebSite(sheet.getRow(10).getCell(2, Row.CREATE_NULL_AS_BLANK).toString());
-		String eventDateStr = sheet.getRow(11).getCell(2, Row.CREATE_NULL_AS_BLANK).toString();
+		program.setProgramChannel(sheet.getRow(3).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setCoordinatorName(sheet.getRow(4).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setCoordinatorEmail(sheet.getRow(5).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setEventPlace(sheet.getRow(6).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setProgramName(sheet.getRow(6).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setEventState(sheet.getRow(7).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setEventCountry(sheet.getRow(8).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setOrganizationName(sheet.getRow(9).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setOrganizationWebSite(sheet.getRow(10).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		String eventDateStr = sheet.getRow(11).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim();
 		Date eventDate = null;
 		try {
 			eventDate = DateUtils.parseDate(eventDateStr);

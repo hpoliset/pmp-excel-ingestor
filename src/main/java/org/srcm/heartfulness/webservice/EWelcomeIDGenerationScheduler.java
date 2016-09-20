@@ -61,12 +61,12 @@ public class EWelcomeIDGenerationScheduler {
 		PMPAPIAccessLog accessLog =null;
 		for (Participant participant : participants) {
 			try {
-				Program program= programService.getProgramById(participant.getProgramId());
-				participant.setProgram(program);
 				accessLog = new PMPAPIAccessLog(null, null, "cron-to-generate-ewelcomeID",
 						DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
 						StackTraceUtils.convertPojoToJson(participant), null);
 				int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+				Program program= programService.getProgramById(participant.getProgramId());
+				participant.setProgram(program);
 				String eWelcomeID = programService.generateeWelcomeID(participant, id);
 				if ("success".equalsIgnoreCase(eWelcomeID)) {
 					participant.setIntroducedBy(program.getCoordinatorEmail());
@@ -94,98 +94,6 @@ public class EWelcomeIDGenerationScheduler {
 					accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 				}
-				
-			/*	eWelcomeIDGenerationHelper.generateEWelcomeId(participant);
-				participant.setIntroducedBy(program.getCoordinatorEmail());
-				participant.setIntroductionDate(new Date());
-				participant.setIntroduced(1);
-				participant.setEwelcomeIdRemarks(null);
-				participant.setIsEwelcomeIdInformed(0);
-				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
-				participantRepository.save(participant);
-				LOGGER.debug(
-						"Scheduler to generate EwelcomeID's : eWelcomeID generated successfully to the participant : {} ",
-						participant.getPrintName());*/
-		/*	} catch (HttpClientErrorException e) {
-				System.out.println(e.getResponseBodyAsString());
-				LOGGER.debug("Scheduler to generate EwelcomeID's : HttpClientErrorException :  {} ",StackTraceUtils.convertStackTracetoString(e));
-				ObjectMapper mapper = new ObjectMapper();
-				try {
-					EWelcomeIDErrorResponse eWelcomeIDErrorResponse = mapper.readValue(e.getResponseBodyAsString(),
-							EWelcomeIDErrorResponse.class);
-					if ((null != eWelcomeIDErrorResponse.getEmail() && !eWelcomeIDErrorResponse.getEmail().isEmpty())) {
-						participant.setEwelcomeIdRemarks(eWelcomeIDErrorResponse.getEmail().get(0));
-					} else if ((null != eWelcomeIDErrorResponse.getValidation() && !eWelcomeIDErrorResponse
-							.getValidation().isEmpty())) {
-						participant.setEwelcomeIdRemarks(eWelcomeIDErrorResponse.getEmail().get(0));
-					} else if ((null != eWelcomeIDErrorResponse.getError() && !eWelcomeIDErrorResponse.getError()
-							.isEmpty())) {
-						participant.setEwelcomeIdRemarks(eWelcomeIDErrorResponse.getError());
-					} else {
-						participant.setEwelcomeIdRemarks(e.getResponseBodyAsString());
-					}
-					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
-					participant.setIsEwelcomeIdInformed(0);
-					participantRepository.save(participant);
-				} catch (JsonParseException | JsonMappingException e1) {
-					LOGGER.debug(
-							"Scheduler to generate EwelcomeID's : Error while parsing the EWelcomeID response from MYSRCM for the participant : "
-									+ "SeqID : {} , Name : {} , Email : {} ", participant.getSeqId(),
-							participant.getPrintName(), participant.getEmail());
-					LOGGER.debug(
-							"Scheduler to generate EwelcomeID's : JsonParseException | JsonMappingException :  {} ",
-							StackTraceUtils.convertStackTracetoString(e));
-					participant.setEwelcomeIdRemarks(e1.getMessage());
-					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
-					participant.setIsEwelcomeIdInformed(0);
-					participantRepository.save(participant);
-				} catch (IOException e1) {
-					LOGGER.debug(
-							"Scheduler to generate EwelcomeID's : Error while parsing the EWelcomeID response from MYSRCM for the participant :"
-									+ " SeqID : {} , Name : {} , Email : {} ", participant.getSeqId(),
-							participant.getPrintName(), participant.getEmail());
-					LOGGER.debug("Scheduler to generate EwelcomeID's : IOException :  {} ",
-							StackTraceUtils.convertStackTracetoString(e));
-					participant.setEwelcomeIdRemarks(e1.getMessage());
-					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
-					participant.setIsEwelcomeIdInformed(0);
-					participantRepository.save(participant);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-					LOGGER.debug(
-							"Scheduler to generate EwelcomeID's : Error while parsing the EWelcomeID response from MYSRCM for the participant :"
-									+ " SeqID : {} , Name : {} , Email : {} ", participant.getSeqId(),
-							participant.getPrintName(), participant.getEmail());
-					LOGGER.debug("Scheduler to generate EwelcomeID's : Exception :  {} ",
-							StackTraceUtils.convertStackTracetoString(e));
-					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
-					participant.setEwelcomeIdRemarks(e1.getMessage());
-					participant.setIsEwelcomeIdInformed(0);
-					participantRepository.save(participant);
-				}
-			} catch (JsonParseException | JsonMappingException e) {
-				LOGGER.debug(
-						"Scheduler to generate EwelcomeID's : Error while generating EWelcomeID for the participant :"
-								+ " SeqID : {} , Name : {} , Email : {} ", participant.getSeqId(),
-						participant.getPrintName(), participant.getEmail());
-				LOGGER.debug("Scheduler to generate EwelcomeID's : JsonParseException | JsonMappingException :  {} ",
-						StackTraceUtils.convertStackTracetoString(e));
-				participant.setEwelcomeIdRemarks(e.getMessage());
-				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
-				System.out.println(participant.toString());
-				participant.setIsEwelcomeIdInformed(0);
-				participantRepository.save(participant);
-			} catch (IOException e) {
-				LOGGER.debug(
-						"Scheduler to generate EwelcomeID's : Error while generating EWelcomeID for the participant :"
-								+ " SeqID : {} , Name : {} , Email : {} ", participant.getSeqId(),
-						participant.getPrintName(), participant.getEmail());
-				LOGGER.debug("Scheduler to generate EwelcomeID's : IOException :  {} ",
-						StackTraceUtils.convertStackTracetoString(e));
-				participant.setEwelcomeIdRemarks(e.getMessage());
-				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
-				participant.setIsEwelcomeIdInformed(0);
-				participantRepository.save(participant);*/
 			} catch (Exception e) {
 				LOGGER.debug(
 						"Scheduler to generate EwelcomeID's : Error while generating EWelcomeID for the participant :"

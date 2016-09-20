@@ -100,7 +100,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 	public void checkEventMandatoryFields(Sheet sheet, List<String> eventErrorList) {
 
 		LOGGER.debug("Started validating Event Details fields for altered 1.0 template.");
-		String eventDateStr = sheet.getRow(11).getCell(2, Row.CREATE_NULL_AS_BLANK).toString();
+		String eventDateStr = sheet.getRow(11).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim();
 		try {
 			DateUtils.parseDate(eventDateStr);
 		} catch (ParseException e) {
@@ -108,7 +108,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 			eventErrorList.add("Not able to parse program start date:[" + eventDateStr + "]");
 		}
 
-		String coordinatorEmail = sheet.getRow(5).getCell(2, Row.CREATE_NULL_AS_BLANK).toString();
+		String coordinatorEmail = sheet.getRow(5).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim();
 		if(null != coordinatorEmail && !coordinatorEmail.isEmpty()){
 			
 			if(coordinatorEmail.contains(";")){
@@ -141,16 +141,16 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 	private List<String> parseParticipantData(Row currentRow, int rowNumber) {
 
 		List<String> errorList = new ArrayList<String>();
-		if (!currentRow.getCell(1, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()) {
+		if (!currentRow.getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()) {
 			
-			String ptncptEmail = currentRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString();
+			String ptncptEmail = currentRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if(null != ptncptEmail && !ptncptEmail.isEmpty()){
 				if(!ptncptEmail.matches(ExpressionConstants.EMAIL_REGEX)){
 					errorList.add(V1ParticipantCols.EMAIL_ADDRESS.getHeader() + "is invalid at row number "+rowNumber);
 				}
 			}
 
-			String introducedDateStr = currentRow.getCell(8, Row.CREATE_NULL_AS_BLANK).toString();
+			String introducedDateStr = currentRow.getCell(8, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			try {
 				DateUtils.parseDate(introducedDateStr);
 			} catch (ParseException e) {
