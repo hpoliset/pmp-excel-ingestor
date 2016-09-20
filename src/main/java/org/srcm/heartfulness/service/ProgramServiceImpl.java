@@ -804,6 +804,7 @@ public class ProgramServiceImpl implements ProgramService {
 											participant.setWelcomeCardDate(new Date());
 											participant.setIsEwelcomeIdInformed(0);
 											participant.setIntroduced(1);
+											participant.setEwelcomeIdRemarks(null);
 											participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
 											participantRepository.save(participant);
 											return "success";
