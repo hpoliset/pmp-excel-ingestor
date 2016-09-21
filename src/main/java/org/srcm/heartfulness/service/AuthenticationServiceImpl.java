@@ -46,7 +46,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Autowired
 	APIAccessLogService apiAccessLogService;
-
+	
 	/**
 	 * Method to validate the user with MySRCM.
 	 * 
@@ -78,4 +78,5 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		authenticationResponse.setIsSahajmargAllowed(currentUser.getIsSahajmargAllowed());
 		return authenticationResponse;
 	}
+	
 }

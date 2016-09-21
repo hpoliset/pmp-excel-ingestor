@@ -22,10 +22,10 @@ public class ErrorResponse {
 		super();
 	}
 
-	public ErrorResponse(String error_description, String error) {
+	public ErrorResponse(String error,String error_description) {
 		super();
-		this.error_description = error_description;
 		this.error = error;
+		this.error_description = error_description;
 	}
 
 	public String getError_description() {

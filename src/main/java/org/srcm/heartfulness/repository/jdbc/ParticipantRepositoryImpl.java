@@ -69,14 +69,14 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	 */
 	@Override
 	public Participant findById(int id) throws DataAccessException {
-		try{
+		try {
 			Participant participant;
 			Map<String, Object> params = new HashMap<>();
 			params.put("id", id);
-			participant = this.namedParameterJdbcTemplate.queryForObject("SELECT * FROM participant WHERE id=:id", params,
-					BeanPropertyRowMapper.newInstance(Participant.class));
+			participant = this.namedParameterJdbcTemplate.queryForObject("SELECT * FROM participant WHERE id=:id",
+					params, BeanPropertyRowMapper.newInstance(Participant.class));
 			return participant;
-		}catch(EmptyResultDataAccessException ex){
+		} catch (EmptyResultDataAccessException ex) {
 			return new Participant();
 		}
 	}
@@ -128,10 +128,8 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 			if (participantId > 0) {
 				participant.setId(participantId);
-				String seqId = this.jdbcTemplate.query(
-						"SELECT seqId from participant where id=?",
-						new Object[]{participantId},
-						new ResultSetExtractor<String>() {
+				String seqId = this.jdbcTemplate.query("SELECT seqId from participant where id=?",
+						new Object[] { participantId }, new ResultSetExtractor<String>() {
 							@Override
 							public String extractData(ResultSet resultSet) throws SQLException, DataAccessException {
 								if (resultSet.next()) {
@@ -139,14 +137,13 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 								}
 								return "";
 							}
-						}
-						);
-				if(null != seqId && !seqId.isEmpty()){
-					participant.setSeqId(seqId);	
-				}else{
+						});
+				if (null != seqId && !seqId.isEmpty()) {
+					participant.setSeqId(seqId);
+				} else {
 					participant.setSeqId(SmsUtil.generateFourDigitPIN());
 				}
-			}else{
+			} else {
 				participant.setSeqId(SmsUtil.generateFourDigitPIN());
 			}
 		}
@@ -156,7 +153,6 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 			Number newId = this.insertParticipant.executeAndReturnKey(parameterSource);
 			participant.setId(newId.intValue());
 		} else {
-			// TODO: Need to deal with Hashcode.
 			this.namedParameterJdbcTemplate.update("UPDATE participant SET " + "print_name=:printName, "
 					+ "first_name=:firstName, " + "last_name=:lastName, " + "middle_name=:middleName, "
 					+ "email=:email, " + "mobile_phone=:mobilePhone," + "gender=:gender,"
@@ -170,8 +166,8 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 					+ "first_sitting=:firstSitting," + "second_sitting=:secondSitting,"
 					+ "third_sitting=:thirdSitting," + "first_sitting_date=:firstSittingDate, "
 					+ "second_sitting_date=:secondSittingDate, " + "third_sitting_date=:thirdSittingDate, "
-					+ "is_ewelcome_id_informed=:isEwelcomeIdInformed, "
-					+ "batch=:batch, "+ "introduced=:introduced, "+"seqId=:seqId " + "WHERE id=:id", parameterSource);
+					+ "is_ewelcome_id_informed=:isEwelcomeIdInformed, " + "batch=:batch, " + "introduced=:introduced, "
+					+ "seqId=:seqId, " + "ewelcome_id_state=:ewelcomeIdState, " + "ewelcome_id_remarks=:ewelcomeIdRemarks " + "WHERE id=:id", parameterSource);
 		}
 	}
 
@@ -183,7 +179,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	 */
 	@Override
 	public Participant getParticipantByIntroIdAndMobileNo(String introId, String seqNumber) {
-		try{
+		try {
 			Map<String, Object> params = new HashMap<>();
 			params.put("auto_generated_intro_id", introId);
 			params.put("seqId", seqNumber);
@@ -192,13 +188,13 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 			Participant participant = null;
 
 			Program program = null;
-			List<Participant> participants = this.namedParameterJdbcTemplate
-					.query("SELECT * FROM participant p INNER JOIN program pr on p.program_id=pr.program_id "
+			List<Participant> participants = this.namedParameterJdbcTemplate.query(
+					"SELECT * FROM participant p INNER JOIN program pr on p.program_id=pr.program_id "
 							+ " WHERE pr.auto_generated_intro_id =:auto_generated_intro_id and p.seqId =:seqId",
-							sqlParameterSource, BeanPropertyRowMapper.newInstance(Participant.class));
+					sqlParameterSource, BeanPropertyRowMapper.newInstance(Participant.class));
 			if (participants.size() > 0) {
 				participant = participants.get(0);
-			}else{
+			} else {
 				participant = new Participant();
 			}
 			if (participant != null && participant.getProgramId() > 0) {
@@ -208,7 +204,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 			}
 			participant.setProgram(program);
 			return participant;
-		}catch(EmptyResultDataAccessException ex){
+		} catch (EmptyResultDataAccessException ex) {
 			return new Participant();
 		}
 	}
@@ -222,18 +218,19 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	 */
 	@Override
 	public Program findOnlyProgramById(int id) {
-		try{
+		try {
 			Program program;
 			Map<String, Object> params = new HashMap<>();
 			params.put("program_id", id);
-			program = this.namedParameterJdbcTemplate.queryForObject("SELECT * FROM program WHERE program_id=:program_id",
-					params, BeanPropertyRowMapper.newInstance(Program.class));
+			program = this.namedParameterJdbcTemplate.queryForObject(
+					"SELECT * FROM program WHERE program_id=:program_id", params,
+					BeanPropertyRowMapper.newInstance(Program.class));
 			return program;
-		}catch(EmptyResultDataAccessException ex){
+		} catch (EmptyResultDataAccessException ex) {
 			return new Program();
 		}
 	}
-	
+
 	/**
 	 * Retrieve <code>List<Participant></code> from the data store by values
 	 * given in the SearchRequest.
@@ -270,6 +267,45 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 		return participants;
 
+	}
+
+	@Override
+	public List<Participant> getParticipantListToGenerateEWelcomeID() {
+
+		List<Participant> participants = this.namedParameterJdbcTemplate.query(
+				"SELECT * FROM participant WHERE create_time <= CURRENT_TIMESTAMP" 
+						+ " AND ewelcome_id_state = 'T' AND ("
+						+ "welcome_card_number IS NULL" + " OR welcome_card_number = '')",
+				BeanPropertyRowMapper.newInstance(Participant.class));
+		return participants;
+
+	}
+
+	@Override
+	public List<Participant> getEWelcomeIdGenerationFailedPartcicipants(String programId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("programId", programId);
+		List<Participant> participants = this.namedParameterJdbcTemplate.query(
+				"SELECT * from participant WHERE create_time <= CURRENT_TIMESTAMP AND program_id=:programId AND "
+				+ "ewelcome_id_state = 'F' AND ( welcome_card_number IS NULL OR welcome_card_number = '') AND  is_ewelcome_id_informed=0"
+						,params,
+						BeanPropertyRowMapper.newInstance(Participant.class));
+		
+		return participants;
+		
+	}
+
+	@Override
+	public List<Participant> getEWelcomeIdGeneratedPartcicipants(String programId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("programId", programId);
+		List<Participant> participants = this.namedParameterJdbcTemplate.query(
+				"SELECT * from participant WHERE create_time <= CURRENT_TIMESTAMP AND program_id=:programId AND "
+				+ "ewelcome_id_state = 'C' AND ( welcome_card_number IS NOT NULL OR welcome_card_number <> '') AND  is_ewelcome_id_informed=0"
+						,params,
+						BeanPropertyRowMapper.newInstance(Participant.class));
+		
+		return participants;
 	}
 
 }

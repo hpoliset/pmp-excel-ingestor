@@ -3,6 +3,8 @@
  */
 package org.srcm.heartfulness.model;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  * This class holds the api access time and other user information for log
  * purpose.
@@ -10,6 +12,7 @@ package org.srcm.heartfulness.model;
  * @author himasreev
  *
  */
+@JsonPropertyOrder({ "serialNo", "id", "username", "ipAddress", "apiName", "totalRequestedTime", "totalResponseTime","timeDifference","status","errorMessage","requestBody","responseBody", "viewAccessLogDetailsData" })
 public class PMPAPIAccessLog {
 
 	private int id;
@@ -31,6 +34,14 @@ public class PMPAPIAccessLog {
 	private String requestBody;
 	
 	private String responseBody;
+	
+	private String timeDifference;
+	
+	private String serialNo;
+	
+	private String viewAccessLogDetailsData;
+	
+	private String viewReqRespBody;
 
 	public PMPAPIAccessLog() {
 		super();
@@ -61,6 +72,18 @@ public class PMPAPIAccessLog {
 		this.status = status;
 		this.errorMessage = errorMessage;
 		this.requestBody = requestBody;
+	}
+	
+	public PMPAPIAccessLog(int id, String username, String ipAddress, String apiName, String totalRequestedTime,
+			String totalResponseTime, String status ) {
+		super();
+		this.id = id;
+		this.username = username;
+		this.ipAddress = ipAddress;
+		this.apiName = apiName;
+		this.totalRequestedTime = totalRequestedTime;
+		this.totalResponseTime = totalResponseTime;
+		this.status = status;
 	}
 
 	public int getId() {
@@ -143,12 +166,47 @@ public class PMPAPIAccessLog {
 		this.responseBody = responseBody;
 	}
 
+	
+	public String getTimeDifference() {
+		return timeDifference;
+	}
+
+	public void setTimeDifference(String timeDifference) {
+		this.timeDifference = timeDifference;
+	}
+
+	
+	public String getSerialNo() {
+		return serialNo;
+	}
+
+	public void setSerialNo(String serialNo) {
+		this.serialNo = serialNo;
+	}
+
+	public String getViewAccessLogDetailsData() {
+		return viewAccessLogDetailsData;
+	}
+
+	public void setViewAccessLogDetailsData(String viewAccessLogDetailsData) {
+		this.viewAccessLogDetailsData = viewAccessLogDetailsData;
+	}
+
+	public String getViewReqRespBody() {
+		return viewReqRespBody;
+	}
+
+	public void setViewReqRespBody(String viewReqRespBody) {
+		this.viewReqRespBody = viewReqRespBody;
+	}
+
 	@Override
 	public String toString() {
 		return "PMPAPIAccessLog [id=" + id + ", username=" + username + ", ipAddress=" + ipAddress + ", apiName="
 				+ apiName + ", totalRequestedTime=" + totalRequestedTime + ", totalResponseTime=" + totalResponseTime
 				+ ", status=" + status + ", errorMessage=" + errorMessage + ", requestBody=" + requestBody
-				+ ", responseBody=" + responseBody + "]";
+				+ ", responseBody=" + responseBody + ", timeDifference=" + timeDifference + ", serialNo=" + serialNo
+				+ ", viewAccessLogDetailsData=" + viewAccessLogDetailsData + ", viewReqRespBody=" + viewReqRespBody
+				+ "]";
 	}
-
 }

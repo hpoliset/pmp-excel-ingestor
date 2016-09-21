@@ -12,6 +12,8 @@ public class EWelcomeIDErrorResponse {
 	private List<String> validation;
 	
 	private String error;
+	
+	private List<String> mobile;
 
 	public List<String> getEmail() {
 		return email;
@@ -36,10 +38,19 @@ public class EWelcomeIDErrorResponse {
 	public void setError(String error) {
 		this.error = error;
 	}
+	
+	public List<String> getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(List<String> mobile) {
+		this.mobile = mobile;
+	}
 
 	@Override
 	public String toString() {
-		return "EWelcomeIDErrorResponse [email=" + email + ", validation=" + validation + ", error=" + error + "]";
+		return "EWelcomeIDErrorResponse [email=" + email + ", validation=" + validation + ", error=" + error
+				+ ", mobile=" + mobile + "]";
 	}
 
 }

@@ -48,4 +48,5 @@ public interface UserProfileService {
 	 * @param user
 	 */
 	void save(User user);
+	
 }

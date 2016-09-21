@@ -3,9 +3,17 @@
  */
 package org.srcm.heartfulness.repository.jdbc;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -24,6 +32,8 @@ public class APIAccessLogrepositoryImpl implements APIAccesslogRepository {
 	private SimpleJdbcInsert insertPmpAPIAccessLog;
 	private SimpleJdbcInsert insertPmpAPIAccessLogDetails;
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+	
+	private final JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	public APIAccessLogrepositoryImpl(DataSource dataSource) {
@@ -32,6 +42,7 @@ public class APIAccessLogrepositoryImpl implements APIAccesslogRepository {
 				.usingGeneratedKeyColumns("id");
 		this.insertPmpAPIAccessLogDetails = new SimpleJdbcInsert(dataSource).withTableName("pmp_api_access_log_details")
 				.usingGeneratedKeyColumns("id");
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
 
 	}
 
@@ -87,5 +98,98 @@ public class APIAccessLogrepositoryImpl implements APIAccesslogRepository {
 		}
 		return accessLogDetails.getId();
 	}
+	
+	@Override
+	public List<PMPAPIAccessLog> fetchPmpApiAccessLogData() {
+		List<PMPAPIAccessLog> accessLogData = this.jdbcTemplate.query("SELECT id,username,"
+				+ "ip_address,api_name,total_requested_time,total_response_time,"
+				+ "status FROM pmp_api_access_log",
+				new Object[] {}, new ResultSetExtractor<List<PMPAPIAccessLog>>() {
+					@Override
+					public List<PMPAPIAccessLog> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+						List<PMPAPIAccessLog> logData = new ArrayList<PMPAPIAccessLog>();
+						while (resultSet.next()) {
+							PMPAPIAccessLog log = new PMPAPIAccessLog(resultSet.getInt(1),resultSet.getString(2),resultSet.getString(3),
+									resultSet.getString(4),resultSet.getString(5),resultSet.getString(6),resultSet.getString(7));
+							logData.add(log);
+						}
+						return logData;
+					}
+				});
+		return accessLogData;
+	}
+	
+	
+	@Override
+	public List<PMPAPIAccessLog> fetchPmpApiAccessErrorLogData(String accessLogId) {
+		List<PMPAPIAccessLog> accessLogData = this.jdbcTemplate.query("SELECT error_message,request_body,response_body FROM pmp_api_access_log "
+				+ "WHERE id = ?",
+				new Object[] {accessLogId}, new ResultSetExtractor<List<PMPAPIAccessLog>>() {
+					@Override
+					public List<PMPAPIAccessLog> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+						List<PMPAPIAccessLog> logData = new ArrayList<PMPAPIAccessLog>();
+						while (resultSet.next()) {
+							PMPAPIAccessLog log = new PMPAPIAccessLog();
+							log.setErrorMessage(resultSet.getString(1));
+							log.setRequestBody(resultSet.getString(2));
+							log.setResponseBody(resultSet.getString(3));
+							logData.add(log);
+						}
+						return logData;
+					}
+				});
+		return accessLogData;
+	}
+	
+	
+	@Override
+	public List<PMPAPIAccessLogDetails> fetchPmpApiLogDetailsData(String accessLogId){
+		List<PMPAPIAccessLogDetails> logDetails = null;
+		logDetails	= this.jdbcTemplate.query("SELECT id,endpoint,requested_time,"
+				+ "response_time,status FROM pmp_api_access_log_details"
+				+ " WHERE pmp_access_log_id = ?",
+				new Object[] {accessLogId}, 
+				new ResultSetExtractor<List<PMPAPIAccessLogDetails>>() {
+					@Override
+					public List<PMPAPIAccessLogDetails> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+						List<PMPAPIAccessLogDetails> logDetailsData = new ArrayList<PMPAPIAccessLogDetails>();
+						while (resultSet.next()) {
+							PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails();
+							accessLogDetails.setId(resultSet.getInt(1));
+							accessLogDetails.setEndpoint(resultSet.getString(2));
+							accessLogDetails.setRequestedTime(resultSet.getString(3));
+							accessLogDetails.setResponseTime(resultSet.getString(4));
+							accessLogDetails.setStatus(resultSet.getString(5));
+							logDetailsData.add(accessLogDetails);
+						}
+						return logDetailsData;
+					}
+				});
+		return logDetails;
+	}
+
+	@Override
+	public List<PMPAPIAccessLogDetails> fetchPmpApiErrorLogDetailsData(String logDetailsId) {
+		List<PMPAPIAccessLogDetails> logDetails = null;
+		logDetails	= this.jdbcTemplate.query("SELECT error_message,request_body,response_body FROM pmp_api_access_log_details"
+				+ " WHERE id = ?",
+				new Object[] {logDetailsId}, 
+				new ResultSetExtractor<List<PMPAPIAccessLogDetails>>() {
+					@Override
+					public List<PMPAPIAccessLogDetails> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+						List<PMPAPIAccessLogDetails> logDetailsData = new ArrayList<PMPAPIAccessLogDetails>();
+						while (resultSet.next()) {
+							PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails();
+							accessLogDetails.setErrorMessage(resultSet.getString(1));
+							accessLogDetails.setRequestBody(resultSet.getString(2));
+							accessLogDetails.setResponseBody(resultSet.getString(3));
+							logDetailsData.add(accessLogDetails);
+						}
+						return logDetailsData;
+					}
+				});
+		return logDetails;
+	}
+
 
 }

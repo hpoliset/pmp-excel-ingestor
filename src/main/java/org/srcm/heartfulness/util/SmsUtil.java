@@ -5,7 +5,6 @@ import java.security.SecureRandom;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.srcm.heartfulness.service.SMSIntegrationServiceImpl;
 
 /**
  * 

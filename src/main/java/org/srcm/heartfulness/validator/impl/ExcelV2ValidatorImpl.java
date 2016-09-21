@@ -4,7 +4,6 @@
 package org.srcm.heartfulness.validator.impl;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +12,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.srcm.heartfulness.constants.EventConstants;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
+import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.enumeration.V2ParticipantCols;
 import org.srcm.heartfulness.enumeration.V2ProgramCols2;
 import org.srcm.heartfulness.util.DateUtils;
@@ -100,15 +99,15 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 	public void checkProgramMandatoryFields(Sheet eventSheet, List<String> errorList){
 		LOGGER.debug("INFO : Started validating Program Details sheet structure for v2.1 template.");
 
-		if(eventSheet.getRow(2).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()){
+		if(eventSheet.getRow(2).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
 			errorList.add(V2ProgramCols2.EVENT_TYPE.getHeader() + " is a mandatory field and cannot be empty at rownumber 3");
 		}
 
-		if(eventSheet.getRow(3).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()){
+		if(eventSheet.getRow(3).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
 			errorList.add(V2ProgramCols2.EVENT_PLACE.getHeader() + " is a mandatory field and cannot be empty at rownumber 4");
 		}
 
-		String programStartDate = eventSheet.getRow(3).getCell(3, Row.CREATE_NULL_AS_BLANK).toString();
+		String programStartDate = eventSheet.getRow(3).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim();
 		if(programStartDate.isEmpty()){
 			errorList.add(V2ProgramCols2.EVENT_DATE.getHeader() + " is a mandatory field and cannot be empty at rownumber 4");
 		}else{
@@ -119,27 +118,27 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 			}
 		}
 
-		if(eventSheet.getRow(4).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()){
+		if(eventSheet.getRow(4).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
 			errorList.add(V2ProgramCols2.EVENT_COUNTRY.getHeader() + " is a mandatory field and cannot be empty at rownumber 5");
 		}
 
-		if(eventSheet.getRow(4).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()){
+		if(eventSheet.getRow(4).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
 			errorList.add(V2ProgramCols2.EVENT_STATE.getHeader() + " is a mandatory field and cannot be empty at rownumber 5");
 		}
 
-		if(eventSheet.getRow(5).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()){
+		if(eventSheet.getRow(5).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
 			errorList.add(V2ProgramCols2.EVENT_CITY.getHeader() + " is a mandatory field and cannot be empty at rownumber 6");
 		}
 
-		if(eventSheet.getRow(6).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()){
+		if(eventSheet.getRow(6).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
 			errorList.add(V2ProgramCols2.EVENT_COORDINATORNAME.getHeader() + " is a mandatory field and cannot be empty at rownumber 7");
 		}
 
-		if(eventSheet.getRow(7).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()){
+		if(eventSheet.getRow(7).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
 			errorList.add(V2ProgramCols2.EVENT_COORDINATOR_MOBILE.getHeader() + " is a mandatory field and cannot be empty at rownumber 8");
 		}
 
-		String coordinatorEmail = eventSheet.getRow(7).getCell(3, Row.CREATE_NULL_AS_BLANK).toString();
+		String coordinatorEmail = eventSheet.getRow(7).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim();
 		if(coordinatorEmail.isEmpty()){
 			errorList.add(V2ProgramCols2.EVENT_COORDINATOR_MAIL.getHeader() + " is a mandatory field and cannot be empty at rownumber 8");
 		}else{
@@ -149,7 +148,7 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 				String[] emails = coordinatorEmail.split(";");
 				if(emails != null && emails.length > 0){
 					for(String email:emails){
-						if(!email.matches(EventConstants.EMAIL_REGEX)){
+						if(!email.matches(ExpressionConstants.EMAIL_REGEX)){
 							errorList.add(V2ProgramCols2.EVENT_COORDINATOR_MAIL.getHeader() + " is invalid at row number 8");
 							break;
 						}
@@ -161,33 +160,33 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 
 		}
 
-		if(eventSheet.getRow(9).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()){
+		if(eventSheet.getRow(9).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
 			errorList.add(V2ProgramCols2.ORGANIZATION_NAME.getHeader() + " is a mandatory field and cannot be empty at rownumber 10");
 		}
 
-		if(eventSheet.getRow(9).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()){
+		if(eventSheet.getRow(9).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
 			errorList.add(V2ProgramCols2.ORGANIZATION_CONTACT_PERSON.getHeader() + " is a mandatory field and cannot be empty at rownumber 10");
 		}
 
-		String orgCntctEmail = eventSheet.getRow(10).getCell(3, Row.CREATE_NULL_AS_BLANK).toString();
+		String orgCntctEmail = eventSheet.getRow(10).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim();
 
 		if(orgCntctEmail.isEmpty()){
 			errorList.add(V2ProgramCols2.ORGANIZATION_CONTACT_MAILID.getHeader() + " is a mandatory field and cannot be empty at rownumber 11");
 		}else{
-			if(!orgCntctEmail.matches(EventConstants.EMAIL_REGEX)){
+			if(!orgCntctEmail.matches(ExpressionConstants.EMAIL_REGEX)){
 				errorList.add(V2ProgramCols2.ORGANIZATION_CONTACT_MAILID.getHeader() + " is invalid at row number 11");
 			}
 		}
 
-		if(eventSheet.getRow(11).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()){
+		if(eventSheet.getRow(11).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
 			errorList.add(V2ProgramCols2.ORGANIZATION_CONTACT_MOBILE.getHeader() + " is a mandatory field and cannot be empty at row number 12");
 		}
 
-		if(eventSheet.getRow(13).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()){
+		if(eventSheet.getRow(13).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
 			errorList.add(V2ProgramCols2.PRECEPTOR_NAME.getHeader() + " is a mandatory field and cannot be empty at row number 14");
 		}
 
-		if(eventSheet.getRow(14).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()){
+		if(eventSheet.getRow(14).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
 			errorList.add(V2ProgramCols2.PRECEPTOR_ID.getHeader() + " is a mandatory field and cannot be empty at row number 15");
 		}
 
@@ -200,7 +199,9 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 		int rowCount = participantSheet.getPhysicalNumberOfRows();
 		for (int i = 1; i < rowCount; i++) {
 			Row currentRow = participantSheet.getRow(i);
-			errorList.addAll(parseParticipantData(currentRow, i + 1));
+			if (!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()) {
+				errorList.addAll(parseParticipantData(currentRow, i + 1));
+			}
 		}
 		LOGGER.debug("Participation Details sheet mandatory fields validation completed for v2.1 template.");
 	}
@@ -209,10 +210,10 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 
 		List<String> errorList = new ArrayList<String>();
 
-		if (!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()) {
+		if (!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()) {
 
 			String firstSittingStr =  currentRow.getCell(1,
-					Row.CREATE_NULL_AS_BLANK).toString();
+					Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if(!firstSittingStr.isEmpty() && null != firstSittingStr){
 				if (!firstSittingStr.equals("Y")) {
 					if(!firstSittingStr.equals("N")){
@@ -227,7 +228,7 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 			}
 
 			String secondSittingStr =  currentRow.getCell(2,
-					Row.CREATE_NULL_AS_BLANK).toString();
+					Row.CREATE_NULL_AS_BLANK).toString().trim();
 
 			if(!secondSittingStr.isEmpty()  && null != secondSittingStr){
 				if (!secondSittingStr.equals("Y")) {
@@ -243,7 +244,7 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 			}
 
 			String thirdSittingStr =  currentRow.getCell(3,
-					Row.CREATE_NULL_AS_BLANK).toString();
+					Row.CREATE_NULL_AS_BLANK).toString().trim();
 
 			if(!thirdSittingStr.isEmpty() && null != thirdSittingStr){
 				if (!thirdSittingStr.equals("Y")) {
@@ -258,37 +259,37 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 				}
 			}
 
-			if (currentRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()) {
+			if (currentRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()) {
 				errorList.add(V2ParticipantCols.COUNTRY.getHeader()
 						+ " is a mandatory field and cannot be empty at row number " + rowNumber);
 			}
 
-			if (currentRow.getCell(5, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()) {
+			if (currentRow.getCell(5, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()) {
 				errorList.add(V2ParticipantCols.STATE.getHeader()
 						+ " is a mandatory field and cannot be empty at row number " + rowNumber);
 			}
 
-			if (currentRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString().isEmpty()) {
+			if (currentRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()) {
 				errorList.add(V2ParticipantCols.CITY.getHeader()
 						+ " is a mandatory field and cannot be empty at row number " + rowNumber);
 			}
 
-			String ptcpntEmail = currentRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString();
+			String ptcpntEmail = currentRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if(null != ptcpntEmail && !ptcpntEmail.isEmpty()){
-				if(!ptcpntEmail.matches(EventConstants.EMAIL_REGEX)){
+				if(!ptcpntEmail.matches(ExpressionConstants.EMAIL_REGEX)){
 					errorList.add(V2ParticipantCols.EMAIL.getHeader() 
 							+ " is invalid at row number "+rowNumber);
 				}
 			}
 
-			String welcomeCardNumber = currentRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString();
+			String welcomeCardNumber = currentRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if(!welcomeCardNumber.isEmpty()){
-				if(!welcomeCardNumber.matches(EventConstants.EWELCOME_ID_REGEX)){
+				if(!welcomeCardNumber.matches(ExpressionConstants.EWELCOME_ID_REGEX)){
 					errorList.add(V2ParticipantCols.WELCOME_CARD_NUMBER.getHeader() + "is invalid at row number "+rowNumber);
 				}
 			}
 
-			String wlcmCardIssueDate = currentRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString();
+			String wlcmCardIssueDate = currentRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if(null != wlcmCardIssueDate && !wlcmCardIssueDate.isEmpty()){
 				try {
 					DateUtils.parseDate(wlcmCardIssueDate);
