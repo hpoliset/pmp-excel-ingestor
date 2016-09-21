@@ -36,6 +36,9 @@ public class UserProfileManagementValidatorImpl implements UserProfileManagement
 		if(null == user.getFirstName() || user.getFirstName().isEmpty()){
 			errors.put("first_name", "FirstName is required");
 		}
+		if(null == user.getLastName() || user.getLastName().isEmpty()){
+			errors.put("last_name", "LastName is required");
+		}
 		if(null != user.getZipcode() && !user.getZipcode().isEmpty() && !user.getZipcode().matches(ExpressionConstants.ZIPCODE_REGEX) ){
 			errors.put("zipcode", "Invalid zipcode");
 		}

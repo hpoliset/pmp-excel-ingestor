@@ -231,18 +231,16 @@ public class UserController {
 						CreateUserErrorResponse.class);
 				if (null != createUserErrorResponse.getNon_field_errors()
 						&& !createUserErrorResponse.getNon_field_errors().isEmpty()) {
-					error = new Response(createUserErrorResponse.getNon_field_errors().get(0),
-							ErrorConstants.STATUS_FAILED);
+					error = new Response( ErrorConstants.STATUS_FAILED,createUserErrorResponse.getNon_field_errors().get(0).replace("\"", ""));
 				} else if (null != createUserErrorResponse.getEmail() && !createUserErrorResponse.getEmail().isEmpty()) {
-					error = new Response(createUserErrorResponse.getEmail().get(0), ErrorConstants.STATUS_FAILED);
+					error = new Response( ErrorConstants.STATUS_FAILED,createUserErrorResponse.getEmail().get(0));
 				} else if (null != createUserErrorResponse.getDetail()
 						&& !createUserErrorResponse.getDetail().isEmpty()) {
-					error = new Response(createUserErrorResponse.getDetail(), ErrorConstants.STATUS_FAILED);
+					error = new Response( ErrorConstants.STATUS_FAILED,createUserErrorResponse.getDetail());
 				} else {
-					error = new Response(e.getResponseBodyAsString(), ErrorConstants.STATUS_FAILED);
+					error = new Response( ErrorConstants.STATUS_FAILED,e.getResponseBodyAsString());
 				}
 				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
-				//e.printStackTrace();
 				System.out.println(StackTraceUtils.convertStackTracetoString(e));
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
