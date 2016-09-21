@@ -42,13 +42,13 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.sun.mail.smtp.SMTPMessage;
 
 /**
- * This is  a template class, communicates with sendy by calling sendy api
+ * This is  a template class, communicates with sendy by calling sendy api.
  * 
  * @author rramesh
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:prod.sendy.api.properties", ignoreUnknownFields = false, prefix = "sendy")
+@ConfigurationProperties(locations = "classpath:dev.sendy.api.properties", ignoreUnknownFields = false, prefix = "sendy")
 public class SendyRestTemplate extends RestTemplate {
 	
 	private String subscribeUri;

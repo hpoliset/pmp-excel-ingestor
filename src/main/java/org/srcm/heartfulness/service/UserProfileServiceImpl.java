@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EndpointConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
+import org.srcm.heartfulness.helper.MySRCMIntegrationHelper;
 import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.CreateUserRequest;
@@ -37,6 +38,9 @@ public class UserProfileServiceImpl implements UserProfileService {
 	@Autowired
 	APIAccessLogService apiAccessLogService;
 	
+	@Autowired
+	MySRCMIntegrationHelper mysrcmIntegrationHelper;
+
 	/**
 	 * method to save the user details
 	 * org.srcm.heartfulness.service.UserService#
@@ -76,4 +80,46 @@ public class UserProfileServiceImpl implements UserProfileService {
 		return result;
 	}
 	
+	/**
+	 * Method to create the user in srcm & pmp and to persist user details in
+	 * pmp
+	 */
+	@Override
+	public User createUser(CreateUserRequest user, int id, String requestURL) throws HttpClientErrorException, JsonParseException,
+			JsonMappingException, IOException {
+		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id,
+				EndpointConstants.CREATE_USER_PROFILE, DateUtils.getCurrentTimeInMilliSec(), null,
+				ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(user), null);
+		int accessdetailsID = apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
+		accessLogDetails.setId(accessdetailsID);
+		User newUser =  mysrcmIntegrationHelper.getClientCredentialsandCreateUser(user, requestURL);
+		if (null != user.getName() && ! user.getName().isEmpty())
+			newUser.setName(user.getName());
+		if (null != user.getGender()&& ! user.getGender().isEmpty())
+			newUser.setGender(user.getGender());
+		if (null != user.getAbyasiId()&& ! user.getAbyasiId().isEmpty())
+			newUser.setAbyasiId(user.getAbyasiId());
+		if (null != user.getCity()&& ! user.getCity().isEmpty())
+			newUser.setCity(user.getCity());
+		if (null != user.getCountry()&& ! user.getCountry().isEmpty())
+			newUser.setCountry(user.getCountry());
+		if (null != user.getState()&& ! user.getState().isEmpty())
+			newUser.setState(user.getState());
+		if (null != user.getMobile()&& ! user.getMobile().isEmpty())
+			newUser.setMobile(user.getMobile());
+		if(null != user.getAgeGroup()&& ! user.getAgeGroup().isEmpty())
+			newUser.setAgeGroup(user.getAgeGroup());
+		if(null != user.getLanguagePreference()&& ! user.getLanguagePreference().isEmpty())
+			newUser.setLanguagePreference(user.getLanguagePreference());
+		if(null != user.getZipcode()&& ! user.getZipcode().isEmpty())
+			newUser.setZipcode( user.getZipcode());
+		userRepository.save(newUser);
+		accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(newUser));
+		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+		return newUser;
+	}
+
+
 }
