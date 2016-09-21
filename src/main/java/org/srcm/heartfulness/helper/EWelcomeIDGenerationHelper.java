@@ -182,7 +182,6 @@ public class EWelcomeIDGenerationHelper {
 	 */
 	public void generateEWelcomeId(Participant participant) throws HttpClientErrorException, JsonParseException,
 			JsonMappingException, IOException {
-
 		GeoSearchResponse geoSearchResponse = srcmRestTemplate.geoSearch(participant.getCity() + ","
 				+ participant.getState() + "," + participant.getCountry());
 		CitiesAPIResponse citiesAPIResponse = srcmRestTemplate.getCityName(geoSearchResponse.getCityId());
@@ -193,15 +192,11 @@ public class EWelcomeIDGenerationHelper {
 		SimpleDateFormat sdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
 		aspirant.setDateOfBirth((null != participant.getDateOfBirth()) ? sdf.format(participant.getDateOfBirth())
 				: null);
-		aspirant.setDateOfJoining((null != participant.getProgram().getProgramStartDate()) ? sdf.format(participant
-				.getProgram().getProgramStartDate()) : null);
-		aspirant.setEmail((null != participant.getEmail() && !participant.getEmail().isEmpty()) ? participant
-				.getEmail() : null);
-		System.out.println(participant.getProgram().toString());
+		aspirant.setDateOfJoining((null != participant.getProgram().getProgramStartDate()) ? sdf.format(participant.getProgram().getProgramStartDate()) : null);
+		aspirant.setEmail((null != participant.getEmail() && !participant.getEmail().isEmpty()) ? participant.getEmail() : null);
 		aspirant.setFirstSittingBy((null != participant.getProgram().getPrefectId() && !participant.getProgram()
 				.getPrefectId().isEmpty()) ? participant.getProgram().getPrefectId() : null);
-		aspirant.setSrcmGroup(0 != geoSearchResponse.getNearestCenter() ? String.valueOf(geoSearchResponse
-				.getNearestCenter()) : null);
+		aspirant.setSrcmGroup(0 != geoSearchResponse.getNearestCenter() ? String.valueOf(geoSearchResponse.getNearestCenter()) : null);
 		aspirant.setMobile((null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty()) ? participant
 				.getMobilePhone() : null);
 		aspirant.setName((null != participant.getPrintName() && !participant.getPrintName().isEmpty()) ? participant

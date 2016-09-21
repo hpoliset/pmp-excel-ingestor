@@ -1,0 +1,19 @@
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<div>
+Dear ${NAME},
+<br/>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thank you for showing interest in Heartfulness Meditation, we hope you will enjoy the experience of relaxation and meditation.This mail is to confirm that we have received your details and we would like to stay in touch with you and respond to your interest in meditation.</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You can confirm your email ID through the below link : </p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="${CONFIRMATION_LINK}" >Confirm your emailID</a></p>
+<br/>
+<div style="font-style: italic; font-weight: bold;">
+With regards,
+<br/>
+Heartfulness Webmaster
+</div>
+</body>
+</html>

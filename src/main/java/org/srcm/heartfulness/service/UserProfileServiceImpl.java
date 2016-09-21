@@ -10,6 +10,7 @@ import org.srcm.heartfulness.constants.EndpointConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 import org.srcm.heartfulness.model.User;
+import org.srcm.heartfulness.model.json.request.CreateUserRequest;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.repository.UserRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
@@ -35,7 +36,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
 	@Autowired
 	APIAccessLogService apiAccessLogService;
-
+	
 	/**
 	 * method to save the user details
 	 * org.srcm.heartfulness.service.UserService#
@@ -74,5 +75,5 @@ public class UserProfileServiceImpl implements UserProfileService {
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 		return result;
 	}
-
+	
 }

@@ -29,6 +29,7 @@ import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
+import org.srcm.heartfulness.model.json.response.Response;
 import org.srcm.heartfulness.model.json.response.UpdateIntroductionResponse;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.service.APIAccessLogService;
@@ -129,7 +130,7 @@ public class ParticipantsController {
 			return new ResponseEntity<List<ParticipantRequest>>(participantList, HttpStatus.OK);
 
 		} catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid authorization token");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -138,7 +139,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.UNAUTHORIZED);
 		} catch (HttpClientErrorException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid client credentials");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -147,7 +148,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.REQUEST_TIMEOUT);
 		} catch (JsonParseException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from mysrcm");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -157,7 +158,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (JsonMappingException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from mysrcm");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -167,7 +168,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from mysrcm");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -177,7 +178,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid request");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -249,7 +250,7 @@ public class ParticipantsController {
 				}
 			}
 		} catch (HttpClientErrorException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -267,7 +268,7 @@ public class ParticipantsController {
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
 		} catch (JsonParseException | JsonMappingException e) {
 			e.printStackTrace();
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"parse-error : error while parsing json data");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -278,7 +279,7 @@ public class ParticipantsController {
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
 			e.printStackTrace();
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"input/output-error ; Please try after sometime");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -293,7 +294,7 @@ public class ParticipantsController {
 			 * PrintWriter(stack)); LOGGER.error("Exception" +
 			 * stack.toString());
 			 */
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Please try after sometime.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -336,7 +337,7 @@ public class ParticipantsController {
 				return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
 			} else {
 				accessLog.setUsername(userProfile.getEmail());
-				Map<String, String> map = eventDashboardValidator.checkParticicipantMandatoryFields(participant);
+				Map<String, String> map = eventDashboardValidator.checkParticipantMandatoryFields(participant);
 				if (!map.isEmpty()) {
 					accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 					accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(map));
@@ -355,7 +356,7 @@ public class ParticipantsController {
 				}
 			}
 		} catch (HttpClientErrorException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -372,7 +373,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
 		} catch (JsonParseException | JsonMappingException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"parse-error : error while parsing json data");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -382,7 +383,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"input/output-error ; Please try after sometime");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -393,7 +394,7 @@ public class ParticipantsController {
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Please try after sometime.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -437,7 +438,7 @@ public class ParticipantsController {
 			}
 			accessLog.setUsername(userProfile.getEmail());
 
-			Map<String, String> errors = eventDashboardValidator.checkUpdateParticicipantMandatoryFields(participant);
+			Map<String, String> errors = eventDashboardValidator.checkUpdateParticipantMandatoryFields(participant);
 			if (!errors.isEmpty()) {
 				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(errors));
@@ -454,7 +455,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ParticipantRequest>(newparticipant, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -471,7 +472,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
 		} catch (JsonParseException | JsonMappingException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"parse-error : error while parsing json data");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -481,7 +482,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"input/output-error ; Please try after sometime");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -492,7 +493,7 @@ public class ParticipantsController {
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Please try after sometime.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -558,7 +559,7 @@ public class ParticipantsController {
 				}
 			}
 		} catch (HttpClientErrorException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"client-error : Invalid auth token");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -576,7 +577,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
 		} catch (JsonParseException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"parse-error : error while parsing json data");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -586,7 +587,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (JsonMappingException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"json mapping-error : json data is not mapped properly");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -596,7 +597,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"input/output-error ; Please try after sometime");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -607,7 +608,7 @@ public class ParticipantsController {
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Please try after sometime.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -680,17 +681,17 @@ public class ParticipantsController {
 			}
 
 		} catch (HttpClientErrorException e) {
-			LOGGER.error("HttpClientErrorException    :" + e.getMessage());
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
+			LOGGER.error("HttpClientErrorException    :" + StackTraceUtils.convertStackTracetoString(e));
+			Response eResponse = new Response(ErrorConstants.STATUS_FAILED,
 					"client-error : Invalid auth token");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.REQUEST_TIMEOUT);
+			return new ResponseEntity<Response>(eResponse, HttpStatus.REQUEST_TIMEOUT);
 		} catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
-			LOGGER.error("Exception in Encryption/decryption :" + e.getMessage());
+			LOGGER.error("Exception in Encryption/decryption :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
@@ -699,7 +700,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
 		} catch (JsonParseException e) {
-			LOGGER.error("JsonParseException    :" + e.getMessage());
+			LOGGER.error("JsonParseException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"parse-error : error while parsing json data");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -709,7 +710,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (JsonMappingException e) {
-			LOGGER.error("JsonMappingException    :" + e.getMessage());
+			LOGGER.error("JsonMappingException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"json mapping-error : json data is not mapped properly");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -719,7 +720,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
-			LOGGER.error("IOException    :" + e.getMessage());
+			LOGGER.error("IOException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"input/output-error ; Please try after sometime");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -730,7 +731,7 @@ public class ParticipantsController {
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Please try after sometime.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -742,7 +743,7 @@ public class ParticipantsController {
 	}
 
 	/**
-	 * webservice end point to search the participants based on the given search
+	 * Web Service end point to search the participants based on the given search
 	 * field and search text and based on program start date
 	 * 
 	 * @param token
@@ -778,7 +779,7 @@ public class ParticipantsController {
 				return new ResponseEntity<List<ParticipantRequest>>(participantList, HttpStatus.OK);
 			}
 		} catch (HttpClientErrorException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"client-error : Invalid auth token");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -796,7 +797,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
 		} catch (JsonParseException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"parse-error : error while parsing json data");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -806,7 +807,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (JsonMappingException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"json mapping-error : json data is not mapped properly");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -816,7 +817,7 @@ public class ParticipantsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (IOException e) {
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"input/output-error ; Please try after sometime");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -827,7 +828,7 @@ public class ParticipantsController {
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
-			LOGGER.error("Exception    :" + e.getMessage());
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Please try after sometime.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));

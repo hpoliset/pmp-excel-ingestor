@@ -78,5 +78,11 @@ public interface ParticipantRepository {
 	 * @return <code>List<Participant></code>
 	 */
 	List<Participant> getParticipantList(SearchRequest searchRequest);
+	
+	List<Participant> getParticipantListToGenerateEWelcomeID();
+
+	List<Participant> getEWelcomeIdGenerationFailedPartcicipants(String programId);
+
+	List<Participant> getEWelcomeIdGeneratedPartcicipants(String programId);
 
 }

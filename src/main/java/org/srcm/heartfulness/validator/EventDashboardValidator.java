@@ -34,7 +34,7 @@ public interface EventDashboardValidator {
 	 * @param participant
 	 * @return
 	 */
-	public Map<String, String> checkParticicipantMandatoryFields(ParticipantRequest participant);
+	public Map<String, String> checkParticipantMandatoryFields(ParticipantRequest participant);
 
 	/**
 	 * Method to validate the values given in
@@ -93,7 +93,9 @@ public interface EventDashboardValidator {
 	public Map<String, String> checkDeleteRequestMandatoryFields(ParticipantIntroductionRequest participantRequest);
 
 	public List<String> checkParticipantIntroductionMandatoryFields(Participant participantInput);
+	
+	public boolean validateParticipantCompletedPreliminarySittings(Participant participantInput);
 
-	public Map<String, String> checkUpdateParticicipantMandatoryFields(ParticipantRequest participant);
+	public Map<String, String> checkUpdateParticipantMandatoryFields(ParticipantRequest participant);
 
 }

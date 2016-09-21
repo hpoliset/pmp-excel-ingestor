@@ -498,9 +498,9 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	public Map<CoordinatorEmail, List<Participant>> getGeneratedEwelcomeIdDetails() {
 
 		return this.jdbcTemplate.query(
-				"SELECT p.program_channel,p.coordinator_name,p.coordinator_email,p.program_id,pr.print_name,pr.email,pr.welcome_card_number,pr.id,pr.mobile_phone,pr.introduction_date FROM program p,participant pr"
+				"SELECT p.program_channel,p.coordinator_name,p.coordinator_email,p.program_id,pr.print_name,pr.email,pr.welcome_card_number,pr.id,pr.mobile_phone,pr.introduction_date,pr.ewelcome_id_state,pr.ewelcome_id_remarks FROM program p,participant pr"
 						+	" WHERE p.program_id = pr.program_id"
-						+	" AND pr.is_ewelcome_id_informed = 0",
+						+	" AND pr.is_ewelcome_id_informed = 0 AND ( pr.ewelcome_id_state='F' OR pr.ewelcome_id_state='C')",
 						new Object[] {}, new ResultSetExtractor<Map<CoordinatorEmail, List<Participant>>>() {
 							@Override
 							public Map<CoordinatorEmail, List<Participant>> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
@@ -518,6 +518,8 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 									participant.setId(Integer.parseInt(resultSet.getString(8)));
 									participant.setMobilePhone(resultSet.getString(9));
 									participant.setIntroductionDate(resultSet.getDate(10));
+									participant.setEwelcomeIdState(resultSet.getString(11));
+									participant.setEwelcomeIdRemarks(resultSet.getString(12));
 									if(eWelcomeIdDetails.containsKey(coordinatorEmail)){
 										eWelcomeIdDetails.get(coordinatorEmail).add(participant);
 									}else{
@@ -537,4 +539,5 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		return this.jdbcTemplate.update("UPDATE participant SET is_ewelcome_id_informed = 1 "
 				+  " WHERE id=? ", new Object[] {Id});
 	}
+
 }

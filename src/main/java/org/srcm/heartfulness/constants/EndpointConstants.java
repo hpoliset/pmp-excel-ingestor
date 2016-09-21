@@ -1,5 +1,11 @@
 package org.srcm.heartfulness.constants;
 
+/**
+ * Constant class to hold the endpoints of MySRCM and PMP. 
+ * 
+ * @author himasreev
+ *
+ */
 public class EndpointConstants {
 	
 	public static final String  GET_USER_PROFILE = "http://profile.srcm.net/api/me?format=json";
@@ -14,5 +20,10 @@ public class EndpointConstants {
 	
 	public static final String  CITIES_API = "http://profile.srcm.net/api/v2/cities/";
 	
+	public static final String  MOBILE_AUTHENTICATION_ENDPOINT = "/pmp/api/mobile/authenticate";
+	
+	public static final String  MOBILE_CREATE_USER_ENDPOINT = "/pmp/api/v1/mobile/users";
 
+	public static final String CREATE_USER_PROFILE = "http://profile.srcm.net/api/users/?format=json";
+	
 }
