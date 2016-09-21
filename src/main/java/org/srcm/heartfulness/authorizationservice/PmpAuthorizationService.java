@@ -63,16 +63,29 @@ public interface PmpAuthorizationService {
 	 * 
 	 * @return Index page
 	 */
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR','ROLE_SEEKER')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_PRECEPTOR','ROLE_SEEKER')")
 	String showIndexForm();
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_PRECEPTOR')")
 	String showEventsForm();
 
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_PRECEPTOR')")
 	String showProgramForm(String encryptedProgramId, Model model);
 
 	/* @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')") */
 	ResponseEntity<?> getEventList();
+	
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN')")
+	String showPmpApiLogForm();
+	
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN')")
+	String showPmpApiErrorLogForm();
+	
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN')")
+	String showPmpApiPopupForm();
+	
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN')")
+	String showPmpApiErrorPopupForm();
+
 
 }

@@ -22,7 +22,6 @@ import org.srcm.heartfulness.constants.RestTemplateConstants;
 import org.srcm.heartfulness.model.Aspirant;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
-import org.srcm.heartfulness.model.json.request.CreateUserRequest;
 import org.srcm.heartfulness.model.json.response.AbhyasiResult;
 import org.srcm.heartfulness.model.json.response.CitiesAPIResponse;
 import org.srcm.heartfulness.model.json.response.GeoSearchResponse;
@@ -42,7 +41,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:prod.srcm.api.properties", ignoreUnknownFields = true, prefix = "srcm.oauth2")
+@ConfigurationProperties(locations = "classpath:dev.srcm.api.properties", ignoreUnknownFields = true, prefix = "srcm.oauth2")
 public class SrcmRestTemplate extends RestTemplate {
 
 	private String clientId;
@@ -330,7 +329,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	 */
 	private void setProxy() {
 
-		/*CredentialsProvider credsProvider = new BasicCredentialsProvider();
+	/*	CredentialsProvider credsProvider = new BasicCredentialsProvider();
 		credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 				new UsernamePasswordCredentials(proxyUser, proxyPassword));
 		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
@@ -341,8 +340,8 @@ public class SrcmRestTemplate extends RestTemplate {
 		CloseableHttpClient client = clientBuilder.build();
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
 		factory.setHttpClient(client);
-		this.setRequestFactory(factory);*/
-
+		this.setRequestFactory(factory);
+*/
 	}
 
 	/**

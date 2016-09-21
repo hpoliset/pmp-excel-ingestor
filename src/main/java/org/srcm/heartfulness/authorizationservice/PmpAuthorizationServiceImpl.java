@@ -162,4 +162,26 @@ public class PmpAuthorizationServiceImpl implements PmpAuthorizationService {
 		return new ResponseEntity<List<Program>>(programList, HttpStatus.OK);
 	}
 
+	@Override
+	public String showPmpApiLogForm() {
+		return "logform";
+
+	}
+
+	@Override
+	public String showPmpApiErrorLogForm() {
+		return "errorlogform";
+	}
+
+	@Override
+	public String showPmpApiPopupForm() {
+		return "logdetailsform";
+	}
+
+	@Override
+	public String showPmpApiErrorPopupForm() {
+		return "errorlogdetailsform";
+	}
+
+
 }

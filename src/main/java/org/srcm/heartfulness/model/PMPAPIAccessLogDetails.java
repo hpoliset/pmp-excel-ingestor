@@ -1,7 +1,6 @@
-/**
- * 
- */
 package org.srcm.heartfulness.model;
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * This class holds the MYSRCM api access time for log purpose.
@@ -9,6 +8,8 @@ package org.srcm.heartfulness.model;
  * @author himasreev
  *
  */
+@JsonPropertyOrder({ "srNo", "id", "pmpAccessLogId", "endpoint", "requestedTime", "responseTime", "timeDifference",
+		"status", "errorMessage", "requestBody", "responseBody", "viewReqRespData" })
 public class PMPAPIAccessLogDetails {
 
 	private int id;
@@ -29,12 +30,18 @@ public class PMPAPIAccessLogDetails {
 
 	private String responseBody;
 
+	private String timeDifference;
+
+	private String srNo;
+
+	private String viewReqRespData;
+
 	public PMPAPIAccessLogDetails() {
 		super();
 	}
-	
-	public PMPAPIAccessLogDetails(int pmpAccessLogId, String endpoint, String requestedTime,
-			String responseTime, String status, String errorMessage, String requestBody, String responseBody) {
+
+	public PMPAPIAccessLogDetails(int pmpAccessLogId, String endpoint, String requestedTime, String responseTime,
+			String status, String errorMessage, String requestBody, String responseBody) {
 		super();
 		this.pmpAccessLogId = pmpAccessLogId;
 		this.endpoint = endpoint;
@@ -130,11 +137,36 @@ public class PMPAPIAccessLogDetails {
 		this.responseBody = responseBody;
 	}
 
+	public String getTimeDifference() {
+		return timeDifference;
+	}
+
+	public void setTimeDifference(String timeDifference) {
+		this.timeDifference = timeDifference;
+	}
+
+	public String getSrNo() {
+		return srNo;
+	}
+
+	public void setSrNo(String srNo) {
+		this.srNo = srNo;
+	}
+
+	public String getViewReqRespData() {
+		return viewReqRespData;
+	}
+
+	public void setViewReqRespData(String viewReqRespData) {
+		this.viewReqRespData = viewReqRespData;
+	}
+
 	@Override
 	public String toString() {
 		return "PMPAPIAccessLogDetails [id=" + id + ", pmpAccessLogId=" + pmpAccessLogId + ", endpoint=" + endpoint
 				+ ", requestedTime=" + requestedTime + ", responseTime=" + responseTime + ", status=" + status
 				+ ", errorMessage=" + errorMessage + ", requestBody=" + requestBody + ", responseBody=" + responseBody
+				+ ", timeDifference=" + timeDifference + ", srNo=" + srNo + ", viewReqRespData=" + viewReqRespData
 				+ "]";
 	}
 
