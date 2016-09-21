@@ -1,7 +1,7 @@
 $( document ).ready(function() {
 	$('#errorlogdetailstable').DataTable( {
 		"ajax": {
-			"url"    	   : "https://pmpbeta.heartfulness.org/pmp/api/log/loaderrorlogdetailsdata?id="+$("#error_log_details_id").val(),
+			"url"    	   : "https://pmp.heartfulness.org/pmp/api/log/loaderrorlogdetailsdata?id="+$("#error_log_details_id").val(),
 			"type" 		   : "GET",
 			"contentType" : "application/json"
 		},
