@@ -19,6 +19,6 @@ public interface UserProfileManagementValidator {
 	 * @param user
 	 * @return
 	 */
-	public Map<String, String> checkCreateUserManadatoryFields(CreateUserRequest user);
+	public String checkCreateUserManadatoryFields(CreateUserRequest user);
 
 }

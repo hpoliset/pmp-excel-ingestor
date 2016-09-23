@@ -206,14 +206,14 @@ public class UserController {
 				StackTraceUtils.convertPojoToJson(user));
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		try {
-			Map<String, String> errors = uservalidator.checkCreateUserManadatoryFields(user);
-			if (!errors.isEmpty()) {
+			String description = uservalidator.checkCreateUserManadatoryFields(user);
+			if (null != description ) {
+				Response errors=new Response( ErrorConstants.STATUS_FAILED,description);
 				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(errors));
 				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-				errors.put("Status", ErrorConstants.STATUS_FAILED);
-				return new ResponseEntity<Map<String,String>>(errors, HttpStatus.PRECONDITION_FAILED);
+				return new ResponseEntity<Response>(errors, HttpStatus.PRECONDITION_FAILED);
 			}
 			user.setUserType("se");
 			User newUser = userProfileService.createUser(user, id, httpRequest.getRequestURI());
@@ -286,6 +286,7 @@ public class UserController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<Response>(error, HttpStatus.REQUEST_TIMEOUT);
 		} catch (Exception e) {
+			e.printStackTrace();
 			LOGGER.debug("Error while creating user profile - {} ", e.getMessage());
 			Response error = new Response(ErrorConstants.STATUS_FAILED, "Internal Server Error.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);

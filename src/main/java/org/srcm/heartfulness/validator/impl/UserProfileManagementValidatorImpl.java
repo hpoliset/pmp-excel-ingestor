@@ -23,25 +23,36 @@ public class UserProfileManagementValidatorImpl implements UserProfileManagement
 	 * @param user
 	 * @return
 	 */
-	public Map<String, String> checkCreateUserManadatoryFields(CreateUserRequest user){
+	public String checkCreateUserManadatoryFields(CreateUserRequest user){
+		StringBuilder description=new StringBuilder();
 		Map<String, String> errors = new HashMap<>();
 		if(null == user.getEmail() || user.getEmail().isEmpty()){
+			description.append(!(description.length()>0) ? "emailID is required" : ", "+"emailID is required" );
 			errors.put("email", "emailID is required");
 		}else if(!user.getEmail().matches(ExpressionConstants.EMAIL_REGEX)){
+			description.append(!(description.length()>0) ? "Invalid emailID" : ", "+"Invalid emailID");
 			errors.put("email", "Invalid emailID.");
 		}
 		if(null == user.getPassword() || user.getPassword().isEmpty()){
+			description.append(!(description.length()>0) ? "password is required" : ", "+"password is required");
 			errors.put("password", "password is required");
 		}
 		if(null == user.getFirstName() || user.getFirstName().isEmpty()){
+			description.append(!(description.length()>0) ? "FirstName is required" : ", "+"FirstName is required");
 			errors.put("first_name", "FirstName is required");
 		}
 		if(null == user.getLastName() || user.getLastName().isEmpty()){
+			description.append(!(description.length()>0) ? "LastName is required" : ", "+"LastName is required");
 			errors.put("last_name", "LastName is required");
 		}
 		if(null != user.getZipcode() && !user.getZipcode().isEmpty() && !user.getZipcode().matches(ExpressionConstants.ZIPCODE_REGEX) ){
+			description.append(!(description.length()>0) ? "Invalid zipcode" : ", "+"Invalid zipcode");
 			errors.put("zipcode", "Invalid zipcode");
 		}
-		return errors;
+		if(description.length()>0){
+			return description.toString();
+		}else{
+			return null;
+		}
 	}
 }
