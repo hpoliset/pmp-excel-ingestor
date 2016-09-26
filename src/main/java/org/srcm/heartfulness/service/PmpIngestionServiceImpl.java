@@ -117,30 +117,30 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 						validatePreceptorID(program);
 						response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
 					} catch (InvalidExcelFileException ex) {
-						errorResponse.add(ex.getMessage());
+						errorResponse.add("File you are trying to upload is invalid.Please contact Administrator");
 						response.setErrorMsg(errorResponse);
 						response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 					} catch (Exception ex) {
-						errorResponse.add(ex.getMessage());
+						errorResponse.add("Failed to upload excel file.Please contact Administrator");
 						response.setErrorMsg(errorResponse);
 						response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 					}
 
 				}
 			} else {
-				errorResponse.add("Invalid file contents.");
+				errorResponse.add("Invalid file contents.Please contact Administrator");
 				response.setErrorMsg(errorResponse);
 				response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 			}
 		} catch (IOException | InvalidExcelFileException | POIXMLException ex) {
 			// To show the error message to the end user.
 			LOGGER.error(ex.getMessage());
-			errorResponse.add(ex.getMessage());
+			errorResponse.add("Error while uploading excel file.Please contact Administrator");
 			response.setErrorMsg(errorResponse);
 			response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 		} catch (Exception ex) {
 			LOGGER.error(ex.getMessage());
-			errorResponse.add("Error while uploading excel file.Please contact Administrator");
+			errorResponse.add("Exception while uploading excel file.Please contact Administrator");
 			response.setErrorMsg(errorResponse);
 			response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 		}
