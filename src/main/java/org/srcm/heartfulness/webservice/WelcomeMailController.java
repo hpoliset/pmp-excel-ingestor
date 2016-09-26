@@ -78,8 +78,8 @@ public class WelcomeMailController {
 		LOGGER.debug("END		:Cron job completed to fetch participants to whom welcome mail already sent");
 	}
 
-	@RequestMapping(value = "informcoordinatorswithewelcomeids", method = RequestMethod.POST)
-	/*@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}") */
+	//@RequestMapping(value = "informcoordinatorswithewelcomeids", method = RequestMethod.POST)
+	@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}")
 	public void sendGeneratedEwelcomeIdToCoordinators() {
 		try {
 			LOGGER.debug("Sending mail to co-ordinator for e-welcome id generation called.");
