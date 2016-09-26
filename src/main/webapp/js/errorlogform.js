@@ -3,7 +3,8 @@ $( document ).ready(function() {
 		"ajax": {
 			"url"    	   : "https://pmp.heartfulness.org/pmp/api/log/loaderrorlogdata?id="+$("#error_log_id").val(),
 			"type" 		   : "GET",
-			"contentType"  : "application/json"
+			"contentType"  : "application/json",
+			"async"		   : "false"
 		},
 		"columns": [
 		            { "data": "serialNo" },
