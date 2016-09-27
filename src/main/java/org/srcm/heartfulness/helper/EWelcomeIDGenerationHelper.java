@@ -64,45 +64,49 @@ public class EWelcomeIDGenerationHelper {
 	public Object generateEWelcomeId(Participant participant, int id, GeoSearchResponse geoSearchResponse,
 			CitiesAPIResponse citiesAPIResponse) {
 		PMPAPIAccessLogDetails aspirantAPIAccessLogDetails = null;
+		Aspirant aspirant = new Aspirant();
+		aspirant.setCity(citiesAPIResponse.getName());
+		aspirant.setState(String.valueOf(geoSearchResponse.getStateId()));
+		aspirant.setCountry(String.valueOf(geoSearchResponse.getCountryId()));
+		SimpleDateFormat sdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
+		aspirant.setDateOfBirth((null != participant.getDateOfBirth()) ? sdf.format(participant.getDateOfBirth())
+				: null);
+		aspirant.setDateOfJoining((null != participant.getProgram().getProgramStartDate()) ? sdf.format(participant
+				.getProgram().getProgramStartDate()) : null);
+		aspirant.setEmail((null != participant.getEmail() && !participant.getEmail().isEmpty()) ? participant
+				.getEmail() : null);
+		System.out.println(participant.getProgram().toString());
+		aspirant.setFirstSittingBy((null != participant.getProgram().getPrefectId() && !participant.getProgram()
+				.getPrefectId().isEmpty()) ? participant.getProgram().getPrefectId() : null);
+		aspirant.setSrcmGroup(0 != geoSearchResponse.getNearestCenter() ? String.valueOf(geoSearchResponse
+				.getNearestCenter()) : null);
+		aspirant.setMobile((null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty()) ? participant
+				.getMobilePhone() : null);
+		aspirant.setName((null != participant.getPrintName() && !participant.getPrintName().isEmpty()) ? participant
+				.getPrintName() : null);
+		aspirant.setFirstName((null != participant.getFirstName() && !participant.getFirstName().isEmpty()) ? participant
+				.getFirstName() : participant.getPrintName());
+		aspirant.setStreet((null != participant.getAddressLine1() && !participant.getAddressLine1().isEmpty()) ? participant
+				.getAddressLine1() : null);
+		aspirant.setStreet2((null != participant.getAddressLine2() && !participant.getAddressLine2().isEmpty()) ? participant
+				.getAddressLine2() : null);
 		try {
-			Aspirant aspirant = new Aspirant();
-			aspirant.setCity(citiesAPIResponse.getName());
-			aspirant.setState(String.valueOf(geoSearchResponse.getStateId()));
-			aspirant.setCountry(String.valueOf(geoSearchResponse.getCountryId()));
-			SimpleDateFormat sdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
-			aspirant.setDateOfBirth((null != participant.getDateOfBirth()) ? sdf.format(participant.getDateOfBirth())
-					: null);
-			aspirant.setDateOfJoining((null != participant.getProgram().getProgramStartDate()) ? sdf.format(participant
-					.getProgram().getProgramStartDate()) : null);
-			aspirant.setEmail((null != participant.getEmail() && !participant.getEmail().isEmpty()) ? participant
-					.getEmail() : null);
-			System.out.println(participant.getProgram().toString());
-			aspirant.setFirstSittingBy((null != participant.getProgram().getPrefectId() && !participant.getProgram()
-					.getPrefectId().isEmpty()) ? participant.getProgram().getPrefectId() : null);
-			aspirant.setSrcmGroup(0 != geoSearchResponse.getNearestCenter() ? String.valueOf(geoSearchResponse
-					.getNearestCenter()) : null);
-			aspirant.setMobile((null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty()) ? participant
-					.getMobilePhone() : null);
-			aspirant.setName((null != participant.getPrintName() && !participant.getPrintName().isEmpty()) ? participant
-					.getPrintName() : null);
-			aspirant.setFirstName((null != participant.getFirstName() && !participant.getFirstName().isEmpty()) ? participant
-					.getFirstName() : participant.getPrintName());
-			aspirant.setStreet((null != participant.getAddressLine1() && !participant.getAddressLine1().isEmpty()) ? participant
-					.getAddressLine1() : null);
-			aspirant.setStreet2((null != participant.getAddressLine2() && !participant.getAddressLine2().isEmpty()) ? participant
-					.getAddressLine2() : null);
-
 			aspirantAPIAccessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.CREATE_ASPIRANT_URI,
 					DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
 					StackTraceUtils.convertPojoToJson(aspirant), null);
 			apiAccessLogService.createPmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
-			UserProfile userProfile;
+		} catch (Exception ex) {
+			LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+					StackTraceUtils.convertPojoToJson(ex));
+		}
+		UserProfile userProfile;
+		try {
 			userProfile = srcmRestTemplate.createAspirant(aspirant);
-			try{
-			aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			aspirantAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(userProfile));
-			aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
-			apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
+			try {
+				aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				aspirantAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(userProfile));
+				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 			} catch (Exception ex) {
 				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
@@ -115,51 +119,26 @@ public class EWelcomeIDGenerationHelper {
 			EWelcomeIDErrorResponse eWelcomeIDErrorResponse;
 			try {
 				eWelcomeIDErrorResponse = mapper.readValue(e.getResponseBodyAsString(), EWelcomeIDErrorResponse.class);
-				try{
-				aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-				aspirantAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(eWelcomeIDErrorResponse));
-				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
+				try {
+					aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+					aspirantAPIAccessLogDetails.setResponseBody(StackTraceUtils
+							.convertPojoToJson(eWelcomeIDErrorResponse));
+					aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+					aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+					apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 				} catch (Exception ex) {
 					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 							StackTraceUtils.convertPojoToJson(ex));
 				}
 				return eWelcomeIDErrorResponse;
-			} catch (JsonParseException | JsonMappingException e1) {
-				try{
-				LOGGER.debug("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
-				aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
-				} catch (Exception ex) {
-					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
-							StackTraceUtils.convertPojoToJson(ex));
-				}
-				return null;
-			} catch (IOException e1) {
-				try{
-				LOGGER.debug("Update introduction status : CreateAspirant : IOException : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
-				aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
-				} catch (Exception ex) {
-					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
-							StackTraceUtils.convertPojoToJson(ex));
-				}
-				return null;
 			} catch (Exception e1) {
-				try{
-				LOGGER.debug("Update introduction status : CreateAspirant : Exception : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
-				aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
+				try {
+					LOGGER.debug("Update introduction status : CreateAspirant : Exception : {} ",
+							StackTraceUtils.convertStackTracetoString(e));
+					aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+					aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+					aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+					apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 				} catch (Exception ex) {
 					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 							StackTraceUtils.convertPojoToJson(ex));
@@ -167,39 +146,39 @@ public class EWelcomeIDGenerationHelper {
 				return null;
 			}
 		} catch (JsonParseException | JsonMappingException e) {
-			try{
-			LOGGER.debug("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",
-					StackTraceUtils.convertStackTracetoString(e));
-			aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-			aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
+			try {
+				LOGGER.debug("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 			} catch (Exception ex) {
 				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
 			return null;
 		} catch (IOException e) {
-			try{
-			LOGGER.debug("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",
-					StackTraceUtils.convertStackTracetoString(e));
-			aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-			aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
+			try {
+				LOGGER.debug("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 			} catch (Exception ex) {
 				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
 			return null;
 		} catch (Exception e) {
-			try{
-			LOGGER.debug("Update introduction status : CreateAspirant : Exception : {} ",
-					StackTraceUtils.convertStackTracetoString(e));
-			aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-			aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
+			try {
+				LOGGER.debug("Update introduction status : CreateAspirant : Exception : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 			} catch (Exception ex) {
 				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
@@ -232,11 +211,14 @@ public class EWelcomeIDGenerationHelper {
 		SimpleDateFormat sdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
 		aspirant.setDateOfBirth((null != participant.getDateOfBirth()) ? sdf.format(participant.getDateOfBirth())
 				: null);
-		aspirant.setDateOfJoining((null != participant.getProgram().getProgramStartDate()) ? sdf.format(participant.getProgram().getProgramStartDate()) : null);
-		aspirant.setEmail((null != participant.getEmail() && !participant.getEmail().isEmpty()) ? participant.getEmail() : null);
+		aspirant.setDateOfJoining((null != participant.getProgram().getProgramStartDate()) ? sdf.format(participant
+				.getProgram().getProgramStartDate()) : null);
+		aspirant.setEmail((null != participant.getEmail() && !participant.getEmail().isEmpty()) ? participant
+				.getEmail() : null);
 		aspirant.setFirstSittingBy((null != participant.getProgram().getPrefectId() && !participant.getProgram()
 				.getPrefectId().isEmpty()) ? participant.getProgram().getPrefectId() : null);
-		aspirant.setSrcmGroup(0 != geoSearchResponse.getNearestCenter() ? String.valueOf(geoSearchResponse.getNearestCenter()) : null);
+		aspirant.setSrcmGroup(0 != geoSearchResponse.getNearestCenter() ? String.valueOf(geoSearchResponse
+				.getNearestCenter()) : null);
 		aspirant.setMobile((null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty()) ? participant
 				.getMobilePhone() : null);
 		aspirant.setName((null != participant.getPrintName() && !participant.getPrintName().isEmpty()) ? participant
@@ -281,16 +263,23 @@ public class EWelcomeIDGenerationHelper {
 		try {
 			accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.GEOSEARCH_URI,
 					DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-					StackTraceUtils.convertPojoToJson("Request:"+ participant.getCity() + "," + participant.getState() + ","
-							+ participant.getCountry()+ ", Participant Id:"+participant.getId()+ ", Participant SeqId:"+participant.getSeqId()+ ", Participant emailID:"+participant.getEmail()), null);
+					StackTraceUtils.convertPojoToJson("Request:" + participant.getCity() + "," + participant.getState()
+							+ "," + participant.getCountry() + ", Participant Id:" + participant.getId()
+							+ ", Participant SeqId:" + participant.getSeqId() + ", Participant emailID:"
+							+ participant.getEmail()), null);
 			apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
+		} catch (Exception ex) {
+			LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+					StackTraceUtils.convertPojoToJson(ex));
+		}
+		try {
 			geoSearchResponse = srcmRestTemplate.geoSearch(participant.getCity() + "," + participant.getState() + ","
 					+ participant.getCountry());
-			try{
-			accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
-			accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(geoSearchResponse));
-			apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+			try {
+				accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+				accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(geoSearchResponse));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 			} catch (Exception ex) {
 				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
@@ -303,51 +292,25 @@ public class EWelcomeIDGenerationHelper {
 			EWelcomeIDErrorResponse eWelcomeIDErrorResponse;
 			try {
 				eWelcomeIDErrorResponse = mapper.readValue(e.getResponseBodyAsString(), EWelcomeIDErrorResponse.class);
-				try{
-				accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-				accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(eWelcomeIDErrorResponse));
-				accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-				apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+				try {
+					accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+					accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(eWelcomeIDErrorResponse));
+					accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+					accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+					apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 				} catch (Exception ex) {
 					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 							StackTraceUtils.convertPojoToJson(ex));
 				}
 				return eWelcomeIDErrorResponse;
-			} catch (JsonParseException | JsonMappingException e1) {
-				try{
-				LOGGER.debug("Update introduction status : GeoSearchResponse : JsonParse/JsonMapping Exception : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
-				accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-				accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-				apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-				} catch (Exception ex) {
-					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
-							StackTraceUtils.convertPojoToJson(ex));
-				}
-				return null;
-			} catch (IOException e1) {
-				try{
-				LOGGER.debug("Update introduction status : GeoSearchResponse : IOException : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
-				accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-				accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-				apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-				} catch (Exception ex) {
-					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
-							StackTraceUtils.convertPojoToJson(ex));
-				}
-				return null;
 			} catch (Exception e1) {
-				try{
-				LOGGER.debug("Update introduction status : GeoSearchResponse : Exception : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
-				accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-				accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-				apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+				try {
+					LOGGER.debug("Update introduction status : GeoSearchResponse : Exception : {} ",
+							StackTraceUtils.convertStackTracetoString(e));
+					accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+					accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+					accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+					apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 				} catch (Exception ex) {
 					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 							StackTraceUtils.convertPojoToJson(ex));
@@ -355,39 +318,39 @@ public class EWelcomeIDGenerationHelper {
 				return null;
 			}
 		} catch (JsonParseException | JsonMappingException e) {
-			try{
-			LOGGER.debug("Update introduction status : GeoSearchResponse : JsonParse/JsonMapping Exception : {} ",
-					StackTraceUtils.convertStackTracetoString(e));
-			accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+			try {
+				LOGGER.debug("Update introduction status : GeoSearchResponse : JsonParse/JsonMapping Exception : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 			} catch (Exception ex) {
 				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
 			return null;
 		} catch (IOException e) {
-			try{
-			LOGGER.debug("Update introduction status : GeoSearchResponse : Exception : {} ",
-					StackTraceUtils.convertStackTracetoString(e));
-			accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+			try {
+				LOGGER.debug("Update introduction status : GeoSearchResponse : Exception : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 			} catch (Exception ex) {
 				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
 			return null;
 		} catch (Exception e) {
-			try{
-			LOGGER.debug("Update introduction status : GeoSearchResponse : Exception : {} ",
-					StackTraceUtils.convertStackTracetoString(e));
-			accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+			try {
+				LOGGER.debug("Update introduction status : GeoSearchResponse : Exception : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 			} catch (Exception ex) {
 				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
@@ -401,14 +364,21 @@ public class EWelcomeIDGenerationHelper {
 		try {
 			citiesAPIAccessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.CITIES_API,
 					DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-					StackTraceUtils.convertPojoToJson("Request:"+geoSearchResponse.getCityId()+ ", Participant Id:"+participant.getId()+ ", Participant SeqId:"+participant.getSeqId()+ ", Participant emailID:"+participant.getEmail()));
+					StackTraceUtils.convertPojoToJson("Request:" + geoSearchResponse.getCityId() + ", Participant Id:"
+							+ participant.getId() + ", Participant SeqId:" + participant.getSeqId()
+							+ ", Participant emailID:" + participant.getEmail()));
 			apiAccessLogService.createPmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
+		} catch (Exception e) {
+			LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+					StackTraceUtils.convertPojoToJson(e));
+		}
+		try {
 			CitiesAPIResponse citiesAPIResponse = srcmRestTemplate.getCityName(geoSearchResponse.getCityId());
-			try{
-			citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			citiesAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(citiesAPIResponse));
-			citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
-			apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
+			try {
+				citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				citiesAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(citiesAPIResponse));
+				citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+				apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 			} catch (Exception e) {
 				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(e));
@@ -421,51 +391,26 @@ public class EWelcomeIDGenerationHelper {
 			EWelcomeIDErrorResponse eWelcomeIDErrorResponse;
 			try {
 				eWelcomeIDErrorResponse = mapper.readValue(e.getResponseBodyAsString(), EWelcomeIDErrorResponse.class);
-				try{
-				citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-				citiesAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(eWelcomeIDErrorResponse));
-				citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-				apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
+				try {
+					citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+					citiesAPIAccessLogDetails.setResponseBody(StackTraceUtils
+							.convertPojoToJson(eWelcomeIDErrorResponse));
+					citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+					citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+					apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 				} catch (Exception ex) {
 					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 							StackTraceUtils.convertPojoToJson(ex));
 				}
 				return eWelcomeIDErrorResponse;
-			} catch (JsonParseException | JsonMappingException e1) {
-				try{
-				LOGGER.debug("Update introduction status : CitiesAPIResponse : JsonParse/JsonMapping Exception : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
-				citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-				citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-				apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
-				} catch (Exception ex) {
-					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
-							StackTraceUtils.convertPojoToJson(ex));
-				}
-				return null;
-			} catch (IOException e1) {
-				try{
-				LOGGER.debug("Update introduction status : CitiesAPIResponse : IOException : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
-				citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-				citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-				apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
-				} catch (Exception ex) {
-					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
-							StackTraceUtils.convertPojoToJson(ex));
-				}
-				return null;
 			} catch (Exception e1) {
-				try{
-				LOGGER.debug("Update introduction status : CitiesAPIResponse : Exception : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
-				citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-				citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-				apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
+				try {
+					LOGGER.debug("Update introduction status : CitiesAPIResponse : Exception : {} ",
+							StackTraceUtils.convertStackTracetoString(e));
+					citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+					citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+					citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+					apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 				} catch (Exception ex) {
 					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 							StackTraceUtils.convertPojoToJson(ex));
@@ -473,39 +418,39 @@ public class EWelcomeIDGenerationHelper {
 				return null;
 			}
 		} catch (JsonParseException | JsonMappingException e) {
-			try{
-			LOGGER.debug("Update introduction status : CitiesAPIResponse : JsonParse/JsonMapping Exception : {} ",
-					StackTraceUtils.convertStackTracetoString(e));
-			citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-			citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
+			try {
+				LOGGER.debug("Update introduction status : CitiesAPIResponse : JsonParse/JsonMapping Exception : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 			} catch (Exception ex) {
 				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
 			return null;
 		} catch (IOException e) {
-			try{
-			LOGGER.debug("Update introduction status : CitiesAPIResponse : IOException : {} ",
-					StackTraceUtils.convertStackTracetoString(e));
-			citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-			citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
+			try {
+				LOGGER.debug("Update introduction status : CitiesAPIResponse : IOException : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 			} catch (Exception ex) {
 				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
 			return null;
 		} catch (Exception e) {
-			try{
-			LOGGER.debug("Update introduction status : CitiesAPIResponse : Exception : {} ",
-					StackTraceUtils.convertStackTracetoString(e));
-			citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-			citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
+			try {
+				LOGGER.debug("Update introduction status : CitiesAPIResponse : Exception : {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+				apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 			} catch (Exception ex) {
 				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));

@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
@@ -18,7 +16,6 @@ import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.service.APIAccessLogService;
-import org.srcm.heartfulness.service.PmpIngestionServiceImpl;
 import org.srcm.heartfulness.service.PmpParticipantService;
 import org.srcm.heartfulness.service.ProgramService;
 import org.srcm.heartfulness.util.DateUtils;
@@ -62,12 +59,17 @@ public class EWelcomeIDGenerationScheduler {
 		LOGGER.debug("CRON : EWELCOMEID GENERATION : Total no. of partcipants to generate eWelcomeID : {} ",
 				participants.size());
 		PMPAPIAccessLog accessLog = null;
+		int id = 0;
 		for (Participant participant : participants) {
 			try {
 				accessLog = new PMPAPIAccessLog(null, null, "cron-to-generate-ewelcomeID",
 						DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
 						StackTraceUtils.convertPojoToJson(participant), null);
-				int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+				id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+			} catch (Exception e) {
+
+			}
+			try {
 				Program program = programService.getProgramById(participant.getProgramId());
 				participant.setProgram(program);
 				String eWelcomeID = programService.generateeWelcomeID(participant, id);
@@ -134,8 +136,11 @@ public class EWelcomeIDGenerationScheduler {
 								StackTraceUtils.convertPojoToJson(e));
 					}
 				}
+
 			} catch (Exception e) {
-				try {
+				LOGGER.debug("Scheduler to generate EwelcomeID's : Exception :  {} ",
+						StackTraceUtils.convertStackTracetoString(e));
+				/*try {
 					LOGGER.debug(
 							"CRON : EWELCOMEID GENERATION : Error while generating EWelcomeID for the participant :"
 									+ " SeqID : {} , Name : {} , Email : {} ", participant.getSeqId(),
@@ -150,7 +155,7 @@ public class EWelcomeIDGenerationScheduler {
 				} catch (Exception ex) {
 					LOGGER.debug("Exception while persisting participant details : {} ",
 							StackTraceUtils.convertPojoToJson(ex));
-				}
+				}*/
 				try {
 					accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 					accessLog.setErrorMessage(StackTraceUtils.convertPojoToJson(e));
@@ -167,6 +172,7 @@ public class EWelcomeIDGenerationScheduler {
 							StackTraceUtils.convertPojoToJson(ex));
 				}
 			}
+
 		}
 		LOGGER.debug("END : CRON : EWELCOMEID GENERATION : Scheduler to generate EwelcomeID's for the participants completed at - "
 				+ new Date());
