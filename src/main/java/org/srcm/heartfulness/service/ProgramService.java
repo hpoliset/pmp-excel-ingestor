@@ -275,8 +275,7 @@ public interface ProgramService {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	public String generateeWelcomeID(Participant participant, int id) throws HttpClientErrorException,
-			JsonParseException, JsonMappingException, IOException, ParseException;
+	public String generateeWelcomeID(Participant participant, int id);
 
 	public String validatePreceptorIDCardNumber(Program program, int id);
 

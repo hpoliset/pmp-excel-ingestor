@@ -345,7 +345,9 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	}
 	
 	public boolean validateParticipantCompletedPreliminarySittings(Participant participantInput){
-		if ((null == participantInput.getFirstSittingDate())
+		if(1 == participantInput.getIntroduced() && (null == participantInput.getWelcomeCardNumber() ||  participantInput.getWelcomeCardNumber().isEmpty())){
+			return true;
+		}else if ((null == participantInput.getFirstSittingDate())
 				&& (null == participantInput.getFirstSitting() || 0 == participantInput.getFirstSitting())) {
 			return false;
 		} else if ((null == participantInput.getSecondSittingDate())

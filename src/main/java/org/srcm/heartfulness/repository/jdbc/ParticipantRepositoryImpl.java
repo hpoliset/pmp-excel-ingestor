@@ -140,6 +140,22 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 						});
 				if (null != seqId && !seqId.isEmpty()) {
 					participant.setSeqId(seqId);
+					Map<String, Object> params = new HashMap<>();
+					params.put("participantId", participantId);
+					Participant oldParticipantDetails=this.namedParameterJdbcTemplate.queryForObject(
+							"SELECT * FROM participant WHERE id=:participantId", params,
+							BeanPropertyRowMapper.newInstance(Participant.class));
+					if(null != oldParticipantDetails){
+						if(null != oldParticipantDetails.getWelcomeCardNumber() && !oldParticipantDetails.getWelcomeCardNumber().isEmpty()){
+							participant.setWelcomeCardNumber(oldParticipantDetails.getWelcomeCardNumber());
+							participant.setEwelcomeIdState(oldParticipantDetails.getEwelcomeIdState());
+							participant.setIntroduced(oldParticipantDetails.getIntroduced());
+							participant.setIntroducedBy(oldParticipantDetails.getIntroducedBy());
+							participant.setIsEwelcomeIdInformed(oldParticipantDetails.getIsEwelcomeIdInformed());
+							participant.setWelcomeCardDate(oldParticipantDetails.getWelcomeCardDate());
+							participant.setIntroductionDate(oldParticipantDetails.getIntroductionDate());
+						}
+					}
 				} else {
 					participant.setSeqId(SmsUtil.generateFourDigitPIN());
 				}

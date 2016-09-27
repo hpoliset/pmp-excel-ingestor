@@ -778,8 +778,7 @@ public class ProgramServiceImpl implements ProgramService {
 	 */
 	@SuppressWarnings("unused")
 	@Override
-	public String generateeWelcomeID(Participant participant, int id) throws HttpClientErrorException,
-			JsonParseException, JsonMappingException, IOException, ParseException {
+	public String generateeWelcomeID(Participant participant, int id) {
 		if (participant.getId() > 0 && participant.getProgramId() > 0) {
 			if (participant.getSeqId() != null && participant.getSeqId().length() == 4) {
 				if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty()
