@@ -468,7 +468,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		return program;
 	}
 
-	@Override
+	/*@Override
 	public List<Program> getEventsByEmail(String email, boolean isAdmin) {
 		List<Program> program = null;
 		StringBuilder whereCondition = new StringBuilder("");
@@ -488,6 +488,35 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 						+ "preceptor_id_card_number,welcome_card_signed_by_name,welcome_card_signer_Id_card_number,"
 						+ "remarks,auto_generated_event_id,auto_generated_intro_id" + " FROM program"
 						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""), sqlParameterSource,
+				BeanPropertyRowMapper.newInstance(Program.class));
+		return program;
+	}*/
+	@Override
+	public List<Program> getEventsByEmail(String email, boolean isAdmin,int offset,int pageSize) {
+		List<Program> program = null;
+		StringBuilder whereCondition = new StringBuilder("");
+		StringBuilder limitCondition = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		params.put("coordinator_email", email);
+		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+
+		if (!isAdmin) {
+			whereCondition.append("coordinator_email=:coordinator_email");
+		}
+		//need to change some logic here
+		if((offset != 0 && pageSize != 0) || (offset == 0 && pageSize != 0)){
+			limitCondition.append(" LIMIT "+offset+","+pageSize);
+		}
+		program = this.namedParameterJdbcTemplate.query(
+				"SELECT program_id,program_channel,program_start_date,program_end_date,"
+						+ "coordinator_name,coordinator_email,coordinator_mobile,event_place,"
+						+ "event_city,event_state,event_country,organization_department,"
+						+ "organization_name,organization_web_site,organization_contact_name,"
+						+ "organization_contact_email,organization_contact_mobile,preceptor_name,"
+						+ "preceptor_id_card_number,welcome_card_signed_by_name,welcome_card_signer_Id_card_number,"
+						+ "remarks,auto_generated_event_id,auto_generated_intro_id" + " FROM program"
+						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : "")
+						+ (limitCondition.length() > 0 ? limitCondition : ""), sqlParameterSource,
 				BeanPropertyRowMapper.newInstance(Program.class));
 		return program;
 	}
@@ -1008,6 +1037,22 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		} catch (EmptyResultDataAccessException e) {
 			return "";
 		}
+	}
+	
+	@Override
+	public int getProgramCount(String userEmail,boolean isAdmin) {
+		StringBuilder whereCondition = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		if (!isAdmin) {
+			whereCondition.append("coordinator_email=:coordinator_email");
+			params.put("coordinator_email", userEmail);
+		}
+		int programCount = this.namedParameterJdbcTemplate.queryForObject(
+				"SELECT count(DISTINCT program_id ) FROM program"
+						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""), params, Integer.class);
+
+		return programCount;
+		
 	}
 
 }

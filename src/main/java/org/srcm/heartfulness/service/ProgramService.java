@@ -80,7 +80,7 @@ public interface ProgramService {
 	 * @param isAdmin
 	 * @return List<Event>
 	 */
-	public List<Event> getEventListByEmail(String email, boolean isAdmin);
+	public List<Event> getEventListByEmail(String email, boolean isAdmin,int offset,int pageSize);
 
 	/**
 	 * Returns the list of Participant details for a given auto
@@ -279,5 +279,11 @@ public interface ProgramService {
 			JsonParseException, JsonMappingException, IOException, ParseException;
 
 	public String validatePreceptorIDCardNumber(Program program, int id);
+	
+	/**
+	 * 
+	 * @return total count of program in db.
+	 */
+	public int getProgramCount(String userEmail,boolean isAdmin);
 
 }

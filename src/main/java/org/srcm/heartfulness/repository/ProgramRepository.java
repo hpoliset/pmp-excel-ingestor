@@ -120,7 +120,7 @@ public interface ProgramRepository {
 	 * @param isAdmin
 	 * @return
 	 */
-	List<Program> getEventsByEmail(String email, boolean isAdmin);
+	List<Program> getEventsByEmail(String email, boolean isAdmin,int offset,int pageSize);
 
 	/**
 	 * Repository method to create a new record or update an existing event
@@ -252,5 +252,7 @@ public interface ProgramRepository {
 	List<Program> searchEvents(SearchRequest searchRequest);
 
 	String getEventIdByProgramID(int programId);
+	
+	int getProgramCount(String userEmail,boolean isAdmin);
 
 }
