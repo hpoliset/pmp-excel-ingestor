@@ -249,10 +249,12 @@ public interface ProgramRepository {
 	 */
 	void updateDeletedParticipant(Participant deletedParticipant, String deletedBy);
 
-	List<Program> searchEvents(SearchRequest searchRequest);
+	List<Program> searchEvents(SearchRequest searchRequest,String userEmail,boolean isAdmin,int offset);
 
 	String getEventIdByProgramID(int programId);
 	
 	int getProgramCount(String userEmail,boolean isAdmin);
+	
+	int getPgrmCountBySrchParams(SearchRequest searchRequest, String userEmail, boolean isAdmin);
 
 }

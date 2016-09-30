@@ -973,9 +973,11 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	}
 
 	@Override
-	public List<Program> searchEvents(SearchRequest searchRequest) {
+	public List<Program> searchEvents(SearchRequest searchRequest,String userEmail,boolean isAdmin,int offset) {
 		List<Program> program = null;
 		StringBuilder whereCondition = new StringBuilder("");
+		StringBuilder isAdminCondition = new StringBuilder("");
+		//StringBuilder limitCondition = new StringBuilder("");
 		StringBuilder orderBy = new StringBuilder("");
 		Map<String, Object> params = new HashMap<>();
 		if (!("ALL".equals(searchRequest.getSearchField())) && null != searchRequest.getSearchField()
@@ -1012,13 +1014,30 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 				orderBy.append(searchRequest.getSortDirection().equalsIgnoreCase("0") ? " asc" : " desc");
 			}
 		}
-
+		
+		//is admin validation && email validation
+		if (!isAdmin) {
+			if(whereCondition.length() > 0){
+				isAdminCondition.append(" AND coordinator_email=:coordinator_email");
+			}else{
+				isAdminCondition.append(" WHERE coordinator_email=:coordinator_email");
+			}
+			params.put("coordinator_email", userEmail);
+		}
+		
+		//offset and pgsize validation
+		/*if(isLimit){
+			limitCondition.append(" LIMIT "+offset+","+searchRequest.getPageSize());
+		}
+		*/
 		program = this.namedParameterJdbcTemplate.query(
 				"SELECT auto_generated_event_id,program_channel,program_name,program_start_date,program_end_date,"
 						+ "coordinator_name,coordinator_email,coordinator_mobile,event_place,"
 						+ "event_city,event_state,event_country,preceptor_name," + "preceptor_id_card_number"
 						+ " FROM program" + (whereCondition.length() > 0 ? " WHERE " + whereCondition : "")
-						+ (orderBy.length() > 0 ? " ORDER BY " + orderBy : ""), params,
+						+ (isAdminCondition.length() > 0 ? isAdminCondition : "")
+						+ (orderBy.length() > 0 ? " ORDER BY " + orderBy : "")
+						+ " LIMIT "+offset+","+searchRequest.getPageSize(), params,
 				BeanPropertyRowMapper.newInstance(Program.class));
 
 		return program;
@@ -1053,6 +1072,67 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 		return programCount;
 		
+	}
+	
+	@Override
+	public int getPgrmCountBySrchParams(SearchRequest searchRequest, String userEmail, boolean isAdmin) {
+		StringBuilder whereCondition = new StringBuilder("");
+		StringBuilder isAdminCondition = new StringBuilder("");
+		StringBuilder orderBy = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		
+		if (!("ALL".equals(searchRequest.getSearchField())) && null != searchRequest.getSearchField()
+				&& !searchRequest.getSearchField().isEmpty()) {
+			if (null != searchRequest.getSearchText() && !searchRequest.getSearchText().isEmpty()) {
+				whereCondition.append(whereCondition.length() > 0 ? " and " + searchRequest.getSearchField()
+						+ " LIKE '%" + searchRequest.getSearchText() + "%'" : searchRequest.getSearchField()
+						+ " LIKE '%" + searchRequest.getSearchText() + "%'");
+			}
+		}
+		
+		if ((searchRequest.getDateFrom() != null && !searchRequest.getDateFrom().isEmpty())) {
+			try {
+				whereCondition.append(whereCondition.length() > 0 ? " and program_start_date >=:program_start_date "
+						: " program_start_date >=:program_start_date ");
+				params.put("program_start_date", DateUtils.parseToSqlDate(searchRequest.getDateFrom()));
+			} catch (ParseException e) {
+				LOGGER.error("Error While converting date", e);
+			}
+		}
+
+		if (searchRequest.getDateTo() != null && !searchRequest.getDateTo().isEmpty()) {
+			try {
+				whereCondition
+						.append(whereCondition.length() > 0 ? " and CASE WHEN program_end_date IS NOT NULL THEN program_end_date <=:program_end_date ELSE TRUE END "
+								: " CASE WHEN program_end_date IS NOT NULL THEN program_end_date <=:program_end_date ELSE TRUE END ");
+				params.put("program_end_date", DateUtils.parseToSqlDate(searchRequest.getDateTo()));
+			} catch (ParseException e) {
+				LOGGER.error("Error While converting date", e);
+			}
+		}
+		
+		if (null != searchRequest.getSortBy() && !searchRequest.getSortBy().isEmpty()) {
+			orderBy.append(orderBy.length() > 0 ? ", " + searchRequest.getSortBy() : searchRequest.getSortBy());
+			if (null != searchRequest.getSortDirection() && !searchRequest.getSortDirection().isEmpty()) {
+				orderBy.append(searchRequest.getSortDirection().equalsIgnoreCase("0") ? " asc" : " desc");
+			}
+		}
+		
+		if (!isAdmin) {
+			if(whereCondition.length() > 0){
+				isAdminCondition.append(" AND coordinator_email=:coordinator_email");
+			}else{
+				isAdminCondition.append(" WHERE coordinator_email=:coordinator_email");
+			}
+			params.put("coordinator_email", userEmail);
+		}
+		
+		return this.namedParameterJdbcTemplate.queryForObject(
+				"SELECT COUNT(program_id) FROM program " 
+						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : "")
+						+ (isAdminCondition.length() > 0 ? isAdminCondition : "")
+						//+ (orderBy.length() > 0 ? " ORDER BY " + orderBy : "")
+						, params,Integer.class);
 	}
 
 }

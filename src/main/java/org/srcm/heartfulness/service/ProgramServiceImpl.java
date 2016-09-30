@@ -744,7 +744,7 @@ public class ProgramServiceImpl implements ProgramService {
 	 * @return
 	 */
 	@Override
-	public List<Event> searchEvents(SearchRequest searchRequest) {
+	public List<Event> searchEvents(SearchRequest searchRequest,String userEmail,boolean isAdmin,int offset) {
 		List<Event> eventList = new ArrayList<Event>();
 		for (EventSearchField searchField : EventSearchField.values()) {
 			if (searchField.name().equals(searchRequest.getSearchField())) {
@@ -755,7 +755,7 @@ public class ProgramServiceImpl implements ProgramService {
 			}
 		}
 
-		List<Program> programList = programRepository.searchEvents(searchRequest);
+		List<Program> programList = programRepository.searchEvents(searchRequest,userEmail,isAdmin,offset);
 		SimpleDateFormat convertedsdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
 		for (Program program : programList) {
 			Event event = new Event();
@@ -1087,6 +1087,11 @@ public class ProgramServiceImpl implements ProgramService {
 	@Override
 	public int getProgramCount(String userEmail,boolean isAdmin) {
 		return programRepository.getProgramCount(userEmail,isAdmin);
+	}
+	
+	@Override
+	public int getPgrmCountBySrchParams(SearchRequest searchRequest, String userEmail, boolean isAdmin) {
+		return programRepository.getPgrmCountBySrchParams(searchRequest,userEmail,isAdmin);
 	}
 
 }

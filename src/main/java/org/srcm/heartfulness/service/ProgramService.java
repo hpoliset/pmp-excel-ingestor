@@ -250,7 +250,7 @@ public interface ProgramService {
 	 * @param searchRequest
 	 * @return
 	 */
-	public List<Event> searchEvents(SearchRequest searchRequest);
+	public List<Event> searchEvents(SearchRequest searchRequest,String userEmail,boolean isAdmin,int offset);
 
 	/**
 	 * Retrieve <code>Auto generated eventId</code> from the data store by
@@ -285,5 +285,9 @@ public interface ProgramService {
 	 * @return total count of program in db.
 	 */
 	public int getProgramCount(String userEmail,boolean isAdmin);
+	
+	public int getPgrmCountBySrchParams(SearchRequest searchRequest, String userEmail, boolean isAdmin);
+	
+	
 
 }
