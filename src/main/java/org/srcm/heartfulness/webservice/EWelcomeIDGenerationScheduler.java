@@ -49,9 +49,8 @@ public class EWelcomeIDGenerationScheduler {
 	/**
 	 * Cron to generate EWelcomeIDs for the participants.
 	 */
-	// @RequestMapping(value = "generateewelcomeid", method =
-	// RequestMethod.POST)
-	@Scheduled(cron = "${welcome.mailids.generation.cron.time}")
+	// @RequestMapping(value = "generateewelcomeid", method = RequestMethod.POST)
+	 @Scheduled(cron = "${welcome.mailids.generation.cron.time}")
 	public void generateEWelcomeIDsForTheParticipants() {
 		LOGGER.debug("START : CRON : EWELCOMEID GENERATION : Scheduler to generate EwelcomeID's for the participants started at - "
 				+ new Date());
@@ -72,6 +71,7 @@ public class EWelcomeIDGenerationScheduler {
 			try {
 				Program program = programService.getProgramById(participant.getProgramId());
 				participant.setProgram(program);
+				accessLog.setUsername(program.getCoordinatorEmail());
 				String eWelcomeID = programService.generateeWelcomeID(participant, id);
 				if ("success".equalsIgnoreCase(eWelcomeID)) {
 					try {

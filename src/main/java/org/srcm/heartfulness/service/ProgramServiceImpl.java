@@ -983,7 +983,7 @@ public class ProgramServiceImpl implements ProgramService {
 									StackTraceUtils.convertPojoToJson(ex));
 						}
 					}
-					return "Error while fetching abhyasi profile from MySRCM : " + e.getMessage();
+					return "Error while fetching abhyasi profile from MySRCM ";
 				} catch (JsonParseException | JsonMappingException e) {
 					if (null != accessLogDetails) {
 						try {

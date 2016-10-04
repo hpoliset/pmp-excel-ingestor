@@ -410,7 +410,8 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								coordinatorEmail.setEventName(map.getKey().getEventName());
 								coordinatorEmail.setCoordinatorName(map.getKey().getCoordinatorName());
 								coordinatorEmail.setCoordinatorEmail(map.getKey().getCoordinatorEmail());
-								List<Participant> failedParticipants = participantRepository.getEWelcomeIdGenerationFailedPartcicipants(map.getKey().getProgramId());
+								//List<Participant> failedParticipants = participantRepository.getEWelcomeIdGenerationFailedPartcicipants(map.getKey().getProgramId());
+								List<Participant> failedParticipants = new ArrayList<Participant>();
 								LOGGER.debug("Failed participants : "+failedParticipants.size() + ", programID : "+map.getKey().getProgramId());
 								List<Participant> eWelcomeIDParticipants = participantRepository.getEWelcomeIdGeneratedPartcicipants(map.getKey().getProgramId());
 								LOGGER.debug("eWelcomeIDParticipants : "+eWelcomeIDParticipants.size() + ", programID : "+map.getKey().getProgramId());
