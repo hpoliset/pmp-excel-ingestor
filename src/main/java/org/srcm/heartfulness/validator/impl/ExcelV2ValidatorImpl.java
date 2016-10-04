@@ -281,7 +281,7 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 							+ " is invalid at row number "+rowNumber);
 				}
 			}
-/*
+
 			String welcomeCardNumber = currentRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if(!welcomeCardNumber.isEmpty()){
 				if(!welcomeCardNumber.matches(ExpressionConstants.EWELCOME_ID_REGEX)){
@@ -297,7 +297,7 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 					errorList.add(V2ParticipantCols.WELCOME_CARD_ISSUE_DATE.getHeader()
 							+ " is invalid at row number " + rowNumber);
 				}
-			}*/
+			}
 
 		}
 		return errorList;
