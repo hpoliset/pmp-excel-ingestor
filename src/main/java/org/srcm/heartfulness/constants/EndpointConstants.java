@@ -12,11 +12,11 @@ public class EndpointConstants {
 	
 	public static final String  AUTHENTICATION_TOKEN_URL = "https://profile.sahajmarg.org/o/token/";
 	
-	public static final String  ABHYASI_INFO_URI = "http://profile.srcm.net:80/api/v2/abhyasis/?format=json";
+	public static final String  ABHYASI_INFO_URI = "https://profile.sahajmarg.org/api/v2/abhyasis/?format=json";
 	
-	public static final String  GEOSEARCH_URI = "http://profile.srcm.net:80/api/v2/cities/geosearch/?format=json";
+	public static final String  GEOSEARCH_URI = "https://profile.sahajmarg.org/api/v2/cities/geosearch/?format=json";
 	
-    public static final String  CREATE_ASPIRANT_URI = "http://profile.srcm.net:80/api/v2/abhyasis/create_aspirant/?format=json";
+    public static final String  CREATE_ASPIRANT_URI = "https://profile.sahajmarg.org/api/v2/abhyasis/create_aspirant/?format=json";
 	
 	public static final String  CITIES_API = "https://profile.sahajmarg.org/api/v2/cities/";
 	
