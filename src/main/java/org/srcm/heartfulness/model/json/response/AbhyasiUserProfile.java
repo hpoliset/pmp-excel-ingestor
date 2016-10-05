@@ -24,7 +24,7 @@ public class AbhyasiUserProfile {
 
 	private String ref;
 
-	private AbhyasiSrcmGroup srcm_group;
+	private String srcm_group;
 
 	private boolean is_prefect;
 	
@@ -100,11 +100,11 @@ public class AbhyasiUserProfile {
 		this.ref = ref;
 	}
 
-	public AbhyasiSrcmGroup getSrcm_group() {
+	public String getSrcm_group() {
 		return srcm_group;
 	}
 
-	public void setSrcm_group(AbhyasiSrcmGroup srcm_group) {
+	public void setSrcm_group(String srcm_group) {
 		this.srcm_group = srcm_group;
 	}
 
