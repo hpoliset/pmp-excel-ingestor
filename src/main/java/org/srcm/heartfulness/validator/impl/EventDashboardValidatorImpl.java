@@ -342,6 +342,13 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			errors.add("Participant not completed preliminary sittings.");
 		}
 		
+		if(null == participantInput.getProgram().getPrefectId() || participantInput.getProgram().getPrefectId().isEmpty()){
+			String isValid=programService.validatePreceptorIDCardNumber(participantInput.getProgram(), 0);
+			if(null != isValid){
+				errors.add(isValid);
+			}
+		}
+		
 		return errors;
 	}
 	
