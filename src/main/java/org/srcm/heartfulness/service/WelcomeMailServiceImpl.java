@@ -2,6 +2,8 @@ package org.srcm.heartfulness.service;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -517,4 +519,14 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		}
 	}
 
+	@Override
+	public void sendWelcomeMailToHfnList() {
+		try {
+			sendEmailNotification.sendWelcomeMail();
+			LOGGER.debug("Welcome mail sent successfully to the list.");
+		} catch (UnsupportedEncodingException | MessagingException | ParseException e) {
+			LOGGER.debug("Error while sending mail to list - " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
 }

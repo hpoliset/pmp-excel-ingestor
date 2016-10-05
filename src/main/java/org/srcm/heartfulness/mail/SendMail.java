@@ -74,6 +74,9 @@ public class SendMail {
 	private String crdntrmailforewlcmidsubject;
 	private String coordinatormailforupdatingevent;
 	private String coordinatormailforupdatingeventsubject;
+	private String welcomemailto;
+	private String welcomemailsubject;
+	private String welcomemailtemplatename;
 
 	public String getUsername() {
 		return username;
@@ -257,6 +260,30 @@ public class SendMail {
 
 	public void setCoordinatormailforupdatingeventsubject(String coordinatormailforupdatingeventsubject) {
 		this.coordinatormailforupdatingeventsubject = coordinatormailforupdatingeventsubject;
+	}
+	
+	public String getWelcomemailto() {
+		return welcomemailto;
+	}
+
+	public void setWelcomemailto(String welcomemailto) {
+		this.welcomemailto = welcomemailto;
+	}
+
+	public String getWelcomemailsubject() {
+		return welcomemailsubject;
+	}
+
+	public void setWelcomemailsubject(String welcomemailsubject) {
+		this.welcomemailsubject = welcomemailsubject;
+	}
+
+	public String getWelcomemailtemplatename() {
+		return welcomemailtemplatename;
+	}
+
+	public void setWelcomemailtemplatename(String welcomemailtemplatename) {
+		this.welcomemailtemplatename = welcomemailtemplatename;
 	}
 
 	@Autowired
@@ -673,5 +700,50 @@ public class SendMail {
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
 		Transport.send(message);
 		LOGGER.debug("Mail sent successfully to Coordinator : {} ", coordinator.getCoordinatorEmail());
+	}
+	
+	public void sendWelcomeMail() throws AddressException, MessagingException, UnsupportedEncodingException,
+			ParseException {
+
+		Properties props = System.getProperties();
+		props.put("mail.debug", "true");
+		props.put("mail.smtp.host", hostname);
+		props.put("mail.smtp.port", port);
+		props.put("mail.smtp.ssl.enable", "true");
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", "true");
+
+		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(username, password);
+			}
+		});
+
+		/*
+		 * addParameter("COORDINATOR_NAME",
+		 * getName(crdntrEmail.getCoordinatorName()));
+		 * addParameter("TOTAL_PARTICIPANT_COUNT",
+		 * crdntrEmail.getTotalParticipantCount());
+		 * addParameter("WLCM_MAIL_ALRDY_RCVD_PARTICIPANT_COUNT",
+		 * crdntrEmail.getPctptAlreadyRcvdWlcmMailCount());
+		 * addParameter("WLCM_MAIL_RCVD_YSTRDY_PARTICIPANT_COUNT",
+		 * crdntrEmail.getPctptRcvdWlcmMailYstrdayCount());
+		 * addParameter("EVENT_NAME", crdntrEmail.getEventName());
+		 */
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+		Date date = new Date();
+		String date_str = sdf.format(date);
+		addParameter("DATE", date_str);
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(username, name));
+		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(welcomemailto));
+		message.setSubject(welcomemailsubject);
+		message.setContent(getMessageContentbyTemplateName(welcomemailtemplatename), "text/html");
+		message.setAllow8bitMIME(true);
+		message.setSentDate(new Date());
+		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+		Transport.send(message);
 	}
 }

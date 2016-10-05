@@ -55,4 +55,5 @@ public interface WelcomeMailService {
 	
 	public void getGeneratedEwelcomeIdAndSendToCoordinators();
 
+	public void sendWelcomeMailToHfnList();
 }

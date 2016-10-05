@@ -89,4 +89,14 @@ public class WelcomeMailController {
 		}
 	}
 
+	@RequestMapping(value = "sendwelcomemail", method = RequestMethod.POST)
+	// @Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}")
+	public void sendWelcomeMail() {
+		try {
+			LOGGER.debug("Sending mail to hfn list called.");
+			WelcomeMailService.sendWelcomeMailToHfnList();
+		} catch (Exception e) {
+			LOGGER.error("Exception while sending mail - {} " + e.getMessage());
+		}
+	}
 }
