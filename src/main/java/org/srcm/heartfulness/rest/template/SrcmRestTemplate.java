@@ -23,11 +23,11 @@ import org.srcm.heartfulness.model.Aspirant;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
 import org.srcm.heartfulness.model.json.response.AbhyasiResult;
-import org.srcm.heartfulness.model.json.response.AbhyasiUserProfile;
 import org.srcm.heartfulness.model.json.response.CitiesAPIResponse;
 import org.srcm.heartfulness.model.json.response.GeoSearchResponse;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
+import org.srcm.heartfulness.model.json.response.UserProfile;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -321,7 +321,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public AbhyasiUserProfile createAspirant(Aspirant aspirant) throws HttpClientErrorException, JsonParseException,
+	public UserProfile createAspirant(Aspirant aspirant) throws HttpClientErrorException, JsonParseException,
 			JsonMappingException, IOException {
 		if (proxy)
 			setProxy();
@@ -344,7 +344,7 @@ public class SrcmRestTemplate extends RestTemplate {
 		httpEntity = new HttpEntity<Object>(mapper.writeValueAsString(aspirant), httpHeaders);
 		ResponseEntity<String> Response = this.exchange(abyasi.createAspirant, HttpMethod.POST, httpEntity,
 				String.class);
-		return mapper.readValue(Response.getBody(), AbhyasiUserProfile.class);
+		return mapper.readValue(Response.getBody(), UserProfile.class);
 	}
 
 	public CitiesAPIResponse getCityName(int cityId) throws JsonParseException, JsonMappingException, IOException {

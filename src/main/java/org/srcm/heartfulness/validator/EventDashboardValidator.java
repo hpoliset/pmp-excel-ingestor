@@ -10,6 +10,7 @@ import javax.crypto.IllegalBlockSizeException;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.model.EventPagination;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
@@ -97,5 +98,7 @@ public interface EventDashboardValidator {
 	public boolean validateParticipantCompletedPreliminarySittings(Participant participantInput);
 
 	public Map<String, String> checkUpdateParticipantMandatoryFields(ParticipantRequest participant);
+	
+	public String validatePaginationProperties(EventPagination eventPagination);
 
 }

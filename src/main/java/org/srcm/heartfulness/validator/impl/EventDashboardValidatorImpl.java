@@ -19,6 +19,7 @@ import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
+import org.srcm.heartfulness.model.EventPagination;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.Event;
@@ -341,6 +342,13 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			errors.add("Participant not completed preliminary sittings.");
 		}
 		
+		if(null == participantInput.getProgram().getPrefectId() || participantInput.getProgram().getPrefectId().isEmpty()){
+			String isValid=programService.validatePreceptorIDCardNumber(participantInput.getProgram(), 0);
+			if(null != isValid){
+				errors.add(isValid);
+			}
+		}
+		
 		return errors;
 	}
 	
@@ -370,6 +378,17 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			errors.put(ErrorConstants.STATUS_FAILED, "SeqID is required ");
 		}
 		return errors;
+	}
+	
+	@Override
+	public String validatePaginationProperties(EventPagination eventPagination) {
+		if(eventPagination.getPageIndex() <= 0 ){
+			return "Invalid page index";
+		}
+		if(eventPagination.getPageSize() <= 0){
+			return "Invalid page size";
+		}
+		return "";
 	}
 
 }

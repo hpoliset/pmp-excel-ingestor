@@ -22,6 +22,7 @@ import org.srcm.heartfulness.model.json.response.AbhyasiUserProfile;
 import org.srcm.heartfulness.model.json.response.CitiesAPIResponse;
 import org.srcm.heartfulness.model.json.response.EWelcomeIDErrorResponse;
 import org.srcm.heartfulness.model.json.response.GeoSearchResponse;
+import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
 import org.srcm.heartfulness.service.APIAccessLogService;
@@ -33,6 +34,12 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * This class is the helper class to generate ewelcomeID by calling MYSRCM API.
+ * 
+ * @author himasreev
+ *
+ */
 @Component
 public class EWelcomeIDGenerationHelper {
 
@@ -99,7 +106,7 @@ public class EWelcomeIDGenerationHelper {
 			LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
 					StackTraceUtils.convertPojoToJson(ex));
 		}
-		AbhyasiUserProfile userProfile;
+		UserProfile userProfile;
 		try {
 			userProfile = srcmRestTemplate.createAspirant(aspirant);
 			try {
@@ -229,7 +236,7 @@ public class EWelcomeIDGenerationHelper {
 				.getAddressLine1() : null);
 		aspirant.setStreet2((null != participant.getAddressLine2() && !participant.getAddressLine2().isEmpty()) ? participant
 				.getAddressLine2() : null);
-		AbhyasiUserProfile userProfile = srcmRestTemplate.createAspirant(aspirant);
+		UserProfile userProfile = srcmRestTemplate.createAspirant(aspirant);
 		participant.getProgram().setSrcmGroup(String.valueOf(geoSearchResponse.getNearestCenter()));
 		participant.setWelcomeCardNumber(userProfile.getRef());
 		participant.setWelcomeCardDate(new Date());
