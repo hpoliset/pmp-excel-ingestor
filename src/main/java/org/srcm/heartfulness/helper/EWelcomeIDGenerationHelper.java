@@ -33,6 +33,12 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * This class is the helper class to generate ewelcomeID by calling MYSRCM API.
+ * 
+ * @author himasreev
+ *
+ */
 @Component
 public class EWelcomeIDGenerationHelper {
 

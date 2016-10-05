@@ -80,7 +80,7 @@ public interface ProgramService {
 	 * @param isAdmin
 	 * @return List<Event>
 	 */
-	public List<Event> getEventListByEmail(String email, boolean isAdmin);
+	public List<Event> getEventListByEmail(String email, boolean isAdmin,int offset,int pageSize);
 
 	/**
 	 * Returns the list of Participant details for a given auto
@@ -250,7 +250,7 @@ public interface ProgramService {
 	 * @param searchRequest
 	 * @return
 	 */
-	public List<Event> searchEvents(SearchRequest searchRequest);
+	public List<Event> searchEvents(SearchRequest searchRequest,String userEmail,boolean isAdmin,int offset);
 
 	/**
 	 * Retrieve <code>Auto generated eventId</code> from the data store by
@@ -278,5 +278,13 @@ public interface ProgramService {
 	public String generateeWelcomeID(Participant participant, int id);
 
 	public String validatePreceptorIDCardNumber(Program program, int id);
+	
+	/**
+	 * 
+	 * @return total count of program in db.
+	 */
+	public int getProgramCount(String userEmail,boolean isAdmin);
+	
+	public int getPgrmCountBySrchParams(SearchRequest searchRequest, String userEmail, boolean isAdmin);
 
 }

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import org.srcm.heartfulness.authorization.CustomAuthenticationProvider;
 
 /**
- * This class is the helper class for authorization
+ * This class is the helper class for authorization.
  * 
  * @author HimaSree
  *
