@@ -93,8 +93,11 @@ public class UserProfileServiceImpl implements UserProfileService {
 		int accessdetailsID = apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
 		accessLogDetails.setId(accessdetailsID);
 		User newUser =  mysrcmIntegrationHelper.getClientCredentialsandCreateUser(user, requestURL);
-		if (null != user.getName() && ! user.getName().isEmpty())
+		if (null != user.getName() && ! user.getName().isEmpty()){
 			newUser.setName(user.getName());
+		}else{
+			newUser.setName(user.getFirstName()+" "+user.getLastName());
+		}
 		if (null != user.getGender()&& ! user.getGender().isEmpty())
 			newUser.setGender(user.getGender());
 		if (null != user.getAbyasiId()&& ! user.getAbyasiId().isEmpty())

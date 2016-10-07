@@ -2,8 +2,6 @@ package org.srcm.heartfulness.webservice;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
@@ -90,7 +88,7 @@ public class UserController {
 			User user = userProfileService.loadUserByEmail(srcmProfile.getEmail());
 			if (null == user) {
 				user = new User();
-				user.setName(srcmProfile.getName());
+				user.setName((null != srcmProfile.getName() || !srcmProfile.getName().isEmpty())?srcmProfile.getName():srcmProfile.getFirst_name()+" "+srcmProfile.getLast_name());
 				user.setFirst_name(srcmProfile.getFirst_name());
 				user.setLast_name(srcmProfile.getLast_name());
 				user.setEmail(srcmProfile.getEmail());
@@ -217,11 +215,14 @@ public class UserController {
 			}
 			user.setUserType("se");
 			User newUser = userProfileService.createUser(user, id, httpRequest.getRequestURI());
+			StringBuilder userResponse=new StringBuilder();
+			userResponse.append("name : "+newUser.getName());
+			userResponse.append(", "+"email : "+newUser.getEmail());
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			LOGGER.debug("User profile created - {} ", newUser.getEmail());
-			Response response = new Response(ErrorConstants.STATUS_SUCCESS, "User created successfully");
+			Response response = new Response(ErrorConstants.STATUS_SUCCESS, userResponse.toString());
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
 			ObjectMapper mapper = new ObjectMapper();
