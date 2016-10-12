@@ -90,7 +90,7 @@ public class WelcomeMailController {
 	}
 	
 	//@RequestMapping(value = "sendwelcomemail", method = RequestMethod.POST)
-	@Scheduled(cron = "${welcome.mailto.hfnlist.cron.time}") 
+	@Scheduled(cron = "${welcome.mail.to.hfnlist.cron.time}") 
 	public void sendWelcomeMail() {
 		try {
 			LOGGER.debug("Sending mail to hfn list called.");
