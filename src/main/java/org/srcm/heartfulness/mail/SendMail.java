@@ -77,6 +77,8 @@ public class SendMail {
 	private String welcomemailto;
 	private String welcomemailsubject;
 	private String welcomemailtemplatename;
+	private String welcomemailbcc;
+	private String welcomemailbcc2;
 
 	public String getUsername() {
 		return username;
@@ -284,6 +286,22 @@ public class SendMail {
 
 	public void setWelcomemailtemplatename(String welcomemailtemplatename) {
 		this.welcomemailtemplatename = welcomemailtemplatename;
+	}
+	
+	public String getWelcomemailbcc() {
+		return welcomemailbcc;
+	}
+
+	public void setWelcomemailbcc(String welcomemailbcc) {
+		this.welcomemailbcc = welcomemailbcc;
+	}
+
+	public String getWelcomemailbcc2() {
+		return welcomemailbcc2;
+	}
+
+	public void setWelcomemailbcc2(String welcomemailbcc2) {
+		this.welcomemailbcc2 = welcomemailbcc2;
 	}
 
 	@Autowired
@@ -727,6 +745,8 @@ public class SendMail {
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(username, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(welcomemailto));
+		message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc));
+		message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc2));
 		message.setSubject(welcomemailsubject);
 		message.setContent(getMessageContentbyTemplateName(welcomemailtemplatename), "text/html");
 		message.setAllow8bitMIME(true);
