@@ -743,7 +743,7 @@ public class SendMail {
 		String date_str = sdf.format(date);
 		addParameter("DATE", date_str);
 		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(username, name));
+		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(welcomemailto));
 		message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc));
 		message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc2));
