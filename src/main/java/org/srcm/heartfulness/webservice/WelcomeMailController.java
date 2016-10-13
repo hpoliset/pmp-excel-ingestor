@@ -55,11 +55,12 @@ public class WelcomeMailController {
 		}
 	}
 
-	/*@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") */
+	@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") 
 	public void uploadDailyWelcomeMailidsToFTP() {
+		LOGGER.debug("----------------->>>>>>Upload File to FTP called.");
 		try {
 			LOGGER.debug("Upload File to FTP called.");
-			WelcomeMailService.uploadParticipantEmailidsToFTP();
+			//WelcomeMailService.uploadParticipantEmailidsToFTP();
 			LOGGER.debug("Process Completed.");
 		} catch (Exception e) {
 			LOGGER.error("Exception while uploading file - {} " + e.getMessage());
