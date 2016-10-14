@@ -879,7 +879,7 @@ public class ProgramServiceImpl implements ProgramService {
 				if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty()
 						|| !participant.getWelcomeCardNumber().matches(ExpressionConstants.EWELCOME_ID_REGEX)) {
 					// check whether participant already got ewelcomeID or not
-					String partcipantEwelcomeID = fetchParticipantEwelcomeID(participant);
+					String partcipantEwelcomeID = fetchParticipantEwelcomeID(participant,id);
 					if (null != partcipantEwelcomeID) {
 							return partcipantEwelcomeID;
 					} else {
@@ -1003,11 +1003,30 @@ public class ProgramServiceImpl implements ProgramService {
 		}
 	}
 	
-	private String fetchParticipantEwelcomeID(Participant participant) {
+	private String fetchParticipantEwelcomeID(Participant participant, int id) {
+		PMPAPIAccessLogDetails fetchEwelcomeIDAPIAccessLogDetails = null;
 		if(null != participant.getEmail() && !participant.getEmail().isEmpty()){
 			try {
 				LOGGER.debug("Trying to fetch the ewelcomeID for the participant.  NAME: {}, EMAIL: {}",participant.getPrintName(),participant.getEmail());
+				try {
+					fetchEwelcomeIDAPIAccessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.ABHYASI_INFO_URI+"?email_exact="+participant.getEmail(),
+							DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
+							StackTraceUtils.convertPojoToJson("Request: Participant Email:" + participant.getEmail()+", Participant Name:" + participant.getPrintName()));
+					apiAccessLogService.createPmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
+				} catch (Exception e) {
+					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+							StackTraceUtils.convertPojoToJson(e));
+				}
 				AbhyasiResult abhyasiResult=srcmRestTemplate.fetchparticipanteWelcomeID(participant.getEmail());
+				try {
+					fetchEwelcomeIDAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+					fetchEwelcomeIDAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(abhyasiResult));
+					fetchEwelcomeIDAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+					apiAccessLogService.updatePmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
+				} catch (Exception e) {
+					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+							StackTraceUtils.convertPojoToJson(e));
+				}
 				if (abhyasiResult.getUserProfile().length > 0) {
 					AbhyasiUserProfile userProfile=abhyasiResult.getUserProfile()[0];
 					if (null != userProfile) {
@@ -1026,18 +1045,46 @@ public class ProgramServiceImpl implements ProgramService {
 								return "success";
 							}
 						}else{
+							LOGGER.debug("Print name of the participant and name from the MYSRCM API doesn't match : Participant Name : {}, Name from MYSRCM : {}  ",participant.getPrintName(),userProfile.getName());
 							return "Email already in use with participant name: "+userProfile.getName();
 						}
 					}
 				}
 			} catch (HttpClientErrorException e) {
-				LOGGER.debug("HTTP CLIENT ERROR : Error While already generated ewelcomeId of the participant. NAME: {}, EMAIL: {}, EXCEPTION: {} ",participant.getPrintName(),participant.getEmail(),StackTraceUtils.convertStackTracetoString(e));
+				LOGGER.debug("HTTP CLIENT ERROR : Error While fetching already generated ewelcomeId of the participant. NAME: {}, EMAIL: {}, EXCEPTION: {} ",participant.getPrintName(),participant.getEmail(),StackTraceUtils.convertStackTracetoString(e));
+				try {
+					fetchEwelcomeIDAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+					fetchEwelcomeIDAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+					fetchEwelcomeIDAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+					apiAccessLogService.updatePmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
+				} catch (Exception ex) {
+					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+							StackTraceUtils.convertPojoToJson(ex));
+				}
 				return e.getResponseBodyAsString();
 			} catch (JsonParseException | JsonMappingException e) {
-				LOGGER.debug("JSONPARSE/JSONMAPPING ERROR : Error While already generated ewelcomeId of the participant. NAME: {}, EMAIL: {}, EXCEPTION: {} ",participant.getPrintName(),participant.getEmail(),StackTraceUtils.convertStackTracetoString(e));
+				LOGGER.debug("JSONPARSE/JSONMAPPING ERROR : Error While fetching already generated ewelcomeId of the participant. NAME: {}, EMAIL: {}, EXCEPTION: {} ",participant.getPrintName(),participant.getEmail(),StackTraceUtils.convertStackTracetoString(e));
+				try {
+					fetchEwelcomeIDAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+					fetchEwelcomeIDAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+					fetchEwelcomeIDAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+					apiAccessLogService.updatePmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
+				} catch (Exception ex) {
+					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+							StackTraceUtils.convertPojoToJson(ex));
+				}
 				return "Parsing error while fetching already generated ewelcomeId of the participant";
 			}catch (Exception e) {
-				LOGGER.debug("Exception : Error While already generated ewelcomeId of the participant. NAME: {}, EMAIL: {}, EXCEPTION: {} ",participant.getPrintName(),participant.getEmail(),StackTraceUtils.convertStackTracetoString(e));
+				LOGGER.debug("Exception : Error While fetching already generated ewelcomeId of the participant. NAME: {}, EMAIL: {}, EXCEPTION: {} ",participant.getPrintName(),participant.getEmail(),StackTraceUtils.convertStackTracetoString(e));
+				try {
+					fetchEwelcomeIDAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+					fetchEwelcomeIDAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
+					fetchEwelcomeIDAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+					apiAccessLogService.updatePmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
+				} catch (Exception ex) {
+					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+							StackTraceUtils.convertPojoToJson(ex));
+				}
 				return "Error while fetching already generated ewelcomeId of the participant";
 			}
 		}
