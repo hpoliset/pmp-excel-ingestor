@@ -1026,7 +1026,7 @@ public class ProgramServiceImpl implements ProgramService {
 								return "success";
 							}
 						}else{
-							return "Email already in use with other participant. Participant Name: "+userProfile.getName();
+							return "Email already in use with participant name: "+userProfile.getName();
 						}
 					}
 				}
