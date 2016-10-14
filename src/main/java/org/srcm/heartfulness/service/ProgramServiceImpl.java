@@ -1025,6 +1025,8 @@ public class ProgramServiceImpl implements ProgramService {
 								participantRepository.save(participant);
 								return "success";
 							}
+						}else{
+							return "Email already in use with other participant. Participant Name: "+userProfile.getName();
 						}
 					}
 				}
