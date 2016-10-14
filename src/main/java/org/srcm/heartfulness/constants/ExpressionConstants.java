@@ -21,4 +21,6 @@ public class ExpressionConstants {
 	public static final String EWELCOME_ID_REGEX="^[A-Z]\\d{8}$";
 	
 	public static final String ZIPCODE_REGEX="^[1-9][0-9]{5}$";
+	
+	public static final String PARTICIPANT_EWELCOME_ID_REGEX="^[HB][0-9]{8}$";
 }

@@ -320,7 +320,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	}
 
 	@Override
-	public List<String> checkParticipantIntroductionMandatoryFields(Participant participantInput) {
+	public List<String> checkParticipantIntroductionMandatoryFields(Participant participantInput, int id) {
 		List<String> errors = new ArrayList<String>();
 		if (null == participantInput.getCity() || participantInput.getCity().isEmpty()) {
 			errors.add("City is required.");
@@ -343,7 +343,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		}
 		
 		if(null == participantInput.getProgram().getPrefectId() || participantInput.getProgram().getPrefectId().isEmpty()){
-			String isValid=programService.validatePreceptorIDCardNumber(participantInput.getProgram(), 0);
+			String isValid=programService.validatePreceptorIDCardNumber(participantInput.getProgram(), id);
 			if(null != isValid){
 				errors.add(isValid);
 			}

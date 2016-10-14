@@ -497,7 +497,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				if ("Y".equalsIgnoreCase(participantRequest.getIntroduced())) {
 					UpdateIntroductionResponse response = null;
 					List<String> errorResult = eventDashboardValidator
-							.checkParticipantIntroductionMandatoryFields(participantInput);
+							.checkParticipantIntroductionMandatoryFields(participantInput,id);
 					if (!errorResult.isEmpty()) {
 						response = new UpdateIntroductionResponse(participant.getSeqId(),
 								participantInput.getPrintName(), ErrorConstants.STATUS_FAILED, errorResult);
