@@ -63,9 +63,9 @@ public class EWelcomeIDGenerationScheduler {
 		}
 		LOGGER.debug("CRON : EWELCOMEID GENERATION : Total no. of partcipants to generate eWelcomeID : {} ",
 				participants.size());
-		PMPAPIAccessLog accessLog = null;
-		int id = 0;
 		for (Participant participant : participants) {
+			PMPAPIAccessLog accessLog = null;
+			int id = 0;
 			try {
 				accessLog = new PMPAPIAccessLog(null, null, "cron-to-generate-ewelcomeID",
 						DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,

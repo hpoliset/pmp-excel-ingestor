@@ -1031,9 +1031,9 @@ public class ProgramServiceImpl implements ProgramService {
 					AbhyasiUserProfile userProfile=abhyasiResult.getUserProfile()[0];
 					if (null != userProfile) {
 						LOGGER.debug("EwelcomeID for the participant from MYSRCM.PARTICIPANT EMAIL: {}, NAME FROM MYSRCM:",userProfile.getEmail(),userProfile.getName());
-						if(userProfile.getName().equalsIgnoreCase(participant.getPrintName().trim())){
-							String refNo=userProfile.getRef();
-							if(refNo.matches(ExpressionConstants.PARTICIPANT_EWELCOME_ID_REGEX)){
+						String refNo=userProfile.getRef();
+						if(refNo.matches(ExpressionConstants.PARTICIPANT_EWELCOME_ID_REGEX)){
+							if(userProfile.getName().equalsIgnoreCase(participant.getPrintName().trim())){
 								participant.setIntroducedBy(participant.getProgram().getCoordinatorEmail());
 								participant.setWelcomeCardNumber(refNo);
 								participant.setWelcomeCardDate(new Date());
@@ -1043,10 +1043,12 @@ public class ProgramServiceImpl implements ProgramService {
 								participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
 								participantRepository.save(participant);
 								return "success";
+							}else{
+								LOGGER.debug("Print name of the participant and name from the MYSRCM API doesn't match : Participant Name : {}, Name from MYSRCM : {}  ",participant.getPrintName(),userProfile.getName());
+								return "Email already in use with participant name: "+userProfile.getName();
 							}
 						}else{
-							LOGGER.debug("Print name of the participant and name from the MYSRCM API doesn't match : Participant Name : {}, Name from MYSRCM : {}  ",participant.getPrintName(),userProfile.getName());
-							return "Email already in use with participant name: "+userProfile.getName();
+							LOGGER.debug("particpant ref No. from MYSRCM doesn't match with H*** or B*** ids : Participant Name : {}, Name from MYSRCM : {}, Ref NO: {}  ",participant.getPrintName(),userProfile.getName(),userProfile.getRef());
 						}
 					}
 				}

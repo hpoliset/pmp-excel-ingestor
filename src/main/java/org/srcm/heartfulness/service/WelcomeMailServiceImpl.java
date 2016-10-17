@@ -220,7 +220,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		participants = welcomeMailRepository.getParticipantsToSendWelcomeEmails();
 		int validEmailSubscribersCount = 0;
 		StringBuilder sb = new StringBuilder();
-		LOGGER.debug("Total partcipant size {}" + participants.size());
+		LOGGER.debug("Total partcipant size {}", participants.size());
 		if (null != participants && participants.size() >= 1) {
 			for (Participant participant : participants) {
 				if (null != participant.getEmail() && !participant.getEmail().isEmpty()
@@ -240,7 +240,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 				}
 			}
 			LOGGER.debug("{} participants already received welcome mail.",participants.size()-validEmailSubscribersCount);
-			LOGGER.debug("{} new participants." + validEmailSubscribersCount);
+			LOGGER.debug("{} new participants.", validEmailSubscribersCount);
 			if(validEmailSubscribersCount>0){
 				FileOutputStream fop = new FileOutputStream(welcomeMailidsLocalFilepath + currentDate + "_"
 						+ welcomeMailidsFileName);
