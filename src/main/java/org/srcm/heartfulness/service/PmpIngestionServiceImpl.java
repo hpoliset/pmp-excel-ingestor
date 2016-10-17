@@ -115,7 +115,16 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 						program.setCreatedSource("Excel");
 						programRepository.save(program);
 						// preceptor ID card number validation
-						validatePreceptorID(program);
+						Runnable task = new Runnable() {
+				            @Override
+				             public void run() {
+				                 try {
+				                	 validatePreceptorID(program);
+				                 } catch (Exception ex) {
+				                 }
+				             }
+				         };
+				         new Thread(task, "ServiceThread").start();
 						response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
 					} catch (InvalidExcelFileException ex) {
 						errorResponse.add("File you are trying to upload is invalid.Please contact Administrator");
@@ -153,7 +162,6 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	 * 
 	 * @param program
 	 */
-	@Async
 	private void validatePreceptorID(Program program) {
 		PMPAPIAccessLog accessLog = null;
 		int id = 0;
@@ -170,7 +178,16 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 		try {
 			String isValid=programService.validatePreceptorIDCardNumber(program, id);
 			if (null != isValid) {
-				//sendMailToCoordinatorToUpdatePreceptorID(program);
+				/*Runnable task = new Runnable() {
+		            @Override
+		             public void run() {
+		                 try {
+		                	//sendMailToCoordinatorToUpdatePreceptorID(program);
+		                 } catch (Exception ex) {
+		                 }
+		             }
+		         };
+		         new Thread(task, "ServiceThread").start();*/
 				participantService.updatePartcipantEWelcomeIDStatuswithParticipantID(program.getProgramId(),
 						PMPConstants.EWELCOMEID_FAILED_STATE, isValid);
 				try {

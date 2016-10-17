@@ -470,14 +470,14 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		return this.jdbcTemplate.update("UPDATE participant SET is_co_ordinator_informed = 1 "
 				+  " WHERE welcome_mail_Sent = 1 AND is_co_ordinator_informed = 0 AND program_id=? ", new Object[] {programId});
 	}
-	
+
 	@Override
 	public int checkForMailIdInWelcomeLog(String email) {
-	int participantsCount = this.jdbcTemplate.queryForObject(
-	"SELECT count(id) FROM welcome_email_log WHERE email=?", new Object[] { email }, Integer.class);
-	return participantsCount;
+		int participantsCount = this.jdbcTemplate.queryForObject(
+				"SELECT count(id) FROM welcome_email_log WHERE email=?", new Object[] { email }, Integer.class);
+		return participantsCount;
 	} 
-	
+
 	@Override
 	public void updateVerificationStatus(String email,int status) {
 		Map<String, Object> params = new HashMap<>();
@@ -493,14 +493,14 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		.update("UPDATE participant SET is_email_verified=:isEmailVerified,is_valid_email=:isValidEmail WHERE email=:email",
 				params);
 	}
-	
+
 	@Override
 	public Map<CoordinatorEmail, List<Participant>> getGeneratedEwelcomeIdDetails() {
 
 		return this.jdbcTemplate.query(
 				"SELECT p.program_channel,p.coordinator_name,p.coordinator_email,p.program_id,pr.print_name,pr.email,pr.welcome_card_number,pr.id,pr.mobile_phone,pr.introduction_date,pr.ewelcome_id_state,pr.ewelcome_id_remarks FROM program p,participant pr"
 						+	" WHERE p.program_id = pr.program_id"
-						+	" AND pr.is_ewelcome_id_informed = 0 AND (pr.ewelcome_id_state='C')",
+						+	" AND pr.is_ewelcome_id_informed = 0 AND (pr.ewelcome_id_state='C' OR pr.ewelcome_id_state='F')",
 						new Object[] {}, new ResultSetExtractor<Map<CoordinatorEmail, List<Participant>>>() {
 							@Override
 							public Map<CoordinatorEmail, List<Participant>> extractData(ResultSet resultSet) throws SQLException, DataAccessException {

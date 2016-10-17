@@ -93,7 +93,7 @@ public interface EventDashboardValidator {
 	 */
 	public Map<String, String> checkDeleteRequestMandatoryFields(ParticipantIntroductionRequest participantRequest);
 
-	public List<String> checkParticipantIntroductionMandatoryFields(Participant participantInput);
+	public List<String> checkParticipantIntroductionMandatoryFields(Participant participantInput, int id);
 	
 	public boolean validateParticipantCompletedPreliminarySittings(Participant participantInput);
 

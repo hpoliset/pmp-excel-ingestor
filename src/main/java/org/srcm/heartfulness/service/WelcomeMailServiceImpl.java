@@ -220,7 +220,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		participants = welcomeMailRepository.getParticipantsToSendWelcomeEmails();
 		int validEmailSubscribersCount = 0;
 		StringBuilder sb = new StringBuilder();
-		LOGGER.debug("Total partcipant size {}" + participants.size());
+		LOGGER.debug("Total partcipant size {}", participants.size());
 		if (null != participants && participants.size() >= 1) {
 			for (Participant participant : participants) {
 				if (null != participant.getEmail() && !participant.getEmail().isEmpty()
@@ -240,7 +240,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 				}
 			}
 			LOGGER.debug("{} participants already received welcome mail.",participants.size()-validEmailSubscribersCount);
-			LOGGER.debug("{} new participants." + validEmailSubscribersCount);
+			LOGGER.debug("{} new participants.", validEmailSubscribersCount);
 			if(validEmailSubscribersCount>0){
 				FileOutputStream fop = new FileOutputStream(welcomeMailidsLocalFilepath + currentDate + "_"
 						+ welcomeMailidsFileName);
@@ -412,8 +412,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								coordinatorEmail.setEventName(map.getKey().getEventName());
 								coordinatorEmail.setCoordinatorName(map.getKey().getCoordinatorName());
 								coordinatorEmail.setCoordinatorEmail(map.getKey().getCoordinatorEmail());
-								//List<Participant> failedParticipants = participantRepository.getEWelcomeIdGenerationFailedPartcicipants(map.getKey().getProgramId());
-								List<Participant> failedParticipants = new ArrayList<Participant>();
+								List<Participant> failedParticipants = participantRepository.getEWelcomeIdGenerationFailedPartcicipants(map.getKey().getProgramId());
 								LOGGER.debug("Failed participants : "+failedParticipants.size() + ", programID : "+map.getKey().getProgramId());
 								List<Participant> eWelcomeIDParticipants = participantRepository.getEWelcomeIdGeneratedPartcicipants(map.getKey().getProgramId());
 								LOGGER.debug("eWelcomeIDParticipants : "+eWelcomeIDParticipants.size() + ", programID : "+map.getKey().getProgramId());
@@ -429,7 +428,11 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								}catch(Exception ex){
 									LOGGER.debug("Exception while inserting log details in table.");
 								}
-								for(Participant participant : map.getValue()){
+								for(Participant participant : failedParticipants){
+									listOfParticipantId.add(participant.getId());
+									//System.out.println("participant id "+participant.getId()+" inserted");
+								}
+								for(Participant participant : eWelcomeIDParticipants){
 									listOfParticipantId.add(participant.getId());
 									//System.out.println("participant id "+participant.getId()+" inserted");
 								}
