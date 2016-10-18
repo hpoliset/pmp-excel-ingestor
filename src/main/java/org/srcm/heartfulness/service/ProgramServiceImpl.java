@@ -1042,10 +1042,11 @@ public class ProgramServiceImpl implements ProgramService {
 								participant.setEwelcomeIdRemarks(null);
 								participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
 								participantRepository.save(participant);
+								LOGGER.debug("Fetching ewelcomeID from MYSRCM and persisted in PMP.  NAME: {}, EMAIL: {}",participant.getPrintName(),participant.getEmail());
 								return "success";
 							}else{
 								LOGGER.debug("Print name of the participant and name from the MYSRCM API doesn't match : Participant Name : {}, Name from MYSRCM : {}  ",participant.getPrintName(),userProfile.getName());
-								return "Email already in use with participant name: "+userProfile.getName();
+								return "Email already in use with participant name "+((null != userProfile.getName() || !userProfile.getName().isEmpty())?": "+userProfile.getName():" as empty.");
 							}
 						}else{
 							LOGGER.debug("particpant ref No. from MYSRCM doesn't match with H*** or B*** ids : Participant Name : {}, Name from MYSRCM : {}, Ref NO: {}  ",participant.getPrintName(),userProfile.getName(),userProfile.getRef());

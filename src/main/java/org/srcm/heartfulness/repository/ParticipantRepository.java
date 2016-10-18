@@ -81,7 +81,7 @@ public interface ParticipantRepository {
 	
 	List<Participant> getParticipantListToGenerateEWelcomeID();
 
-	List<Participant> getEWelcomeIdGenerationFailedPartcicipants(String programId);
+	List<Participant> getEWelcomeIdGenerationFailedParticipants(String programId);
 
 	List<Participant> getEWelcomeIdGeneratedPartcicipants(String programId);
 

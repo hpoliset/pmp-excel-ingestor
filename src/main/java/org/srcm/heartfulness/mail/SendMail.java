@@ -48,7 +48,7 @@ import com.sun.mail.smtp.SMTPMessage;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:prod.mail.api.properties", ignoreUnknownFields = false, prefix = "mail.api")
+@ConfigurationProperties(locations = "classpath:dev.mail.api.properties", ignoreUnknownFields = false, prefix = "mail.api")
 public class SendMail {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendMail.class);
@@ -562,7 +562,7 @@ public class SendMail {
 				return new PasswordAuthentication(username, password);
 			}
 		});
-
+		
 		addParameter("COORDINATOR_NAME",
 				coordinatorEmail.getCoordinatorName() != null ? getName(coordinatorEmail.getCoordinatorName()) : "");
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
@@ -571,7 +571,7 @@ public class SendMail {
 			sb.append("<p>Please note that the following e-welcome ID's has been generated for the below given participants of the event - " );
 			sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
 			sb.append("</p>");
-			sb.append("<table border=\"1\" style=\"width: 100%;border-collapse: collapse;\">");
+			sb.append("<table border=\"1\" style=\"width: 75%;border-collapse: collapse;\">");
 			sb.append("<tr>");
 			sb.append("<td  align=middle><b>S.No</b></td>");
 			sb.append("<td  align=middle><b>Participant Name</b></td>");
@@ -603,7 +603,7 @@ public class SendMail {
 				sb.append("<p>The following participant's haven't received e-welcome ID for the event - " );
 				sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
 				sb.append("</p>");
-				sb.append("<table border=\"1\" style=\"width: 100%;border-collapse: collapse;\">");
+				sb.append("<table border=\"1\" style=\"width: 75%;border-collapse: collapse;\">");
 				sb.append("<tr>");
 				sb.append("<td  align=middle><b>S.No</b></td>");
 				sb.append("<td  align=middle><b>Participant Name</b></td>");
@@ -636,7 +636,7 @@ public class SendMail {
 			sb.append("<p>Please note that the following participants haven't received e-welcome ID for the event - " );
 			sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
 			sb.append("</p>");
-			sb.append("<table border=\"1\" style=\"width: 100%;border-collapse: collapse;\">");
+			sb.append("<table border=\"1\" style=\"width: 75%;border-collapse: collapse;\">");
 			sb.append("<tr>");
 			sb.append("<td  align=middle><b>S.No</b></td>");
 			sb.append("<td  align=middle><b>Participant Name</b></td>");
@@ -663,6 +663,10 @@ public class SendMail {
 			sb.append("</p>");
 
 		}
+		sb.append("<p><b>Note:</b> Please <u><a href=");
+		sb.append(SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL +"?id="+ coordinatorEmail.getEventID());
+		sb.append(">click here</a></u> to view the event and participant details.</p>");
+		sb.append("</p>");
 
 		addParameter("PARTICIPANTS_DETAILS", sb.toString());
 		System.out.println(" co ord details - " + coordinatorEmail.getEventName() + "--"

@@ -1100,11 +1100,11 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	@Override
 	public String getEventIdByProgramID(int programId) {
 		Map<String, Object> params = new HashMap<>();
-		params.put("program_id", programId);
+		params.put("programId", programId);
 		try {
 			String eventId = this.namedParameterJdbcTemplate.queryForObject(
-					"SELECT auto_generated_event_id from program where program_id=:program_id", params,
-					BeanPropertyRowMapper.newInstance(String.class));
+					"SELECT auto_generated_event_id from program where program_id=:programId", params,
+					String.class);
 			return eventId;
 		} catch (EmptyResultDataAccessException e) {
 			return "";
