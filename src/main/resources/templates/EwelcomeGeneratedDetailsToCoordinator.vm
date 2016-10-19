@@ -7,7 +7,12 @@
 Dear ${COORDINATOR_NAME},
 <br/>
 <div style="padding-left: 10px;">
+<p>Please note that the participants with valid email's should have received welcome email's by now for the event - ${EVENT_NAME}.<p>
 ${PARTICIPANTS_DETAILS}
+<p><i><u><b>Note:</b></u> You can now manage the event details by clicking on <u><a href="${EVENT_LINK}">this link</a></u>. Through this interface, you can view/edit participant details and also generate eWelcomeIds for newer participants as well.  
+You will need a valid MYSRCM ID associated with the email address on record to manage this event. 
+MYSRCM accounts can be managed by visiting the link <u><a href="https://profile.sahajmarg.org">https://profile.sahajmarg.org</a></u>. 
+For specific questions about the dashboard, please write to introductions@heartfulness.org .<i></p>
 <br/>
 </div>
 <div style="font-style: italic; font-weight: bold;">

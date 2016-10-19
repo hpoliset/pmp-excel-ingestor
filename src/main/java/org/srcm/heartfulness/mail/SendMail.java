@@ -563,12 +563,16 @@ public class SendMail {
 			}
 		});
 		
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(frommail, name));
+		
 		addParameter("COORDINATOR_NAME",
 				coordinatorEmail.getCoordinatorName() != null ? getName(coordinatorEmail.getCoordinatorName()) : "");
+		addParameter("EVENT_NAME", coordinatorEmail.getEventName());
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 		StringBuilder sb = new StringBuilder();
 		if (!participants.isEmpty()) {
-			sb.append("<p>Please note that the following e-welcome ID's has been generated for the below given participants of the event - " );
+			sb.append("<p>The following e-welcome ID's has been generated for the below given participants of the event - " );
 			sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
 			sb.append("</p>");
 			sb.append("<table border=\"1\" style=\"width: 75%;border-collapse: collapse;\">");
@@ -633,7 +637,7 @@ public class SendMail {
 				sb.append("</p>");
 			}
 		} else if (!failedParticipants.isEmpty()) {
-			sb.append("<p>Please note that the following participants haven't received e-welcome ID for the event - " );
+			sb.append("<p>The following participant's haven't received e-welcome ID for the event - " );
 			sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
 			sb.append("</p>");
 			sb.append("<table border=\"1\" style=\"width: 75%;border-collapse: collapse;\">");
@@ -663,11 +667,7 @@ public class SendMail {
 			sb.append("</p>");
 
 		}
-		sb.append("<p><b>Note:</b> Please <u><a href=");
-		sb.append(SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL +"?id="+ coordinatorEmail.getEventID());
-		sb.append(">click here</a></u> to view the event and participant details.</p>");
-		sb.append("</p>");
-
+		addParameter("EVENT_LINK",SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL +"?id="+ coordinatorEmail.getEventID());
 		addParameter("PARTICIPANTS_DETAILS", sb.toString());
 		System.out.println(" co ord details - " + coordinatorEmail.getEventName() + "--"
 				+ coordinatorEmail.getCoordinatorEmail());
@@ -676,8 +676,6 @@ public class SendMail {
 		cal.add(Calendar.DATE, -1);
 		// SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 		// addParameter("DATE", sdf.format(cal.getTime()));
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinatorEmail.getCoordinatorEmail()));
 		message.setSubject(crdntrmailforewlcmidsubject + " - " + coordinatorEmail.getEventName());
 		message.setContent(getMessageContentbyTemplateName(crdntrewlcomeidmailtemplatename), "text/html");
