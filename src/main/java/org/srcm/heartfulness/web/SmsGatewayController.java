@@ -55,6 +55,7 @@ public class SmsGatewayController {
 		String response= "FAILURE";
 		SMS sms = new SMS(mobileNo,smsContent,operator,carrier,datetime);
 		response = smsIntegrationService.createEvent(sms);
+		LOGGER.debug("Response : "+response);
 		LOGGER.debug("--------------- End Create Event----------------------");
 		return response;
 	}

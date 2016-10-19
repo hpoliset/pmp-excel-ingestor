@@ -76,6 +76,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 	public String createEvent(SMS sms) {
 		String response = "";
 		String contents[] = SmsUtil.parseSmsContent(sms.getMessageConetent());
+		LOGGER.debug("inside create event");
 		if (contents.length > 0 && contents.length >= 5) {
 			String subKeyword = contents.length >= 2 ? contents[1] : null;// Subkeyword
 			if (subKeyword != null && !subKeyword.isEmpty()
@@ -146,6 +147,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 													LOGGER.debug("Created Program" + program);
 													response = createSMSSuccessResponse(program);
 												} else {
+													LOGGER.debug("invalid abhyasiID");
 													response = "Specified abhyasiID ( "
 															+ abhyasiId
 															+ " ) is not authorized to create an event( Need to be an preceptor ).";
@@ -155,7 +157,9 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 															+ " ) is not valid.";
 												}*/
 											}
+											LOGGER.debug("userprofile null");
 										} else {
+											LOGGER.debug("invalid abhyasi ID");
 											response = "Specified abhyasiID( " + abhyasiId
 													+ " ) is not valid. Please enter a valid abhyasiID.";
 										}
@@ -187,12 +191,14 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 											+ SMSConstants.SMS_CREATE_EVENT_RESPONSE_SUCCESS_5;*/
 								}
 							} else {
+								LOGGER.debug("invalid zip code 2");
 								response = SMSConstants.SMS_CREATE_EVENT_INVALID_ZIPCODE_RESPONSE_1 + pincode
 										+ SMSConstants.SMS_CREATE_EVENT_INVALID_ZIPCODE_RESPONSE_2;
 
 							}
 						}
 					}else{
+						LOGGER.debug("invalid zip code");
 						response = SMSConstants.SMS_CREATE_EVENT_INVALID_ZIPCODE_RESPONSE_1 + pincode
 								+ SMSConstants.SMS_CREATE_EVENT_INVALID_ZIPCODE_RESPONSE_2;
 					}
