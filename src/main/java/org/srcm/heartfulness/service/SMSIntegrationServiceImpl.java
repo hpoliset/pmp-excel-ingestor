@@ -104,13 +104,16 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 					if (eventName != null && !eventName.isEmpty() && pincode.length()==6) {
 						program.setProgramName(eventName);
 						try {
+							LOGGER.debug("googlemaps api called.. ");
 							googleResponse = smsGatewayRestTemplate.getLocationdetails("India", pincode);
+							LOGGER.debug("googlemaps api end.. "+googleResponse);
 						} catch (HttpClientErrorException | IOException e) {
 							googleResponse=null;
 							e.printStackTrace();
 						}
 						if (googleResponse != null) {
 							if (googleResponse.getStatus().equals(("OK"))) {
+								LOGGER.debug("googlemaps api OK.. ");
 								List<AddressComponents> addressComponents = new ArrayList<AddressComponents>();
 								if (!googleResponse.getResults().isEmpty()) {
 									addressComponents = googleResponse.getResults().get(0).getAddress_components();
@@ -133,12 +136,14 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 								} else {
 									try {
 										//boolean validMobileNum = false;
+										LOGGER.debug("validating abhyasi ID api called.. ");
 										AbhyasiResult result = srcmRestTemplate.getAbyasiProfile(abhyasiId);
 										if (result.getUserProfile().length > 0) {
 											AbhyasiUserProfile userProfile = result.getUserProfile()[0];
 											if (null != userProfile) {
 												//validMobileNum = validateSenderMobileNumber(userProfile,sms.getSenderMobile());
 												//if (validMobileNum) {
+												LOGGER.debug("validating abhyasi ID api called.. user profile not null");
 												if (true == userProfile.isIs_prefect()
 														&& 0 != userProfile.getPrefect_id()) {
 													program.setAbyasiRefNo(abhyasiId);
@@ -165,6 +170,12 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 										}
 									} catch (HttpClientErrorException | IOException e) {
 										e.printStackTrace();
+										LOGGER.debug("validating abhyasi ID api called..catch block ");
+										response = "Specified abhyasiID( " + abhyasiId
+												+ " ) is not valid. Please enter a valid abhyasiID.";
+									}catch (Exception e) {
+										e.printStackTrace();
+										LOGGER.debug("validating abhyasi ID api called..catch block ");
 										response = "Specified abhyasiID( " + abhyasiId
 												+ " ) is not valid. Please enter a valid abhyasiID.";
 									}
@@ -197,6 +208,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 
 							}
 						}
+						LOGGER.debug("googlemaps response null");
 					}else{
 						LOGGER.debug("invalid zip code");
 						response = SMSConstants.SMS_CREATE_EVENT_INVALID_ZIPCODE_RESPONSE_1 + pincode
@@ -209,6 +221,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 				}
 
 			}
+			LOGGER.debug("subkeyword is empty.. ");
 		} else {
 			LOGGER.debug("Insufficient Content");
 			response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
@@ -283,6 +296,8 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		program.setCreatedBy("admin");
 		program.setCreateTime(new Date());
 		program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
+		//LOGGER.debug("pojo"+userProfile.getSrcm_group().toString());
+		LOGGER.debug("string"+String.valueOf(userProfile.getSrcm_group()));
 		program.setSrcmGroup(String.valueOf(userProfile.getSrcm_group()));
 		program.setCoordinatorEmail(userProfile.getEmail());
 		program.setCoordinatorName(userProfile.getName());

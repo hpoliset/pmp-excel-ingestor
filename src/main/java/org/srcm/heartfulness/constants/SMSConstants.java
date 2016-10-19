@@ -13,7 +13,7 @@ public class SMSConstants {
 	public static final String SMS_KEYWORD="LOVHFN";
 	
 	/** Holds the sub keyword for create event  */
-	public static final String SMS_CREATE_EVENT_SUB_KEYWORD="CE";
+	public static final String SMS_CREATE_EVENT_SUB_KEYWORD="CES";
 	
 	/** Holds the sub keyword for create event	 */
 	public static final String SMS_UPDATE_EVENT_SUB_KEYWORD="UE";
