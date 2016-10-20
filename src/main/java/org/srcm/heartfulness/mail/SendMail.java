@@ -263,7 +263,7 @@ public class SendMail {
 	public void setCoordinatormailforupdatingeventsubject(String coordinatormailforupdatingeventsubject) {
 		this.coordinatormailforupdatingeventsubject = coordinatormailforupdatingeventsubject;
 	}
-	
+
 	public String getWelcomemailto() {
 		return welcomemailto;
 	}
@@ -287,7 +287,7 @@ public class SendMail {
 	public void setWelcomemailtemplatename(String welcomemailtemplatename) {
 		this.welcomemailtemplatename = welcomemailtemplatename;
 	}
-	
+
 	public String getWelcomemailbcc() {
 		return welcomemailbcc;
 	}
@@ -722,36 +722,59 @@ public class SendMail {
 
 	public void sendWelcomeMail() throws AddressException, MessagingException, UnsupportedEncodingException,
 	ParseException {
+		try {
+			Properties props = System.getProperties();
+			props.put("mail.debug", "true");
+			props.put("mail.smtp.host", hostname);
+			props.put("mail.smtp.port", port);
+			props.put("mail.smtp.ssl.enable", "true");
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");
 
-		Properties props = System.getProperties();
-		props.put("mail.debug", "true");
-		props.put("mail.smtp.host", hostname);
-		props.put("mail.smtp.port", port);
-		props.put("mail.smtp.ssl.enable", "true");
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
-
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
+			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
+				}
+			});
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.DATE, -1);
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+			Date date = new Date();
+			String date_str = sdf.format(date);
+			addParameter("DATE", date_str);
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
+			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(welcomemailto));
+			message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc));
+			message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc2));
+			message.setSubject(welcomemailsubject);
+			message.setContent(getMessageContentbyTemplateName(welcomemailtemplatename), "text/html");
+			message.setAllow8bitMIME(true);
+			message.setSentDate(new Date());
+			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+			Transport.send(message);
+			try {
+				LOGGER.debug("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0),welcomemailto ,
+						EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_SUCCESS, null);
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.debug("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.debug("END        :Exception while inserting mail log details in table");
 			}
-		});
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -1);
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
-		Date date = new Date();
-		String date_str = sdf.format(date);
-		addParameter("DATE", date_str);
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
-		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(welcomemailto));
-		message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc));
-		message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc2));
-		message.setSubject(welcomemailsubject);
-		message.setContent(getMessageContentbyTemplateName(welcomemailtemplatename), "text/html");
-		message.setAllow8bitMIME(true);
-		message.setSentDate(new Date());
-		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-		Transport.send(message);
+		} catch (MessagingException | UnsupportedEncodingException e) {
+			LOGGER.error("Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.debug("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), welcomemailto,
+						EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.debug("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.debug("END        :Exception while inserting mail log details in table");
+			}
+		}
 	}
 }
+
