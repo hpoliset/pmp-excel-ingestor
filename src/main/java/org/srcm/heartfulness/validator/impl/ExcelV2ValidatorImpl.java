@@ -63,7 +63,7 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 	 */
 	public void validateProgramDetails(Sheet sheet, List<String> errorList) {
 
-		LOGGER.debug("Started validating Event Details structure for v2 template.");
+		LOGGER.info("Started validating Event Details structure for v2 template.");
 		int row, col;
 		for (V2ProgramCols2 column : V2ProgramCols2.values()) {
 			row = column.getRow();
@@ -73,7 +73,7 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 						+ " is not present as per the template.");
 			}
 		}
-		LOGGER.debug("Event Details structure validation completed for v2 template.");
+		LOGGER.info("Event Details structure validation completed for v2 template.");
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 	 */
 	public void validateParticipantDetails(Sheet sheet, List<String> errorList) {
 
-		LOGGER.debug("INFO : Started validating Participants Details sheet structure for v2.1 template.");
+		LOGGER.info("INFO : Started validating Participants Details sheet structure for v2.1 template.");
 		int row, col;
 		for (V2ParticipantCols column : V2ParticipantCols.values()) {
 			row = column.getRow();
@@ -93,11 +93,11 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 						+ " is not present as per the template.");
 			}
 		}
-		LOGGER.debug("INFO : Participants Details sheet structure validation completed for v2.1 template.");
+		LOGGER.info("INFO : Participants Details sheet structure validation completed for v2.1 template.");
 	}
 
 	public void checkProgramMandatoryFields(Sheet eventSheet, List<String> errorList){
-		LOGGER.debug("INFO : Started validating Program Details sheet structure for v2.1 template.");
+		LOGGER.info("INFO : Started validating Program Details sheet structure for v2.1 template.");
 
 		if(eventSheet.getRow(2).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
 			errorList.add(V2ProgramCols2.EVENT_TYPE.getHeader() + " is a mandatory field and cannot be empty at rownumber 3");
@@ -190,12 +190,12 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 			errorList.add(V2ProgramCols2.PRECEPTOR_ID.getHeader() + " is a mandatory field and cannot be empty at row number 15");
 		}
 
-		LOGGER.debug("INFO : Completed validating Program Details sheet structure for v2.1 template.");
+		LOGGER.info("INFO : Completed validating Program Details sheet structure for v2.1 template.");
 	}
 
 	public void checkParticipantMandatoryFields(Sheet participantSheet, List<String> errorList) {
 
-		LOGGER.debug("Started validating Participation Details sheet mandatory fields for v2.1 template.");
+		LOGGER.info("Started validating Participation Details sheet mandatory fields for v2.1 template.");
 		int rowCount = participantSheet.getPhysicalNumberOfRows();
 		for (int i = 1; i < rowCount; i++) {
 			Row currentRow = participantSheet.getRow(i);
@@ -203,7 +203,7 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 				errorList.addAll(parseParticipantData(currentRow, i + 1));
 			}
 		}
-		LOGGER.debug("Participation Details sheet mandatory fields validation completed for v2.1 template.");
+		LOGGER.info("Participation Details sheet mandatory fields validation completed for v2.1 template.");
 	}
 
 	private List<String> parseParticipantData(Row currentRow, int rowNumber) {
