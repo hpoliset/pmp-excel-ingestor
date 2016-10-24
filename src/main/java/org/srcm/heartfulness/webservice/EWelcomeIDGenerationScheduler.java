@@ -53,15 +53,15 @@ public class EWelcomeIDGenerationScheduler {
 	// @RequestMapping(value = "generateewelcomeid", method = RequestMethod.POST)
 	@Scheduled(cron = "${welcome.mailids.generation.cron.time}")
 	public void generateEWelcomeIDsForTheParticipants() {
-		LOGGER.debug("START : CRON : EWELCOMEID GENERATION : Scheduler to generate EwelcomeID's for the participants started at - "
+		LOGGER.info("START : CRON : EWELCOMEID GENERATION : Scheduler to generate EwelcomeID's for the participants started at - "
 				+ new Date());
 		List<Participant> participants=new ArrayList<Participant>();
 		try{
 			participants = participantService.getParticipantListToGenerateEWelcomeID();
 		}catch(Exception e){
-			LOGGER.debug("Error While fetching participants from DB : Exception : {} ",StackTraceUtils.convertStackTracetoString(e));
+			LOGGER.error("Error While fetching participants from DB : Exception : {} ",StackTraceUtils.convertStackTracetoString(e));
 		}
-		LOGGER.debug("CRON : EWELCOMEID GENERATION : Total no. of partcipants to generate eWelcomeID : {} ",
+		LOGGER.info("CRON : EWELCOMEID GENERATION : Total no. of partcipants to generate eWelcomeID : {} ",
 				participants.size());
 		for (Participant participant : participants) {
 			PMPAPIAccessLog accessLog = null;
@@ -72,7 +72,7 @@ public class EWelcomeIDGenerationScheduler {
 						StackTraceUtils.convertPojoToJson(participant), null);
 				id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 			} catch (Exception e) {
-				LOGGER.debug("Error while inserting data into pmp api access log table. Exception: {} ",StackTraceUtils.convertStackTracetoString(e));
+				LOGGER.error("Error while inserting data into pmp api access log table. Exception: {} ",StackTraceUtils.convertStackTracetoString(e));
 			}
 			try {
 				Program program = programService.getProgramById(participant.getProgramId());
@@ -94,7 +94,7 @@ public class EWelcomeIDGenerationScheduler {
 							apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 							LOGGER.debug("CRON : EWELCOMEID GENERATION :Updated log successfully");
 						} catch (Exception e) {
-							LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+							LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 									StackTraceUtils.convertPojoToJson(e));
 						}
 					} else {
@@ -109,7 +109,7 @@ public class EWelcomeIDGenerationScheduler {
 							participantRepository.save(participant);
 							LOGGER.debug("CRON : EWELCOMEID GENERATION : Failed case: Participant details persisted successfully");
 						} catch (Exception e) {
-							LOGGER.debug("Exception while persisting participant details : {} ",
+							LOGGER.error("Exception while persisting participant details : {} ",
 									StackTraceUtils.convertPojoToJson(e));
 						}
 						try {
@@ -123,7 +123,7 @@ public class EWelcomeIDGenerationScheduler {
 							apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 							LOGGER.debug("CRON : EWELCOMEID GENERATION : Failed case: Updated log successfully");
 						} catch (Exception e) {
-							LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+							LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 									StackTraceUtils.convertPojoToJson(e));
 						}
 					}
@@ -139,7 +139,7 @@ public class EWelcomeIDGenerationScheduler {
 						participantRepository.save(participant);
 						LOGGER.debug("CRON : EWELCOMEID GENERATION : Failed case: Participant details persisted successfully");
 					} catch (Exception e) {
-						LOGGER.debug("Exception while persisting participant details : {} ",
+						LOGGER.error("Exception while persisting participant details : {} ",
 								StackTraceUtils.convertPojoToJson(e));
 					}
 					try {
@@ -153,12 +153,12 @@ public class EWelcomeIDGenerationScheduler {
 						apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 						LOGGER.debug("CRON : EWELCOMEID GENERATION : Failed case: Updated log successfully");
 					} catch (Exception e) {
-						LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+						LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 								StackTraceUtils.convertPojoToJson(e));
 					}
 				}
 			} catch (Exception e) {
-				LOGGER.debug("Scheduler to generate EwelcomeID's : Exception :  {} ",
+				LOGGER.error("Scheduler to generate EwelcomeID's : Exception :  {} ",
 						StackTraceUtils.convertStackTracetoString(e));
 				/*try {
 					LOGGER.debug(
@@ -187,13 +187,13 @@ public class EWelcomeIDGenerationScheduler {
 					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 					LOGGER.debug("CRON : EWELCOMEID GENERATION : Failed case: Updated log successfully");
 				} catch (Exception ex) {
-					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+					LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 							StackTraceUtils.convertPojoToJson(ex));
 				}
 			}
 
 		}
-		LOGGER.debug("END : CRON : EWELCOMEID GENERATION : Scheduler to generate EwelcomeID's for the participants completed at - "
+		LOGGER.info("END : CRON : EWELCOMEID GENERATION : Scheduler to generate EwelcomeID's for the participants completed at - "
 				+ new Date());
 	}
 
