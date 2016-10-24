@@ -246,7 +246,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 						+ welcomeMailidsFileName);
 				fop.write(sb.toString().getBytes());
 				fop.close();
-				LOGGER.debug("File copied to  " + welcomeMailidsLocalFilepath + currentDate + "_" + welcomeMailidsFileName);
+				LOGGER.info("File copied to  " + welcomeMailidsLocalFilepath + currentDate + "_" + welcomeMailidsFileName);
 				ftpConnectionHelper.processUpload(welcomeMailidsLocalFilepath, welcomeMailidsRemoteFilepath,
 						welcomeMailidsFileName);
 			}
