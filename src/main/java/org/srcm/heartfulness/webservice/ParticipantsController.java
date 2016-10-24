@@ -103,7 +103,7 @@ public class ParticipantsController {
 		try {
 			userProfile = eventDashboardValidator.validateToken(token, id);
 			if (null == userProfile) {
-				LOGGER.debug("UserProfile doesnot exists in MySrcm database");
+				LOGGER.info("UserProfile doesnot exists in MySrcm database");
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid client credentials");
 				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage("Invalid client credentials");
@@ -667,7 +667,7 @@ public class ParticipantsController {
 					accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 					map.put("status", ErrorConstants.STATUS_FAILED);
-					LOGGER.debug("END : Update introduction status call : Partcicipants count - {} ",
+					LOGGER.info("END : Update introduction status call : Partcicipants count - {} ",
 							participantRequest.getParticipantIds().size());
 					return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
 				} else {

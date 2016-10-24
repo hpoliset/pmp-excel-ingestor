@@ -362,26 +362,26 @@ public class SendMail {
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
 			Transport.send(message);
 			for (String toId : toIds) {
-				LOGGER.debug("Mail sent successfully : {} ", toId);
+				LOGGER.info("Mail sent successfully : {} ", toId);
 			}
 			try {
-				LOGGER.debug("START        :Inserting mail log details in table");
+				LOGGER.info("START        :Inserting mail log details in table");
 				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), toIds[0],
 						EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_SUCCESS, null);
 				mailLogRepository.createMailLog(pmpMailLog);
-				LOGGER.debug("END        :Completed inserting mail log details in table");
+				LOGGER.info("END        :Completed inserting mail log details in table");
 			} catch (Exception ex) {
 				LOGGER.error("END        :Exception while inserting mail log details in table");
 			}
 		} catch (MessagingException | UnsupportedEncodingException e) {
 			LOGGER.error("Sending Mail Failed : {} " + e.getMessage());
 			try {
-				LOGGER.debug("START        :Inserting mail log details in table");
+				LOGGER.info("START        :Inserting mail log details in table");
 				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), toIds[0],
 						EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_FAILED,
 						StackTraceUtils.convertStackTracetoString(e));
 				mailLogRepository.createMailLog(pmpMailLog);
-				LOGGER.debug("END        :Completed inserting mail log details in table");
+				LOGGER.info("END        :Completed inserting mail log details in table");
 			} catch (Exception ex) {
 				LOGGER.error("END        :Exception while inserting mail log details in table");
 			}
@@ -714,7 +714,7 @@ public class SendMail {
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
 		Transport.send(message);
-		LOGGER.debug("Mail sent successfully to Coordinator : {} ", coordinator.getCoordinatorEmail());
+		LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinator.getCoordinatorEmail());
 	}
 
 	public void sendWelcomeMail() throws AddressException, MessagingException, UnsupportedEncodingException,
@@ -751,23 +751,23 @@ public class SendMail {
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
 			Transport.send(message);
 			try {
-				LOGGER.debug("START        :Inserting mail log details in table");
+				LOGGER.info("START        :Inserting mail log details in table");
 				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0),welcomemailto ,
 						EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_SUCCESS, null);
 				mailLogRepository.createMailLog(pmpMailLog);
-				LOGGER.debug("END        :Completed inserting mail log details in table");
+				LOGGER.info("END        :Completed inserting mail log details in table");
 			} catch (Exception ex) {
 				LOGGER.error("END        :Exception while inserting mail log details in table");
 			}
 		} catch (MessagingException | UnsupportedEncodingException e) {
 			LOGGER.error("Sending Mail Failed : {} " + e.getMessage());
 			try {
-				LOGGER.debug("START        :Inserting mail log details in table");
+				LOGGER.info("START        :Inserting mail log details in table");
 				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), welcomemailto,
 						EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_FAILED,
 						StackTraceUtils.convertStackTracetoString(e));
 				mailLogRepository.createMailLog(pmpMailLog);
-				LOGGER.debug("END        :Completed inserting mail log details in table");
+				LOGGER.info("END        :Completed inserting mail log details in table");
 			} catch (Exception ex) {
 				LOGGER.error("END        :Exception while inserting mail log details in table");
 			}
