@@ -43,7 +43,7 @@ public class SmsUtil {
 			int generatedInt = secureRandomGenerator.nextInt();
 			generatedNumber = Integer.valueOf(Math.abs(generatedInt)).toString();
 		} catch (NoSuchAlgorithmException e) {
-			LOGGER.debug("Exception while generating random number {}", e.getMessage());
+			LOGGER.error("Exception while generating random number {}", e.getMessage());
 		}
 		return generatedNumber.substring(0, digit);
 	}
@@ -62,7 +62,7 @@ public class SmsUtil {
 			secureRandomGenerator.nextBytes(randomBytes);
 			generatedInt = secureRandomGenerator.nextInt(9999);
 		} catch (NoSuchAlgorithmException e) {
-			LOGGER.debug("Exception while generating sequence number {}", e.getMessage());
+			LOGGER.error("Exception while generating sequence number {}", e.getMessage());
 		}
 		return String.format("%04d", generatedInt);
 	}

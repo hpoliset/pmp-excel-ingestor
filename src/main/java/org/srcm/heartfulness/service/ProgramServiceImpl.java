@@ -965,6 +965,12 @@ public class ProgramServiceImpl implements ProgramService {
 								} else {
 									return "Error While fetching cities api response";
 								}
+							} else if (objResponse instanceof String) {
+								if(null != objResponse){
+									return (String) objResponse;
+								}else{
+									return "Error While fetching geosearch response";
+								}
 							} else {
 								return "Error While fetching geosearch response";
 							}
@@ -1123,10 +1129,12 @@ public class ProgramServiceImpl implements ProgramService {
 						AbhyasiUserProfile userProfile = result.getUserProfile()[0];
 						if (null != userProfile) {
 							if (true == userProfile.isIs_prefect() && 0 != userProfile.getPrefect_id()) {
+								LOGGER.info("Prefect ID fecthed from MYSRCM : prefect ID : {}",userProfile.getPrefect_id());
 								program.setAbyasiRefNo(program.getPreceptorIdCardNumber());
 								program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
 								program.setPreceptorName(userProfile.getName());
 								programRepository.save(program);
+								LOGGER.debug("Prefect ID persisted in PMP : prefect ID : {}",program.getPrefectId());
 								try {
 									if (null != accessLogDetails) {
 										accessLogDetails

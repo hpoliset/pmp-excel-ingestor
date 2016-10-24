@@ -503,7 +503,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 								participantInput.getPrintName(), ErrorConstants.STATUS_FAILED, errorResult);
 						result.add(response);
 					} else {
-						LOGGER.debug("START - {} : Generating eWelcomeID for the participant : {} ",
+						LOGGER.info("START - {} : Generating eWelcomeID for the participant : {} ",
 								participantInput.getSeqId(), participantInput.getEmail());
 						eWelcomeID = programService.generateeWelcomeID(participantInput, id);
 						if ("success".equalsIgnoreCase(eWelcomeID)) {
@@ -524,11 +524,11 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 									participantInput.getPrintName(), ErrorConstants.STATUS_FAILED, description);
 						}
 						result.add(response);
-						LOGGER.debug("END - {} : Response of eWelcomeID Generation for the participant : {} ",
+						LOGGER.info("END - {} : Response of eWelcomeID Generation for the participant : {} ",
 								participantInput.getSeqId(), result.toString());
 					}
 				} else {
-					LOGGER.debug("START - {} : Updating participant Status : {} ", participantInput.getSeqId(),
+					LOGGER.info("START - {} : Updating participant Status : {} ", participantInput.getSeqId(),
 							participantInput.getEmail());
 					programService.UpdateParticipantsStatus(participant.getSeqId(), participantRequest.getEventId(),
 							participantRequest.getIntroduced(), userEmailID);
@@ -537,7 +537,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					UpdateIntroductionResponse response = new UpdateIntroductionResponse(participant.getSeqId(),
 							participantInput.getPrintName(), ErrorConstants.STATUS_SUCCESS, description);
 					result.add(response);
-					LOGGER.debug("END - {} : Response of update introduction status for the participant : {} ",
+					LOGGER.info("END - {} : Response of update introduction status for the participant : {} ",
 							participantInput.getSeqId(), result.toString());
 				}
 				/*

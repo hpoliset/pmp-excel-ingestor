@@ -43,7 +43,7 @@ public class MailSubscriptionController {
 		try {
 			String mailID = getMailIDfromEncryptedID(id);
 			if (null == mailID || mailID.isEmpty() || !mailID.matches(ExpressionConstants.EMAIL_REGEX)) {
-				LOGGER.debug("Invalid ID. - id : {}", id);
+				LOGGER.info("Invalid ID. - id : {}", id);
 				model.addAttribute("message", "Invalid ID.");
 				return "eventsuccess";
 			}
@@ -51,8 +51,8 @@ public class MailSubscriptionController {
 			model.addAttribute("message", response);
 			return "eventsuccess";
 		} catch (IllegalBlockSizeException | NumberFormatException e) {
-			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
-			LOGGER.debug("Invalid ID. - id : {}", id);
+			LOGGER.error("Exception while decrypting {} ", e.getMessage());
+			LOGGER.error("Invalid ID. - id : {}", id);
 			model.addAttribute("message", "Invalid ID.");
 			return "eventsuccess";
 		}

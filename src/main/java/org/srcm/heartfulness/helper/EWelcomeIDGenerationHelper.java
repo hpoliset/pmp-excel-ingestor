@@ -336,7 +336,7 @@ public class EWelcomeIDGenerationHelper {
 				LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
-			return null;
+			return "Invalid participant City/State/Country.";
 		} catch (IOException e) {
 			try {
 				LOGGER.debug("Update introduction status : GeoSearchResponse : Exception : {} ",
