@@ -36,7 +36,7 @@ public class WelcomeMailController {
 	/* @Scheduled(cron = "${welcome.mail.subscribe.cron.time}") */
 	public void subscribeUser() {
 		try {
-			LOGGER.debug("Scheduler started at - " + new Date());
+			LOGGER.info("Scheduler started at - " + new Date());
 			WelcomeMailService.addNewSubscriber();
 		} catch (HttpClientErrorException | IOException | MessagingException e) {
 			// e.printStackTrace();
@@ -47,7 +47,7 @@ public class WelcomeMailController {
 	/* @Scheduled(cron = "${welcome.mail.unsubscribe.cron.time}") */
 	public void unsubscribeUser() {
 		try {
-			LOGGER.debug("Unsubcribe user called.");
+			LOGGER.info("Unsubcribe user called.");
 			WelcomeMailService.unsubscribeUsers();
 		} catch (HttpClientErrorException | IOException e) {
 			// e.printStackTrace();
@@ -58,9 +58,9 @@ public class WelcomeMailController {
 	@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") 
 	public void uploadDailyWelcomeMailidsToFTP() {
 		try {
-			LOGGER.debug("Upload File to FTP called.");
+			LOGGER.info("Upload File to FTP called.");
 			WelcomeMailService.uploadParticipantEmailidsToFTP();
-			LOGGER.debug("Process Completed.");
+			LOGGER.info("Process Completed.");
 		} catch (Exception e) {
 			LOGGER.error("Exception while uploading file - {} " + e.getMessage());
 		}
@@ -73,16 +73,16 @@ public class WelcomeMailController {
 	 */
 	@Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}") 
 	public void sendEmailToCoordinator() {
-		LOGGER.debug("START		:Cron job started to fetch participants to whom welcome mail already sent");
+		LOGGER.info("START		:Cron job started to fetch participants to whom welcome mail already sent");
 		WelcomeMailService.getCoordinatorListAndSendMail();
-		LOGGER.debug("END		:Cron job completed to fetch participants to whom welcome mail already sent");
+		LOGGER.info("END		:Cron job completed to fetch participants to whom welcome mail already sent");
 	}
 
 	//@RequestMapping(value = "informcoordinatorswithewelcomeids", method = RequestMethod.POST)
 	/*@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}") */
 	public void sendGeneratedEwelcomeIdToCoordinators() {
 		try {
-			LOGGER.debug("Sending mail to co-ordinator for e-welcome id generation called.");
+			LOGGER.info("Sending mail to co-ordinator for e-welcome id generation called.");
 			WelcomeMailService.getGeneratedEwelcomeIdAndSendToCoordinators();
 		} catch (Exception e) {
 			LOGGER.error("Exception while sending file - {} " + e.getMessage());
@@ -93,7 +93,7 @@ public class WelcomeMailController {
 	@Scheduled(cron = "${welcome.mail.to.hfnlist.cron.time}") 
 	public void sendWelcomeMail() {
 		try {
-			LOGGER.debug("Sending mail to hfn list called.");
+			LOGGER.info("Sending mail to hfn list called.");
 			WelcomeMailService.sendWelcomeMailToHfnList();
 		} catch (Exception e) {
 			LOGGER.error("Exception while sending mail - {} " + e.getMessage());

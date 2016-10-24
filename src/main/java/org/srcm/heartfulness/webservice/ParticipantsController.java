@@ -93,11 +93,11 @@ public class ParticipantsController {
 	@RequestMapping(value = "/getparticipantlist", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getParticipantList(@RequestHeader(value = "Authorization") String token,
 			@RequestBody(required = true) Event event, @Context HttpServletRequest httpRequest) {
-		LOGGER.debug("Fetching participant List.... " + DateUtils.getCurrentTimeInMilliSec());
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
 				StackTraceUtils.convertPojoToJson(event), null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		LOGGER.info("Fetching participant List. logger ID: {} " ,id);
 		UserProfile userProfile = null;
 		List<ParticipantRequest> participantList = new ArrayList<ParticipantRequest>();
 		try {
@@ -210,7 +210,7 @@ public class ParticipantsController {
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile userProfile = null;
 		try {
-			LOGGER.error("Fetching participant details....");
+			LOGGER.info("Fetching participant details. logger ID: {} ",id);
 			userProfile = eventDashboardValidator.validateToken(token, id);
 			if (null == userProfile) {
 				ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
@@ -324,6 +324,7 @@ public class ParticipantsController {
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
 				StackTraceUtils.convertPojoToJson(participant), null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		LOGGER.info("create participant  logger ID: {} " ,id);
 		UserProfile userProfile = null;
 		try {
 			userProfile = eventDashboardValidator.validateToken(token, id);
@@ -424,6 +425,7 @@ public class ParticipantsController {
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
 				StackTraceUtils.convertPojoToJson(participant), null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		LOGGER.info("update particpant : logger ID: {} " ,id);
 		UserProfile userProfile = null;
 		try {
 			userProfile = eventDashboardValidator.validateToken(token, id);
@@ -526,6 +528,7 @@ public class ParticipantsController {
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
 				StackTraceUtils.convertPojoToJson(participantRequest), null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		LOGGER.info("delete particpant : logger ID: {} " ,id);
 		UserProfile userProfile = null;
 		try {
 			userProfile = eventDashboardValidator.validateToken(token, id);
@@ -652,7 +655,7 @@ public class ParticipantsController {
 				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 				return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
 			} else {
-				LOGGER.debug("SATRT : Update introduction status method called : Partcicipants count - {} ",
+				LOGGER.info("SATRT :  logger ID: {} : Update introduction status method called : Partcicipants count - {} ",id,
 						participantRequest.getParticipantIds().size());
 				accessLog.setUsername(userProfile.getEmail());
 				Map<String, String> map = eventDashboardValidator.checkIntroductionRequestMandatoryFields(
@@ -674,7 +677,7 @@ public class ParticipantsController {
 					accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(result));
 					accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-					LOGGER.debug("END : Update introduction status call : Partcicipants count - {} ",
+					LOGGER.info("END : Update introduction status call : Partcicipants count - {} ",
 							participantRequest.getParticipantIds().size());
 					return new ResponseEntity<List<UpdateIntroductionResponse>>(result, HttpStatus.OK);
 				}

@@ -68,8 +68,8 @@ public class SubscriptionController {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(subscriptionRequest.getMailID(), httpRequest.getRemoteAddr(),
 				httpRequest.getRequestURI(), DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED,
 				null, StackTraceUtils.convertPojoToJson(subscriptionRequest), null);
-		apiAccessLogService.createPmpAPIAccessLog(accessLog);
-		LOGGER.debug("Unsubcribe user called - {} ", subscriptionRequest.getName());
+		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		LOGGER.info(" logger ID: {} :Unsubcribe user called - {} ",id, subscriptionRequest.getName());
 		Map<String, String> map = subscriptionValidator.checkMandatoryFieldsinSubscriptionRequest(subscriptionRequest);
 		if (!map.isEmpty()) {
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -102,11 +102,11 @@ public class SubscriptionController {
 	@RequestMapping(value = "/subscribemail", method = RequestMethod.POST)
 	public ResponseEntity<?> subscribeToMailAlerts(@RequestBody SubscriptionRequest subscriptionRequest,
 			@Context HttpServletRequest httpRequest) {
-		LOGGER.debug("subcribe user called - {} ", subscriptionRequest.getName());
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(subscriptionRequest.getMailID(), httpRequest.getRemoteAddr(),
 				httpRequest.getRequestURI(), DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED,
 				null, StackTraceUtils.convertPojoToJson(subscriptionRequest), null);
-		apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		int id =apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		LOGGER.debug(" logger ID: {} : subcribe user called - {} ",id, subscriptionRequest.getName());
 		Map<String, String> map = subscriptionValidator.checkMandatoryFieldsinSubscriptionRequest(subscriptionRequest);
 		if (!map.isEmpty()) {
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);

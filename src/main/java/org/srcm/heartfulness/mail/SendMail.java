@@ -371,7 +371,7 @@ public class SendMail {
 				mailLogRepository.createMailLog(pmpMailLog);
 				LOGGER.debug("END        :Completed inserting mail log details in table");
 			} catch (Exception ex) {
-				LOGGER.debug("END        :Exception while inserting mail log details in table");
+				LOGGER.error("END        :Exception while inserting mail log details in table");
 			}
 		} catch (MessagingException | UnsupportedEncodingException e) {
 			LOGGER.error("Sending Mail Failed : {} " + e.getMessage());
@@ -383,7 +383,7 @@ public class SendMail {
 				mailLogRepository.createMailLog(pmpMailLog);
 				LOGGER.debug("END        :Completed inserting mail log details in table");
 			} catch (Exception ex) {
-				LOGGER.debug("END        :Exception while inserting mail log details in table");
+				LOGGER.error("END        :Exception while inserting mail log details in table");
 			}
 		}
 	}
@@ -486,7 +486,7 @@ public class SendMail {
 		toEmailIDs.add(mail);
 		try {
 			sendMail(toEmailIDs, new ArrayList<String>(), getMessageContentbyTemplateName(onlinetemplatename));
-			LOGGER.debug("Mail sent successfully : {} ", mail);
+			LOGGER.info("Mail sent successfully : {} ", mail);
 		} catch (MessagingException | UnsupportedEncodingException e) {
 			LOGGER.error("Sending Mail Failed : {} ", mail);
 			throw new RuntimeException(e);
@@ -665,9 +665,6 @@ public class SendMail {
 		}
 
 		addParameter("PARTICIPANTS_DETAILS", sb.toString());
-		System.out.println(" co ord details - " + coordinatorEmail.getEventName() + "--"
-				+ coordinatorEmail.getCoordinatorEmail());
-		System.out.println("PARTICIPANTS_DETAILS " + sb.toString());
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
 		// SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
@@ -760,7 +757,7 @@ public class SendMail {
 				mailLogRepository.createMailLog(pmpMailLog);
 				LOGGER.debug("END        :Completed inserting mail log details in table");
 			} catch (Exception ex) {
-				LOGGER.debug("END        :Exception while inserting mail log details in table");
+				LOGGER.error("END        :Exception while inserting mail log details in table");
 			}
 		} catch (MessagingException | UnsupportedEncodingException e) {
 			LOGGER.error("Sending Mail Failed : {} " + e.getMessage());
@@ -772,7 +769,7 @@ public class SendMail {
 				mailLogRepository.createMailLog(pmpMailLog);
 				LOGGER.debug("END        :Completed inserting mail log details in table");
 			} catch (Exception ex) {
-				LOGGER.debug("END        :Exception while inserting mail log details in table");
+				LOGGER.error("END        :Exception while inserting mail log details in table");
 			}
 		}
 	}

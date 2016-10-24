@@ -79,7 +79,7 @@ public class AuthenticationController {
 				ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(authenticationRequest), null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		try {
-			LOGGER.debug("Trying to Authenticate :  {}", authenticationRequest.getUsername());
+			LOGGER.info("Trying to Authenticate :  {}", authenticationRequest.getUsername());
 			SrcmAuthenticationResponse authenticationResponse = authenticationService.validateLogin(
 					authenticationRequest, session, id);
 			model.addAttribute("Auth", session.getAttribute("Authentication"));
