@@ -103,10 +103,10 @@ public class PMPAPILogController {
 	consumes = MediaType.APPLICATION_JSON_VALUE,
 	produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> loadPmpApiAccessLogData(){
-		LOGGER.debug("START  :  Fetching details from PMP Log table");
+		LOGGER.info("START  :  Fetching details from PMP Log table");
 		PMPLogData logData = new PMPLogData();
 		logData.setData(accessLogService.loadPmpApiAccessLogData());
-		LOGGER.debug("END  :  Completed fetching details from PMP Log table");
+		LOGGER.info("END  :  Completed fetching details from PMP Log table");
 		return new ResponseEntity<PMPLogData>(logData,HttpStatus.OK);
 	}
 
@@ -117,10 +117,10 @@ public class PMPAPILogController {
 	consumes = MediaType.APPLICATION_JSON_VALUE,
 	produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> loadPmpApiAccessErrorLogData(@RequestParam(name = "id",required = true) String accessLogId){
-		LOGGER.debug("START  :  Fetching Error details from PMP Log table");
+		LOGGER.info("START  :  Fetching Error details from PMP Log table");
 		PMPLogData logData = new PMPLogData();
 		logData.setData(accessLogService.loadPmpApiAccessErrorLogData(accessLogId));
-		LOGGER.debug("END  :  Completed fetching Error details from PMP Log table");
+		LOGGER.info("END  :  Completed fetching Error details from PMP Log table");
 		return new ResponseEntity<PMPLogData>(logData,HttpStatus.OK);
 	}
 	
@@ -131,10 +131,10 @@ public class PMPAPILogController {
 	consumes = MediaType.APPLICATION_JSON_VALUE,
 	produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> loadPmpApiLogDetailsData(@RequestParam(name = "id",required = true) String accessLogId ){
-		LOGGER.debug("START  :  Fetching details from PMP Log details table");
+		LOGGER.info("START  :  Fetching details from PMP Log details table");
 		PMPLogDetailsData logDetailsData = new PMPLogDetailsData();
 		logDetailsData.setData(accessLogService.loadPmpApiLogDetailsData(accessLogId));
-		LOGGER.debug("END  :  Completed fetching details from PMP Log details table");
+		LOGGER.info("END  :  Completed fetching details from PMP Log details table");
 		return new ResponseEntity<PMPLogDetailsData>(logDetailsData,HttpStatus.OK);
 	}
 	
@@ -144,10 +144,10 @@ public class PMPAPILogController {
 	consumes = MediaType.APPLICATION_JSON_VALUE,
 	produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> loadPmpApiErrorLogDetailsData(@RequestParam(name = "id",required = true) String logDetailsId ){
-		LOGGER.debug("START  :  Fetching Error details from PMP Log details table");
+		LOGGER.info("START  :  Fetching Error details from PMP Log details table");
 		PMPLogDetailsData logDetailsData = new PMPLogDetailsData();
 		logDetailsData.setData(accessLogService.loadPmpApiErrorLogDetailsData(logDetailsId));
-		LOGGER.debug("END  :  Completed fetching Error details from PMP Log details table");
+		LOGGER.info("END  :  Completed fetching Error details from PMP Log details table");
 		return new ResponseEntity<PMPLogDetailsData>(logDetailsData,HttpStatus.OK);
 	}
 

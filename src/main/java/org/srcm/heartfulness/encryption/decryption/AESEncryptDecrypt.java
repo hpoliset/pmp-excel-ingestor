@@ -49,15 +49,15 @@ public class AESEncryptDecrypt {
 			LOGGER.debug("Token encrypted successfully. ");
 			return encryptedValue;
 		} catch (NoSuchAlgorithmException e) {
-			LOGGER.debug("Exception while encrypting the token {} ", e.getMessage());
+			LOGGER.error("Exception while encrypting the token {} ", e.getMessage());
 		} catch (NoSuchPaddingException e) {
-			LOGGER.debug("Exception while encrypting the token {} ", e.getMessage());
+			LOGGER.error("Exception while encrypting the token {} ", e.getMessage());
 		} catch (InvalidKeyException e) {
-			LOGGER.debug("Exception while encrypting the token {} ", e.getMessage());
+			LOGGER.error("Exception while encrypting the token {} ", e.getMessage());
 		} catch (IllegalBlockSizeException e) {
-			LOGGER.debug("Exception while encrypting the token {} ", e.getMessage());
+			LOGGER.error("Exception while encrypting the token {} ", e.getMessage());
 		} catch (BadPaddingException e) {
-			LOGGER.debug("Exception while encrypting the token {} ", e.getMessage());
+			LOGGER.error("Exception while encrypting the token {} ", e.getMessage());
 		}
 		return null;
 	}
@@ -80,15 +80,15 @@ public class AESEncryptDecrypt {
 			String decryptedValue = new String(decValue);
 			return decryptedValue;
 		} catch (NoSuchAlgorithmException e) {
-			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
+			LOGGER.error("Exception while decrypting {} ", e.getMessage());
 		} catch (NoSuchPaddingException e) {
-			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
+			LOGGER.error("Exception while decrypting {} ", e.getMessage());
 		} catch (InvalidKeyException e) {
-			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
+			LOGGER.error("Exception while decrypting {} ", e.getMessage());
 		} catch (IllegalBlockSizeException e) {
-			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
+			LOGGER.error("Exception while decrypting {} ", e.getMessage());
 		} catch (BadPaddingException e) {
-			LOGGER.debug("Exception while decrypting {} ", e.getMessage());
+			LOGGER.error("Exception while decrypting {} ", e.getMessage());
 		}
 		return null;
 

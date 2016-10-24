@@ -57,6 +57,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 
 
 	private List<Participant> getParticipantList(Sheet participantsSheet) throws InvalidExcelFileException {
+		LOGGER.info("Started extracting participant for V2 template");
 		List<Participant> participantList = new ArrayList<Participant>();
 		int totalRows = participantsSheet.getPhysicalNumberOfRows();
 		// skip first two
@@ -73,7 +74,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 				j++;
 			}
 		}
-
+		LOGGER.info("Completed extracting participant for V2 template");
 		return participantList;
 	}
 
@@ -136,10 +137,10 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 				Double numbericMobilePhone = mobilePhoneCell.getNumericCellValue();
 				participant.setMobilePhone(String.valueOf(numbericMobilePhone.longValue()).trim());
 			} catch (NumberFormatException | ClassCastException | IllegalStateException  e) {
-				LOGGER.info("Participant mobile phone number is not numeric, trying as string");
+				LOGGER.error("Participant mobile phone number is not numeric, trying as string");
 				participant.setMobilePhone(String.valueOf(mobilePhoneCell).trim());
 			} catch (Exception e) {
-				LOGGER.info("Participant mobile phone number is not numeric, trying as string");
+				LOGGER.error("Participant mobile phone number is not numeric, trying as string");
 				participant.setMobilePhone(String.valueOf(mobilePhoneCell).trim());
 			}
 			participant.setProfession(participantRow.getCell(9, Row.CREATE_NULL_AS_BLANK).toString().trim());
@@ -172,7 +173,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 	}
 
 	private Program parseProgram(Sheet eventSheet) throws InvalidExcelFileException {
-
+		LOGGER.info("Started extracting program for V2 template");
 		Program program = new Program();
 		program.setProgramChannel(eventSheet.getRow(2).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		program.setEventPlace(eventSheet.getRow(3).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
@@ -185,10 +186,10 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			Double numericCoorntrMobNbr = coordinatorMobileNumber.getNumericCellValue();
 			program.setCoordinatorMobile(String.valueOf(numericCoorntrMobNbr.longValue()).trim());
 		}catch (NumberFormatException | ClassCastException | IllegalStateException  e) {
-			LOGGER.info("Coordinator mobile number is not numeric, trying as string");
+			LOGGER.error("Coordinator mobile number is not numeric, trying as string");
 			program.setCoordinatorMobile(String.valueOf(coordinatorMobileNumber).trim());
 		}catch(Exception ex){
-			LOGGER.info("Coordinator mobile number is not numeric, trying as string");
+			LOGGER.error("Coordinator mobile number is not numeric, trying as string");
 			program.setCoordinatorMobile(String.valueOf(coordinatorMobileNumber).trim());
 		}
 
@@ -219,15 +220,15 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			Double numbericPhoneNumber = organizationContactMobile.getNumericCellValue();
 			program.setOrganizationContactMobile(String.valueOf(numbericPhoneNumber.longValue()).trim());
 		} catch (NumberFormatException | ClassCastException | IllegalStateException  e) {
-			LOGGER.info("OrganizationPhoneNumber is not numeric, trying as string");
+			LOGGER.error("OrganizationPhoneNumber is not numeric, trying as string");
 			program.setOrganizationContactMobile(String.valueOf(organizationContactMobile).trim());
 		} catch (Exception e) {
-			LOGGER.info("OrganizationPhoneNumber is not numeric, trying as string");
+			LOGGER.error("OrganizationPhoneNumber is not numeric, trying as string");
 			program.setOrganizationContactMobile(String.valueOf(organizationContactMobile).trim());
 		}
 		program.setWelcomeCardSignedByName(eventSheet.getRow(13).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		program.setWelcomeCardSignerIdCardNumber(eventSheet.getRow(14).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim());
-
+		LOGGER.info("Completed extracting program for V2 template");
 		return program;
 	}
 

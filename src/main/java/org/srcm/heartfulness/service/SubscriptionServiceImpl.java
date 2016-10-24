@@ -34,10 +34,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	@Override
 	public Response unsubscribe(String emailID, String name) {
 		if (1 == welcomeMailRepository.checkForMailSubcription(emailID)) {
-			LOGGER.debug("Already unsubscribed - mail : {} , name : {}", emailID, name);
+			LOGGER.info("Already unsubscribed - mail : {} , name : {}", emailID, name);
 			return new Response("Success", "You've already unsubscribed.");
 		} else {
-			LOGGER.debug("unsubscription - mail : {} , name : {}", emailID, name);
+			LOGGER.info("unsubscription - mail : {} , name : {}", emailID, name);
 			WelcomeMailDetails sendySubscriber = new WelcomeMailDetails();
 			sendySubscriber.setEmail(emailID);
 			sendySubscriber.setPrintName(name);
@@ -68,11 +68,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	@Override
 	public Response subscribetoMailAlerts(SubscriptionRequest subscriptionRequest) {
 		if (1 == welcomeMailRepository.checkMailSubscribedStatus(subscriptionRequest.getMailID())) {
-			LOGGER.debug("Already subscribed - mail : {} , name : {}", subscriptionRequest.getMailID(),
+			LOGGER.info("Already subscribed - mail : {} , name : {}", subscriptionRequest.getMailID(),
 					subscriptionRequest.getName());
 			return new Response("Success", "You've already subscribed.");
 		} else {
-			LOGGER.debug("subscription - mail : {} , name : {}", subscriptionRequest.getMailID(),
+			LOGGER.info("subscription - mail : {} , name : {}", subscriptionRequest.getMailID(),
 					subscriptionRequest.getName());
 			WelcomeMailDetails sendySubscriber = new WelcomeMailDetails();
 			sendySubscriber.setEmail(subscriptionRequest.getMailID());
@@ -104,15 +104,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	public String updateconfirmSubscribedStatus(String mailID) {
 		if (1 == welcomeMailRepository.checkMailSubscribedStatus(mailID)) {
 			if (1 == welcomeMailRepository.checkForconfirmStatusOfSubscription(mailID)) {
-				LOGGER.debug("Already you have confirmed your mail ID. - mail : {}", mailID);
+				LOGGER.info("Already you have confirmed your mail ID. - mail : {}", mailID);
 				return "Already you have confirmed your email address.";
 			} else {
 				welcomeMailRepository.updateconfirmSubscribedStatus(mailID);
-				LOGGER.debug("You have successfully confirmed your mail ID. - mail : {}", mailID);
+				LOGGER.info("You have successfully confirmed your mail ID. - mail : {}", mailID);
 				return "Thank you for confirming your email address.";
 			}
 		} else {
-			LOGGER.debug(
+			LOGGER.info(
 					"Please subscribe your emailID in Heartfulness Website to confirm your email address. Invalid mailID. - mailID : {}",
 					mailID);
 			return "Please subscribe your emailID in Heartfulness Website to confirm your email address.";
@@ -140,7 +140,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	@Override
 	public String updateValidationStatus(String mailID) {
 		welcomeMailRepository.updateVerificationStatus(mailID,1);
-		LOGGER.debug("You have successfully confirmed your mail ID. - mail : {}", mailID);
+		LOGGER.info("You have successfully confirmed your mail ID. - mail : {}", mailID);
 		return "Thank you for confirming your email address.";
 	}
 

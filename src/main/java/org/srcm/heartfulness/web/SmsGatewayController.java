@@ -50,12 +50,12 @@ public class SmsGatewayController {
 			@RequestParam(value = "carrier", required = false) String carrier,
 			@RequestParam(value = "datetime", required = false) String datetime,
 			HttpServletRequest request){
-		LOGGER.debug("--------------- Start Create Event----------------------");
+		LOGGER.info("--------------- Start Create Event----------------------");
 		//LOGGER.debug("Host Name"+hostName);
 		String response= "FAILURE";
 		SMS sms = new SMS(mobileNo,smsContent,operator,carrier,datetime);
 		response = smsIntegrationService.createEvent(sms);
-		LOGGER.debug("--------------- End Create Event----------------------");
+		LOGGER.info("--------------- End Create Event----------------------");
 		return response;
 	}
 	
@@ -78,12 +78,12 @@ public class SmsGatewayController {
 			@RequestParam(value = "carrier", required = false) String carrier,
 			@RequestParam(value = "datetime", required = false) String datetime,
 			HttpServletRequest request){
-		LOGGER.debug("--------------- Start Update Event----------------------");
+		LOGGER.info("--------------- Start Update Event----------------------");
 		//LOGGER.debug("Host Name"+hostName);
 		String response= "FAILURE";
 		SMS sms = new SMS(mobileNo,smsContent,operator,carrier,datetime);
 		response = smsIntegrationService.updateEvent(sms);
-		LOGGER.debug("--------------- End Update Event----------------------");
+		LOGGER.info("--------------- End Update Event----------------------");
 		return response;
 	}
 	

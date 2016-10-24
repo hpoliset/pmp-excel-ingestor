@@ -57,7 +57,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 	 */
 	public void validateProgramDetails(Sheet sheet, List<String> errorList) {
 
-		LOGGER.debug("INFO : Started validating Event Details structure for altered 1.0 template.");
+		LOGGER.info("INFO : Started validating Event Details structure for altered 1.0 template.");
 		int row, col;
 		for (V1ProgramCols column : V1ProgramCols.values()) {
 			row = column.getRow();
@@ -67,7 +67,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 				+ " is not present as per the template.");
 			}
 		}
-		LOGGER.debug("INFO : Event Details structure validation completed for altered 1.0 template.");
+		LOGGER.info("INFO : Event Details structure validation completed for altered 1.0 template.");
 	}
 
 	/**
@@ -77,7 +77,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 	 */
 	public void validateParticipantDetails(Sheet sheet, List<String> errorList) {
 
-		LOGGER.debug("INFO : Started validating Participation Details structure for altered 1.0 template.");
+		LOGGER.info("INFO : Started validating Participation Details structure for altered 1.0 template.");
 		int row, col;
 		for (V1ParticipantCols column : V1ParticipantCols.values()) {
 			row = column.getRow();
@@ -87,7 +87,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 				+ " is not present as per the template.");
 			}
 		}
-		LOGGER.debug("INFO : Participants Details structure validation completed for altered 1.0 template.");
+		LOGGER.info("INFO : Participants Details structure validation completed for altered 1.0 template.");
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 	 */
 	public void checkEventMandatoryFields(Sheet sheet, List<String> eventErrorList) {
 
-		LOGGER.debug("Started validating Event Details fields for altered 1.0 template.");
+		LOGGER.info("Started validating Event Details fields for altered 1.0 template.");
 		String eventDateStr = sheet.getRow(11).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim();
 		try {
 			DateUtils.parseDate(eventDateStr);
@@ -124,18 +124,18 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 			
 		}
 
-		LOGGER.debug("Event Details fields  validation completed for altered 1.0 template.");
+		LOGGER.info("Event Details fields  validation completed for altered 1.0 template.");
 	}
 
 	public void checkParticipantMandatoryFields(Sheet sheet, List<String> eventErrorList) {
 
-		LOGGER.debug("INFO : Started validating participant detail fields for altered 1.0 template.");
+		LOGGER.info("INFO : Started validating participant detail fields for altered 1.0 template.");
 		int rowCount = sheet.getPhysicalNumberOfRows();
 		for (int i = 15; i < rowCount; i++) {
 			Row currentRow = sheet.getRow(i);
 			eventErrorList.addAll(parseParticipantData(currentRow, i + 1));
 		}
-		LOGGER.debug("INFO : Participants detail field validation completed for altered 1.0 template.");
+		LOGGER.info("INFO : Participants detail field validation completed for altered 1.0 template.");
 	}
 
 	private List<String> parseParticipantData(Row currentRow, int rowNumber) {

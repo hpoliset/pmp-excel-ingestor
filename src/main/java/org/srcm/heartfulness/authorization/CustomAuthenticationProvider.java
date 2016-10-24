@@ -30,7 +30,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 	 */
 	@Override
 	public Authentication authenticate(Authentication token) {
-		System.out.println("Inside authentication provider..");
 		String username = token.getName();
 		String password = (String) token.getCredentials();
 		org.srcm.heartfulness.model.User user = userProfileService.loadUserByEmail(username);

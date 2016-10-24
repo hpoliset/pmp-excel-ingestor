@@ -139,7 +139,7 @@ public class FTPConnectionHelper {
 		JSch jsch = new JSch();
 		Session session = null;
 		try {
-			LOGGER.debug("Connecting to server...");
+			LOGGER.info("Connecting to server...");
 			session = jsch.getSession(username, host, port);
 			session.setConfig("StrictHostKeyChecking", "no");
 			session.setPassword(password);
@@ -171,7 +171,7 @@ public class FTPConnectionHelper {
 			sftpChannel.exit();
 			session.disconnect();
 		} catch (JSchException ex) {
-			LOGGER.debug("Error while copying file to FTP - " + ex.getMessage());
+			LOGGER.error("Error while copying file to FTP - " + ex.getMessage());
 			ex.printStackTrace();
 		}
 	}

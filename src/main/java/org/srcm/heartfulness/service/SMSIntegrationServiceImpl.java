@@ -143,7 +143,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 													program.setAbyasiRefNo(abhyasiId);
 													program.setCoordinatorMobile(sms.getSenderMobile());
 													saveProgram(program, userProfile);
-													LOGGER.debug("Created Program" + program);
+													LOGGER.info("Created Program" + program);
 													response = createSMSSuccessResponse(program);
 												} else {
 													response = "Specified abhyasiID ( "
@@ -207,18 +207,18 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 								+ SMSConstants.SMS_CREATE_EVENT_INVALID_ZIPCODE_RESPONSE_2;
 					}
 				} else {
-					LOGGER.debug("Insufficient Content");
+					LOGGER.info("Insufficient Content");
 					response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
 							+ SMSConstants.SMS_HELP_FORMAT;
 				}
 
 			}else {
-				LOGGER.debug("Invalid subkeyword");
+				LOGGER.info("Invalid subkeyword");
 				response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
 						+ SMSConstants.SMS_HELP_FORMAT;
 			}
 		} else {
-			LOGGER.debug("Insufficient Content");
+			LOGGER.info("Insufficient Content");
 			response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
 					+ SMSConstants.SMS_HELP_FORMAT;
 		}
@@ -226,7 +226,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
 		} catch (HttpClientErrorException | IOException e) {
-			LOGGER.debug("Exception while sending SMS {} ", e.getMessage());
+			LOGGER.error("Exception while sending SMS {} ", e.getMessage());
 		}
 		return response;
 	}
@@ -339,21 +339,21 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 										+ SMSConstants.SMS_UPDATE_EVENT_RESPONSE_ALREADY_EXISTS_2;
 							} else {
 								programRepository.saveWithProgramName(program);
-								LOGGER.debug("Created Program" + program);
+								LOGGER.info("Created Program" + program);
 								response = SMSConstants.SMS_UPDATE_EVENT_RESPONSE_SUCCESS_1;
 							}
 						}
 
 					}
 				} else {
-					LOGGER.debug("Insufficient Content");
+					LOGGER.info("Insufficient Content");
 					response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
 							+ SMSConstants.SMS_HELP_FORMAT;
 				}
 
 			}
 		} else {
-			LOGGER.debug("Insufficient Content");
+			LOGGER.info("Insufficient Content");
 			response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
 					+ SMSConstants.SMS_HELP_FORMAT;
 		}
@@ -361,7 +361,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
 		} catch (HttpClientErrorException | IOException e) {
-			LOGGER.debug("Exception while sending SMS {} ", e.getMessage());
+			LOGGER.error("Exception while sending SMS {} ", e.getMessage());
 		}
 		return response;
 	}
@@ -481,13 +481,13 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 								+ SMSConstants.SMS_CREATE_PARTICIPANT_INVALID_FORMAT_6;
 					}
 				} else {
-					LOGGER.debug("Insufficient Content1");
+					LOGGER.info("Insufficient Content1");
 					response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
 							+ SMSConstants.SMS_HELP_FORMAT;
 				}
 
 			} else if (eventId == null) {
-				LOGGER.debug("Insufficient Content2");
+				LOGGER.info("Insufficient Content2");
 				response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
 						+ SMSConstants.SMS_HELP_FORMAT;
 			}
@@ -537,14 +537,14 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 						+ SMSConstants.SMS_HELP_FORMAT;
 			}
 		} else {
-			LOGGER.debug("Insufficient Content");
+			LOGGER.info("Insufficient Content");
 			response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
 					+ SMSConstants.SMS_HELP_FORMAT;
 		}
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
 		} catch (HttpClientErrorException | IOException e) {
-			LOGGER.debug("Exception while sending SMS {} ", e.getMessage());
+			LOGGER.error("Exception while sending SMS {} ", e.getMessage());
 		}
 		return response;
 	}
@@ -583,14 +583,14 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 				}
 			}
 		} else {
-			LOGGER.debug("Insufficient Content");
+			LOGGER.info("Insufficient Content");
 			response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
 					+ SMSConstants.SMS_HELP_FORMAT;
 		}
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
 		} catch (HttpClientErrorException | IOException e) {
-			LOGGER.debug("Exception while sending SMS {} ", e.getMessage());
+			LOGGER.error("Exception while sending SMS {} ", e.getMessage());
 		}
 		return response;
 	}
@@ -661,19 +661,19 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 							+ SMSConstants.SMS_INTRODUCE_PARTICIPANT_RESPONSE_INVALID_FORMAT_2;
 				}
 			} else {
-				LOGGER.debug("Insufficient Content");
+				LOGGER.info("Insufficient Content");
 				response = SMSConstants.SMS_MISSING_INTRO_ID + SMSConstants.SMS_EMPTY_SPACE
 						+ SMSConstants.SMS_HELP_FORMAT;
 			}
 		} else {
-			LOGGER.debug("Insufficient Content");
+			LOGGER.info("Insufficient Content");
 			response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
 					+ SMSConstants.SMS_HELP_FORMAT;
 		}
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
 		} catch (HttpClientErrorException | IOException e) {
-			LOGGER.debug("Exception while sending SMS {} ", e.getMessage());
+			LOGGER.error("Exception while sending SMS {} ", e.getMessage());
 		}
 		return response;
 	}
@@ -705,7 +705,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), helpMessage.toString());
 		} catch (HttpClientErrorException | IOException e) {
-			LOGGER.debug("Exception while sending SMS {} ", e.getMessage());
+			LOGGER.error("Exception while sending SMS {} ", e.getMessage());
 		}
 		return helpMessage.toString();
 	}
@@ -717,7 +717,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
 		} catch (HttpClientErrorException | IOException e) {
-			LOGGER.debug("Exception while sending SMS {} ", e.getMessage());
+			LOGGER.error("Exception while sending SMS {} ", e.getMessage());
 		}
 		return response;
 	}

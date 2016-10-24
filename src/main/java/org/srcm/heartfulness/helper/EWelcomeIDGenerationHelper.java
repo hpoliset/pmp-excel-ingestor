@@ -103,7 +103,7 @@ public class EWelcomeIDGenerationHelper {
 					StackTraceUtils.convertPojoToJson(aspirant), null);
 			apiAccessLogService.createPmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 		} catch (Exception ex) {
-			LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+			LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 					StackTraceUtils.convertPojoToJson(ex));
 		}
 		UserProfile userProfile;
@@ -115,7 +115,7 @@ public class EWelcomeIDGenerationHelper {
 				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
 				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 			} catch (Exception ex) {
-				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+				LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
 			return userProfile.getRef();
@@ -134,7 +134,7 @@ public class EWelcomeIDGenerationHelper {
 					aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 					apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 				} catch (Exception ex) {
-					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+					LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 							StackTraceUtils.convertPojoToJson(ex));
 				}
 				return eWelcomeIDErrorResponse;
@@ -147,7 +147,7 @@ public class EWelcomeIDGenerationHelper {
 					aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 					apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 				} catch (Exception ex) {
-					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+					LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 							StackTraceUtils.convertPojoToJson(ex));
 				}
 				return null;
@@ -161,7 +161,7 @@ public class EWelcomeIDGenerationHelper {
 				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 			} catch (Exception ex) {
-				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+				LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
 			return null;
@@ -174,7 +174,7 @@ public class EWelcomeIDGenerationHelper {
 				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 			} catch (Exception ex) {
-				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+				LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
 			return null;
@@ -187,7 +187,7 @@ public class EWelcomeIDGenerationHelper {
 				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 			} catch (Exception ex) {
-				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+				LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
 			return null;
@@ -276,7 +276,7 @@ public class EWelcomeIDGenerationHelper {
 							+ participant.getEmail()), null);
 			apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
 		} catch (Exception ex) {
-			LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+			LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 					StackTraceUtils.convertPojoToJson(ex));
 		}
 		try {
@@ -288,7 +288,7 @@ public class EWelcomeIDGenerationHelper {
 				accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(geoSearchResponse));
 				apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 			} catch (Exception ex) {
-				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+				LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
 			return geoSearchResponse;
@@ -306,7 +306,7 @@ public class EWelcomeIDGenerationHelper {
 					accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 					apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 				} catch (Exception ex) {
-					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+					LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 							StackTraceUtils.convertPojoToJson(ex));
 				}
 				return eWelcomeIDErrorResponse;
@@ -319,7 +319,7 @@ public class EWelcomeIDGenerationHelper {
 					accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 					apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 				} catch (Exception ex) {
-					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+					LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 							StackTraceUtils.convertPojoToJson(ex));
 				}
 				return null;
@@ -333,10 +333,10 @@ public class EWelcomeIDGenerationHelper {
 				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 				apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 			} catch (Exception ex) {
-				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+				LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
-			return null;
+			return "Invalid participant City/State/Country.";
 		} catch (IOException e) {
 			try {
 				LOGGER.debug("Update introduction status : GeoSearchResponse : Exception : {} ",
@@ -346,7 +346,7 @@ public class EWelcomeIDGenerationHelper {
 				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 				apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 			} catch (Exception ex) {
-				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+				LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
 			return null;
@@ -359,7 +359,7 @@ public class EWelcomeIDGenerationHelper {
 				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 				apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 			} catch (Exception ex) {
-				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+				LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
 			return null;
@@ -376,7 +376,7 @@ public class EWelcomeIDGenerationHelper {
 							+ ", Participant emailID:" + participant.getEmail()));
 			apiAccessLogService.createPmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 		} catch (Exception e) {
-			LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+			LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 					StackTraceUtils.convertPojoToJson(e));
 		}
 		try {
@@ -387,7 +387,7 @@ public class EWelcomeIDGenerationHelper {
 				citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
 				apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 			} catch (Exception e) {
-				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+				LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(e));
 			}
 			return citiesAPIResponse;
@@ -406,7 +406,7 @@ public class EWelcomeIDGenerationHelper {
 					citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 					apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 				} catch (Exception ex) {
-					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+					LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 							StackTraceUtils.convertPojoToJson(ex));
 				}
 				return eWelcomeIDErrorResponse;
@@ -419,7 +419,7 @@ public class EWelcomeIDGenerationHelper {
 					citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 					apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 				} catch (Exception ex) {
-					LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+					LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 							StackTraceUtils.convertPojoToJson(ex));
 				}
 				return null;
@@ -433,7 +433,7 @@ public class EWelcomeIDGenerationHelper {
 				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 				apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 			} catch (Exception ex) {
-				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+				LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
 			return null;
@@ -446,7 +446,7 @@ public class EWelcomeIDGenerationHelper {
 				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 				apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 			} catch (Exception ex) {
-				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+				LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
 			return null;
@@ -459,7 +459,7 @@ public class EWelcomeIDGenerationHelper {
 				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 				apiAccessLogService.updatePmpAPIAccesslogDetails(citiesAPIAccessLogDetails);
 			} catch (Exception ex) {
-				LOGGER.debug("Exception while inserting PMP API log details in table : {} ",
+				LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 						StackTraceUtils.convertPojoToJson(ex));
 			}
 			return null;

@@ -96,6 +96,7 @@ public class UserController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
+			LOGGER.error("Error occured while fecthing user :{}", e);
 			Response error = new Response(ErrorConstants.STATUS_FAILED,"Invalid auth token.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -104,6 +105,7 @@ public class UserController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<Response>(error, e.getStatusCode());
 		} catch (IOException e) {
+			LOGGER.error("Error occured while fecthing user :{}", e);
 			Response error = new Response(ErrorConstants.STATUS_FAILED,"IOException occured.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -112,6 +114,7 @@ public class UserController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<Response>(error, HttpStatus.REQUEST_TIMEOUT);
 		} catch (Exception e) {
+			LOGGER.error("Error occured while fecthing user :{}", e);
 			Response error = new Response(ErrorConstants.STATUS_FAILED, "Internal Server Error.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -158,6 +161,7 @@ public class UserController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
+			LOGGER.error("Error occured while update user :{}", e);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(e.getResponseBodyAsString()));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -165,6 +169,7 @@ public class UserController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
 		} catch (IOException e) {
+			LOGGER.error("Error occured while update user :{}", e);
 			ErrorResponse error = new ErrorResponse("IOException occured.",ErrorConstants.STATUS_FAILED);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -173,7 +178,8 @@ public class UserController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.REQUEST_TIMEOUT);
 		} catch (Exception e) {
-			ErrorResponse error = new ErrorResponse("Internal Server Error.", e.getMessage());
+			LOGGER.error("Error occured while update user :{}", e);
+			ErrorResponse error = new ErrorResponse("Internal Server Error.",ErrorConstants.STATUS_FAILED);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));

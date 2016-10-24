@@ -52,7 +52,7 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 	 * @return List of Participant details
 	 */
 	private List<Participant> getParticipantList(Sheet sheet) throws InvalidExcelFileException {
-		LOGGER.debug("Started to parse participant data for altered 1.0 template.");
+		LOGGER.info("Started to parse participant data for altered 1.0 template.");
 		List<Participant> participantList = new ArrayList<Participant>();
 		int totalRows = sheet.getPhysicalNumberOfRows(),j=15;
 		for (int i = 15; i < totalRows; i++) {
@@ -66,7 +66,7 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 				j++;
 			}
 		}
-		LOGGER.debug("Parsing participant data completed for altered 1.0 template.");
+		LOGGER.info("Parsing participant data completed for altered 1.0 template.");
 		return participantList;
 	}
 
@@ -128,7 +128,7 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 	 * @throws InvalidExcelFileException
 	 */
 	private Program parseProgram(Sheet sheet) throws InvalidExcelFileException {
-		LOGGER.debug("Started to parse program data for altered 1.0 template.");
+		LOGGER.info("Started to parse program data for altered 1.0 template.");
 		Program program = new Program();
 		program.setProgramChannel(sheet.getRow(3).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		program.setCoordinatorName(sheet.getRow(4).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim());
@@ -148,7 +148,7 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 			throw new InvalidExcelFileException("Not able to parse program event date:[" + eventDateStr + "]");
 		}
 		program.setProgramStartDate(eventDate);
-		LOGGER.debug("Parsing program data completed for altered 1.0 template.");
+		LOGGER.info("Parsing program data completed for altered 1.0 template.");
 		return program;
 	}
 
