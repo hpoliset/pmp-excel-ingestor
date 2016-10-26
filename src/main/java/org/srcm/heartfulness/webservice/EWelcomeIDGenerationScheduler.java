@@ -7,7 +7,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
@@ -50,8 +51,8 @@ public class EWelcomeIDGenerationScheduler {
 	/**
 	 * Cron to generate EWelcomeIDs for the participants.
 	 */
-	// @RequestMapping(value = "generateewelcomeid", method = RequestMethod.POST)
-	@Scheduled(cron = "${welcome.mailids.generation.cron.time}")
+	@RequestMapping(value = "generateewelcomeid", method = RequestMethod.POST)
+	/*@Scheduled(cron = "${welcome.mailids.generation.cron.time}")*/
 	public void generateEWelcomeIDsForTheParticipants() {
 		LOGGER.info("START : CRON : EWELCOMEID GENERATION : Scheduler to generate EwelcomeID's for the participants started at - "
 				+ new Date());
@@ -99,6 +100,7 @@ public class EWelcomeIDGenerationScheduler {
 									StackTraceUtils.convertPojoToJson(e));
 						}
 					} else {
+						eWelcomeID = transformErrorMsg(eWelcomeID);
 						try {
 							LOGGER.debug(
 									"CRON : EWELCOMEID GENERATION : eWelcomeID generation failed to the participant : {} ,SeqID:{}, EventID: {},EwelcomeID remarks: {} ",
@@ -196,6 +198,17 @@ public class EWelcomeIDGenerationScheduler {
 		}
 		LOGGER.info("END : CRON : EWELCOMEID GENERATION : Scheduler to generate EwelcomeID's for the participants completed at - "
 				+ new Date());
+	}
+	
+	
+	
+	private String transformErrorMsg(String eWelcomeID) {
+		String[] eWelcomeIDParts = eWelcomeID.split(" - ");
+		if(eWelcomeIDParts[0].equalsIgnoreCase(ErrorConstants.EWELCOMEID_DUPLICATE_RECORD_RESPONSE_FROM_MYSRCM)){
+			eWelcomeIDParts[0]=ErrorConstants.EWELCOMEID_DUPLICATE_RECORD_CUSTOMIZED_RESPONSE;
+			eWelcomeID=eWelcomeIDParts[0]+eWelcomeIDParts[1];
+		}
+		return eWelcomeID;
 	}
 
 }

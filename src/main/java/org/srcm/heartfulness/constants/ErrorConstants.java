@@ -33,5 +33,9 @@ public class ErrorConstants {
 	public static final String INVALID_AUTH_TOKEN = "Invalid auth token";
 	
 	public static final String INVALID_CREDENTIALS= "Invalid credentials";
+	
+	public static final String EWELCOMEID_DUPLICATE_RECORD_RESPONSE_FROM_MYSRCM="Duplicate record with name and mobile";
+	
+	public static final String EWELCOMEID_DUPLICATE_RECORD_CUSTOMIZED_RESPONSE="Member already exists with eWelcomeId - ";
 
 }
