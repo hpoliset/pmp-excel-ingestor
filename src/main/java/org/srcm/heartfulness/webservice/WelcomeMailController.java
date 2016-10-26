@@ -79,7 +79,7 @@ public class WelcomeMailController {
 	}
 
 	//@RequestMapping(value = "informcoordinatorswithewelcomeids", method = RequestMethod.POST)
-	/*@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}") */
+	@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}") 
 	public void sendGeneratedEwelcomeIdToCoordinators() {
 		try {
 			LOGGER.info("Sending mail to co-ordinator for e-welcome id generation called.");

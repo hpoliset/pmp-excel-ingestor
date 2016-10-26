@@ -1132,7 +1132,7 @@ public class ProgramServiceImpl implements ProgramService {
 								program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
 								program.setPreceptorName(userProfile.getName());
 								programRepository.save(program);
-								LOGGER.debug("Prefect ID persisted in PMP : prefect ID : {}",program.getPrefectId());
+								//LOGGER.debug("Prefect ID persisted in PMP : prefect ID : {}",program.getPrefectId());
 								try {
 									if (null != accessLogDetails) {
 										accessLogDetails

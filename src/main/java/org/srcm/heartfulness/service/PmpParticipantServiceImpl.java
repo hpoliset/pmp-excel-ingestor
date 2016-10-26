@@ -143,8 +143,14 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 		} else {
 			participant = findBySeqId(participantRequest);
 			if(null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()){
-				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE);
-				participant.setIsEwelcomeIdInformed(0);
+				if (!eventDashboardValidator.validateParticipantCompletedPreliminarySittings(participant)) {
+					participant.setEwelcomeIdRemarks((null != participant.getEwelcomeIdRemarks() && !participant.getEwelcomeIdRemarks().isEmpty()) ? participant.getEwelcomeIdRemarks() :"Participant not completed preliminary sittings.");
+					participant.setIsEwelcomeIdInformed(0);
+					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
+				}else{
+					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE);
+					participant.setIsEwelcomeIdInformed(0);
+				}
 			}
 			participant.setPrintName(participantRequest.getPrintName());
 			participant.setEmail(participantRequest.getEmail());
