@@ -500,7 +500,9 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		return this.jdbcTemplate.query(
 				"SELECT p.program_channel,p.coordinator_name,p.coordinator_email,p.program_id,pr.print_name,pr.email,pr.welcome_card_number,pr.id,pr.mobile_phone,pr.introduction_date,pr.ewelcome_id_state,pr.ewelcome_id_remarks FROM program p,participant pr"
 						+	" WHERE p.program_id = pr.program_id"
-						+	" AND pr.is_ewelcome_id_informed = 0 AND (pr.ewelcome_id_state='C' OR pr.ewelcome_id_state='F')",
+						+	" AND pr.is_ewelcome_id_informed = 0 AND "
+						+"((pr.ewelcome_id_state='C' AND pr.welcome_card_number IS NOT NULL AND pr.welcome_card_number<>'')"
+						+" OR (pr.ewelcome_id_state='F' AND (pr.welcome_card_number IS NULL OR pr.welcome_card_number='')))",
 						new Object[] {}, new ResultSetExtractor<Map<CoordinatorEmail, List<Participant>>>() {
 							@Override
 							public Map<CoordinatorEmail, List<Participant>> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
@@ -532,6 +534,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 							}
 						});
 	}
+
 
 	@Override
 	public int updateEwelcomeIDInformedStatus(String Id) {

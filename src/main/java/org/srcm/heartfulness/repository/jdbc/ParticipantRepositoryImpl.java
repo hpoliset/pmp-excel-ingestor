@@ -298,7 +298,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	}
 
 	@Override
-	public List<Participant> getEWelcomeIdGenerationFailedPartcicipants(String programId) {
+	public List<Participant> getEWelcomeIdGenerationFailedParticipants(String programId) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("programId", programId);
 		List<Participant> participants = this.namedParameterJdbcTemplate.query(
@@ -312,7 +312,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	}
 
 	@Override
-	public List<Participant> getEWelcomeIdGeneratedPartcicipants(String programId) {
+	public List<Participant> getEWelcomeIdGeneratedParticipants(String programId) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("programId", programId);
 		List<Participant> participants = this.namedParameterJdbcTemplate.query(
