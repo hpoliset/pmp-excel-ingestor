@@ -562,16 +562,20 @@ public class SendMail {
 				return new PasswordAuthentication(username, password);
 			}
 		});
-
+		
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(frommail, name));
+		
 		addParameter("COORDINATOR_NAME",
 				coordinatorEmail.getCoordinatorName() != null ? getName(coordinatorEmail.getCoordinatorName()) : "");
+		addParameter("EVENT_NAME", coordinatorEmail.getEventName());
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 		StringBuilder sb = new StringBuilder();
 		if (!participants.isEmpty()) {
-			sb.append("<p>Please note that the following e-welcome ID's has been generated for the below given participants of the event - " );
+			sb.append("<p>The following e-welcome ID's has been generated for the below given participants of the event - " );
 			sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
 			sb.append("</p>");
-			sb.append("<table border=\"1\" style=\"width: 100%;border-collapse: collapse;\">");
+			sb.append("<table border=\"1\" style=\"width: 75%;border-collapse: collapse;\">");
 			sb.append("<tr>");
 			sb.append("<td  align=middle><b>S.No</b></td>");
 			sb.append("<td  align=middle><b>Participant Name</b></td>");
@@ -603,7 +607,7 @@ public class SendMail {
 				sb.append("<p>The following participant's haven't received e-welcome ID for the event - " );
 				sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
 				sb.append("</p>");
-				sb.append("<table border=\"1\" style=\"width: 100%;border-collapse: collapse;\">");
+				sb.append("<table border=\"1\" style=\"width: 75%;border-collapse: collapse;\">");
 				sb.append("<tr>");
 				sb.append("<td  align=middle><b>S.No</b></td>");
 				sb.append("<td  align=middle><b>Participant Name</b></td>");
@@ -633,10 +637,10 @@ public class SendMail {
 				sb.append("</p>");
 			}
 		} else if (!failedParticipants.isEmpty()) {
-			sb.append("<p>Please note that the following participants haven't received e-welcome ID for the event - " );
+			sb.append("<p>The following participant's haven't received e-welcome ID for the event - " );
 			sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
 			sb.append("</p>");
-			sb.append("<table border=\"1\" style=\"width: 100%;border-collapse: collapse;\">");
+			sb.append("<table border=\"1\" style=\"width: 75%;border-collapse: collapse;\">");
 			sb.append("<tr>");
 			sb.append("<td  align=middle><b>S.No</b></td>");
 			sb.append("<td  align=middle><b>Participant Name</b></td>");
@@ -663,14 +667,15 @@ public class SendMail {
 			sb.append("</p>");
 
 		}
-
+		addParameter("EVENT_LINK",SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL +"?id="+ coordinatorEmail.getEventID());
 		addParameter("PARTICIPANTS_DETAILS", sb.toString());
+		System.out.println(" co ord details - " + coordinatorEmail.getEventName() + "--"
+				+ coordinatorEmail.getCoordinatorEmail());
+		System.out.println("PARTICIPANTS_DETAILS " + sb.toString());
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
 		// SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 		// addParameter("DATE", sdf.format(cal.getTime()));
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinatorEmail.getCoordinatorEmail()));
 		message.setSubject(crdntrmailforewlcmidsubject + " - " + coordinatorEmail.getEventName());
 		message.setContent(getMessageContentbyTemplateName(crdntrewlcomeidmailtemplatename), "text/html");
@@ -679,6 +684,7 @@ public class SendMail {
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
 		Transport.send(message);
 	}
+
 
 	public void sendMailToCoordinatorToUpdatePreceptorID(CoordinatorEmail coordinator) throws AddressException,
 	MessagingException, UnsupportedEncodingException, ParseException {
