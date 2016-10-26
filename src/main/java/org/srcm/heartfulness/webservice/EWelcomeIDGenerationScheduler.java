@@ -74,8 +74,8 @@ public class EWelcomeIDGenerationScheduler {
 			} catch (Exception e) {
 				LOGGER.error("Error while inserting data into pmp api access log table. Exception: {} ",StackTraceUtils.convertStackTracetoString(e));
 			}
+			LOGGER.info("CRON : EWELCOMEID GENERATION : partcipant {} : loggerID:{} ",participant.getPrintName(),id);
 			try {
-				LOGGER.debug("CRON : EWELCOMEID GENERATION : partcipant {} : loggerID:{} ",participant.getPrintName(),id);
 				Program program = programService.getProgramById(participant.getProgramId());
 				participant.setProgram(program);
 				accessLog.setUsername(program.getCoordinatorEmail());
