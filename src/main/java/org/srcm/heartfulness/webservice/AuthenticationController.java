@@ -76,7 +76,7 @@ public class AuthenticationController {
 			ModelMap model, @Context HttpServletRequest httpRequest) {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(authenticationRequest.getUsername(),
 				httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), DateUtils.getCurrentTimeInMilliSec(), null,
-				ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(authenticationRequest), null);
+				ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(authenticationRequest.getUsername()), null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		try {
 			LOGGER.info("Trying to Authenticate :  {}", authenticationRequest.getUsername());
