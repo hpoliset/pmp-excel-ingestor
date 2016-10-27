@@ -81,12 +81,9 @@ public class WelcomeMailController {
 	//@RequestMapping(value = "informcoordinatorswithewelcomeids", method = RequestMethod.POST)
 	@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}") 
 	public void sendGeneratedEwelcomeIdToCoordinators() {
-		try {
-			LOGGER.info("Sending mail to co-ordinator for e-welcome id generation called.");
-			WelcomeMailService.getGeneratedEwelcomeIdAndSendToCoordinators();
-		} catch (Exception e) {
-			LOGGER.error("Exception while sending file - {} " + e.getMessage());
-		}
+		LOGGER.info("START		:Cron job started to send mails to coordinator to inform participant ewelcomeid's");
+		WelcomeMailService.getGeneratedEwelcomeIdAndSendToCoordinators();
+		LOGGER.info("END		:Cron job completed to send mails to coordinator to inform participant ewelcomeid's");
 	}
 	
 	//@RequestMapping(value = "sendwelcomemail", method = RequestMethod.POST)

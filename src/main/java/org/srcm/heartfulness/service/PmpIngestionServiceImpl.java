@@ -179,16 +179,16 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 		try {
 			String isValid=programService.validatePreceptorIDCardNumber(program, id);
 			if (null != isValid) {
-				/*Runnable task = new Runnable() {
+				Runnable task = new Runnable() {
 		            @Override
 		             public void run() {
 		                 try {
-		                	//sendMailToCoordinatorToUpdatePreceptorID(program);
+		                	sendMailToCoordinatorToUpdatePreceptorID(program);
 		                 } catch (Exception ex) {
 		                 }
 		             }
 		         };
-		         new Thread(task, "ServiceThread").start();*/
+		         new Thread(task, "ServiceThread").start();
 				participantService.updatePartcipantEWelcomeIDStatuswithParticipantID(program.getProgramId(),
 						PMPConstants.EWELCOMEID_FAILED_STATE, isValid);
 				try {
