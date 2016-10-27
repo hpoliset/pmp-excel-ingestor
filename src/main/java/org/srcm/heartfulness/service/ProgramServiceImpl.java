@@ -913,7 +913,7 @@ public class ProgramServiceImpl implements ProgramService {
 												participant.setIntroductionDate(new Date());
 												participant.setIntroduced(1);
 												participantRepository.save(participant);
-												LOGGER.debug("CRON : EWELCOMEID GENERATION :Participant details persisted successfully");
+												LOGGER.info("CRON : EWELCOMEID GENERATION :Participant details persisted successfully");
 												return "success";
 											} else {
 												return "Error While generating eWelcomeID";
