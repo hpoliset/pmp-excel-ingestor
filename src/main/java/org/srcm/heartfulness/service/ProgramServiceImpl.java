@@ -878,6 +878,9 @@ public class ProgramServiceImpl implements ProgramService {
 			if (participant.getSeqId() != null && participant.getSeqId().length() == 4) {
 				if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty()
 						|| !participant.getWelcomeCardNumber().matches(ExpressionConstants.EWELCOME_ID_REGEX)) {
+					if(0 == participant.getProgram().getFirstSittingBy()){
+						return "Please check your preceptor ID and update event(First Sitting by value is empty)";
+					}
 					// check whether participant already got ewelcomeID or not
 					String partcipantEwelcomeID = fetchParticipantEwelcomeID(participant,id);
 					if (null != partcipantEwelcomeID) {
