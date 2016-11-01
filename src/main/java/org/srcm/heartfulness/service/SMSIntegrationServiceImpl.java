@@ -290,7 +290,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 	private Program saveProgram(Program program, AbhyasiUserProfile userProfile) {
 		program.setCreatedBy("admin");
 		program.setCreateTime(new Date());
-		program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
+		program.setFirstSittingBy((userProfile.getId()));
 		//program.setSrcmGroup(String.valueOf(userProfile.getSrcm_group()));
 		program.setCoordinatorEmail(userProfile.getEmail());
 		program.setCoordinatorName(userProfile.getName());
@@ -610,7 +610,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 							//participant.setWelcomeCardNumber(String.valueOf(SmsUtil.generateRandomNumber(9)));
 							try {
 								
-								if(null == participant.getProgram().getPrefectId() || participant.getProgram().getPrefectId().isEmpty() ){
+								if(participant.getProgram().getFirstSittingBy() == 0){
 									if(null == participant.getProgram().getAbyasiRefNo() ||  participant.getProgram().getAbyasiRefNo().isEmpty()){
 										response =  SMSConstants.SMS_EWELCOME_RESPONSE_INVALID_FORMAT_3 ;
 									}else{
@@ -622,7 +622,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 														&& 0 != userProfile.getPrefect_id()) {
 													Program program=participantRepository.findOnlyProgramById(participant.getProgram().getProgramId());
 													System.out.println(participant.getProgram().getProgramId());
-													program.setPrefectId(String.valueOf(userProfile.getPrefect_id()));
+													program.setFirstSittingBy(userProfile.getId());
 													programRepository.save(program);
 													eWelcomeIDGenerationHelper.generateEWelcomeId(participant);
 													participantRepository.save(participant);

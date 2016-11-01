@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AbhyasiUserProfile {
 
-	private String id;
+	private Integer id;
 
 	private String name;
 
@@ -44,11 +44,12 @@ public class AbhyasiUserProfile {
 
 	private String abhyasi_status;
 
-	public String getId() {
+
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
