@@ -1,1 +1,1 @@
-ALTER TABLE program CHANGE prefect_id first_sitting_by int(25);
+ALTER TABLE program CHANGE prefect_id first_sitting_by int(25) DEFAULT 0;

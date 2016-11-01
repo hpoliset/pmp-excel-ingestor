@@ -58,7 +58,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 			ParseException {
 		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id,
 				EndpointConstants.AUTHENTICATION_TOKEN_URL, DateUtils.getCurrentTimeInMilliSec(), null,
-				ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(authenticationRequest), null);
+				ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(authenticationRequest.getUsername()), null);
 		int accessdetailsID = apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
 		accessLogDetails.setId(accessdetailsID);
 		SrcmAuthenticationResponse authenticationResponse = srcmRest.authenticate(authenticationRequest);
