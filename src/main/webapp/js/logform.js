@@ -1,7 +1,7 @@
 $( document ).ready(function() {
 	$('#logtable').DataTable( {
 		"ajax": {
-			"url"    	   : "https://pmpbeta.heartfulness.org/pmp/api/log/loadlogdata",
+			"url"    	   : "https://pmp.heartfulness.org/pmp/api/log/loadlogdata",
 			"type" 		   : "POST",
 			"contentType"  : "application/json",
 			"async"		   : "false"	
