@@ -212,7 +212,7 @@ public class SmsGatewayController {
 	}
 	
 	/**
-	 * 	To hanldle the invlalid subkeyword
+	 * 	To hanldle the invalid subkeyword
 	 * 
 	 * @param mobileNo		- Sender mobile number
 	 * @param smsContent	- Content of the SMS
