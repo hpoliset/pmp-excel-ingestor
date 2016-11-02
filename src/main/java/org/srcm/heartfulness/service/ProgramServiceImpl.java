@@ -968,12 +968,6 @@ public class ProgramServiceImpl implements ProgramService {
 								} else {
 									return "Error While fetching cities api response";
 								}
-							} else if (objResponse instanceof String) {
-								if(null != objResponse){
-									return (String) objResponse;
-								}else{
-									return "Error While fetching geosearch response";
-								}
 							} else {
 								return "Error While fetching geosearch response";
 							}
@@ -996,10 +990,15 @@ public class ProgramServiceImpl implements ProgramService {
 								return eWelcomeIDErrorResponse.getMobile().get(0);
 							}
 							return "Error While parsing error response from MySRCM";
+						} else if (objResponse instanceof String) {
+							if(null != objResponse){
+								return (String) objResponse;
+							}else{
+								return "Error While fetching geosearch response";
+							}
 						} else {
 							return "Error While fetching geosearch response";
 						}
-
 					}
 				} else {
 					return "success";

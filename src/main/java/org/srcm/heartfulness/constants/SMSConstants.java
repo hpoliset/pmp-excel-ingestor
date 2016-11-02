@@ -83,7 +83,7 @@ public class SMSConstants {
 	
 	public static final String SMS_CREATE_PARTICIPANT_RESPONSE_SUCCESS_2 = " to visit Heartfulness website.";
 	
-	public static final String SMS_CREATE_EVENT_PARTICIANT_INVALID_RESPONSE_1 = " <EVENT_ID> <PARTICIPANT_NAME> <EMAIL_ID>";
+	public static final String SMS_CREATE_EVENT_PARTICIANT_INVALID_RESPONSE_1 = " <EVENT_ID> <PARTICIPANT_ZIPCODE> <PARTICIPANT_NAME> <EMAIL_ID>";
 	
 	public static final String SMS_EWELCOME_RESPONSE_SUCCESS_1 = "Your eWelcome ID : ";
 	
@@ -151,7 +151,7 @@ public class SMSConstants {
 	
 	public static final String SMS_REGISTER_PARTICIPANT_SUB_KEYWORD = "RP";
 	
-	public static final String SMS_INTRODUCE_PARTICIPANT_SUB_KEYWORD = "IN";
+	public static final String SMS_INTRODUCE_PARTICIPANT_SUB_KEYWORD = "IP";
 	
 	public static final String SMS_NO_OF_REGISTERED_PARTICIPANT_INVALID_FORMAT_4 = " <EVENT_ID>";
 	
