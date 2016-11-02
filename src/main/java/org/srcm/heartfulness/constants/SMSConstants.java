@@ -16,10 +16,10 @@ public class SMSConstants {
 	public static final String SMS_CREATE_EVENT_SUB_KEYWORD="CES";
 	
 	/** Holds the sub keyword for create event	 */
-	public static final String SMS_UPDATE_EVENT_SUB_KEYWORD="UE";
+	public static final String SMS_UPDATE_EVENT_SUB_KEYWORD="UES";
 	
 	/** Holds the sub keyword to get total registered users	 */
-	public static final String SMS_GET_TOTAL_REGISTERED_USERS_SUB_KEYWORD = "CR";
+	public static final String SMS_GET_TOTAL_REGISTERED_USERS_SUB_KEYWORD = "CRS";
 	
 	/** Holds the sub keyword to get total introduced users	 */
 	public static final String SMS_GET_TOTAL_REGISTERED_USERS_BY_INTRO_ID_SUB_KEYWORD = "CI";

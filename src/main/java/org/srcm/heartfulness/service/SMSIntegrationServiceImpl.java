@@ -351,6 +351,10 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 							+ SMSConstants.SMS_HELP_FORMAT;
 				}
 
+			}else {
+				LOGGER.info("Insufficient Content");
+				response = SMSConstants.SMS_RESPONSE_INVALID_FORMAT_1 + SMSConstants.SMS_EMPTY_SPACE
+						+ SMSConstants.SMS_HELP_FORMAT;
 			}
 		} else {
 			LOGGER.info("Insufficient Content");
