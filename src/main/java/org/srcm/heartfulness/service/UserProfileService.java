@@ -5,6 +5,7 @@ import java.text.ParseException;
 
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.User;
+import org.srcm.heartfulness.model.json.request.CreateUserRequest;
 import org.srcm.heartfulness.model.json.response.Result;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -48,5 +49,7 @@ public interface UserProfileService {
 	 * @param user
 	 */
 	void save(User user);
+	
+	User createUser(CreateUserRequest user, int id,String requestURL) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
 	
 }

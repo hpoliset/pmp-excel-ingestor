@@ -22,6 +22,7 @@ import org.srcm.heartfulness.constants.RestTemplateConstants;
 import org.srcm.heartfulness.model.Aspirant;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
+import org.srcm.heartfulness.model.json.request.CreateUserRequest;
 import org.srcm.heartfulness.model.json.response.AbhyasiResult;
 import org.srcm.heartfulness.model.json.response.CitiesAPIResponse;
 import org.srcm.heartfulness.model.json.response.GeoSearchResponse;
@@ -148,6 +149,38 @@ public class SrcmRestTemplate extends RestTemplate {
 		ResponseEntity<String> response = this.exchange(accessTokenUri, HttpMethod.POST, httpEntity, String.class);
 		return mapper.readValue(response.getBody(), SrcmAuthenticationResponse.class);
 	}
+	
+	/**
+	 * Method to authenticate the user with MySRCM and return the response with
+	 * token details.
+	 * 
+	 * @param authenticationRequest
+	 * @param userClientSecret
+	 * @param userClientId
+	 * @return
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	public SrcmAuthenticationResponse authenticate(AuthenticationRequest authenticationRequest, String userClientId,
+			String userClientSecret) throws HttpClientErrorException, JsonParseException, JsonMappingException,
+			IOException {
+		if (proxy)
+			setProxy();
+		MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<String, String>();
+		bodyParams.add(RestTemplateConstants.PARAMS_USERNAME, authenticationRequest.getUsername());
+		bodyParams.add(RestTemplateConstants.PARAMS_PASSWORD, authenticationRequest.getPassword());
+		bodyParams.add(RestTemplateConstants.GRANT_TYPE, tokenName);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.add(RestTemplateConstants.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		httpHeaders.set(RestTemplateConstants.AUTHORIZATION, RestTemplateConstants.BASIC_AUTHORIZATION
+				+ getBase64Credentials(userClientId, userClientSecret));
+		HttpEntity<?> httpEntity = new HttpEntity<Object>(bodyParams, httpHeaders);
+		ResponseEntity<String> response = this.exchange(accessTokenUri, HttpMethod.POST, httpEntity, String.class);
+		return mapper.readValue(response.getBody(), SrcmAuthenticationResponse.class);
+	}
+
 
 	/**
 	 * Method to get the user profile with token details by calling MySRCM API.
@@ -211,6 +244,45 @@ public class SrcmRestTemplate extends RestTemplate {
 				String.class);
 		return mapper.readValue(createUserResponse.getBody(), User.class);
 	}
+	
+	/**
+	 * Method to create the user profile in MySRCM and PMP by calling MySRCM
+	 * API.
+	 * 
+	 * @param user
+	 * @return
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	public User createUserProfile(CreateUserRequest user, String createUserClientId, String createUserClientSecret)
+			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
+		if (proxy)
+			setProxy();
+		System.out.println(user.toString());
+		MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<String, String>();
+		bodyParams.add(RestTemplateConstants.GRANT_TYPE, tokenNameToCreateProfile);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.add(RestTemplateConstants.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		httpHeaders.set(RestTemplateConstants.AUTHORIZATION, RestTemplateConstants.BASIC_AUTHORIZATION
+				+ getBase64Credentials(createUserClientId, createUserClientSecret));
+		HttpEntity<?> httpEntity = new HttpEntity<Object>(bodyParams, httpHeaders);
+		ResponseEntity<String> response = this.exchange(accessTokenUri, HttpMethod.POST, httpEntity, String.class);
+		SrcmAuthenticationResponse tokenResponse = mapper.readValue(response.getBody(),
+				SrcmAuthenticationResponse.class);
+
+		httpHeaders.clear();
+		bodyParams.clear();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		httpHeaders.add(RestTemplateConstants.AUTHORIZATION,
+				RestTemplateConstants.BEARER_TOKEN + tokenResponse.getAccess_token());
+		httpEntity = new HttpEntity<Object>(mapper.writeValueAsString(user), httpHeaders);
+		ResponseEntity<String> createUserResponse = this.exchange(createUserUri, HttpMethod.POST, httpEntity,
+				String.class);
+		return mapper.readValue(createUserResponse.getBody(), User.class);
+	}
+
 
 	/**
 	 * Method to get the abhyasi user profile with token details by calling

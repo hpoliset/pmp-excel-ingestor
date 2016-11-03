@@ -142,16 +142,6 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setEwelcomeIdRemarks(participantRequest.getEwelcomeIdRemarks());
 		} else {
 			participant = findBySeqId(participantRequest);
-			if(null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()){
-				if (!eventDashboardValidator.validateParticipantCompletedPreliminarySittings(participant)) {
-					participant.setEwelcomeIdRemarks((null != participant.getEwelcomeIdRemarks() && !participant.getEwelcomeIdRemarks().isEmpty()) ? participant.getEwelcomeIdRemarks() :"Participant not completed preliminary sittings.");
-					participant.setIsEwelcomeIdInformed(0);
-					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
-				}else{
-					participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE);
-					participant.setIsEwelcomeIdInformed(0);
-				}
-			}
 			participant.setPrintName(participantRequest.getPrintName());
 			participant.setEmail(participantRequest.getEmail());
 			participant.setMobilePhone(participantRequest.getMobilePhone());
@@ -217,6 +207,16 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					.equalsIgnoreCase(participantRequest.getThirdSitting())) ? 1 : 0);
 			participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
 					.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
+		}
+		if(null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()){
+			if (!eventDashboardValidator.validateParticipantCompletedPreliminarySittings(participant)) {
+				participant.setEwelcomeIdRemarks((null != participant.getEwelcomeIdRemarks() && !participant.getEwelcomeIdRemarks().isEmpty()) ? participant.getEwelcomeIdRemarks() :"Participant not completed preliminary sittings.");
+				participant.setIsEwelcomeIdInformed(0);
+				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
+			}else{
+				participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE);
+				participant.setIsEwelcomeIdInformed(0);
+			}
 		}
 		participantRepository.save(participant);
 		System.out.println(participant.toString());
@@ -508,6 +508,10 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 						response = new UpdateIntroductionResponse(participant.getSeqId(),
 								participantInput.getPrintName(), ErrorConstants.STATUS_FAILED, errorResult);
 						result.add(response);
+						participantInput.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
+						participantInput.setIsEwelcomeIdInformed(0);
+						participantInput.setEwelcomeIdRemarks(errorResult.toString());
+						participantRepository.save(participantInput);
 					} else {
 						LOGGER.info("START - {} : Generating eWelcomeID for the participant : {} ",
 								participantInput.getSeqId(), participantInput.getEmail());
