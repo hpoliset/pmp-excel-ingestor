@@ -2,7 +2,11 @@ package org.srcm.heartfulness.rest.template;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -29,6 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 @Component
+@PropertySource("classpath:application.properties")
 @ConfigurationProperties(locations = "classpath:dev.sms.gateway.properties", ignoreUnknownFields = false, prefix = "gateway")
 public class SmsGatewayRestTemplate extends RestTemplate {
 
@@ -41,12 +46,21 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 	private String sendSmsUri;
 	private String DCS;
 
-	private boolean proxy = false;
-	private String proxyHost = "10.1.28.12";
-	private int proxyPort = 8080;
-	private String proxyUser = "rramesh";
-	private String proxyPassword = "123Welcome";
-
+	@Value("${proxy}")
+	private boolean proxy;
+	
+	@Value("${proxyHost}")
+	private String proxyHost;
+	
+	@Value("${proxyPort}")
+	private int proxyPort;
+	
+	@Value("${proxyUser}")
+	private String proxyUser;
+	
+	@Value("${proxyPassword}")
+	private String proxyPassword;
+	
 	private ObjectMapper mapper = new ObjectMapper();
 	private HttpHeaders httpHeaders = new HttpHeaders();
 	private MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
@@ -169,4 +183,8 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 		this.body = body;
 	}
 
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
+		return new PropertySourcesPlaceholderConfigurer();
+	}
 }

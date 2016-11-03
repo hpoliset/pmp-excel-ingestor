@@ -14,5 +14,6 @@ public class EmailLogConstants {
 	public static final String   FTP_UPLOAD_DETAILS = "FTP_UPLOAD";
 	public static final String STATUS_SUCCESS = "Success";
 	public static final String STATUS_FAILED = "Failed";
+	public static final String SUBSCRIBE_VIA_CIVICRM = "SUBSCRIBE_VIA_CIVICRM";
 
 }

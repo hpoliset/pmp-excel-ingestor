@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,10 +26,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EmailLogConstants;
+import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.helper.FTPConnectionHelper;
 import org.srcm.heartfulness.mail.SendMail;
 import org.srcm.heartfulness.model.CoordinatorEmail;
+import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.PMPMailLog;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.SendySubscriber;
@@ -37,7 +40,9 @@ import org.srcm.heartfulness.repository.MailLogRepository;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.repository.WelcomeMailRepository;
+import org.srcm.heartfulness.rest.template.CivicrmRestTemplate;
 import org.srcm.heartfulness.rest.template.SendyRestTemplate;
+import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -79,6 +84,12 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	
 	@Autowired
 	private ProgramRepository programRepository;
+	
+	@Autowired
+	private CivicrmRestTemplate civicrmRestTemp;
+	
+	@Autowired
+	APIAccessLogService apiAccessLogService;
 
 
 
@@ -222,6 +233,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		SendySubscriber sendySubscriber = null;
 		List<SendySubscriber> subscriberList = new ArrayList<SendySubscriber>();
 		List<Participant> participants = new ArrayList<Participant>();
+		LinkedHashSet<Participant> subscribeParticipantsToCivicrm = new LinkedHashSet<>();
 		participants = welcomeMailRepository.getParticipantsToSendWelcomeEmails();
 		int validEmailSubscribersCount = 0;
 		StringBuilder sb = new StringBuilder();
@@ -238,6 +250,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 						sb.append(participant.getEmail() + System.lineSeparator());
 						sendySubscriber.setIsCoOrdinatorInformed(0);
 						validEmailSubscribersCount++;
+						subscribeParticipantsToCivicrm.add(participant);
 					}else{
 						sendySubscriber.setIsCoOrdinatorInformed(1);
 					}
@@ -246,22 +259,57 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			}
 			LOGGER.info("{} participants already received welcome mail.",participants.size()-validEmailSubscribersCount);
 			LOGGER.info("{} new participants.", validEmailSubscribersCount);
-			if(validEmailSubscribersCount>0){
-				FileOutputStream fop = new FileOutputStream(welcomeMailidsLocalFilepath + currentDate + "_"
-						+ welcomeMailidsFileName);
-				fop.write(sb.toString().getBytes());
-				fop.close();
-				LOGGER.info("File copied to  " + welcomeMailidsLocalFilepath + currentDate + "_" + welcomeMailidsFileName);
-				ftpConnectionHelper.processUpload(welcomeMailidsLocalFilepath, welcomeMailidsRemoteFilepath,
-						welcomeMailidsFileName);
-			}
-			ftpConnectionHelper.sendNotificationForWelcomeEmails(validEmailSubscribersCount);
-			if (null != subscriberList && subscriberList.size() >= 1) {
-				for (SendySubscriber subscriber : subscriberList) {
-					welcomeMailRepository.updateWelcomeMailLog(subscriber.getUserName(), subscriber.getEmail());
-					welcomeMailRepository.updateParticipantByMailId(subscriber);
+			try{
+				if(validEmailSubscribersCount>0){
+					FileOutputStream fop = new FileOutputStream(welcomeMailidsLocalFilepath + currentDate + "_"
+							+ welcomeMailidsFileName);
+					fop.write(sb.toString().getBytes());
+					fop.close();
+					LOGGER.info("File copied to  " + welcomeMailidsLocalFilepath + currentDate + "_" + welcomeMailidsFileName);
+					ftpConnectionHelper.processUpload(welcomeMailidsLocalFilepath, welcomeMailidsRemoteFilepath,
+							welcomeMailidsFileName);
 				}
-				LOGGER.info("Details updated to participant and welcome email log table for {} participants." ,subscriberList.size());
+				ftpConnectionHelper.sendNotificationForWelcomeEmails(validEmailSubscribersCount);
+				if (null != subscriberList && subscriberList.size() >= 1) {
+					for (SendySubscriber subscriber : subscriberList) {
+						welcomeMailRepository.updateWelcomeMailLog(subscriber.getUserName(), subscriber.getEmail());
+						welcomeMailRepository.updateParticipantByMailId(subscriber);
+					}
+					LOGGER.info("Details updated to participant and welcome email log table for {} participants." ,subscriberList.size());
+				}
+			}catch(Exception ex){
+				LOGGER.error("Exception while uploading file - {} " + ex.getMessage());
+			}
+			if(subscribeParticipantsToCivicrm.size() > 0){
+				LOGGER.info("Calling CiviCRM services to insert subscriber data");
+				for(Participant pctpt : subscribeParticipantsToCivicrm){
+					PMPAPIAccessLog accessLog = null;
+					String civicrmresp="";
+					try{
+						 accessLog = new PMPAPIAccessLog(pctpt.getPrintName(), EmailLogConstants.SUBSCRIBE_VIA_CIVICRM, null,DateUtils.getCurrentTimeInMilliSec(), 
+								null, ErrorConstants.STATUS_FAILED, null,pctpt.getPrintName() + "," + pctpt.getEmail());
+						int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+						accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+					}catch(Exception ex){
+						LOGGER.error("Failed to insert record in pmp access log table");
+					}
+					try{
+						 civicrmresp = civicrmRestTemp.subscribeParticipantToCivicrm(pctpt.getPrintName(),pctpt.getEmail());
+					}catch(Exception ex){
+						accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+						LOGGER.error("Failed to call civicrm api to subscribe participant");
+					}
+					try{
+						accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+						accessLog.setResponseBody(civicrmresp);
+						apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+					}catch(Exception ex){
+						LOGGER.error("Failed to update record in pmp access log table");
+					}
+				}
+				LOGGER.info("Completed sending participant records to civicrm");
+			}else{
+				LOGGER.info("Participant details are already available in welcome email log table");
 			}
 		} else {
 			LOGGER.info("No participant found.");

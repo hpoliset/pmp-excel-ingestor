@@ -56,6 +56,7 @@ public class WelcomeMailController {
 	}
 
 	/*@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") */
+	@RequestMapping(value = "ftpupload", method = RequestMethod.POST)
 	public void uploadDailyWelcomeMailidsToFTP() {
 		try {
 			LOGGER.info("Upload File to FTP called.");

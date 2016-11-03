@@ -7,7 +7,11 @@ import java.text.ParseException;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -42,6 +46,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 @Component
+@PropertySource("classpath:application.properties")
 @ConfigurationProperties(locations = "classpath:dev.srcm.api.properties", ignoreUnknownFields = true, prefix = "srcm.oauth2")
 public class SrcmRestTemplate extends RestTemplate {
 
@@ -52,11 +57,22 @@ public class SrcmRestTemplate extends RestTemplate {
 	private String refreshTokenName;
 	private String userInfoUri;
 	private String createUserUri;
-	private boolean proxy = false;
-	private String proxyHost = "10.1.28.12";
-	private int proxyPort = 8080;
-	private String proxyUser = "himasreev";
-	private String proxyPassword = "123Himasree";
+	
+	@Value("${proxy}")
+	private boolean proxy;
+	
+	@Value("${proxyHost}")
+	private String proxyHost;
+	
+	@Value("${proxyPort}")
+	private int proxyPort;
+	
+	@Value("${proxyUser}")
+	private String proxyUser;
+	
+	@Value("${proxyPassword}")
+	private String proxyPassword;
+	
 	private String clientIdToCreateProfile;
 	private String clientSecretToCreateProfile;
 	private String tokenNameToCreateProfile;
@@ -501,6 +517,11 @@ public class SrcmRestTemplate extends RestTemplate {
 
 	public void setTokenNameToCreateProfile(String tokenNameToCreateProfile) {
 		this.tokenNameToCreateProfile = tokenNameToCreateProfile;
+	}
+	
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
+		return new PropertySourcesPlaceholderConfigurer();
 	}
 
 }
