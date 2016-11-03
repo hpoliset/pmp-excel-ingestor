@@ -77,7 +77,7 @@ public class EWelcomeIDGenerationScheduler {
 			try {
 				Program program = programService.getProgramById(participant.getProgramId());
 				participant.setProgram(program);
-				LOGGER.info("CRON : EWELCOMEID GENERATION : partcipant:{} , EventChannel:{} , Preceptor : {} ",participant.getPrintName(),program.getProgramChannel(),program.getPreceptorName());
+				//LOGGER.info("CRON : EWELCOMEID GENERATION : partcipant:{} , EventChannel:{} , Preceptor : {} ",participant.getPrintName(),program.getProgramChannel(),program.getPreceptorName());
 				accessLog.setUsername(program.getCoordinatorEmail());
 				String isvalid=programService.validatePreceptorIDCardNumber(program, id);
 				if (null == isvalid) {
