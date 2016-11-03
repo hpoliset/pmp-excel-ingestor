@@ -54,9 +54,6 @@ public class AuthenticationController {
 	Environment env;
 
 	@Autowired
-	private AESEncryptDecrypt encryptDecryptAES;
-
-	@Autowired
 	AuthorizationHelper authHelper;
 
 	@Autowired

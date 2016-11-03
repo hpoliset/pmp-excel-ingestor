@@ -67,6 +67,12 @@ public class APIAccessLogServiceImpl implements APIAccessLogService {
 		apiAccesslogRepository.createOrUpdatePmpAPIAccesslogDetails(accessLogDetails);
 	}
 	
+	/**
+	 * Service to load the PMP API access details from the PMP DB.
+	 * 
+	 * @param accessLog
+	 * @return list of <PMPAPIAccessLog>
+	 */
 	@Override
 	public List<PMPAPIAccessLog> loadPmpApiAccessLogData() {
 		List<PMPAPIAccessLog> pmpApilogDetails = apiAccesslogRepository.fetchPmpApiAccessLogData();
@@ -97,6 +103,12 @@ public class APIAccessLogServiceImpl implements APIAccessLogService {
 		return pmpApilogDetails;
 	}
 
+	/**
+	 * Service to load the PMP API access error, request and response details from the PMP DB.
+	 * 
+	 * @param accessLogId
+	 * @return list of <PMPAPIAccessLog>
+	 */
 	@Override
 	public List<PMPAPIAccessLog> loadPmpApiAccessErrorLogData(String accessLogId) {
 		List<PMPAPIAccessLog> pmpApilogDetails = apiAccesslogRepository.fetchPmpApiAccessErrorLogData(accessLogId);
@@ -110,6 +122,13 @@ public class APIAccessLogServiceImpl implements APIAccessLogService {
 		return pmpApilogDetails;
 	}
 
+
+	/**
+	 * Service to load the PMP API details from the PMP DB.
+	 * 
+	 * @param accessLogId
+	 * @return list of <PMPAPIAccessLog>
+	 */
 	@Override
 	public List<PMPAPIAccessLogDetails> loadPmpApiLogDetailsData(String accessLogId) {
 		List<PMPAPIAccessLogDetails> accessLogDetails = apiAccesslogRepository.fetchPmpApiLogDetailsData(accessLogId);
@@ -137,6 +156,12 @@ public class APIAccessLogServiceImpl implements APIAccessLogService {
 		return accessLogDetails;
 	}
 
+	/**
+	 * Service to load the PMP API access error, request and response details from the PMP DB.
+	 * 
+	 * @param logDetailsId
+	 * @return list of <PMPAPIAccessLog>
+	 */
 	@Override
 	public List<PMPAPIAccessLogDetails> loadPmpApiErrorLogDetailsData(String logDetailsId) {
 		List<PMPAPIAccessLogDetails> accessLogDetails = apiAccesslogRepository.fetchPmpApiErrorLogDetailsData(logDetailsId);

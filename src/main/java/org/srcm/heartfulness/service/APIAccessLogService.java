@@ -43,12 +43,36 @@ public interface APIAccessLogService {
 	 */
 	void updatePmpAPIAccesslogDetails(PMPAPIAccessLogDetails accessLogDetails);
 
+	/**
+	 * Service to load the PMP API api access details from the PMP DB.
+	 * 
+	 * @param accessLog
+	 * @return list of <PMPAPIAccessLog>
+	 */
 	List<PMPAPIAccessLog> loadPmpApiAccessLogData();
 
+	/**
+	 * Service to load the PMP API access error, request and response details from the PMP DB.
+	 * 
+	 * @param accessLogId
+	 * @return list of <PMPAPIAccessLog>
+	 */
 	List<PMPAPIAccessLog> loadPmpApiAccessErrorLogData(String accessLogId);
 
+	/**
+	 * Service to load the PMP API details from the PMP DB.
+	 * 
+	 * @param accessLogId
+	 * @return list of <PMPAPIAccessLog>
+	 */
 	List<PMPAPIAccessLogDetails> loadPmpApiLogDetailsData(String accessLogId);
 
+	/**
+	 * Service to load the PMP API access error, request and response details from the PMP DB.
+	 * 
+	 * @param logDetailsId
+	 * @return list of <PMPAPIAccessLog>
+	 */
 	List<PMPAPIAccessLogDetails> loadPmpApiErrorLogDetailsData(String logDetailsId);
 
 }

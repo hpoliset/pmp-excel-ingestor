@@ -48,9 +48,6 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	private UserProfileService userProfileService;
 
 	@Autowired
-	private AESEncryptDecrypt encryptDecryptAES;
-
-	@Autowired
 	private ProgramService programService;
 
 	@Autowired
@@ -291,8 +288,11 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	public UserProfile validateToken(String token, int id) throws HttpClientErrorException, JsonParseException,
 			JsonMappingException, IOException, IllegalBlockSizeException, NumberFormatException, BadPaddingException,
 			ParseException {
+		/*Result result = userProfileService.getUserProfile(
+				encryptDecryptAES.decrypt(token, env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)), id);*/ //removed token decryption
+		
 		Result result = userProfileService.getUserProfile(
-				encryptDecryptAES.decrypt(token, env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)), id);
+				token, id);
 		return result.getUserProfile()[0];
 	}
 

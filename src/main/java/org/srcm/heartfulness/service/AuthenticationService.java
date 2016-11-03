@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 public interface AuthenticationService {
 
 	/**
-	 * method to validate the user based on username and password
+	 * Method to validate the user based on username and password.
 	 * 
 	 * @param authenticationRequest
 	 * @param session 
