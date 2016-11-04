@@ -296,6 +296,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 					try{
 						 civicrmresp = civicrmRestTemp.subscribeParticipantToCivicrm(pctpt.getPrintName(),pctpt.getEmail());
 					}catch(Exception ex){
+						LOGGER.error("Stack Trace=={}",ex);
 						accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 						LOGGER.error("Failed to call civicrm api to subscribe participant");
 					}
