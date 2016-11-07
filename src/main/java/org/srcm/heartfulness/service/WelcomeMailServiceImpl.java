@@ -88,6 +88,10 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	@Autowired
 	private CivicrmRestTemplate civicrmRestTemp;
 	
+	@Autowired
+	APIAccessLogService apiAccessLogService;
+
+
 
 	/**
 	 * To fetch the participants from database and subscribe to the welcome mail
@@ -279,7 +283,30 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			if(subscribeParticipantsToCivicrm.size() > 0){
 				LOGGER.info("Calling CiviCRM services to insert subscriber data");
 				for(Participant pctpt : subscribeParticipantsToCivicrm){
-					 civicrmRestTemp.subscribeParticipantToCivicrm(pctpt.getPrintName(),pctpt.getEmail());
+					PMPAPIAccessLog accessLog = null;
+					String civicrmresp="";
+					try{
+						 accessLog = new PMPAPIAccessLog(pctpt.getPrintName(), null,EmailLogConstants.SUBSCRIBE_VIA_CIVICRM,DateUtils.getCurrentTimeInMilliSec(), 
+								null, ErrorConstants.STATUS_FAILED, null,pctpt.getPrintName() + "," + pctpt.getEmail());
+						int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+						accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+					}catch(Exception ex){
+						LOGGER.error("Failed to insert record in pmp access log table");
+					}
+					try{
+						 civicrmresp = civicrmRestTemp.subscribeParticipantToCivicrm(pctpt.getPrintName(),pctpt.getEmail());
+					}catch(Exception ex){
+						LOGGER.error("Stack Trace=={}",ex);
+						accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+						LOGGER.error("Failed to call civicrm api to subscribe participant");
+					}
+					try{
+						accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+						accessLog.setResponseBody(civicrmresp);
+						apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+					}catch(Exception ex){
+						LOGGER.error("Failed to update record in pmp access log table");
+					}
 				}
 				LOGGER.info("Completed sending participant records to civicrm");
 			}else{
