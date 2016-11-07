@@ -5,6 +5,8 @@ package org.srcm.heartfulness.rest.template;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
@@ -20,6 +22,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.srcm.heartfulness.constants.RestTemplateConstants;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -31,6 +34,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 @PropertySource("classpath:application.properties")
 @PropertySource("classpath:dev.civicrm.api.properties")
 public class CivicrmRestTemplate extends RestTemplate {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(CivicrmRestTemplate.class);
 	
 	@Value("${proxy}")
 	private boolean proxy;
@@ -54,7 +59,6 @@ public class CivicrmRestTemplate extends RestTemplate {
 			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
 		if (proxy)
 			setProxy();
-		
 		MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<String, String>();
 		bodyParams.add(RestTemplateConstants.FIRST_NAME, name);
 		bodyParams.add(RestTemplateConstants.LAST_NAME, "");
@@ -62,8 +66,10 @@ public class CivicrmRestTemplate extends RestTemplate {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		HttpEntity<?> httpEntity = new HttpEntity<Object>(bodyParams, httpHeaders);
+		LOGGER.error("Request=={}",httpEntity);
 		ResponseEntity<String> response = this.exchange(civicrmAPI, HttpMethod.POST, httpEntity, String.class);
-		return response.getBody();
+		LOGGER.error("Response=={}",response);
+		return String.valueOf(response.getBody());
 	}
 	
 	private void setProxy() {

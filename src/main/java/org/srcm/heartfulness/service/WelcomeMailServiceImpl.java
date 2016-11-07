@@ -286,7 +286,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 					PMPAPIAccessLog accessLog = null;
 					String civicrmresp="";
 					try{
-						 accessLog = new PMPAPIAccessLog(pctpt.getPrintName(), EmailLogConstants.SUBSCRIBE_VIA_CIVICRM, null,DateUtils.getCurrentTimeInMilliSec(), 
+						 accessLog = new PMPAPIAccessLog(pctpt.getPrintName(), null,EmailLogConstants.SUBSCRIBE_VIA_CIVICRM,DateUtils.getCurrentTimeInMilliSec(), 
 								null, ErrorConstants.STATUS_FAILED, null,pctpt.getPrintName() + "," + pctpt.getEmail());
 						int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 						accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
