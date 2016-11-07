@@ -253,8 +253,10 @@ public interface ProgramRepository {
 
 	String getEventIdByProgramID(int programId);
 	
-int getProgramCount(String userEmail,boolean isAdmin);
+	int getProgramCount(String userEmail,boolean isAdmin);
 	
 	int getPgrmCountBySrchParams(SearchRequest searchRequest, String userEmail, boolean isAdmin);
+	
+	void updatePreceptorDetails(Program program);
 
 }

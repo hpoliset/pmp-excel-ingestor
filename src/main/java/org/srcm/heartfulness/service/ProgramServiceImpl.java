@@ -914,8 +914,8 @@ public class ProgramServiceImpl implements ProgramService {
 												participant.setIntroducedBy(participant.getProgram().getCoordinatorEmail());
 												participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
 												participant.setIntroductionDate(new Date());
-												participant.setIntroduced(1);
-												participantRepository.save(participant);
+												participantRepository.UpdateParticipantEwelcomeIDDetails(participant);
+												//participantRepository.save(participant);
 												//LOGGER.info("CRON : EWELCOMEID GENERATION :Participant details persisted successfully");
 												return "success";
 											} else {
@@ -1049,7 +1049,8 @@ public class ProgramServiceImpl implements ProgramService {
 								participant.setIntroduced(1);
 								participant.setEwelcomeIdRemarks(null);
 								participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
-								participantRepository.save(participant);
+								participantRepository.UpdateParticipantEwelcomeIDDetails(participant);
+								//participantRepository.save(participant);
 								//LOGGER.debug("Fetching ewelcomeID from MYSRCM and persisted in PMP.  NAME: {}, EMAIL: {}",participant.getPrintName(),participant.getEmail());
 								return "success";
 							}else{
@@ -1133,7 +1134,8 @@ public class ProgramServiceImpl implements ProgramService {
 								program.setAbyasiRefNo(program.getPreceptorIdCardNumber());
 								program.setFirstSittingBy(userProfile.getId());
 								program.setPreceptorName(userProfile.getName());
-								programRepository.save(program);
+								programRepository.updatePreceptorDetails(program);
+								//programRepository.save(program);
 								//LOGGER.debug("Prefect ID persisted in PMP : prefect ID : {}",program.getPrefectId());
 								try {
 									if (null != accessLogDetails) {

@@ -2,6 +2,7 @@ package org.srcm.heartfulness.repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
 import org.srcm.heartfulness.model.Participant;
@@ -84,5 +85,9 @@ public interface ParticipantRepository {
 	List<Participant> getEWelcomeIdGenerationFailedParticipants(String programId);
 
 	List<Participant> getEWelcomeIdGeneratedParticipants(String programId);
+	
+	Map<Program, List<Participant>> getGeneratedEwelcomeIdDetails();
+
+	void UpdateParticipantEwelcomeIDDetails(Participant participant);
 	
 }

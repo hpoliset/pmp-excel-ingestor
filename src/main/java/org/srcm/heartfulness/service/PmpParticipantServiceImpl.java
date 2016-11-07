@@ -652,8 +652,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				participant.setEwelcomeIdState(eWelcomeIDStatus);
 				participant.setIsEwelcomeIdInformed(0);
 			}
-				
-			participantRepository.save(participant);
+			participantRepository.UpdateParticipantEwelcomeIDDetails(participant);
+			//participantRepository.save(participant);
 		}
 	}
 
