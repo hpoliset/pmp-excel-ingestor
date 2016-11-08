@@ -1181,6 +1181,7 @@ public class ProgramServiceImpl implements ProgramService {
 						return "Invalid preceptor ID";
 					}
 				} catch (HttpClientErrorException e) {
+					LOGGER.error("Error while fetching abhyasi profile from MySRCM" + e);
 					if (null != accessLogDetails) {
 						try {
 							accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -1197,6 +1198,7 @@ public class ProgramServiceImpl implements ProgramService {
 					}
 					return "Error while fetching abhyasi profile from MySRCM ";
 				} catch (JsonParseException | JsonMappingException e) {
+					LOGGER.error("Error while fetching abhyasi profile from MySRCM : parsing exception  " + e);
 					if (null != accessLogDetails) {
 						try {
 							accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -1213,6 +1215,7 @@ public class ProgramServiceImpl implements ProgramService {
 					}
 					return "Error while fetching abhyasi profile from MySRCM : parsing exception ";
 				} catch (IOException e) {
+					LOGGER.error("Error while fetching abhyasi profile from MySRCM : IO exception " + e);
 					if (null != accessLogDetails) {
 						try {
 							accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -1229,6 +1232,7 @@ public class ProgramServiceImpl implements ProgramService {
 					}
 					return "Error while fetching abhyasi profile from MySRCM : IO exception ";
 				} catch (Exception e) {
+					LOGGER.error("Error while fetching abhyasi profile from MySRCM : Internal server Error " + e);
 					if (null != accessLogDetails) {
 						try {
 							accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
