@@ -18,7 +18,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
-import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.model.EventPagination;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
@@ -323,24 +322,33 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	public List<String> checkParticipantIntroductionMandatoryFields(Participant participantInput, int id) {
 		List<String> errors = new ArrayList<String>();
 		if (null == participantInput.getCity() || participantInput.getCity().isEmpty()) {
-			errors.add("City is required.");
+			if(null == participantInput.getProgram().getEventCity() || participantInput.getProgram().getEventCity().isEmpty() ){
+				errors.add("City is required.");
+			}else{
+				participantInput.setCity(participantInput.getProgram().getEventCity());
+			}
 		}
 
 		if (null == participantInput.getState() || participantInput.getState().isEmpty()) {
-			errors.add("State is required.");
+			if(null == participantInput.getProgram().getEventState() || participantInput.getProgram().getEventState().isEmpty() ){
+				errors.add("State is required.");
+			}else{
+				participantInput.setState(participantInput.getProgram().getEventState());
+			}
 		}
 
 		if (null == participantInput.getCountry() || participantInput.getCountry().isEmpty()) {
-			errors.add("Country is required.");
+			//errors.add("Country is required.");
+			participantInput.setCountry(PMPConstants.COUNTRY_INDIA);
 		}
 
 		if (null == participantInput.getProgram().getProgramStartDate()) {
 			errors.add("Program start date is required.");
 		}
 		
-		if(!validateParticipantCompletedPreliminarySittings(participantInput)){
+		/*if(!validateParticipantCompletedPreliminarySittings(participantInput)){
 			errors.add("Participant not completed preliminary sittings.");
-		}
+		}*/
 		
 		if(participantInput.getProgram().getFirstSittingBy() == 0){
 			String isValid=programService.validatePreceptorIDCardNumber(participantInput.getProgram(), id);
