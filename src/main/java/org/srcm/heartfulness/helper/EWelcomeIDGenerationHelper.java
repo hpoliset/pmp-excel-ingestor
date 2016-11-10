@@ -118,8 +118,7 @@ public class EWelcomeIDGenerationHelper {
 			}
 			return userProfile.getRef();
 		} catch (HttpClientErrorException e) {
-			LOGGER.error("Update introduction status : HttpClientErrorException : {} ",
-					StackTraceUtils.convertStackTracetoString(e));
+			LOGGER.error("Update introduction status : HttpClientErrorException : {} ",e.getMessage());
 			ObjectMapper mapper = new ObjectMapper();
 			EWelcomeIDErrorResponse eWelcomeIDErrorResponse;
 			try {
@@ -138,8 +137,7 @@ public class EWelcomeIDGenerationHelper {
 				return eWelcomeIDErrorResponse;
 			} catch (Exception e1) {
 				try {
-					LOGGER.error("Update introduction status : CreateAspirant : Exception : {} ",
-							StackTraceUtils.convertStackTracetoString(e));
+					LOGGER.error("Update introduction status : CreateAspirant : Exception : {} ",e.getMessage());
 					aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 					aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 					aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -152,8 +150,7 @@ public class EWelcomeIDGenerationHelper {
 			}
 		} catch (JsonParseException | JsonMappingException e) {
 			try {
-				LOGGER.error("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
+				LOGGER.error("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",e.getMessage());
 				aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -165,8 +162,7 @@ public class EWelcomeIDGenerationHelper {
 			return null;
 		} catch (IOException e) {
 			try {
-				LOGGER.error("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
+				LOGGER.error("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",e.getMessage());
 				aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -178,8 +174,7 @@ public class EWelcomeIDGenerationHelper {
 			return null;
 		} catch (Exception e) {
 			try {
-				LOGGER.error("Update introduction status : CreateAspirant : Exception : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
+				LOGGER.error("Update introduction status : CreateAspirant : Exception : {} ",e.getMessage());
 				aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -290,8 +285,7 @@ public class EWelcomeIDGenerationHelper {
 			}
 			return geoSearchResponse;
 		} catch (HttpClientErrorException e) {
-			LOGGER.error("Update introduction status : HttpClientErrorException : {} ",
-					StackTraceUtils.convertStackTracetoString(e));
+			LOGGER.error("Update introduction status : HttpClientErrorException : {} ",e.getMessage());
 			ObjectMapper mapper = new ObjectMapper();
 			EWelcomeIDErrorResponse eWelcomeIDErrorResponse;
 			try {
@@ -310,7 +304,7 @@ public class EWelcomeIDGenerationHelper {
 			} catch (Exception e1) {
 				try {
 					LOGGER.error("Update introduction status : GeoSearchResponse : Exception : {} ",
-							StackTraceUtils.convertStackTracetoString(e));
+							e.getMessage());
 					accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 					accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 					accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -323,8 +317,7 @@ public class EWelcomeIDGenerationHelper {
 			}
 		} catch (JsonParseException | JsonMappingException e) {
 			try {
-				LOGGER.error("Update introduction status : GeoSearchResponse : JsonParse/JsonMapping Exception : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
+				LOGGER.error("Update introduction status : GeoSearchResponse : JsonParse/JsonMapping Exception : {} ",e.getMessage());
 				accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -336,8 +329,7 @@ public class EWelcomeIDGenerationHelper {
 			return "Invalid participant City/State/Country.";
 		} catch (IOException e) {
 			try {
-				LOGGER.error("Update introduction status : GeoSearchResponse : Exception : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
+				LOGGER.error("Update introduction status : GeoSearchResponse : Exception : {} ",e.getMessage());
 				accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -349,8 +341,7 @@ public class EWelcomeIDGenerationHelper {
 			return null;
 		} catch (Exception e) {
 			try {
-				LOGGER.error("Update introduction status : GeoSearchResponse : Exception : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
+				LOGGER.error("Update introduction status : GeoSearchResponse : Exception : {} ",e.getMessage());
 				accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -389,8 +380,7 @@ public class EWelcomeIDGenerationHelper {
 			}
 			return citiesAPIResponse;
 		} catch (HttpClientErrorException e) {
-			LOGGER.error("Update introduction status : HttpClientErrorException : {} ",
-					StackTraceUtils.convertStackTracetoString(e));
+			LOGGER.error("Update introduction status : HttpClientErrorException : {} ",e.getMessage());
 			ObjectMapper mapper = new ObjectMapper();
 			EWelcomeIDErrorResponse eWelcomeIDErrorResponse;
 			try {
@@ -409,8 +399,7 @@ public class EWelcomeIDGenerationHelper {
 				return eWelcomeIDErrorResponse;
 			} catch (Exception e1) {
 				try {
-					LOGGER.error("Update introduction status : CitiesAPIResponse : Exception : {} ",
-							StackTraceUtils.convertStackTracetoString(e));
+					LOGGER.error("Update introduction status : CitiesAPIResponse : Exception : {} ",e.getMessage());
 					citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 					citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 					citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -423,8 +412,7 @@ public class EWelcomeIDGenerationHelper {
 			}
 		} catch (JsonParseException | JsonMappingException e) {
 			try {
-				LOGGER.error("Update introduction status : CitiesAPIResponse : JsonParse/JsonMapping Exception : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
+				LOGGER.error("Update introduction status : CitiesAPIResponse : JsonParse/JsonMapping Exception : {} ",e.getMessage());
 				citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -436,8 +424,7 @@ public class EWelcomeIDGenerationHelper {
 			return null;
 		} catch (IOException e) {
 			try {
-				LOGGER.error("Update introduction status : CitiesAPIResponse : IOException : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
+				LOGGER.error("Update introduction status : CitiesAPIResponse : IOException : {} ",e.getMessage());
 				citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -449,8 +436,7 @@ public class EWelcomeIDGenerationHelper {
 			return null;
 		} catch (Exception e) {
 			try {
-				LOGGER.error("Update introduction status : CitiesAPIResponse : Exception : {} ",
-						StackTraceUtils.convertStackTracetoString(e));
+				LOGGER.error("Update introduction status : CitiesAPIResponse : Exception : {} ",e.getMessage());
 				citiesAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				citiesAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 				citiesAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));

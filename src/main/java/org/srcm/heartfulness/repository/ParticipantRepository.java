@@ -78,11 +78,50 @@ public interface ParticipantRepository {
 	 * @return <code>List<Participant></code>
 	 */
 	List<Participant> getParticipantList(SearchRequest searchRequest);
-	
-	List<Participant> getParticipantListToGenerateEWelcomeID();
 
+	/* List<Participant> getParticipantListToGenerateEWelcomeID(); */
+
+	/**
+	 * Method to get the list of participants whose ewelcomeId generation got
+	 * failed.
+	 * 
+	 * @param programId
+	 * @return
+	 */
 	List<Participant> getEWelcomeIdGenerationFailedParticipants(String programId);
 
+	/**
+	 * Method to get the list of participants who got ewelcomeID's and not
+	 * informed to coordinator.
+	 * 
+	 * @param programId
+	 * @return
+	 */
 	List<Participant> getEWelcomeIdGeneratedParticipants(String programId);
-	
+
+	/**
+	 * Method to get the list of program ID's of the events in order to generate
+	 * ewelcomeID's for the participant's.
+	 * 
+	 * @return
+	 */
+	List<Integer> getProgramIDsToGenerateEwelcomeIds();
+
+	/**
+	 * Method to get the list of participants to whom PMP needs to generate
+	 * ewelcomeID's with programId.
+	 * 
+	 * @param programId
+	 * @return
+	 */
+	List<Participant> getParticipantwithProgramIdTogenerateEwelcomeId(Integer programId);
+
+	/**
+	 * Method to update the participant ewelcomeID details
+	 * (ewelcome_id_state,..)
+	 * 
+	 * @param participant
+	 */
+	void UpdateParticipantEwelcomeIDDetails(Participant participant);
+
 }

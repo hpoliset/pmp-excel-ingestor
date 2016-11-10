@@ -219,7 +219,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
 		}
 		participantRepository.save(participant);
-		System.out.println(participant.toString());
+		//System.out.println(participant.toString());
 		participantRequest.setSeqId(participant.getSeqId());
 		participantRequest.setPrintName(participant.getPrintName());
 		participantRequest.setEmail(participant.getEmail());
@@ -546,34 +546,6 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					LOGGER.info("END - {} : Response of update introduction status for the participant : {} ",
 							participantInput.getSeqId(), result.toString());
 				}
-				/*
-				 * } catch (HttpClientErrorException e) { description = new
-				 * ArrayList<String>(); ObjectMapper mapper = new
-				 * ObjectMapper(); EWelcomeIDErrorResponse
-				 * eWelcomeIDErrorResponse =
-				 * mapper.readValue(e.getResponseBodyAsString(),
-				 * EWelcomeIDErrorResponse.class); if ((null !=
-				 * eWelcomeIDErrorResponse.getEmail() &&
-				 * !eWelcomeIDErrorResponse.getEmail().isEmpty())) { description
-				 * .add(eWelcomeIDErrorResponse.getEmail().get(0)); } if ((null
-				 * != eWelcomeIDErrorResponse.getValidation() &&
-				 * !eWelcomeIDErrorResponse.getValidation() .isEmpty())) {
-				 * description
-				 * .add(eWelcomeIDErrorResponse.getValidation().get(0)); } if
-				 * ((null != eWelcomeIDErrorResponse.getError() &&
-				 * !eWelcomeIDErrorResponse.getError().isEmpty())) {
-				 * description.add(eWelcomeIDErrorResponse.getError()); } if
-				 * (description.isEmpty()) {
-				 * description.add(e.getResponseBodyAsString()); }
-				 * UpdateIntroductionResponse response = new
-				 * UpdateIntroductionResponse(participant.getSeqId(),
-				 * participantInput.getPrintName(),
-				 * ErrorConstants.STATUS_FAILED, description);
-				 * result.add(response); LOGGER.debug(
-				 * "END - {} : Response of eWelcomeID Generation for the participant : {} "
-				 * ,participantInput.getSeqId(),result.toString()); }
-				 */
-
 			}
 		}
 		return result;
@@ -620,6 +592,12 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 		return result;
 	}
 
+	/**
+	 * Service to update the participant ewelcome Id status and remarks.
+	 * @param programId
+	 * @param eWelcomeIDStatus
+	 * @param remarks
+	 */
 	@Override
 	public void updatePartcipantEWelcomeIDStatuswithParticipantID(int programId, String eWelcomeIDStatus, String remarks) {
 		List<Participant> participants = participantRepository.findByProgramId(programId);
@@ -649,13 +627,9 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				participant.setIsEwelcomeIdInformed(0);
 			}
 				
-			participantRepository.save(participant);
+			//participantRepository.save(participant);
+			participantRepository.UpdateParticipantEwelcomeIDDetails(participant);
 		}
-	}
-
-	@Override
-	public List<Participant> getParticipantListToGenerateEWelcomeID() {
-		return participantRepository.getParticipantListToGenerateEWelcomeID();
 	}
 
 }

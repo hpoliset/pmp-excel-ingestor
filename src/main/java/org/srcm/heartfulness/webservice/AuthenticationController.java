@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.ErrorConstants;
-import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.helper.AuthorizationHelper;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
@@ -52,9 +51,6 @@ public class AuthenticationController {
 
 	@Autowired
 	Environment env;
-
-	@Autowired
-	private AESEncryptDecrypt encryptDecryptAES;
 
 	@Autowired
 	AuthorizationHelper authHelper;

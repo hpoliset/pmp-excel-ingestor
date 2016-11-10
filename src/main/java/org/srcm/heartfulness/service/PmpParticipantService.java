@@ -82,8 +82,12 @@ public interface PmpParticipantService {
 	 */
 	public List<UpdateIntroductionResponse> deleteparticipantsBySeqID(ParticipantIntroductionRequest participantRequest,String userEmailID);
 
+	/**
+	 * Service to update the participant ewelcome Id status and remarks.
+	 * @param programId
+	 * @param eWelcomeIDStatus
+	 * @param remarks
+	 */
 	public void updatePartcipantEWelcomeIDStatuswithParticipantID(int programId, String eWelcomeIDStatus, String remarks);
-
-	public List<Participant> getParticipantListToGenerateEWelcomeID();
 
 }

@@ -319,7 +319,6 @@ public class SrcmRestTemplate extends RestTemplate {
 			setProxy();
 		MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<String, String>();
 		bodyParams.add(RestTemplateConstants.PARAMS_FORMATTED_ADDRESS, address);
-		System.out.println("address : " + address);
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add(RestTemplateConstants.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		HttpEntity<?> httpEntity = new HttpEntity<Object>(bodyParams, httpHeaders);

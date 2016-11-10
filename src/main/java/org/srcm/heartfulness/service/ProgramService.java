@@ -80,7 +80,7 @@ public interface ProgramService {
 	 * @param isAdmin
 	 * @return List<Event>
 	 */
-	public List<Event> getEventListByEmail(String email, boolean isAdmin,int offset,int pageSize);
+	public List<Event> getEventListByEmail(String email, boolean isAdmin, int offset, int pageSize);
 
 	/**
 	 * Returns the list of Participant details for a given auto
@@ -250,7 +250,7 @@ public interface ProgramService {
 	 * @param searchRequest
 	 * @return
 	 */
-	public List<Event> searchEvents(SearchRequest searchRequest,String userEmail,boolean isAdmin,int offset);
+	public List<Event> searchEvents(SearchRequest searchRequest, String userEmail, boolean isAdmin, int offset);
 
 	/**
 	 * Retrieve <code>Auto generated eventId</code> from the data store by
@@ -277,14 +277,40 @@ public interface ProgramService {
 	 */
 	public String generateeWelcomeID(Participant participant, int id);
 
-	public String validatePreceptorIDCardNumber(Program program, int id);
-	
 	/**
+	 * Method to validate the preceptor Id against MYSRCM.
+	 * 
+	 * @param program
+	 * @param id
+	 * @return
+	 */
+	public String validatePreceptorIDCardNumber(Program program, int id);
+
+	/**
+	 * Method to get the count of programs for the given user mail ID.
 	 * 
 	 * @return total count of program in db.
 	 */
-	public int getProgramCount(String userEmail,boolean isAdmin);
-	
+	public int getProgramCount(String userEmail, boolean isAdmin);
+
+	/**
+	 * Method to get the program count w.r.t the search params provided and with
+	 * user mail ID.
+	 * 
+	 * @param searchRequest
+	 * @param userEmail
+	 * @param isAdmin
+	 * @return
+	 */
 	public int getPgrmCountBySrchParams(SearchRequest searchRequest, String userEmail, boolean isAdmin);
+
+	/**
+	 * Method to get the required program details inorder to generate ewelcome
+	 * Id's for participants.
+	 * 
+	 * @param programId
+	 * @return
+	 */
+	public Program getProgramDetailsToGenerateEwelcomeIDById(Integer programId);
 
 }

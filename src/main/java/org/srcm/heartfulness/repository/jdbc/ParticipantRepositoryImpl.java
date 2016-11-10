@@ -285,7 +285,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 	}
 
-	@Override
+	/*@Override
 	public List<Participant> getParticipantListToGenerateEWelcomeID() {
 
 		List<Participant> participants = this.namedParameterJdbcTemplate.query(
@@ -295,7 +295,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 				BeanPropertyRowMapper.newInstance(Participant.class));
 		return participants;
 
-	}
+	}*/
 
 	@Override
 	public List<Participant> getEWelcomeIdGenerationFailedParticipants(String programId) {
@@ -323,5 +323,51 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 		
 		return participants;
 	}
+	
+	@Override
+	public List<Integer> getProgramIDsToGenerateEwelcomeIds() {
+
+		return this.jdbcTemplate.queryForList("SELECT DISTINCT(pr.program_id) FROM program p,participant pr"
+				+ " WHERE p.program_id = pr.program_id AND pr.create_time <= CURRENT_TIMESTAMP"
+				+ " AND pr.ewelcome_id_state = 'T' AND ("
+				+ "pr.welcome_card_number IS NULL OR pr.welcome_card_number = '')", null, Integer.class);
+	}
+
+	@Override
+	public List<Participant> getParticipantwithProgramIdTogenerateEwelcomeId(Integer programId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("programId", programId);
+		return this.namedParameterJdbcTemplate.query("SELECT print_name"
+						+ ",first_name,date_of_birth,email,third_sitting_date,third_sitting,city,state,country,welcome_card_number,"
+						+ "welcome_card_date,id,mobile_phone,introduction_date,address_line1,address_line2,"
+						+ "ewelcome_id_state,ewelcome_id_remarks,seqId from participant "
+				+ " WHERE program_id=:programId AND create_time <= CURRENT_TIMESTAMP"
+				+ " AND ewelcome_id_state = 'T' AND ("
+				+ "welcome_card_number IS NULL OR welcome_card_number = '')", params,
+				BeanPropertyRowMapper.newInstance(Participant.class));
+	}
+	
+	@Override
+	public void UpdateParticipantEwelcomeIDDetails(Participant participant) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("id", participant.getId());
+		params.put("welcomeCardNumber", participant.getWelcomeCardNumber());
+		params.put("welcomeCardDate", participant.getWelcomeCardDate());
+		params.put("introduced", participant.getIntroduced());
+		params.put("introductionDate", participant.getIntroductionDate());
+		params.put("introducedBy", participant.getIntroducedBy());
+		params.put("ewelcomeIdState", participant.getEwelcomeIdState());
+		params.put("ewelcomeIdRemarks", participant.getEwelcomeIdRemarks());
+		params.put("isEwelcomeIdInformed", participant.getIsEwelcomeIdInformed());
+		if (0 != participant.getId()) {
+			this.namedParameterJdbcTemplate.update("UPDATE participant SET " + "introduction_date=:introductionDate,"
+					+ "introduced_by=:introducedBy," + "welcome_card_number=:welcomeCardNumber,"
+					+ "welcome_card_date=:welcomeCardDate," + "is_ewelcome_id_informed=:isEwelcomeIdInformed, "
+					+ "introduced=:introduced, " + "ewelcome_id_state=:ewelcomeIdState, "
+					+ "ewelcome_id_remarks=:ewelcomeIdRemarks " + "WHERE id=:id", params);
+		}
+	}
+
+
 
 }
