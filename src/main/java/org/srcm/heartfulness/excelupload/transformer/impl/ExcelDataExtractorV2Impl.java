@@ -85,46 +85,46 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 
 			String firstSittingStr = participantRow.getCell(1,
 					Row.CREATE_NULL_AS_BLANK).toString().trim();
-			if (!"Y".equals(firstSittingStr) && !"N".equals(firstSittingStr)) {
+			if (!"Y".equalsIgnoreCase(firstSittingStr) && !"N".equalsIgnoreCase(firstSittingStr)) {
 				try {
 					Date firstSittingDate = DateUtils.parseDate(firstSittingStr);
 					participant.setFirstSittingDate(firstSittingDate);
 				} catch (ParseException e) {
 					throw new InvalidExcelFileException("Not able to parse first sitting date:[" + firstSittingStr + "]");
 				}
-			}else if("Y".equals(firstSittingStr)){
+			}else if("Y".equalsIgnoreCase(firstSittingStr)){
 				participant.setFirstSitting(1);
-			}else if("N".equals(firstSittingStr)){
+			}else if("N".equalsIgnoreCase(firstSittingStr)){
 				participant.setFirstSitting(0);
 			}
 
 			String secondSittingStr = participantRow.getCell(2,
 					Row.CREATE_NULL_AS_BLANK).toString().trim();
-			if (!"Y".equals(secondSittingStr) && !"N".equals(secondSittingStr)) {
+			if (!"Y".equalsIgnoreCase(secondSittingStr) && !"N".equalsIgnoreCase(secondSittingStr)) {
 				try {
 					Date secondSittingDate = DateUtils.parseDate(secondSittingStr);
 					participant.setSecondSittingDate(secondSittingDate);
 				} catch (ParseException e) {
 					throw new InvalidExcelFileException("Not able to parse second sitting date:[" + secondSittingStr + "]");
 				}
-			} else if("Y".equals(secondSittingStr)){
+			} else if("Y".equalsIgnoreCase(secondSittingStr)){
 				participant.setSecondSitting(1);
-			}else if("N".equals(secondSittingStr)){
+			}else if("N".equalsIgnoreCase(secondSittingStr)){
 				participant.setSecondSitting(0);
 			}
 
 			String thirdSittingStr = participantRow.getCell(3,
 					Row.CREATE_NULL_AS_BLANK).toString().trim();
-			if (!"Y".equals(thirdSittingStr) && !"N".equals(thirdSittingStr)) {
+			if (!"Y".equalsIgnoreCase(thirdSittingStr) && !"N".equalsIgnoreCase(thirdSittingStr)) {
 				try {
 					Date thirdSittingDate = DateUtils.parseDate(thirdSittingStr);
 					participant.setThirdSittingDate(thirdSittingDate);
 				} catch (ParseException e) {
 					throw new InvalidExcelFileException("Not able to parse third sitting date:[" + thirdSittingStr + "]");
 				}
-			} else if("Y".equals(thirdSittingStr)){
+			} else if("Y".equalsIgnoreCase(thirdSittingStr)){
 				participant.setThirdSitting(1);
-			}else if("N".equals(thirdSittingStr)){
+			}else if("N".equalsIgnoreCase(thirdSittingStr)){
 				participant.setThirdSitting(0);
 			}
 
