@@ -215,8 +215,8 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 			String firstSittingStr =  currentRow.getCell(1,
 					Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if(!firstSittingStr.isEmpty() && null != firstSittingStr){
-				if (!firstSittingStr.equals("Y")) {
-					if(!firstSittingStr.equals("N")){
+				if (!firstSittingStr.equalsIgnoreCase("Y")) {
+					if(!firstSittingStr.equalsIgnoreCase("N")){
 						try {
 							DateUtils.parseDate(firstSittingStr);
 						} catch (ParseException e) {
@@ -231,8 +231,8 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 					Row.CREATE_NULL_AS_BLANK).toString().trim();
 
 			if(!secondSittingStr.isEmpty()  && null != secondSittingStr){
-				if (!secondSittingStr.equals("Y")) {
-					if(!secondSittingStr.equals("N")){
+				if (!secondSittingStr.equalsIgnoreCase("Y")) {
+					if(!secondSittingStr.equalsIgnoreCase("N")){
 						try {
 							DateUtils.parseDate(secondSittingStr);
 						} catch (ParseException e) {
@@ -247,8 +247,8 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 					Row.CREATE_NULL_AS_BLANK).toString().trim();
 
 			if(!thirdSittingStr.isEmpty() && null != thirdSittingStr){
-				if (!thirdSittingStr.equals("Y")) {
-					if(!thirdSittingStr.equals("N")){
+				if (!thirdSittingStr.equalsIgnoreCase("Y")) {
+					if(!thirdSittingStr.equalsIgnoreCase("N")){
 						try {
 							DateUtils.parseDate(thirdSittingStr);
 						} catch (ParseException e) {

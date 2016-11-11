@@ -1186,6 +1186,38 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 						//+ (orderBy.length() > 0 ? " ORDER BY " + orderBy : "")
 						, params,Integer.class);
 	}
+	
+	@Override
+	public Program getProgramDetailsToGenerateEwelcomeIDById(Integer programId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("programId", programId);
+		return this.namedParameterJdbcTemplate
+				.queryForObject("SELECT program_start_date,auto_generated_event_id,program_id,preceptor_id_card_number,first_sitting_by,coordinator_email From program WHERE program_id=:programId",
+						params, BeanPropertyRowMapper.newInstance(Program.class));
+	}
+	
+	/**
+	 * Method to update the preceptor details after validating the preceptor ID
+	 * against MYSRCM.
+	 * 
+	 * @param program
+	 */
+	@Override
+	public void updatePreceptorDetails(Program program) {
+		System.out.println(program.getPreceptorName() + "  " + program.getAbyasiRefNo() + "  "
+				+ program.getAbyasiRefNo() + "   " + program.getFirstSittingBy() + "   " + program.getProgramId());
+		Map<String, Object> params = new HashMap<>();
+		params.put("preceptorName", program.getPreceptorName());
+		params.put("abyasiRefNo", program.getAbyasiRefNo());
+		params.put("firstSittingBy", program.getFirstSittingBy());
+		params.put("programId", program.getProgramId());
+		if (0 != program.getProgramId()) {
+			this.namedParameterJdbcTemplate.update("UPDATE program SET " + "preceptor_name=:preceptorName,"
+					+ "abyasi_ref_no=:abyasiRefNo, " + "first_sitting_by=:firstSittingBy "
+					+ "WHERE program_id=:programId", params);
+		}
+
+	}
 
 
 }

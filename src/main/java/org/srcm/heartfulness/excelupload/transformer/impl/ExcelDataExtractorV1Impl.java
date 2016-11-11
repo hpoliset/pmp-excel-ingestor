@@ -101,7 +101,7 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 			participant.setMobilePhone(String.valueOf(phoneCell).trim());
 		}
 		participant.setProfession(currentRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString().trim());
-		if (currentRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString().trim().equals("YES")) {
+		if (currentRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString().trim().equalsIgnoreCase("YES")) {
 			participant.setIntroduced(1);
 		} else {
 			participant.setIntroduced(0);

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EndpointConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
-import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.helper.AuthorizationHelper;
 import org.srcm.heartfulness.model.CurrentUser;
 import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
@@ -34,9 +33,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Autowired
 	SrcmRestTemplate srcmRest;
-
-	@Autowired
-	private AESEncryptDecrypt encryptDecryptAES;
 
 	@Autowired
 	Environment env;
@@ -66,10 +62,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(authenticationResponse));
 		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-		authenticationResponse.setAccess_token(encryptDecryptAES.encrypt(authenticationResponse.getAccess_token(),
+		/*authenticationResponse.setAccess_token(encryptDecryptAES.encrypt(authenticationResponse.getAccess_token(),
 				env.getProperty("security.encrypt.token")));
 		authenticationResponse.setRefresh_token(encryptDecryptAES.encrypt(authenticationResponse.getRefresh_token(),
-				env.getProperty("security.encrypt.token")));
+				env.getProperty("security.encrypt.token")));*/
 		LOGGER.debug("User:{} is validated and token is generated", authenticationRequest.getUsername());
 		authHelper.doAutoLogin(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 		session.setAttribute("Authentication", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
