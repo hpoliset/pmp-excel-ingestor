@@ -402,7 +402,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	@Override
 	public void getGeneratedEwelcomeIdAndSendToCoordinators() {
 		LOGGER.info("Fetching co-ordinator details and e-welcomeID details..!");
-		List<CoordinatorEmail> coordinatorEmails = new ArrayList<>();
+		//List<CoordinatorEmail> coordinatorEmails = new ArrayList<>();
 		List<Integer> listOfParticipantId = new ArrayList<>();
 		try{
 			Map<CoordinatorEmail, List<Participant>> eWelcomeIdDetails = welcomeMailRepository.getGeneratedEwelcomeIdDetails();

@@ -43,7 +43,7 @@ public interface UserProfileService {
 			IOException, ParseException;
 
 	/**
-	 * method to retrieve <code>User</code> from the data store by email.
+	 * Method to retrieve <code>User</code> from the data store by email.
 	 * 
 	 * @param user
 	 */
