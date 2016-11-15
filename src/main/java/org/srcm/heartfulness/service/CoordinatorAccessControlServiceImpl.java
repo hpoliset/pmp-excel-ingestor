@@ -8,6 +8,7 @@ import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.srcm.heartfulness.constants.CoordinatorAccessControlConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.SecondaryCoordinatorRequest;
@@ -45,9 +46,10 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 			scReq.setProgramId(program.getProgramId());
 			scReq.setUserId(userId);
 			scReq.setRequestedBy(userEmail);
+			scReq.setStatus(CoordinatorAccessControlConstants.COORDINATOR_DEFAULT_STATUS);
 			coordntrAccssCntrlRepo.saveSecondaryCoordinatorRequest(scReq);
 			//send mail to preceptor and coordinator
-
+			
 			return new CoordinatorAccessControlSuccessResponse(ErrorConstants.STATUS_SUCCESS, "Your request is completed.");
 		}
 	}
