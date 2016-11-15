@@ -75,7 +75,8 @@ public class CivicrmRestTemplate extends RestTemplate {
 		bodyParams.add(RestTemplateConstants.LAST_NAME, "");
 		bodyParams.add(RestTemplateConstants.USER_EMAIL, userEmail);
 		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		//httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		httpHeaders.add(RestTemplateConstants.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		HttpEntity<?> httpEntity = new HttpEntity<Object>(bodyParams, httpHeaders);
 		try{
 			accessLog = new PMPAPIAccessLog(userEmail, null,EmailLogConstants.SUBSCRIBE_VIA_CIVICRM,DateUtils.getCurrentTimeInMilliSec(), 
