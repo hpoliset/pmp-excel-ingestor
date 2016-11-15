@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `event_access_request` (
   `request_id` int(11) NOT NULL AUTO_INCREMENT,
   `program_id` int(4) unsigned NOT NULL,
   `user_id` int(4) unsigned NOT NULL,
-  `status` varchar(255) DEFAULT 'WAITING_FOR_APPROVAL',
+  `status` varchar(255) DEFAULT 'WAITING_FOR_APPROVAL' NOT NULL,
   `approved_by` varchar(255) DEFAULT NULL,
   `request_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `requested_by` varchar(255) NOT NULL,
