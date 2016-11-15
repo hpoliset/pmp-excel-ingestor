@@ -43,7 +43,8 @@ public class CivicrmSubscriberAPITest extends RestTemplate{
 		LOGGER.error(String.valueOf(httpEntity));
 		ResponseEntity<String> response = null;
 		try{
-			response = this.exchange("http://en.staging.heartfulness.org/civi/subscribeProcess-pmp.php", HttpMethod.POST, httpEntity, String.class);
+			//response = this.exchange("http://en.staging.heartfulness.org/civi/subscribeProcess-pmp.php", HttpMethod.POST, httpEntity, String.class);
+			response = this.exchange("http://162.251.11.50:80/civi/subscribeProcess-pmp.php", HttpMethod.POST, httpEntity, String.class);
 		}catch(Exception ex){
 			return new ResponseEntity<String>(StackTraceUtils.convertStackTracetoString(ex),HttpStatus.OK);
 		}
