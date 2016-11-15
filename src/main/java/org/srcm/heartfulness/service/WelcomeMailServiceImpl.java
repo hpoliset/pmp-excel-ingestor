@@ -432,7 +432,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 									mailLogRepository.createMailLog(pmpMailLog);
 									LOGGER.info("Completed inserting log details in table.");
 								}catch(Exception ex){
-									LOGGER.error("Exception while inserting log details in table.");
+									LOGGER.error("Exception while inserting log details in table."+ex.getMessage());
 								}
 								for(Participant participant : failedParticipants){
 									listOfParticipantId.add(participant.getId());
@@ -451,9 +451,9 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 													EmailLogConstants.STATUS_FAILED,aex.toString());
 									mailLogRepository.createMailLog(pmpMailLog);
 								}catch(Exception ex){
-									LOGGER.error("EXCEPTION  :Failed to update mail log table");
+									LOGGER.error("EXCEPTION  :Failed to update mail log table"+ex.getMessage());
 								}
-								LOGGER.error("ADDRESS_EXCEPTION  :Failed to sent mail to" + map.getKey().getCoordinatorEmail());
+								LOGGER.error("ADDRESS_EXCEPTION  :Failed to send mail to {} - Exception : {} " , map.getKey().getCoordinatorEmail() ,aex.getMessage());
 								LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
 							}catch(MessagingException mex){
 								try{
@@ -465,7 +465,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								}catch(Exception ex){
 									LOGGER.error("EXCEPTION  :Failed to update mail log table");
 								}
-								LOGGER.error("MESSAGING_EXCEPTION  :Failed to sent mail to" + map.getKey().getCoordinatorEmail());
+								LOGGER.error("MESSAGING_EXCEPTION  :Failed to send mail to {} - Exception : {} " , map.getKey().getCoordinatorEmail() ,mex.getMessage());
 								LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
 							}catch(Exception ex){
 								try{
@@ -477,7 +477,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								}catch(Exception exx){
 									LOGGER.error("EXCEPTION  :Failed to update mail log table");
 								}
-								LOGGER.error("EXCEPTION - Failed to sent mail to" + map.getKey().getCoordinatorEmail());
+								LOGGER.error("EXCEPTION - Failed to send mail to {} - Exception : {} " , map.getKey().getCoordinatorEmail() ,ex.getMessage());
 								LOGGER.error("ADDRESS_EXCEPTION - Looking for next coordinator if available");
 							}
 						}else{

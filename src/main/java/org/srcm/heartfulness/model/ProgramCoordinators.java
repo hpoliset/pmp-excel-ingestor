@@ -13,39 +13,28 @@ public class ProgramCoordinators {
 
 	private int id;
 
-	private int program_id;
+	private int programId;
 
-	private int user_id;
+	private int userId;
 
-	private String coordinator_name;
+	private String coordinatorName;
 
-	private String coordinator_email;
+	private String coordinatorEmail;
 
-	private int is_primary_coordinator;
+	private int isPrimaryCoordinator;
 	
 	public ProgramCoordinators() {
 		super();
 	}
-
-	public ProgramCoordinators(int id, int program_id, int user_id, String coordinator_name, String coordinator_email,
-			int is_primary_coordinator) {
-		super();
-		this.id = id;
-		this.program_id = program_id;
-		this.user_id = user_id;
-		this.coordinator_name = coordinator_name;
-		this.coordinator_email = coordinator_email;
-		this.is_primary_coordinator = is_primary_coordinator;
-	}
 	
-	public ProgramCoordinators(int program_id, int user_id, String coordinator_name, String coordinator_email,
-			int is_primary_coordinator) {
+	public ProgramCoordinators(int programId, int userId, String coordinatorName, String coordinatorEmail,
+			int isPrimaryCoordinator) {
 		super();
-		this.program_id = program_id;
-		this.user_id = user_id;
-		this.coordinator_name = coordinator_name;
-		this.coordinator_email = coordinator_email;
-		this.is_primary_coordinator = is_primary_coordinator;
+		this.programId = programId;
+		this.userId = userId;
+		this.coordinatorName = coordinatorName;
+		this.coordinatorEmail = coordinatorEmail;
+		this.isPrimaryCoordinator = isPrimaryCoordinator;
 	}
 
 	public int getId() {
@@ -56,51 +45,51 @@ public class ProgramCoordinators {
 		this.id = id;
 	}
 
-	public int getProgram_id() {
-		return program_id;
+	public int getProgramId() {
+		return programId;
 	}
 
-	public void setProgram_id(int program_id) {
-		this.program_id = program_id;
+	public void setProgramId(int programId) {
+		this.programId = programId;
 	}
 
-	public int getUser_id() {
-		return user_id;
+	public int getUserId() {
+		return userId;
 	}
 
-	public void setUser_id(int user_id) {
-		this.user_id = user_id;
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
-	public String getCoordinator_name() {
-		return coordinator_name;
+	public String getCoordinatorName() {
+		return coordinatorName;
 	}
 
-	public void setCoordinator_name(String coordinator_name) {
-		this.coordinator_name = coordinator_name;
+	public void setCoordinatorName(String coordinatorName) {
+		this.coordinatorName = coordinatorName;
 	}
 
-	public String getCoordinator_email() {
-		return coordinator_email;
+	public String getCoordinatorEmail() {
+		return coordinatorEmail;
 	}
 
-	public void setCoordinator_email(String coordinator_email) {
-		this.coordinator_email = coordinator_email;
+	public void setCoordinatorEmail(String coordinatorEmail) {
+		this.coordinatorEmail = coordinatorEmail;
 	}
 
-	public int getIs_primary_coordinator() {
-		return is_primary_coordinator;
+	public int getIsPrimaryCoordinator() {
+		return isPrimaryCoordinator;
 	}
 
-	public void setIs_primary_coordinator(int is_primary_coordinator) {
-		this.is_primary_coordinator = is_primary_coordinator;
+	public void setIsPrimaryCoordinator(int isPrimaryCoordinator) {
+		this.isPrimaryCoordinator = isPrimaryCoordinator;
 	}
 
 	@Override
 	public String toString() {
-		return "ProgramCoordinators [id=" + id + ", program_id=" + program_id + ", user_id=" + user_id
-				+ ", coordinator_name=" + coordinator_name + ", coordinator_email=" + coordinator_email
-				+ ", is_primary_coordinator=" + is_primary_coordinator + "]";
+		return "ProgramCoordinators [id=" + id + ", programId=" + programId + ", userId=" + userId
+				+ ", coordinatorName=" + coordinatorName + ", coordinatorEmail=" + coordinatorEmail
+				+ ", isPrimaryCoordinator=" + isPrimaryCoordinator + "]";
 	}
 
 }

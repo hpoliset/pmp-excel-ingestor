@@ -1,6 +1,7 @@
 package org.srcm.heartfulness.repository;
 
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.model.ProgramCoordinators;
 import org.srcm.heartfulness.model.SecondaryCoordinatorRequest;
 
 /**
@@ -15,6 +16,8 @@ public interface CoordinatorAccessControlRepository {
 	int getUserIdbyUserEmail(String userEmail);
 
 	void saveSecondaryCoordinatorRequest(SecondaryCoordinatorRequest scReq);
+
+	void savecoordinatorDetails(ProgramCoordinators programCoordinators);
 	
 
 }

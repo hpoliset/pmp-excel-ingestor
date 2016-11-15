@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.model.ProgramCoordinators;
 import org.srcm.heartfulness.model.SecondaryCoordinatorRequest;
 import org.srcm.heartfulness.repository.CoordinatorAccessControlRepository;
 
@@ -34,14 +35,68 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 
 	private JdbcTemplate jdbcTemplate;
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+	private SimpleJdbcInsert insertProgramCoordinators;
 	private SimpleJdbcInsert saveScndryCordntrDetails;
 
 	@Autowired
 	public CoordinatorAccessControlRepositoryImpl(DataSource dataSource) {
+		this.insertProgramCoordinators=new SimpleJdbcInsert(dataSource).withTableName("program_coordinators")
+				.usingGeneratedKeyColumns("id");
 		this.saveScndryCordntrDetails=new SimpleJdbcInsert(dataSource).withTableName("event_access_request")
 				.usingGeneratedKeyColumns("request_id");
 		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
+	}
+	
+	@Override
+	public void savecoordinatorDetails(ProgramCoordinators programCoordinators) {
+		if(0 == programCoordinators.getUserId()){
+			programCoordinators.setUserId(fecthUserIdwithemailId(programCoordinators.getCoordinatorEmail()));
+		}
+		if (programCoordinators.getId() == 0) {
+			Integer id = this.jdbcTemplate.query("SELECT id from program_coordinators where coordinator_email=? and program_id=?",
+					new Object[] { programCoordinators.getCoordinatorEmail(),programCoordinators.getProgramId() }, new ResultSetExtractor<Integer>() {
+						@Override
+						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+							if (resultSet.next()) {
+								return resultSet.getInt(1);
+							}
+							return 0;
+						}
+					});
+
+			if (id > 0) {
+				programCoordinators.setId(id);
+			}
+		}
+		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(programCoordinators);
+		if (programCoordinators.getId() == 0) {
+			Number newId = this.insertProgramCoordinators.executeAndReturnKey(parameterSource);
+			programCoordinators.setId(newId.intValue());
+		}else{
+			this.namedParameterJdbcTemplate.update("UPDATE program_coordinators SET " + "coordinator_name=:coordinatorName, " + "coordinator_email=:coordinatorEmail, "
+					+ "is_primary_coordinator=:isPrimaryCoordinator " + "WHERE id=:id", parameterSource);
+		}
+		
+	}
+
+	private int fecthUserIdwithemailId(String coordinatorEmail) {
+			Integer id = this.jdbcTemplate.query("SELECT id FROM user WHERE email=?",
+					new Object[] { coordinatorEmail }, new ResultSetExtractor<Integer>() {
+						@Override
+						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+							if (resultSet.next()) {
+								return resultSet.getInt(1);
+							}
+							return 0;
+						}
+					});
+
+			if (id > 0) {
+				return id;
+			}else{
+				return 0;
+			}
 	}
 
 
