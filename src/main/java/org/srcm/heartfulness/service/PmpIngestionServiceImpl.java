@@ -21,31 +21,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import org.srcm.heartfulness.constants.EmailLogConstants;
-import org.srcm.heartfulness.constants.EndpointConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.enumeration.ExcelType;
 import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractorFactory;
+import org.srcm.heartfulness.mail.CoordinatorAccessControlMail;
 import org.srcm.heartfulness.mail.SendMail;
 import org.srcm.heartfulness.model.CoordinatorEmail;
 import org.srcm.heartfulness.model.Organisation;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
-import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 import org.srcm.heartfulness.model.PMPMailLog;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.ProgramCoordinators;
-import org.srcm.heartfulness.model.User;
-import org.srcm.heartfulness.model.json.response.AbhyasiResult;
-import org.srcm.heartfulness.model.json.response.AbhyasiUserProfile;
-import org.srcm.heartfulness.repository.CoordinatorAccessControlRepository;
 import org.srcm.heartfulness.repository.MailLogRepository;
 import org.srcm.heartfulness.repository.OrganisationRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
-import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
 import org.srcm.heartfulness.service.response.ExcelUploadResponse;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.ExcelParserUtils;
@@ -53,9 +46,6 @@ import org.srcm.heartfulness.util.InvalidExcelFileException;
 import org.srcm.heartfulness.util.StackTraceUtils;
 import org.srcm.heartfulness.util.VersionIdentifier;
 import org.srcm.heartfulness.validator.EventDetailsExcelValidatorFactory;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
  * Created by vsonnathi on 11/19/15.
@@ -75,13 +65,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	private VersionIdentifier versionIdentifier;
 
 	@Autowired
-	SrcmRestTemplate srcmRestTemplate;
-
-	@Autowired
 	SendMail sendMail;
-
-	@Autowired
-	private ProgramService programService;
 
 	@Autowired
 	private PmpParticipantService participantService;
@@ -93,10 +77,10 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	APIAccessLogService apiAccessLogService;
 
 	@Autowired
-	private UserProfileService userProfileService;
-
+	private CoordinatorAccessControlMail coordinatorAccessControlMail;
+	
 	@Autowired
-	private CoordinatorAccessControlRepository coordinatorAccessControlRepository;
+	private CoordinatorAccessControlService coordinatorAccessControlService;
 
 	/**
 	 * This method is used to parse the excel file and populate the data into
@@ -185,13 +169,18 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 					StackTraceUtils.convertStackTracetoString(e));
 		}
 		// coordinator emailID validation
-		String isCoordinatorEmailIdvalid = validateCoordinatorEmailID(program, id);
+		String isCoordinatorEmailIdvalid =null;
+		if(null == program.getCoordinatorEmail() || program.getCoordinatorEmail().isEmpty()){
+			isCoordinatorEmailIdvalid = "Coordinator email Id is empty";
+		}else{
+			isCoordinatorEmailIdvalid = coordinatorAccessControlService.validateCoordinatorEmailID(program, id);
+		}
 		if (null == isCoordinatorEmailIdvalid) {
 			programRepository.save(program);
 			// persist coordinator details
 			ProgramCoordinators programCoordinators = new ProgramCoordinators(program.getProgramId(), 0,
 					program.getCoordinatorName(), program.getCoordinatorEmail(), 1);
-			coordinatorAccessControlRepository.savecoordinatorDetails(programCoordinators);
+			coordinatorAccessControlService.savecoordinatorDetails(programCoordinators);
 			// preceptor ID card number validation
 			validatePreceptorIDAsyncronously(program, id);
 			response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
@@ -206,9 +195,9 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 						StackTraceUtils.convertPojoToJson(e));
 			}
 		} else {
-			String isPreceptorIdValid = validatePreceptorIDCardNumberandCreateUser(program, id);
+			String isPreceptorIdValid = coordinatorAccessControlService.validatePreceptorIDCardNumberandCreateUser(program, id);
 			if (null != isPreceptorIdValid) {
-				errorResponse.add(isPreceptorIdValid);
+				errorResponse.add(isCoordinatorEmailIdvalid + " and " +isPreceptorIdValid);
 				response.setErrorMsg(errorResponse);
 				response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 				try {
@@ -223,6 +212,11 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			} else {
 				participantService.updatePartcipantEWelcomeIDStatuswithParticipantID(program.getProgramId(),
 						PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, isPreceptorIdValid);
+				if(null == program.getCoordinatorEmail() || program.getCoordinatorEmail().isEmpty() ){
+					System.out.println("Need to send mail to preceptor to update the coordinator email in dashboard.");
+				}else{
+					System.out.println("Need to send mail to preceptor and coordinator regd. profile creation and access link to dashboard.");
+				}
 				response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
 				try {
 					accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
@@ -240,342 +234,6 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	}
 
 	/**
-	 * Method to validate the preceptor ID card number against MYSRCM and
-	 * 
-	 * If preceptor ID is valid, create user in HFN Backend and assign with role
-	 * 'PRECEPTOR'.
-	 * If invalid, returns appropriate error message.
-	 * 
-	 * @param program
-	 * @param id
-	 * @return
-	 */
-	private String validatePreceptorIDCardNumberandCreateUser(Program program, int id) {
-		PMPAPIAccessLogDetails accessLogDetails = null;
-		if (program.getFirstSittingBy() == 0) {
-			if (null == program.getPreceptorIdCardNumber() || program.getPreceptorIdCardNumber().isEmpty()) {
-				return "Preceptor ID is required for the Event";
-			} else {
-				try {
-					if (0 != id) {
-						try {
-							accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.ABHYASI_INFO_URI,
-									DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-									StackTraceUtils.convertPojoToJson("Request : " + program.getPreceptorIdCardNumber()
-											+ " ,Event ID : " + program.getAutoGeneratedEventId()));
-							int accessdetailsID = apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
-							accessLogDetails.setId(accessdetailsID);
-						} catch (Exception e) {
-							LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-									StackTraceUtils.convertPojoToJson(e));
-						}
-					}
-					AbhyasiResult result;
-					result = srcmRestTemplate.getAbyasiProfile(program.getPreceptorIdCardNumber());
-					if (result.getUserProfile().length > 0) {
-						AbhyasiUserProfile userProfile = result.getUserProfile()[0];
-						if (null != userProfile) {
-							if (0 != userProfile.getId()) {
-
-								// update program
-								program.setAbyasiRefNo(program.getPreceptorIdCardNumber());
-								program.setFirstSittingBy(userProfile.getId());
-								program.setPreceptorName(userProfile.getName());
-								// programRepository.updatePreceptorDetails(program);
-								programRepository.save(program);
-								if (null != userProfile.getEmail()) {
-									// create user and assign role
-									User user = new User();
-									user.setAbyasiId(userProfile.getRef());
-									user.setEmail(userProfile.getEmail());
-									user.setFirst_name(userProfile.getFirst_name());
-									user.setLast_name(userProfile.getLast_name());
-									user.setName((userProfile.getFirst_name() + " " + userProfile.getLast_name())
-											.trim());
-									user.setCity(userProfile.getCity());
-									user.setGender(userProfile.getGender());
-									user.setState((null != userProfile.getState()) ? userProfile.getState().getName()
-											: null);
-									user.setCountry((null != userProfile.getCountry()) ? userProfile.getCountry()
-											.getName() : null);
-									user.setRole(PMPConstants.LOGIN_ROLE_PRECEPTOR);
-									userProfileService.save(user);
-									System.out.println(user.toString());
-
-									// persist coordinator details
-									ProgramCoordinators programCoordinators = new ProgramCoordinators(
-											program.getProgramId(), user.getId(), user.getFirst_name() + " "
-													+ user.getFirst_name(), user.getEmail(), 0);
-									coordinatorAccessControlRepository.savecoordinatorDetails(programCoordinators);
-
-									System.out.println("Need to send mail to preceptor..");
-
-								} else {
-									return "Preceptor Email Id is not available for the provided preceptor Id.";
-								}
-
-								try {
-									if (null != accessLogDetails) {
-										accessLogDetails
-												.setResponseBody(StackTraceUtils.convertPojoToJson(userProfile));
-										accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-										accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
-										apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-									}
-								} catch (Exception e) {
-									LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-											StackTraceUtils.convertPojoToJson(e));
-								}
-							} else {
-								return "Invalid preceptor ID";
-							}
-						} else {
-							try {
-								if (null != accessLogDetails) {
-									accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-									accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(result));
-									accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-									accessLogDetails.setErrorMessage("Invalid preceptor ID");
-									apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-								}
-							} catch (Exception e) {
-								LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-										StackTraceUtils.convertPojoToJson(e));
-							}
-							return "Invalid preceptor ID";
-						}
-					} else {
-						try {
-							if (null != accessLogDetails) {
-								accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-								accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-								accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(result));
-								accessLogDetails.setErrorMessage("Invalid preceptor ID");
-								apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-							}
-						} catch (Exception e) {
-							LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-									StackTraceUtils.convertPojoToJson(e));
-						}
-						return "Invalid preceptor ID";
-					}
-				} catch (HttpClientErrorException e) {
-					LOGGER.error("Exception while fecthing abhyasi profile: HttpClientErrorException : {} ",
-							e.getMessage());
-					if (null != accessLogDetails) {
-						try {
-							accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-							accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-							accessLogDetails.setResponseBody(StackTraceUtils
-									.convertPojoToJson("Error while fetching abhyasi profile from MySRCM : "
-											+ e.getMessage()));
-							accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-							apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-						} catch (Exception ex) {
-							LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-									StackTraceUtils.convertPojoToJson(ex));
-						}
-					}
-					return "Error while fetching abhyasi profile from MySRCM ";
-				} catch (JsonParseException | JsonMappingException e) {
-					LOGGER.error("Exception while fecthing abhyasi profile : JsonParseException : {} ", e.getMessage());
-					if (null != accessLogDetails) {
-						try {
-							accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-							accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-							accessLogDetails
-									.setResponseBody(StackTraceUtils
-											.convertPojoToJson("Error while fetching abhyasi profile from MySRCM : parsing exception "));
-							accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-							apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-						} catch (Exception ex) {
-							LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-									StackTraceUtils.convertPojoToJson(ex));
-						}
-					}
-					return "Error while fetching abhyasi profile from MySRCM : parsing exception ";
-				} catch (IOException e) {
-					LOGGER.error("Exception while fecthing abhyasi profile : {} ", e.getMessage());
-					if (null != accessLogDetails) {
-						try {
-							accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-							accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-							accessLogDetails
-									.setResponseBody(StackTraceUtils
-											.convertPojoToJson("Error while fetching abhyasi profile from MySRCM : parsing exception "));
-							accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-							apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-						} catch (Exception ex) {
-							LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-									StackTraceUtils.convertPojoToJson(ex));
-						}
-					}
-					e.printStackTrace();
-					return "Error while fetching abhyasi profile from MySRCM : IO exception ";
-				} catch (Exception e) {
-					LOGGER.error("Exception while fecthing abhyasi profile : Exception : {} ", e.getMessage());
-					e.printStackTrace();
-					if (null != accessLogDetails) {
-						try {
-							accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-							accessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-							accessLogDetails
-									.setResponseBody(StackTraceUtils
-											.convertPojoToJson("Error while fetching abhyasi profile from MySRCM : parsing exception "));
-							accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-							apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-						} catch (Exception ex) {
-							LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-									StackTraceUtils.convertPojoToJson(ex));
-						}
-					}
-					return "Error while fetching abhyasi profile from MySRCM : Internal server Error ";
-				}
-			}
-		}
-		return null;
-
-	}
-
-	/**
-	 * Method to validate coordinator email Id against MYSRCM.
-	 * 
-	 * @param program
-	 * @param id
-	 * @return
-	 */
-	private String validateCoordinatorEmailID(Program program, int id) {
-		PMPAPIAccessLogDetails fetchEwelcomeIDAPIAccessLogDetails = null;
-		if (null != program.getCoordinatorEmail() && !program.getCoordinatorEmail().isEmpty()) {
-			try {
-				LOGGER.debug("Validating email of coordinator :  NAME: {}, EMAIL: {}", program.getCoordinatorName(),
-						program.getCoordinatorEmail());
-				try {
-					fetchEwelcomeIDAPIAccessLogDetails = new PMPAPIAccessLogDetails(id,
-							EndpointConstants.ABHYASI_INFO_URI + "?email_exact=" + program.getCoordinatorEmail(),
-							DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-							StackTraceUtils.convertPojoToJson("Request: Coordinator Email:"
-									+ program.getCoordinatorEmail() + ", Coordinator Name:"
-									+ program.getCoordinatorName()));
-					apiAccessLogService.createPmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
-				} catch (Exception e) {
-					LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-							StackTraceUtils.convertPojoToJson(e));
-				}
-				AbhyasiResult abhyasiResult = srcmRestTemplate
-						.fetchparticipanteWelcomeID(program.getCoordinatorEmail());
-				if (abhyasiResult.getUserProfile().length > 0) {
-					AbhyasiUserProfile userProfile = abhyasiResult.getUserProfile()[0];
-					if (null == userProfile) {
-						try {
-							if (null != fetchEwelcomeIDAPIAccessLogDetails) {
-								fetchEwelcomeIDAPIAccessLogDetails
-										.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-								fetchEwelcomeIDAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-								fetchEwelcomeIDAPIAccessLogDetails.setResponseBody(StackTraceUtils
-										.convertPojoToJson(abhyasiResult));
-								fetchEwelcomeIDAPIAccessLogDetails.setErrorMessage("Invalid coordinator email Id");
-								apiAccessLogService.updatePmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
-							}
-						} catch (Exception e) {
-							LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-									StackTraceUtils.convertPojoToJson(e));
-						}
-						return "Invalid coordinator email Id";
-					} else {
-
-						// create user and assign role
-						User user = new User();
-						user.setAbyasiId(userProfile.getRef());
-						user.setEmail(userProfile.getEmail());
-						user.setFirst_name(userProfile.getFirst_name());
-						user.setLast_name(userProfile.getLast_name());
-						user.setCity(userProfile.getCity());
-						user.setGender(userProfile.getGender());
-						user.setState(userProfile.getState().getName());
-						user.setCountry(userProfile.getCountry().getName());
-						user.setRole(PMPConstants.LOGIN_ROLE_COORDINATOR);
-						userProfileService.save(user);
-
-						try {
-							fetchEwelcomeIDAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-							fetchEwelcomeIDAPIAccessLogDetails.setResponseBody(StackTraceUtils
-									.convertPojoToJson(abhyasiResult));
-							fetchEwelcomeIDAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
-							apiAccessLogService.updatePmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
-						} catch (Exception e) {
-							LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-									StackTraceUtils.convertPojoToJson(e));
-						}
-
-					}
-				} else {
-					try {
-						if (null != fetchEwelcomeIDAPIAccessLogDetails) {
-							fetchEwelcomeIDAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-							fetchEwelcomeIDAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-							fetchEwelcomeIDAPIAccessLogDetails.setResponseBody(StackTraceUtils
-									.convertPojoToJson(abhyasiResult));
-							fetchEwelcomeIDAPIAccessLogDetails.setErrorMessage("Invalid coordinator email Id");
-							apiAccessLogService.updatePmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
-						}
-					} catch (Exception e) {
-						LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-								StackTraceUtils.convertPojoToJson(e));
-					}
-					return "Invalid coordinator email Id";
-				}
-			} catch (HttpClientErrorException e) {
-				LOGGER.error(
-						"HTTP CLIENT ERROR : Error While Validating email of coordinator. NAME: {}, EMAIL: {}, EXCEPTION: {} ",
-						program.getCoordinatorName(), program.getCoordinatorEmail(),
-						StackTraceUtils.convertStackTracetoString(e));
-				try {
-					fetchEwelcomeIDAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-					fetchEwelcomeIDAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-					fetchEwelcomeIDAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-					apiAccessLogService.updatePmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
-				} catch (Exception ex) {
-					LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-							StackTraceUtils.convertPojoToJson(ex));
-				}
-				return e.getResponseBodyAsString();
-			} catch (JsonParseException | JsonMappingException e) {
-				LOGGER.error(
-						"JSONPARSE/JSONMAPPING ERROR : Error While Validating email of coordinator. NAME: {}, EMAIL: {}, EXCEPTION: {} ",
-						program.getCoordinatorName(), program.getCoordinatorEmail(),
-						StackTraceUtils.convertStackTracetoString(e));
-				try {
-					fetchEwelcomeIDAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-					fetchEwelcomeIDAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-					fetchEwelcomeIDAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-					apiAccessLogService.updatePmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
-				} catch (Exception ex) {
-					LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-							StackTraceUtils.convertPojoToJson(ex));
-				}
-				return "Parsing error while fetching already generated ewelcomeId of the participant";
-			} catch (Exception e) {
-				LOGGER.error(
-						"Exception : Error While Validating email of coordinator. NAME: {}, EMAIL: {}, EXCEPTION: {} ",
-						program.getCoordinatorName(), program.getCoordinatorEmail(),
-						StackTraceUtils.convertStackTracetoString(e));
-				try {
-					fetchEwelcomeIDAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-					fetchEwelcomeIDAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
-					fetchEwelcomeIDAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-					apiAccessLogService.updatePmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
-				} catch (Exception ex) {
-					LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-							StackTraceUtils.convertPojoToJson(ex));
-				}
-				return "Error while fetching already generated ewelcomeId of the participant";
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * Async Method to call method to validate the preceptor ID.
 	 * 
 	 * @param program
@@ -586,7 +244,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			@Override
 			public void run() {
 				try {
-					String isValid = validatePreceptorIDCardNumberandCreateUser(program, id);
+					String isValid = coordinatorAccessControlService.validatePreceptorIDCardNumberandCreateUser(program, id);
 					if (null != isValid) {
 						participantService.updatePartcipantEWelcomeIDStatuswithParticipantID(program.getProgramId(),
 								PMPConstants.EWELCOMEID_FAILED_STATE, isValid);
