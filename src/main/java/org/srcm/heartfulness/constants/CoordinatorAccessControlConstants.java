@@ -19,12 +19,15 @@ public class CoordinatorAccessControlConstants {
 	
 	public static final String  COORDINATOR_REQUEST_WAITING_FOR_APPROVAL = "Your request is already waiting for approval";
 	public static final String  COORDINATOR_REQUEST_ALREADY_APPROVED 	 = "Your request has been already approved ";
-	public static final String  COORDINATOR_SUCCESSFULL_REQUEST 		 = "Your request is successfully submitted";
-	
+	public static final String  COORDINATOR_SUCCESSFULL_REQUEST 		 = "Your request has been successfully submitted";
+	public static final String  COORDINATOR_FAILED_REQUEST 				 = "Failed to register your request.Please try after sometime";
+	public static final String  COORDINATOR_EMAIL_INVALID 				 = "Coordinator email cannot be empty";
+	public static final String  COORDINATOR_INVALID_SELF_REQUEST 		 = "You cannot raise a request for yourself";
 	
 	public static final String  PRECEPTOR_REQUEST_DOESNOT_EXIST 		= "Coordinator you are trying to add needs to raise a request first";
-	public static final String  PRECEPTOR_REQUEST_ALREADY_APPROVED 		= "Coordinator you are trying to add hasbeen already added for this event";
+	public static final String  PRECEPTOR_REQUEST_ALREADY_APPROVED 		= "Coordinator you are trying to add hasbeen already provided access for this event";
 	public static final String  PRECEPTOR_VALIDATION_SUCCESSFULL 		= "Preceptor validation successfull";
+	public static final String  PRECEPTOR_SUCCESS_RESPONSE				= "You have successfully added ";
 	
 	
 	

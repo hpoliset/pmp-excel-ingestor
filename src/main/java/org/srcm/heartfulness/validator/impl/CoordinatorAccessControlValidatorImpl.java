@@ -30,6 +30,10 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 
 	@Override
 	public CoordinatorAccessControlResponse validateCoordinatorRequest(ProgramCoordinators pgrmCoordinators) {
+		
+		if(null == pgrmCoordinators.getCoordinatorEmail() || pgrmCoordinators.getCoordinatorEmail().isEmpty()){
+			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.COORDINATOR_EMAIL_INVALID);
+		}
 
 		Program program = coordntrAccssCntrlRepo.getProgramIdByEventId(pgrmCoordinators.getEventId());
 		if(program.getProgramId() == 0){

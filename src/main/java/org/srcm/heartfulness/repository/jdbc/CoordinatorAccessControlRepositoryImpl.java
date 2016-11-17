@@ -22,6 +22,7 @@ import org.srcm.heartfulness.constants.CoordinatorAccessControlConstants;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.ProgramCoordinators;
 import org.srcm.heartfulness.model.SecondaryCoordinatorRequest;
+import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.repository.CoordinatorAccessControlRepository;
 
 /**
@@ -37,18 +38,18 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 	private JdbcTemplate jdbcTemplate;
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	private SimpleJdbcInsert insertProgramCoordinators;
-	private SimpleJdbcInsert saveScndryCordntrDetails;
+	private SimpleJdbcInsert saveScndryCordntrRequest;
 
 	@Autowired
 	public CoordinatorAccessControlRepositoryImpl(DataSource dataSource) {
 		this.insertProgramCoordinators=new SimpleJdbcInsert(dataSource).withTableName("program_coordinators")
 				.usingGeneratedKeyColumns("id");
-		this.saveScndryCordntrDetails=new SimpleJdbcInsert(dataSource).withTableName("event_access_request")
+		this.saveScndryCordntrRequest=new SimpleJdbcInsert(dataSource).withTableName("event_access_request")
 				.usingGeneratedKeyColumns("request_id");
 		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
-	
+
 	@Override
 	public void savecoordinatorDetails(ProgramCoordinators programCoordinators) {
 		if(0 == programCoordinators.getUserId()){
@@ -57,14 +58,14 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 		if (programCoordinators.getId() == 0) {
 			Integer id = this.jdbcTemplate.query("SELECT id from program_coordinators where coordinator_email=? and program_id=?",
 					new Object[] { programCoordinators.getCoordinatorEmail(),programCoordinators.getProgramId() }, new ResultSetExtractor<Integer>() {
-						@Override
-						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-							if (resultSet.next()) {
-								return resultSet.getInt(1);
-							}
-							return 0;
-						}
-					});
+				@Override
+				public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+					if (resultSet.next()) {
+						return resultSet.getInt(1);
+					}
+					return 0;
+				}
+			});
 
 			if (id > 0) {
 				programCoordinators.setId(id);
@@ -78,26 +79,26 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 			this.namedParameterJdbcTemplate.update("UPDATE program_coordinators SET " + "coordinator_name=:coordinatorName, " + "coordinator_email=:coordinatorEmail, "
 					+ "is_primary_coordinator=:isPrimaryCoordinator " + "WHERE id=:id", parameterSource);
 		}
-		
+
 	}
 
 	private int fecthUserIdwithemailId(String coordinatorEmail) {
-			Integer id = this.jdbcTemplate.query("SELECT id FROM user WHERE email=?",
-					new Object[] { coordinatorEmail }, new ResultSetExtractor<Integer>() {
-						@Override
-						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-							if (resultSet.next()) {
-								return resultSet.getInt(1);
-							}
-							return 0;
-						}
-					});
-
-			if (id > 0) {
-				return id;
-			}else{
+		Integer id = this.jdbcTemplate.query("SELECT id FROM user WHERE email=?",
+				new Object[] { coordinatorEmail }, new ResultSetExtractor<Integer>() {
+			@Override
+			public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+				if (resultSet.next()) {
+					return resultSet.getInt(1);
+				}
 				return 0;
 			}
+		});
+
+		if (id > 0) {
+			return id;
+		}else{
+			return 0;
+		}
 	}
 
 
@@ -119,41 +120,30 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 	}
 
 	@Override
-	public int getUserIdbyUserEmail(String userEmail) {
+	public User getUserbyUserEmail(String userEmail) {
+		User user = new User();
 		Map<String, Object> params = new HashMap<>();
 		params.put("email", userEmail);
 		try{
-			int id = this.jdbcTemplate.query("SELECT id FROM user WHERE email= ?",
-					new Object[] { userEmail }, new ResultSetExtractor<Integer>() {
-				@Override
-				public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-					if (resultSet.next()) {
-						return resultSet.getInt(1);
-					}
-					return 0;
-				}
-			});
-			return id;
+			user = this.namedParameterJdbcTemplate.queryForObject("SELECT id,name,First_name,Last_name,email,abyasi_id FROM user WHERE email=:email",params
+					,BeanPropertyRowMapper.newInstance(User.class));
 		}catch(DataAccessException daex){
 			LOGGER.error("DataAccess problem while fetching user details ",daex);
-			return 0;
 		}catch(Exception ex){
-			ex.printStackTrace();
 			LOGGER.error("Exception while fetching user details ",ex);
-			return 0;
 		}
-
+		return user;
 	}
 
 	@Override
 	public void saveSecondaryCoordinatorRequest(SecondaryCoordinatorRequest scReq) {
-		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(scReq);
-		if (scReq.getRequestId() == 0) {
-			Number newId = this.saveScndryCordntrDetails.executeAndReturnKey(parameterSource);
-			scReq.setRequestId(newId.intValue());
-		} 
+			BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(scReq);
+			if (scReq.getRequestId() == 0) {
+				Number newId = this.saveScndryCordntrRequest.executeAndReturnKey(parameterSource);
+				scReq.setRequestId(newId.intValue());
+			}
 	}
-	
+
 	@Override
 	public int checkRequestAlreadyRaised(int programId, String userEmail) {
 		try{
@@ -176,7 +166,7 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 			return -1;
 		}
 	}
-	
+
 	@Override
 	public int checkRequestAlreadyApproved(int programId, String userEmail) {
 		try{
@@ -214,7 +204,16 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 		}
 	}
 
-	
+	@Override
+	public void createProgramCoordinator(ProgramCoordinators pgrmCoordinators) {
+		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(pgrmCoordinators);
+		if (pgrmCoordinators.getId() == 0) {
+			Number newId = this.insertProgramCoordinators.executeAndReturnKey(parameterSource);
+			pgrmCoordinators.setId(newId.intValue());
+		}
+	}
+
+
 
 
 }
