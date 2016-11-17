@@ -23,6 +23,8 @@ public class ProgramCoordinators {
 
 	private int isPrimaryCoordinator;
 	
+	private String eventId;
+	
 	public ProgramCoordinators() {
 		super();
 	}
@@ -85,11 +87,19 @@ public class ProgramCoordinators {
 		this.isPrimaryCoordinator = isPrimaryCoordinator;
 	}
 
+	public String getEventId() {
+		return eventId;
+	}
+
+	public void setEventId(String eventId) {
+		this.eventId = eventId;
+	}
+
 	@Override
 	public String toString() {
 		return "ProgramCoordinators [id=" + id + ", programId=" + programId + ", userId=" + userId
 				+ ", coordinatorName=" + coordinatorName + ", coordinatorEmail=" + coordinatorEmail
-				+ ", isPrimaryCoordinator=" + isPrimaryCoordinator + "]";
+				+ ", isPrimaryCoordinator=" + isPrimaryCoordinator + ", eventId=" + eventId + "]";
 	}
-
+	
 }

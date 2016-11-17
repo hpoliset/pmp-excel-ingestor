@@ -19,5 +19,16 @@ public interface CoordinatorAccessControlRepository {
 
 	void savecoordinatorDetails(ProgramCoordinators programCoordinators);
 	
+	int checkRequestAlreadyRaised(int programId, String userEmail);
+	
+	int checkRequestAlreadyApproved(int programId, String userEmail);
+
+	int approveSecondaryCoordinatorRequest(int programId, String approvedBy, String requestedBy);
+
+	
+
+	
+	
+	
 
 }
