@@ -206,6 +206,18 @@ public class CoordinatorAccessControlMail {
 		return coordinatormailforupdatingeventsubject;
 	}
 
+	public void setCoordinatormailforupdatingeventsubject(String coordinatormailforupdatingeventsubject) {
+		this.coordinatormailforupdatingeventsubject = coordinatormailforupdatingeventsubject;
+	}
+
+	public MailLogRepository getMailLogRepository() {
+		return mailLogRepository;
+	}
+
+	public void setMailLogRepository(MailLogRepository mailLogRepository) {
+		this.mailLogRepository = mailLogRepository;
+	}
+
 	/**
 	 * To get the email content as string from the vm template.
 	 * 
@@ -244,118 +256,327 @@ public class CoordinatorAccessControlMail {
 	public void sendMailToPreceptorToUpdateCoordinatorEmailID(
 			CoordinatorAccessControlEmail coordinatorAccessControlEmail) throws AddressException, MessagingException,
 			UnsupportedEncodingException, ParseException {
+		try {
 
-		Properties props = System.getProperties();
-		props.put("mail.debug", "true");
-		props.put("mail.smtp.host", hostname);
-		props.put("mail.smtp.port", port);
-		props.put("mail.smtp.ssl.enable", "true");
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
+			Properties props = System.getProperties();
+			props.put("mail.debug", "true");
+			props.put("mail.smtp.host", hostname);
+			props.put("mail.smtp.port", port);
+			props.put("mail.smtp.ssl.enable", "true");
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");
 
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
+			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
+				}
+			});
+
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
+			addParameter("PRECEPTOR_NAME", getName(coordinatorAccessControlEmail.getPreceptorName()));
+			addParameter("UPDATE_EVENT_LINK", SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id="
+					+ coordinatorAccessControlEmail.getEventID());
+			addParameter("EVENT_NAME", coordinatorAccessControlEmail.getEventName());
+			SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
+			SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
+			Date pgrmCreateDate = inputsdf.parse(coordinatorAccessControlEmail.getProgramCreateDate());
+			addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
+			message.addRecipients(Message.RecipientType.TO,
+					InternetAddress.parse(coordinatorAccessControlEmail.getPreceptorEmailId()));
+			message.setSubject(emptycoordinatoremailidsubject + " - " + coordinatorAccessControlEmail.getEventName());
+			message.setContent(getMessageContentbyTemplateName(emptycoordinatoremailidtemplate), "text/html");
+			message.setAllow8bitMIME(true);
+			message.setSentDate(new Date());
+			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+			Transport.send(message);
+			LOGGER.info("Mail sent successfully to Coordinator : {} ",
+					coordinatorAccessControlEmail.getPreceptorEmailId());
+
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
+						coordinatorAccessControlEmail.getCoordinatorEmail(),
+						EmailLogConstants.PRECEPTOR_EMAIL_TO_UPDATE_COORDINATOR_EMAIL_ID,
+						EmailLogConstants.STATUS_SUCCESS, null);
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
 			}
-		});
+		} catch (MessagingException e) {
+			LOGGER.error("MessagingException : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
+						coordinatorAccessControlEmail.getCoordinatorEmail(),
+						EmailLogConstants.PRECEPTOR_EMAIL_TO_UPDATE_COORDINATOR_EMAIL_ID,
+						EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (ParseException e) {
+			LOGGER.error("ParseException : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
+						coordinatorAccessControlEmail.getCoordinatorEmail(),
+						EmailLogConstants.PRECEPTOR_EMAIL_TO_UPDATE_COORDINATOR_EMAIL_ID,
+						EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error("UnsupportedEncodingException : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
+						coordinatorAccessControlEmail.getCoordinatorEmail(),
+						EmailLogConstants.PRECEPTOR_EMAIL_TO_UPDATE_COORDINATOR_EMAIL_ID,
+						EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
+						coordinatorAccessControlEmail.getCoordinatorEmail(),
+						EmailLogConstants.PRECEPTOR_EMAIL_TO_UPDATE_COORDINATOR_EMAIL_ID,
+						EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		}
 
-		addParameter("PRECEPTOR_NAME", getName(coordinatorAccessControlEmail.getCoordinatorName()));
-		addParameter("UPDATE_EVENT_LINK", SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id="
-				+ coordinatorAccessControlEmail.getEventID());
-		addParameter("EVENT_NAME", coordinatorAccessControlEmail.getEventName());
-		SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
-		Date pgrmCreateDate = inputsdf.parse(coordinatorAccessControlEmail.getProgramCreateDate());
-		addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
-		message.addRecipients(Message.RecipientType.TO,
-				InternetAddress.parse(coordinatorAccessControlEmail.getCoordinatorEmail()));
-		message.setSubject(emptycoordinatoremailidsubject + " - " + coordinatorAccessControlEmail.getEventName());
-		message.setContent(getMessageContentbyTemplateName(emptycoordinatoremailidtemplate), "text/html");
-		message.setAllow8bitMIME(true);
-		message.setSentDate(new Date());
-		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-		Transport.send(message);
-		LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinatorAccessControlEmail.getCoordinatorEmail());
 	}
 
 	public void sendMailToPreceptorandCoordinatorToCreateProfileAndAccessDashboard(
 			CoordinatorAccessControlEmail coordinatorAccessControlEmail) throws AddressException, MessagingException,
 			UnsupportedEncodingException, ParseException {
+		try {
+			Properties props = System.getProperties();
+			props.put("mail.debug", "true");
+			props.put("mail.smtp.host", hostname);
+			props.put("mail.smtp.port", port);
+			props.put("mail.smtp.ssl.enable", "true");
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");
+			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
+				}
+			});
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
+			addParameter("PRECEPTOR_NAME", getName(coordinatorAccessControlEmail.getPreceptorName()));
+			addParameter("UPDATE_EVENT_LINK", SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id="
+					+ coordinatorAccessControlEmail.getEventID());
+			addParameter("CREATE_PROFILE_LINK", CoordinatorAccessControlConstants.HEARTFULNESS_CREATE_PROFILE_URL);
+			addParameter("EVENT_NAME", coordinatorAccessControlEmail.getEventName());
+			addParameter("COORDINATOR_EMAILID", coordinatorAccessControlEmail.getCoordinatorEmail());
+			SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
+			SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
+			Date pgrmCreateDate = inputsdf.parse(coordinatorAccessControlEmail.getProgramCreateDate());
+			addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
+			message.addRecipients(Message.RecipientType.TO,
+					InternetAddress.parse(coordinatorAccessControlEmail.getCoordinatorEmail()));
+			message.addRecipients(Message.RecipientType.TO,
+					InternetAddress.parse(coordinatorAccessControlEmail.getPreceptorEmailId()));
+			message.setSubject(mailsubjecttocreateprofileandaccessdashboard + " - "
+					+ coordinatorAccessControlEmail.getEventName());
+			message.setContent(getMessageContentbyTemplateName(mailtemplatetocreateprofileandaccessdashboard),
+					"text/html");
+			message.setAllow8bitMIME(true);
+			message.setSentDate(new Date());
+			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+			Transport.send(message);
+			LOGGER.info("Mail sent successfully to Coordinator : {} ",
+					coordinatorAccessControlEmail.getCoordinatorEmail());
+			LOGGER.info("Mail sent successfully to Coordinator : {} ",
+					coordinatorAccessControlEmail.getPreceptorEmailId());
 
-		Properties props = System.getProperties();
-		props.put("mail.debug", "true");
-		props.put("mail.smtp.host", hostname);
-		props.put("mail.smtp.port", port);
-		props.put("mail.smtp.ssl.enable", "true");
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
-
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0),
+						coordinatorAccessControlEmail.getCoordinatorEmail(),
+						EmailLogConstants.EMAIL_CREATE_PROFILE_AND_DASHBOARD_LINK, EmailLogConstants.STATUS_SUCCESS,
+						null);
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
 			}
-		});
-
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
-
-		addParameter("PRECEPTOR_NAME", getName(coordinatorAccessControlEmail.getPreceptorName()));
-		addParameter("UPDATE_EVENT_LINK", SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id="
-				+ coordinatorAccessControlEmail.getEventID());
-		addParameter("EVENT_NAME", coordinatorAccessControlEmail.getEventName());
-		SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
-		Date pgrmCreateDate = inputsdf.parse(coordinatorAccessControlEmail.getProgramCreateDate());
-		addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
-		message.addRecipients(Message.RecipientType.TO,
-				InternetAddress.parse(coordinatorAccessControlEmail.getPreceptorEmailId()));
-		message.setSubject(mailsubjecttocreateprofileandaccessdashboard + " - "
-				+ coordinatorAccessControlEmail.getEventName());
-		message.setContent(getMessageContentbyTemplateName(mailtemplatetocreateprofileandaccessdashboard), "text/html");
-		message.setAllow8bitMIME(true);
-		message.setSentDate(new Date());
-		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-		Transport.send(message);
-		LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinatorAccessControlEmail.getCoordinatorEmail());
+		} catch (MessagingException e) {
+			e.printStackTrace();
+			LOGGER.error("MessagingException : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
+						coordinatorAccessControlEmail.getCoordinatorEmail(),
+						EmailLogConstants.EMAIL_CREATE_PROFILE_AND_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				e.printStackTrace();
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (ParseException e) {
+			LOGGER.error("ParseException : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
+						coordinatorAccessControlEmail.getCoordinatorEmail(),
+						EmailLogConstants.EMAIL_CREATE_PROFILE_AND_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error("UnsupportedEncodingException : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
+						coordinatorAccessControlEmail.getCoordinatorEmail(),
+						EmailLogConstants.EMAIL_CREATE_PROFILE_AND_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
+						coordinatorAccessControlEmail.getCoordinatorEmail(),
+						EmailLogConstants.EMAIL_CREATE_PROFILE_AND_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		}
 	}
 
-	public void sendMailToCoordinatorToUpdatePreceptorID(CoordinatorEmail coordinator) throws AddressException,
-			MessagingException, UnsupportedEncodingException, ParseException {
+	public void sendMailToCoordinatorToUpdatePreceptorID(CoordinatorEmail coordinatorAccessControlEmail)
+			throws AddressException, MessagingException, UnsupportedEncodingException, ParseException {
+		try {
+			Properties props = System.getProperties();
+			props.put("mail.debug", "true");
+			props.put("mail.smtp.host", hostname);
+			props.put("mail.smtp.port", port);
+			props.put("mail.smtp.ssl.enable", "true");
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");
 
-		Properties props = System.getProperties();
-		props.put("mail.debug", "true");
-		props.put("mail.smtp.host", hostname);
-		props.put("mail.smtp.port", port);
-		props.put("mail.smtp.ssl.enable", "true");
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
+			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
+				}
+			});
 
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
+
+			addParameter("COORDINATOR_NAME", getName(coordinatorAccessControlEmail.getCoordinatorName()));
+			addParameter("UPDATE_EVENT_LINK", SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id="
+					+ coordinatorAccessControlEmail.getEventID());
+			addParameter("EVENT_NAME", coordinatorAccessControlEmail.getEventName());
+			SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
+			SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
+			Date pgrmCreateDate = inputsdf.parse(coordinatorAccessControlEmail.getProgramCreateDate());
+			addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
+			message.addRecipients(Message.RecipientType.TO,
+					InternetAddress.parse(coordinatorAccessControlEmail.getCoordinatorEmail()));
+			message.setSubject(coordinatormailforupdatingeventsubject + " - "
+					+ coordinatorAccessControlEmail.getEventName());
+			message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent), "text/html");
+			message.setAllow8bitMIME(true);
+			message.setSentDate(new Date());
+			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+			Transport.send(message);
+			LOGGER.info("Mail sent successfully to Coordinator : {} ",
+					coordinatorAccessControlEmail.getCoordinatorEmail());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0),
+						coordinatorAccessControlEmail.getCoordinatorEmail(),
+						EmailLogConstants.COORDINATOR_EMAIL_TO_UPDATE_PRECEPTOR_ID, EmailLogConstants.STATUS_SUCCESS,
+						null);
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
 			}
-		});
-
-		addParameter("COORDINATOR_NAME", getName(coordinator.getCoordinatorName()));
-		addParameter("UPDATE_EVENT_LINK",
-				SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + coordinator.getEventID());
-		addParameter("EVENT_NAME", coordinator.getEventName());
-		SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
-		Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
-		addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
-		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
-		message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
-		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent), "text/html");
-		message.setAllow8bitMIME(true);
-		message.setSentDate(new Date());
-		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-		Transport.send(message);
-		LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinator.getCoordinatorEmail());
+		} catch (MessagingException e) {
+			LOGGER.error("MessagingException : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
+						coordinatorAccessControlEmail.getCoordinatorEmail(),
+						EmailLogConstants.COORDINATOR_EMAIL_TO_UPDATE_PRECEPTOR_ID, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (ParseException e) {
+			LOGGER.error("ParseException : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
+						coordinatorAccessControlEmail.getCoordinatorEmail(),
+						EmailLogConstants.COORDINATOR_EMAIL_TO_UPDATE_PRECEPTOR_ID, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error("UnsupportedEncodingException : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
+						coordinatorAccessControlEmail.getCoordinatorEmail(),
+						EmailLogConstants.COORDINATOR_EMAIL_TO_UPDATE_PRECEPTOR_ID, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			LOGGER.error("Exception : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
+						coordinatorAccessControlEmail.getCoordinatorEmail(),
+						EmailLogConstants.COORDINATOR_EMAIL_TO_UPDATE_PRECEPTOR_ID, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		}
 	}
 
 	public void sendMailToCoordinatorWithLinktoAccessDashboard(CoordinatorAccessControlEmail coordinator) {
@@ -374,6 +595,8 @@ public class CoordinatorAccessControlMail {
 				}
 			});
 
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
 			addParameter("COORDINATOR_NAME", getName(coordinator.getCoordinatorName()));
 			addParameter("UPDATE_EVENT_LINK",
 					SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + coordinator.getEventID());
@@ -382,8 +605,6 @@ public class CoordinatorAccessControlMail {
 			SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
 			Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
 			addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
-			SMTPMessage message = new SMTPMessage(session);
-			message.setFrom(new InternetAddress(frommail, name));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
 			message.setSubject(coordinatormailsubjecttoaccessdashbrd + " - " + coordinator.getEventName());
 			message.setContent(getMessageContentbyTemplateName(coordinatormailtemplatetoaccessdashbrd), "text/html");
@@ -396,7 +617,7 @@ public class CoordinatorAccessControlMail {
 			try {
 				LOGGER.info("START        :Inserting mail log details in table");
 				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), coordinator.getCoordinatorEmail(),
-						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_SUCCESS, null);
+						EmailLogConstants.COORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_SUCCESS, null);
 				mailLogRepository.createMailLog(pmpMailLog);
 				LOGGER.info("END        :Completed inserting mail log details in table");
 			} catch (Exception ex) {
@@ -406,8 +627,8 @@ public class CoordinatorAccessControlMail {
 			LOGGER.error("MessagingException : Sending Mail Failed : {} " + e.getMessage());
 			try {
 				LOGGER.info("START        :Inserting mail log details in table");
-				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), coordinator.getCoordinatorEmail(),
-						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.COORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
 						StackTraceUtils.convertStackTracetoString(e));
 				mailLogRepository.createMailLog(pmpMailLog);
 				LOGGER.info("END        :Completed inserting mail log details in table");
@@ -418,8 +639,8 @@ public class CoordinatorAccessControlMail {
 			LOGGER.error("ParseException : Sending Mail Failed : {} " + e.getMessage());
 			try {
 				LOGGER.info("START        :Inserting mail log details in table");
-				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), coordinator.getCoordinatorEmail(),
-						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.COORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
 						StackTraceUtils.convertStackTracetoString(e));
 				mailLogRepository.createMailLog(pmpMailLog);
 				LOGGER.info("END        :Completed inserting mail log details in table");
@@ -430,8 +651,8 @@ public class CoordinatorAccessControlMail {
 			LOGGER.error("UnsupportedEncodingException : Sending Mail Failed : {} " + e.getMessage());
 			try {
 				LOGGER.info("START        :Inserting mail log details in table");
-				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), coordinator.getCoordinatorEmail(),
-						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.COORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
 						StackTraceUtils.convertStackTracetoString(e));
 				mailLogRepository.createMailLog(pmpMailLog);
 				LOGGER.info("END        :Completed inserting mail log details in table");
@@ -442,8 +663,8 @@ public class CoordinatorAccessControlMail {
 			LOGGER.error("Exception : Sending Mail Failed : {} " + e.getMessage());
 			try {
 				LOGGER.info("START        :Inserting mail log details in table");
-				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), coordinator.getCoordinatorEmail(),
-						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.COORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
 						StackTraceUtils.convertStackTracetoString(e));
 				mailLogRepository.createMailLog(pmpMailLog);
 				LOGGER.info("END        :Completed inserting mail log details in table");
@@ -453,7 +674,7 @@ public class CoordinatorAccessControlMail {
 		}
 
 	}
-	
+
 	public void sendMailToCoordinatorWithLinktoCreateProfile(CoordinatorAccessControlEmail coordinator) {
 		try {
 			Properties props = System.getProperties();
@@ -470,17 +691,18 @@ public class CoordinatorAccessControlMail {
 				}
 			});
 
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
+
 			addParameter("COORDINATOR_NAME", getName(coordinator.getCoordinatorName()));
 			addParameter("UPDATE_EVENT_LINK",
 					SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + coordinator.getEventID());
-			addParameter("CREATE_PROFILE_LINK",CoordinatorAccessControlConstants.HEARTFULNESS_CREATE_PROFILE_URL);
+			addParameter("CREATE_PROFILE_LINK", CoordinatorAccessControlConstants.HEARTFULNESS_CREATE_PROFILE_URL);
 			addParameter("EVENT_NAME", coordinator.getEventName());
 			SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
 			SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
 			Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
 			addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
-			SMTPMessage message = new SMTPMessage(session);
-			message.setFrom(new InternetAddress(frommail, name));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
 			message.setSubject(coordinatormailsubjecttocreateaccount + " - " + coordinator.getEventName());
 			message.setContent(getMessageContentbyTemplateName(coordinatormailtemplatetocreateaccount), "text/html");
@@ -493,7 +715,7 @@ public class CoordinatorAccessControlMail {
 			try {
 				LOGGER.info("START        :Inserting mail log details in table");
 				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), coordinator.getCoordinatorEmail(),
-						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_SUCCESS, null);
+						EmailLogConstants.COORDINATOR_EMAIL_CREATE_PROFILE, EmailLogConstants.STATUS_SUCCESS, null);
 				mailLogRepository.createMailLog(pmpMailLog);
 				LOGGER.info("END        :Completed inserting mail log details in table");
 			} catch (Exception ex) {
@@ -503,8 +725,8 @@ public class CoordinatorAccessControlMail {
 			LOGGER.error("MessagingException : Sending Mail Failed : {} " + e.getMessage());
 			try {
 				LOGGER.info("START        :Inserting mail log details in table");
-				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), coordinator.getCoordinatorEmail(),
-						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.COORDINATOR_EMAIL_CREATE_PROFILE, EmailLogConstants.STATUS_FAILED,
 						StackTraceUtils.convertStackTracetoString(e));
 				mailLogRepository.createMailLog(pmpMailLog);
 				LOGGER.info("END        :Completed inserting mail log details in table");
@@ -515,8 +737,8 @@ public class CoordinatorAccessControlMail {
 			LOGGER.error("ParseException : Sending Mail Failed : {} " + e.getMessage());
 			try {
 				LOGGER.info("START        :Inserting mail log details in table");
-				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), coordinator.getCoordinatorEmail(),
-						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.COORDINATOR_EMAIL_CREATE_PROFILE, EmailLogConstants.STATUS_FAILED,
 						StackTraceUtils.convertStackTracetoString(e));
 				mailLogRepository.createMailLog(pmpMailLog);
 				LOGGER.info("END        :Completed inserting mail log details in table");
@@ -527,8 +749,8 @@ public class CoordinatorAccessControlMail {
 			LOGGER.error("UnsupportedEncodingException : Sending Mail Failed : {} " + e.getMessage());
 			try {
 				LOGGER.info("START        :Inserting mail log details in table");
-				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), coordinator.getCoordinatorEmail(),
-						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.COORDINATOR_EMAIL_CREATE_PROFILE, EmailLogConstants.STATUS_FAILED,
 						StackTraceUtils.convertStackTracetoString(e));
 				mailLogRepository.createMailLog(pmpMailLog);
 				LOGGER.info("END        :Completed inserting mail log details in table");
@@ -539,8 +761,8 @@ public class CoordinatorAccessControlMail {
 			LOGGER.error("Exception : Sending Mail Failed : {} " + e.getMessage());
 			try {
 				LOGGER.info("START        :Inserting mail log details in table");
-				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), coordinator.getCoordinatorEmail(),
-						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.COORDINATOR_EMAIL_CREATE_PROFILE, EmailLogConstants.STATUS_FAILED,
 						StackTraceUtils.convertStackTracetoString(e));
 				mailLogRepository.createMailLog(pmpMailLog);
 				LOGGER.info("END        :Completed inserting mail log details in table");
@@ -549,13 +771,6 @@ public class CoordinatorAccessControlMail {
 			}
 		}
 
-		
 	}
 	
-	public void setCoordinatormailforupdatingeventsubject(String coordinatormailforupdatingeventsubject) {
-		this.coordinatormailforupdatingeventsubject = coordinatormailforupdatingeventsubject;
-	}
-	
-	
-
 }
