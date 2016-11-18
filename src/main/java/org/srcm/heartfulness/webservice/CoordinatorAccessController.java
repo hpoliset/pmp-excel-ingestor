@@ -10,7 +10,6 @@ import javax.ws.rs.core.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +25,6 @@ import org.srcm.heartfulness.model.ProgramCoordinators;
 import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.response.CoordinatorAccessControlErrorResponse;
 import org.srcm.heartfulness.model.json.response.CoordinatorAccessControlResponse;
-import org.srcm.heartfulness.model.json.response.CoordinatorAccessControlSuccessResponse;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.service.APIAccessLogService;
@@ -252,7 +250,7 @@ public class CoordinatorAccessController {
 			}
 
 			accessLog.setUsername(userProfile.getEmail());
-			CoordinatorAccessControlResponse response = coordntrAccssCntrlValidator.validateCoordinatorRequest(pgrmCoordinators);
+			CoordinatorAccessControlResponse response = coordntrAccssCntrlValidator.validateCoordinatorRequest(userProfile.getEmail(),pgrmCoordinators);
 			if(response instanceof CoordinatorAccessControlErrorResponse){
 				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(((CoordinatorAccessControlErrorResponse) response).getError_description());
@@ -268,7 +266,7 @@ public class CoordinatorAccessController {
 				accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 
 				CoordinatorAccessControlResponse srcvResponse = coordntrAccssCntrlSrcv.approveSecondaryCoordinatorRequest(
-						userProfile.getEmail(),pgrmCoordinators.getCoordinatorEmail(),pgrmCoordinators.getEventId());
+						userProfile.getEmail(),pgrmCoordinators);
 				if(srcvResponse instanceof CoordinatorAccessControlErrorResponse){
 					accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 					accessLog.setErrorMessage(((CoordinatorAccessControlErrorResponse) srcvResponse).getError_description());

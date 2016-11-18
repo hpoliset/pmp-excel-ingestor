@@ -27,11 +27,6 @@ public interface CoordinatorAccessControlRepository {
 	int approveSecondaryCoordinatorRequest(int programId, String approvedBy, String requestedBy);
 
 	void createProgramCoordinator(ProgramCoordinators pgrmCoordinators);
-
-	
-
-	
-	
 	
 
 }

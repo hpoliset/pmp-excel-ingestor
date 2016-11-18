@@ -29,12 +29,16 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 	}
 
 	@Override
-	public CoordinatorAccessControlResponse validateCoordinatorRequest(ProgramCoordinators pgrmCoordinators) {
+	public CoordinatorAccessControlResponse validateCoordinatorRequest(String approvedBy,ProgramCoordinators pgrmCoordinators) {
 		
 		if(null == pgrmCoordinators.getCoordinatorEmail() || pgrmCoordinators.getCoordinatorEmail().isEmpty()){
 			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.COORDINATOR_EMAIL_INVALID);
 		}
-
+		
+		if(approvedBy.equalsIgnoreCase(pgrmCoordinators.getCoordinatorEmail())){
+			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.PRECEPTOR_SAME_APPROVER_REQUESTER);
+		}
+		
 		Program program = coordntrAccssCntrlRepo.getProgramIdByEventId(pgrmCoordinators.getEventId());
 		if(program.getProgramId() == 0){
 			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.INVALID_EVENT_ID);
