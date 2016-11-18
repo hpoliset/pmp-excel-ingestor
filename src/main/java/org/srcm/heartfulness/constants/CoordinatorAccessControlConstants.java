@@ -29,6 +29,8 @@ public class CoordinatorAccessControlConstants {
 	public static final String  PRECEPTOR_VALIDATION_SUCCESSFULL 		= "Preceptor validation successfull";
 	public static final String  PRECEPTOR_SUCCESS_RESPONSE				= "You have successfully added ";
 	
+	public static final String HEARTFULNESS_CREATE_PROFILE_URL = "https://profile.sahajmarg.org/accounts/signup/"; 
+	
 	
 	
 	

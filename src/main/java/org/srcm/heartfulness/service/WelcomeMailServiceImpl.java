@@ -403,13 +403,12 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	public void getGeneratedEwelcomeIdAndSendToCoordinators() {
 		LOGGER.info("Fetching co-ordinator details and e-welcomeID details..!");
 		//List<CoordinatorEmail> coordinatorEmails = new ArrayList<>();
-		List<Integer> listOfParticipantId = new ArrayList<>();
 		try{
 			Map<CoordinatorEmail, List<Participant>> eWelcomeIdDetails = welcomeMailRepository.getGeneratedEwelcomeIdDetails();
 			LOGGER.info("Count of coordinators to send email - "+eWelcomeIdDetails.size());
 			if(!eWelcomeIdDetails.isEmpty()){
 				for(Entry<CoordinatorEmail, List<Participant>> map:eWelcomeIdDetails.entrySet()){
-					//System.out.println("Iterating for - "+map.getKey().getCoordinatorEmail());
+					List<Integer> listOfParticipantId = new ArrayList<>();
 					if(null != map.getKey()){
 						if(map.getKey().getCoordinatorEmail()!=null && !map.getKey().getCoordinatorEmail().isEmpty()){
 							try{
@@ -419,9 +418,9 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								coordinatorEmail.setCoordinatorEmail(map.getKey().getCoordinatorEmail());
 								coordinatorEmail.setEventID(programRepository.getEventIdByProgramID(Integer.parseInt(map.getKey().getProgramId())));
 								List<Participant> failedParticipants = participantRepository.getEWelcomeIdGenerationFailedParticipants(map.getKey().getProgramId());
-								LOGGER.info("Failed participants : "+failedParticipants.size() + ", programID : "+map.getKey().getProgramId());
+								LOGGER.info("Failed participants : "+failedParticipants.size() + ", EventID : "+map.getKey().getEventID());
 								List<Participant> eWelcomeIDParticipants = participantRepository.getEWelcomeIdGeneratedParticipants(map.getKey().getProgramId());
-								LOGGER.info("eWelcomeIDParticipants : "+eWelcomeIDParticipants.size() + ", programID : "+map.getKey().getProgramId());
+								LOGGER.info("eWelcomeIDParticipants : "+eWelcomeIDParticipants.size() + ", EventID : "+map.getKey().getEventID());
 								sendEmailNotification.sendGeneratedEwelcomeIdDetailslToCoordinator(coordinatorEmail,eWelcomeIDParticipants,failedParticipants);
 								try{
 									LOGGER.info("Inserting log details in table.");

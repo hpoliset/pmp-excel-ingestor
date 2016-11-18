@@ -121,7 +121,6 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 						response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 					} catch (Exception ex) {
 						errorResponse.add("Failed to upload excel file.Please contact Administrator");
-						ex.printStackTrace();
 						response.setErrorMsg(errorResponse);
 						response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 					}
@@ -195,7 +194,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 						StackTraceUtils.convertPojoToJson(e));
 			}
 		} else {
-			String isPreceptorIdValid = coordinatorAccessControlService.validatePreceptorIDCardNumberandCreateUser(program, id);
+			String isPreceptorIdValid = coordinatorAccessControlService.validatePreceptorIDCardNumberandCreateUser(program, id , PMPConstants.CREATED_SOURCE_EXCEL);
 			if (null != isPreceptorIdValid) {
 				errorResponse.add(isCoordinatorEmailIdvalid + " and " +isPreceptorIdValid);
 				response.setErrorMsg(errorResponse);
@@ -212,11 +211,6 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			} else {
 				participantService.updatePartcipantEWelcomeIDStatuswithParticipantID(program.getProgramId(),
 						PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, isPreceptorIdValid);
-				if(null == program.getCoordinatorEmail() || program.getCoordinatorEmail().isEmpty() ){
-					System.out.println("Need to send mail to preceptor to update the coordinator email in dashboard.");
-				}else{
-					System.out.println("Need to send mail to preceptor and coordinator regd. profile creation and access link to dashboard.");
-				}
 				response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
 				try {
 					accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
@@ -244,7 +238,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			@Override
 			public void run() {
 				try {
-					String isValid = coordinatorAccessControlService.validatePreceptorIDCardNumberandCreateUser(program, id);
+					String isValid = coordinatorAccessControlService.validatePreceptorIDCardNumberandCreateUser(program, id,PMPConstants.CREATED_SOURCE_EXCEL);
 					if (null != isValid) {
 						participantService.updatePartcipantEWelcomeIDStatuswithParticipantID(program.getProgramId(),
 								PMPConstants.EWELCOMEID_FAILED_STATE, isValid);

@@ -22,11 +22,17 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.srcm.heartfulness.constants.CoordinatorAccessControlConstants;
+import org.srcm.heartfulness.constants.EmailLogConstants;
 import org.srcm.heartfulness.constants.SMSConstants;
 import org.srcm.heartfulness.model.CoordinatorAccessControlEmail;
 import org.srcm.heartfulness.model.CoordinatorEmail;
+import org.srcm.heartfulness.model.PMPMailLog;
+import org.srcm.heartfulness.repository.MailLogRepository;
+import org.srcm.heartfulness.util.StackTraceUtils;
 
 import com.sun.mail.smtp.SMTPMessage;
 
@@ -57,10 +63,13 @@ public class CoordinatorAccessControlMail {
 	private String coordinatormailforupdatingevent;
 	private String coordinatormailforupdatingeventsubject;
 
+	@Autowired
+	private MailLogRepository mailLogRepository;
+
 	private VelocityEngine velocityEngine = new VelocityEngine();
 
 	private VelocityContext context;
-
+	
 	public CoordinatorAccessControlMail() {
 		context = new VelocityContext();
 	}
@@ -73,6 +82,352 @@ public class CoordinatorAccessControlMail {
 		return this.context;
 	}
 
+	/**
+	 * To get the email content as string from the vm template.
+	 * 
+	 * @param templateName
+	 * @return
+	 */
+	private String getMessageContentbyTemplateName(String templateName) {
+		Template template = null;
+		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
+		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+		template = velocityEngine.getTemplate(templateName);
+		StringWriter stringWriter = new StringWriter();
+		template.merge(getParameter(), stringWriter);
+		return stringWriter.toString();
+	}
+
+	/**
+	 * Method to get the personalized name of the given participant.
+	 * 
+	 * @param printName
+	 * @return
+	 */
+	private String getName(String printName) {
+		printName = printName.replace(".", " ");
+		String[] name = printName.split(" ");
+		if (name.length > 0) {
+			for (int i = 0; i < name.length; i++) {
+				if (name[i].length() > 2 && !name[i].equalsIgnoreCase("mrs") && !name[i].equalsIgnoreCase("smt")) {
+					return name[i].substring(0, 1).toUpperCase() + name[i].substring(1).toLowerCase();
+				}
+			}
+		}
+		return printName;
+	}
+
+	public void sendMailToPreceptorToUpdateCoordinatorEmailID(
+			CoordinatorAccessControlEmail coordinatorAccessControlEmail) throws AddressException, MessagingException,
+			UnsupportedEncodingException, ParseException {
+
+		Properties props = System.getProperties();
+		props.put("mail.debug", "true");
+		props.put("mail.smtp.host", hostname);
+		props.put("mail.smtp.port", port);
+		props.put("mail.smtp.ssl.enable", "true");
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", "true");
+
+		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(username, password);
+			}
+		});
+
+		addParameter("PRECEPTOR_NAME", getName(coordinatorAccessControlEmail.getCoordinatorName()));
+		addParameter("UPDATE_EVENT_LINK", SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id="
+				+ coordinatorAccessControlEmail.getEventID());
+		addParameter("EVENT_NAME", coordinatorAccessControlEmail.getEventName());
+		SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
+		Date pgrmCreateDate = inputsdf.parse(coordinatorAccessControlEmail.getProgramCreateDate());
+		addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(frommail, name));
+		message.addRecipients(Message.RecipientType.TO,
+				InternetAddress.parse(coordinatorAccessControlEmail.getCoordinatorEmail()));
+		message.setSubject(emptycoordinatoremailidsubject + " - " + coordinatorAccessControlEmail.getEventName());
+		message.setContent(getMessageContentbyTemplateName(emptycoordinatoremailidtemplate), "text/html");
+		message.setAllow8bitMIME(true);
+		message.setSentDate(new Date());
+		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+		Transport.send(message);
+		LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinatorAccessControlEmail.getCoordinatorEmail());
+	}
+
+	public void sendMailToPreceptorandCoordinatorToCreateProfileAndAccessDashboard(
+			CoordinatorAccessControlEmail coordinatorAccessControlEmail) throws AddressException, MessagingException,
+			UnsupportedEncodingException, ParseException {
+
+		Properties props = System.getProperties();
+		props.put("mail.debug", "true");
+		props.put("mail.smtp.host", hostname);
+		props.put("mail.smtp.port", port);
+		props.put("mail.smtp.ssl.enable", "true");
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", "true");
+
+		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(username, password);
+			}
+		});
+
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(frommail, name));
+
+		addParameter("PRECEPTOR_NAME", getName(coordinatorAccessControlEmail.getPreceptorName()));
+		addParameter("UPDATE_EVENT_LINK", SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id="
+				+ coordinatorAccessControlEmail.getEventID());
+		addParameter("EVENT_NAME", coordinatorAccessControlEmail.getEventName());
+		SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
+		Date pgrmCreateDate = inputsdf.parse(coordinatorAccessControlEmail.getProgramCreateDate());
+		addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
+		message.addRecipients(Message.RecipientType.TO,
+				InternetAddress.parse(coordinatorAccessControlEmail.getPreceptorEmailId()));
+		message.setSubject(mailsubjecttocreateprofileandaccessdashboard + " - "
+				+ coordinatorAccessControlEmail.getEventName());
+		message.setContent(getMessageContentbyTemplateName(mailtemplatetocreateprofileandaccessdashboard), "text/html");
+		message.setAllow8bitMIME(true);
+		message.setSentDate(new Date());
+		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+		Transport.send(message);
+		LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinatorAccessControlEmail.getCoordinatorEmail());
+	}
+
+	public void sendMailToCoordinatorToUpdatePreceptorID(CoordinatorEmail coordinator) throws AddressException,
+			MessagingException, UnsupportedEncodingException, ParseException {
+
+		Properties props = System.getProperties();
+		props.put("mail.debug", "true");
+		props.put("mail.smtp.host", hostname);
+		props.put("mail.smtp.port", port);
+		props.put("mail.smtp.ssl.enable", "true");
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", "true");
+
+		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(username, password);
+			}
+		});
+
+		addParameter("COORDINATOR_NAME", getName(coordinator.getCoordinatorName()));
+		addParameter("UPDATE_EVENT_LINK",
+				SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + coordinator.getEventID());
+		addParameter("EVENT_NAME", coordinator.getEventName());
+		SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
+		Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
+		addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(frommail, name));
+		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
+		message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
+		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent), "text/html");
+		message.setAllow8bitMIME(true);
+		message.setSentDate(new Date());
+		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+		Transport.send(message);
+		LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinator.getCoordinatorEmail());
+	}
+
+	public void sendMailToCoordinatorWithLinktoAccessDashboard(CoordinatorAccessControlEmail coordinator) {
+		try {
+			Properties props = System.getProperties();
+			props.put("mail.debug", "true");
+			props.put("mail.smtp.host", hostname);
+			props.put("mail.smtp.port", port);
+			props.put("mail.smtp.ssl.enable", "true");
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");
+
+			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
+				}
+			});
+
+			addParameter("COORDINATOR_NAME", getName(coordinator.getCoordinatorName()));
+			addParameter("UPDATE_EVENT_LINK",
+					SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + coordinator.getEventID());
+			addParameter("EVENT_NAME", coordinator.getEventName());
+			SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
+			SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
+			Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
+			addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
+			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
+			message.setSubject(coordinatormailsubjecttoaccessdashbrd + " - " + coordinator.getEventName());
+			message.setContent(getMessageContentbyTemplateName(coordinatormailtemplatetoaccessdashbrd), "text/html");
+			message.setAllow8bitMIME(true);
+			message.setSentDate(new Date());
+			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+			Transport.send(message);
+			LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinator.getCoordinatorEmail());
+
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_SUCCESS, null);
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (MessagingException e) {
+			LOGGER.error("MessagingException : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (ParseException e) {
+			LOGGER.error("ParseException : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error("UnsupportedEncodingException : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		}
+
+	}
+	
+	public void sendMailToCoordinatorWithLinktoCreateProfile(CoordinatorAccessControlEmail coordinator) {
+		try {
+			Properties props = System.getProperties();
+			props.put("mail.debug", "true");
+			props.put("mail.smtp.host", hostname);
+			props.put("mail.smtp.port", port);
+			props.put("mail.smtp.ssl.enable", "true");
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");
+
+			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
+				}
+			});
+
+			addParameter("COORDINATOR_NAME", getName(coordinator.getCoordinatorName()));
+			addParameter("UPDATE_EVENT_LINK",
+					SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + coordinator.getEventID());
+			addParameter("CREATE_PROFILE_LINK",CoordinatorAccessControlConstants.HEARTFULNESS_CREATE_PROFILE_URL);
+			addParameter("EVENT_NAME", coordinator.getEventName());
+			SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
+			SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
+			Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
+			addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
+			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
+			message.setSubject(coordinatormailsubjecttocreateaccount + " - " + coordinator.getEventName());
+			message.setContent(getMessageContentbyTemplateName(coordinatormailtemplatetocreateaccount), "text/html");
+			message.setAllow8bitMIME(true);
+			message.setSentDate(new Date());
+			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+			Transport.send(message);
+			LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinator.getCoordinatorEmail());
+
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_SUCCESS, null);
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (MessagingException e) {
+			LOGGER.error("MessagingException : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (ParseException e) {
+			LOGGER.error("ParseException : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error("UnsupportedEncodingException : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		} catch (Exception e) {
+			LOGGER.error("Exception : Sending Mail Failed : {} " + e.getMessage());
+			try {
+				LOGGER.info("START        :Inserting mail log details in table");
+				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), coordinator.getCoordinatorEmail(),
+						EmailLogConstants.CORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(e));
+				mailLogRepository.createMailLog(pmpMailLog);
+				LOGGER.info("END        :Completed inserting mail log details in table");
+			} catch (Exception ex) {
+				LOGGER.error("END        :Exception while inserting mail log details in table");
+			}
+		}
+
+		
+	}
+	
 	public String getUsername() {
 		return username;
 	}
@@ -184,7 +539,7 @@ public class CoordinatorAccessControlMail {
 	public void setCoordinatormailsubjecttoaccessdashbrd(String coordinatormailsubjecttoaccessdashbrd) {
 		this.coordinatormailsubjecttoaccessdashbrd = coordinatormailsubjecttoaccessdashbrd;
 	}
-	
+
 	public String getCoordinatormailforupdatingevent() {
 		return coordinatormailforupdatingevent;
 	}
@@ -200,157 +555,5 @@ public class CoordinatorAccessControlMail {
 	public void setCoordinatormailforupdatingeventsubject(String coordinatormailforupdatingeventsubject) {
 		this.coordinatormailforupdatingeventsubject = coordinatormailforupdatingeventsubject;
 	}
-
-	/**
-	 * To get the email content as string from the vm template.
-	 * 
-	 * @param templateName
-	 * @return
-	 */
-	private String getMessageContentbyTemplateName(String templateName) {
-		Template template = null;
-		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
-		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
-		template = velocityEngine.getTemplate(templateName);
-		StringWriter stringWriter = new StringWriter();
-		template.merge(getParameter(), stringWriter);
-		return stringWriter.toString();
-	}
-
-	/**
-	 * Method to get the personalized name of the given participant.
-	 * 
-	 * @param printName
-	 * @return
-	 */
-	private String getName(String printName) {
-		printName = printName.replace(".", " ");
-		String[] name = printName.split(" ");
-		if (name.length > 0) {
-			for (int i = 0; i < name.length; i++) {
-				if (name[i].length() > 2 && !name[i].equalsIgnoreCase("mrs") && !name[i].equalsIgnoreCase("smt")) {
-					return name[i].substring(0, 1).toUpperCase() + name[i].substring(1).toLowerCase();
-				}
-			}
-		}
-		return printName;
-	}
-
-	public void sendMailToPreceptorToUpdateCoordinatorEmailID(
-			CoordinatorAccessControlEmail coordinatorAccessControlEmail) throws AddressException, MessagingException,
-			UnsupportedEncodingException, ParseException {
-
-		Properties props = System.getProperties();
-		props.put("mail.debug", "true");
-		props.put("mail.smtp.host", hostname);
-		props.put("mail.smtp.port", port);
-		props.put("mail.smtp.ssl.enable", "true");
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
-
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
-			}
-		});
-
-		addParameter("PRECEPTOR_NAME", getName(coordinatorAccessControlEmail.getCoordinatorName()));
-		addParameter("UPDATE_EVENT_LINK", SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id="
-				+ coordinatorAccessControlEmail.getEventID());
-		addParameter("EVENT_NAME", coordinatorAccessControlEmail.getEventName());
-		SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
-		Date pgrmCreateDate = inputsdf.parse(coordinatorAccessControlEmail.getProgramCreateDate());
-		addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
-		message.addRecipients(Message.RecipientType.TO,
-				InternetAddress.parse(coordinatorAccessControlEmail.getCoordinatorEmail()));
-		message.setSubject(emptycoordinatoremailidsubject + " - " + coordinatorAccessControlEmail.getEventName());
-		message.setContent(getMessageContentbyTemplateName(emptycoordinatoremailidtemplate), "text/html");
-		message.setAllow8bitMIME(true);
-		message.setSentDate(new Date());
-		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-		Transport.send(message);
-		LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinatorAccessControlEmail.getCoordinatorEmail());
-	}
-
-	public void sendMailToPreceptorandCoordinatorToCreateProfileAndAccessDashboard(
-			CoordinatorAccessControlEmail coordinatorAccessControlEmail) throws AddressException, MessagingException,
-			UnsupportedEncodingException, ParseException {
-
-		Properties props = System.getProperties();
-		props.put("mail.debug", "true");
-		props.put("mail.smtp.host", hostname);
-		props.put("mail.smtp.port", port);
-		props.put("mail.smtp.ssl.enable", "true");
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
-
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
-			}
-		});
-
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
-
-		addParameter("PRECEPTOR_NAME", getName(coordinatorAccessControlEmail.getPreceptorName()));
-		addParameter("UPDATE_EVENT_LINK", SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id="
-				+ coordinatorAccessControlEmail.getEventID());
-		addParameter("EVENT_NAME", coordinatorAccessControlEmail.getEventName());
-		SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
-		Date pgrmCreateDate = inputsdf.parse(coordinatorAccessControlEmail.getProgramCreateDate());
-		addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
-		message.addRecipients(Message.RecipientType.TO,
-				InternetAddress.parse(coordinatorAccessControlEmail.getPreceptorEmailId()));
-		message.setSubject(mailsubjecttocreateprofileandaccessdashboard + " - " + coordinatorAccessControlEmail.getEventName());
-		message.setContent(getMessageContentbyTemplateName(mailtemplatetocreateprofileandaccessdashboard), "text/html");
-		message.setAllow8bitMIME(true);
-		message.setSentDate(new Date());
-		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-		Transport.send(message);
-		LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinatorAccessControlEmail.getCoordinatorEmail());
-	}
-	
-	public void sendMailToCoordinatorToUpdatePreceptorID(CoordinatorEmail coordinator) throws AddressException,
-	MessagingException, UnsupportedEncodingException, ParseException {
-
-		Properties props = System.getProperties();
-		props.put("mail.debug", "true");
-		props.put("mail.smtp.host", hostname);
-		props.put("mail.smtp.port", port);
-		props.put("mail.smtp.ssl.enable", "true");
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
-
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
-			}
-		});
-
-		addParameter("COORDINATOR_NAME", getName(coordinator.getCoordinatorName()));
-		addParameter("UPDATE_EVENT_LINK",
-				SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + coordinator.getEventID());
-		addParameter("EVENT_NAME", coordinator.getEventName());
-		SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
-		Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
-		addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
-		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
-		message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
-		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent), "text/html");
-		message.setAllow8bitMIME(true);
-		message.setSentDate(new Date());
-		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-		Transport.send(message);
-		LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinator.getCoordinatorEmail());
-	}
-
 
 }
