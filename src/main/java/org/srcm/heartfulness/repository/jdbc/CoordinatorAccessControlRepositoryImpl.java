@@ -55,6 +55,22 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 		if(0 == programCoordinators.getUserId()){
 			programCoordinators.setUserId(fecthUserIdwithemailId(programCoordinators.getCoordinatorEmail()));
 		}
+		if (programCoordinators.getIsPrimaryCoordinator() == 1) {
+			Integer id = this.jdbcTemplate.query("SELECT id from program_coordinators where 	is_primary_coordinator	=? and program_id=?",
+					new Object[] { programCoordinators.getIsPrimaryCoordinator(),programCoordinators.getProgramId() }, new ResultSetExtractor<Integer>() {
+				@Override
+				public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+					if (resultSet.next()) {
+						return resultSet.getInt(1);
+					}
+					return 0;
+				}
+			});
+
+			if (id > 0) {
+				programCoordinators.setId(id);
+			}
+		}
 		if (programCoordinators.getId() == 0) {
 			Integer id = this.jdbcTemplate.query("SELECT id from program_coordinators where coordinator_email=? and program_id=?",
 					new Object[] { programCoordinators.getCoordinatorEmail(),programCoordinators.getProgramId() }, new ResultSetExtractor<Integer>() {
@@ -77,7 +93,7 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 			programCoordinators.setId(newId.intValue());
 		}else{
 			this.namedParameterJdbcTemplate.update("UPDATE program_coordinators SET " + "coordinator_name=:coordinatorName, " + "coordinator_email=:coordinatorEmail, "
-					+ "is_primary_coordinator=:isPrimaryCoordinator " + "WHERE id=:id", parameterSource);
+					+ "is_primary_coordinator=:isPrimaryCoordinator, " 	+ "user_id=:userId "+ "WHERE id=:id", parameterSource);
 		}
 
 	}
