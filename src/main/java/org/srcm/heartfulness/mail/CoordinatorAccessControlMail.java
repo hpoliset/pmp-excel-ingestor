@@ -62,6 +62,8 @@ public class CoordinatorAccessControlMail {
 	private String coordinatormailsubjecttoaccessdashbrd;
 	private String coordinatormailforupdatingevent;
 	private String coordinatormailforupdatingeventsubject;
+	private String requestMailSubject;
+	private String requestMailTemplate;
 
 	@Autowired
 	private MailLogRepository mailLogRepository;
@@ -216,6 +218,22 @@ public class CoordinatorAccessControlMail {
 
 	public void setMailLogRepository(MailLogRepository mailLogRepository) {
 		this.mailLogRepository = mailLogRepository;
+	}
+	
+	public String getRequestMailSubject() {
+		return requestMailSubject;
+	}
+
+	public void setRequestMailSubject(String requestMailSubject) {
+		this.requestMailSubject = requestMailSubject;
+	}
+
+	public String getRequestMailTemplate() {
+		return requestMailTemplate;
+	}
+
+	public void setRequestMailTemplate(String requestMailTemplate) {
+		this.requestMailTemplate = requestMailTemplate;
 	}
 
 	/**
@@ -772,5 +790,33 @@ public class CoordinatorAccessControlMail {
 		}
 
 	}
+	
+	public void sendRequestMailToCoordinatorAndPreceptor(String recipientName,String recipientEmail,String eventId) throws MessagingException, UnsupportedEncodingException{
+			
+			Properties props = System.getProperties();
+			props.put("mail.debug", "true");
+			props.put("mail.smtp.host", hostname);
+			props.put("mail.smtp.port", port);
+			props.put("mail.smtp.ssl.enable", "false");
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "false");
+
+			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
+				}
+			});
+			
+			addParameter("NAME",recipientName);
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
+			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+			message.setSubject(requestMailSubject + eventId);
+			message.setContent(getMessageContentbyTemplateName(requestMailTemplate), "text/html");
+			message.setAllow8bitMIME(true);
+			message.setSentDate(new Date());
+			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+			Transport.send(message);
+		}
 	
 }
