@@ -77,9 +77,6 @@ public class ProgramServiceImpl implements ProgramService {
 	CoordinatorAccessControlService coordinatorAccessControlService;
 	
 	@Autowired
-	CoordinatorAccessControlEmail coordinatorAccessControlEmail;
-	
-	@Autowired
 	CoordinatorAccessControlMail coordinatorAccessControlMail;
 
 	/*
