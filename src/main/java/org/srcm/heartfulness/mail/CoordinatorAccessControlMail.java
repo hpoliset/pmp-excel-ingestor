@@ -81,6 +81,130 @@ public class CoordinatorAccessControlMail {
 	public VelocityContext getParameter() {
 		return this.context;
 	}
+	
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getHostname() {
+		return hostname;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
+
+	public String getPort() {
+		return port;
+	}
+
+	public void setPort(String port) {
+		this.port = port;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getFrommail() {
+		return frommail;
+	}
+
+	public void setFrommail(String frommail) {
+		this.frommail = frommail;
+	}
+
+	public String getEmptycoordinatoremailidtemplate() {
+		return emptycoordinatoremailidtemplate;
+	}
+
+	public void setEmptycoordinatoremailidtemplate(String emptycoordinatoremailidtemplate) {
+		this.emptycoordinatoremailidtemplate = emptycoordinatoremailidtemplate;
+	}
+
+	public String getEmptycoordinatoremailidsubject() {
+		return emptycoordinatoremailidsubject;
+	}
+
+	public void setEmptycoordinatoremailidsubject(String emptycoordinatoremailidsubject) {
+		this.emptycoordinatoremailidsubject = emptycoordinatoremailidsubject;
+	}
+
+	public String getMailtemplatetocreateprofileandaccessdashboard() {
+		return mailtemplatetocreateprofileandaccessdashboard;
+	}
+
+	public void setMailtemplatetocreateprofileandaccessdashboard(String mailtemplatetocreateprofileandaccessdashboard) {
+		this.mailtemplatetocreateprofileandaccessdashboard = mailtemplatetocreateprofileandaccessdashboard;
+	}
+
+	public String getMailsubjecttocreateprofileandaccessdashboard() {
+		return mailsubjecttocreateprofileandaccessdashboard;
+	}
+
+	public void setMailsubjecttocreateprofileandaccessdashboard(String mailsubjecttocreateprofileandaccessdashboard) {
+		this.mailsubjecttocreateprofileandaccessdashboard = mailsubjecttocreateprofileandaccessdashboard;
+	}
+
+	public String getCoordinatormailtemplatetocreateaccount() {
+		return coordinatormailtemplatetocreateaccount;
+	}
+
+	public void setCoordinatormailtemplatetocreateaccount(String coordinatormailtemplatetocreateaccount) {
+		this.coordinatormailtemplatetocreateaccount = coordinatormailtemplatetocreateaccount;
+	}
+
+	public String getCoordinatormailsubjecttocreateaccount() {
+		return coordinatormailsubjecttocreateaccount;
+	}
+
+	public void setCoordinatormailsubjecttocreateaccount(String coordinatormailsubjecttocreateaccount) {
+		this.coordinatormailsubjecttocreateaccount = coordinatormailsubjecttocreateaccount;
+	}
+
+	public String getCoordinatormailtemplatetoaccessdashbrd() {
+		return coordinatormailtemplatetoaccessdashbrd;
+	}
+
+	public void setCoordinatormailtemplatetoaccessdashbrd(String coordinatormailtemplatetoaccessdashbrd) {
+		this.coordinatormailtemplatetoaccessdashbrd = coordinatormailtemplatetoaccessdashbrd;
+	}
+
+	public String getCoordinatormailsubjecttoaccessdashbrd() {
+		return coordinatormailsubjecttoaccessdashbrd;
+	}
+
+	public void setCoordinatormailsubjecttoaccessdashbrd(String coordinatormailsubjecttoaccessdashbrd) {
+		this.coordinatormailsubjecttoaccessdashbrd = coordinatormailsubjecttoaccessdashbrd;
+	}
+
+	public String getCoordinatormailforupdatingevent() {
+		return coordinatormailforupdatingevent;
+	}
+
+	public void setCoordinatormailforupdatingevent(String coordinatormailforupdatingevent) {
+		this.coordinatormailforupdatingevent = coordinatormailforupdatingevent;
+	}
+
+	public String getCoordinatormailforupdatingeventsubject() {
+		return coordinatormailforupdatingeventsubject;
+	}
 
 	/**
 	 * To get the email content as string from the vm template.
@@ -428,132 +552,10 @@ public class CoordinatorAccessControlMail {
 		
 	}
 	
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getHostname() {
-		return hostname;
-	}
-
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
-	}
-
-	public String getPort() {
-		return port;
-	}
-
-	public void setPort(String port) {
-		this.port = port;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getFrommail() {
-		return frommail;
-	}
-
-	public void setFrommail(String frommail) {
-		this.frommail = frommail;
-	}
-
-	public String getEmptycoordinatoremailidtemplate() {
-		return emptycoordinatoremailidtemplate;
-	}
-
-	public void setEmptycoordinatoremailidtemplate(String emptycoordinatoremailidtemplate) {
-		this.emptycoordinatoremailidtemplate = emptycoordinatoremailidtemplate;
-	}
-
-	public String getEmptycoordinatoremailidsubject() {
-		return emptycoordinatoremailidsubject;
-	}
-
-	public void setEmptycoordinatoremailidsubject(String emptycoordinatoremailidsubject) {
-		this.emptycoordinatoremailidsubject = emptycoordinatoremailidsubject;
-	}
-
-	public String getMailtemplatetocreateprofileandaccessdashboard() {
-		return mailtemplatetocreateprofileandaccessdashboard;
-	}
-
-	public void setMailtemplatetocreateprofileandaccessdashboard(String mailtemplatetocreateprofileandaccessdashboard) {
-		this.mailtemplatetocreateprofileandaccessdashboard = mailtemplatetocreateprofileandaccessdashboard;
-	}
-
-	public String getMailsubjecttocreateprofileandaccessdashboard() {
-		return mailsubjecttocreateprofileandaccessdashboard;
-	}
-
-	public void setMailsubjecttocreateprofileandaccessdashboard(String mailsubjecttocreateprofileandaccessdashboard) {
-		this.mailsubjecttocreateprofileandaccessdashboard = mailsubjecttocreateprofileandaccessdashboard;
-	}
-
-	public String getCoordinatormailtemplatetocreateaccount() {
-		return coordinatormailtemplatetocreateaccount;
-	}
-
-	public void setCoordinatormailtemplatetocreateaccount(String coordinatormailtemplatetocreateaccount) {
-		this.coordinatormailtemplatetocreateaccount = coordinatormailtemplatetocreateaccount;
-	}
-
-	public String getCoordinatormailsubjecttocreateaccount() {
-		return coordinatormailsubjecttocreateaccount;
-	}
-
-	public void setCoordinatormailsubjecttocreateaccount(String coordinatormailsubjecttocreateaccount) {
-		this.coordinatormailsubjecttocreateaccount = coordinatormailsubjecttocreateaccount;
-	}
-
-	public String getCoordinatormailtemplatetoaccessdashbrd() {
-		return coordinatormailtemplatetoaccessdashbrd;
-	}
-
-	public void setCoordinatormailtemplatetoaccessdashbrd(String coordinatormailtemplatetoaccessdashbrd) {
-		this.coordinatormailtemplatetoaccessdashbrd = coordinatormailtemplatetoaccessdashbrd;
-	}
-
-	public String getCoordinatormailsubjecttoaccessdashbrd() {
-		return coordinatormailsubjecttoaccessdashbrd;
-	}
-
-	public void setCoordinatormailsubjecttoaccessdashbrd(String coordinatormailsubjecttoaccessdashbrd) {
-		this.coordinatormailsubjecttoaccessdashbrd = coordinatormailsubjecttoaccessdashbrd;
-	}
-
-	public String getCoordinatormailforupdatingevent() {
-		return coordinatormailforupdatingevent;
-	}
-
-	public void setCoordinatormailforupdatingevent(String coordinatormailforupdatingevent) {
-		this.coordinatormailforupdatingevent = coordinatormailforupdatingevent;
-	}
-
-	public String getCoordinatormailforupdatingeventsubject() {
-		return coordinatormailforupdatingeventsubject;
-	}
-
 	public void setCoordinatormailforupdatingeventsubject(String coordinatormailforupdatingeventsubject) {
 		this.coordinatormailforupdatingeventsubject = coordinatormailforupdatingeventsubject;
 	}
+	
+	
 
 }
