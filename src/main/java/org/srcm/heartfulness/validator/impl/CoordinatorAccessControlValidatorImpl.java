@@ -1,5 +1,7 @@
 package org.srcm.heartfulness.validator.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.srcm.heartfulness.constants.CoordinatorAccessControlConstants;
@@ -14,6 +16,8 @@ import org.srcm.heartfulness.validator.CoordinatorAccessControlValidator;
 
 @Component
 public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessControlValidator {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(CoordinatorAccessControlValidatorImpl.class);
 
 	@Autowired
 	CoordinatorAccessControlRepository coordntrAccssCntrlRepo;
@@ -30,40 +34,51 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 
 	@Override
 	public CoordinatorAccessControlResponse validateCoordinatorRequest(String approvedBy,ProgramCoordinators pgrmCoordinators) {
-		
-		if(null == pgrmCoordinators.getCoordinatorEmail() || pgrmCoordinators.getCoordinatorEmail().isEmpty()){
+
+		if(null == pgrmCoordinators.getEmail() || pgrmCoordinators.getEmail().isEmpty()){
 			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.COORDINATOR_EMAIL_INVALID);
 		}
-		
-		if(approvedBy.equalsIgnoreCase(pgrmCoordinators.getCoordinatorEmail())){
+
+		if(approvedBy.equalsIgnoreCase(pgrmCoordinators.getEmail())){
 			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.PRECEPTOR_SAME_APPROVER_REQUESTER);
 		}
-		
-		Program program = coordntrAccssCntrlRepo.getProgramIdByEventId(pgrmCoordinators.getEventId());
+
+		Program program = null;
+		try{
+			program = coordntrAccssCntrlRepo.getProgramIdByEventId(pgrmCoordinators.getEventId());
+		}catch(Exception ex){
+			LOGGER.error("Event not available for event id " +pgrmCoordinators.getEventId());
+		}
 		if(program.getProgramId() == 0){
 			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.INVALID_EVENT_ID);
 		}
-		
-		int alreadyApproved = coordntrAccssCntrlRepo.checkRequestAlreadyApproved(program.getProgramId(), pgrmCoordinators.getCoordinatorEmail());
+
+		int alreadyApproved = -1;
+		try{
+			alreadyApproved = coordntrAccssCntrlRepo.checkRequestAlreadyApproved(program.getProgramId(), pgrmCoordinators.getEmail());
+		}catch(Exception ex){
+			LOGGER.error("Request is not already approved for event Id " +pgrmCoordinators.getEventId());
+		}
 		if(alreadyApproved > 0){
 			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.PRECEPTOR_REQUEST_ALREADY_APPROVED);
 		}else if(alreadyApproved == -1){
 			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.INVALID_REQUEST);
 		}
 		
-		int requestCount = coordntrAccssCntrlRepo.checkRequestAlreadyRaised(program.getProgramId(), pgrmCoordinators.getCoordinatorEmail());
-		if(requestCount == -1){
-			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.INVALID_REQUEST);
+		int requestCount = -1;
+		try{
+			requestCount = coordntrAccssCntrlRepo.checkRequestAlreadyRaised(program.getProgramId(), pgrmCoordinators.getEmail());
+		}catch(Exception ex){
+			LOGGER.error("Request is not already raised for event Id " +pgrmCoordinators.getEventId());
+		}
+		if(requestCount == 1){
+			return new CoordinatorAccessControlSuccessResponse(ErrorConstants.STATUS_SUCCESS,CoordinatorAccessControlConstants.PRECEPTOR_VALIDATION_SUCCESSFULL);
 		}else if(requestCount != 1){
 			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.PRECEPTOR_REQUEST_DOESNOT_EXIST);
 		}else{
-			return new CoordinatorAccessControlSuccessResponse(ErrorConstants.STATUS_SUCCESS,CoordinatorAccessControlConstants.PRECEPTOR_VALIDATION_SUCCESSFULL);
+			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.INVALID_REQUEST);
 		}
 
 	}
-
-
-
-
 
 }

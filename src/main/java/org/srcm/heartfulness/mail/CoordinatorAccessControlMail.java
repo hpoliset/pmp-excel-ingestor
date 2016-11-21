@@ -797,9 +797,9 @@ public class CoordinatorAccessControlMail {
 			props.put("mail.debug", "true");
 			props.put("mail.smtp.host", hostname);
 			props.put("mail.smtp.port", port);
-			props.put("mail.smtp.ssl.enable", "false");
+			props.put("mail.smtp.ssl.enable", "true");
 			props.put("mail.smtp.auth", "true");
-			props.put("mail.smtp.starttls.enable", "false");
+			props.put("mail.smtp.starttls.enable", "true");
 
 			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {

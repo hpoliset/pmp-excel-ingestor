@@ -53,7 +53,7 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 	@Override
 	public void savecoordinatorDetails(ProgramCoordinators programCoordinators) {
 		if(0 == programCoordinators.getUserId()){
-			programCoordinators.setUserId(fecthUserIdwithemailId(programCoordinators.getCoordinatorEmail()));
+			programCoordinators.setUserId(fecthUserIdwithemailId(programCoordinators.getEmail()));
 		}
 		if (programCoordinators.getIsPrimaryCoordinator() == 1) {
 			Integer id = this.jdbcTemplate.query("SELECT id from program_coordinators where 	is_primary_coordinator	=? and program_id=?",
@@ -72,8 +72,8 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 			}
 		}
 		if (programCoordinators.getId() == 0) {
-			Integer id = this.jdbcTemplate.query("SELECT id from program_coordinators where coordinator_email=? and program_id=?",
-					new Object[] { programCoordinators.getCoordinatorEmail(),programCoordinators.getProgramId() }, new ResultSetExtractor<Integer>() {
+			Integer id = this.jdbcTemplate.query("SELECT id from program_coordinators where email=? and program_id=?",
+					new Object[] { programCoordinators.getEmail(),programCoordinators.getProgramId() }, new ResultSetExtractor<Integer>() {
 				@Override
 				public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
 					if (resultSet.next()) {
@@ -92,7 +92,7 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 			Number newId = this.insertProgramCoordinators.executeAndReturnKey(parameterSource);
 			programCoordinators.setId(newId.intValue());
 		}else{
-			this.namedParameterJdbcTemplate.update("UPDATE program_coordinators SET " + "coordinator_name=:coordinatorName, " + "coordinator_email=:coordinatorEmail, "
+			this.namedParameterJdbcTemplate.update("UPDATE program_coordinators SET " + "name=:coordinatorName, " + "email=:coordinatorEmail, "
 					+ "is_primary_coordinator=:isPrimaryCoordinator, " 	+ "user_id=:userId "+ "WHERE id=:id", parameterSource);
 		}
 

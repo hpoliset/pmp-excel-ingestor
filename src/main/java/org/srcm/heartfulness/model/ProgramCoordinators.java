@@ -1,6 +1,7 @@
 package org.srcm.heartfulness.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This class holds the details of the event coordinators.
@@ -16,26 +17,30 @@ public class ProgramCoordinators {
 	private int programId;
 
 	private int userId;
+	
+	@JsonProperty("coordinator_name")
+	private String name;
 
-	private String coordinatorName;
-
-	private String coordinatorEmail;
+	@JsonProperty("coordinator_email")
+	private String email;
 
 	private int isPrimaryCoordinator;
 	
+	@JsonProperty("event_id")
 	private String eventId;
+	
+	private int is_preceptor;
 	
 	public ProgramCoordinators() {
 		super();
 	}
-	
-	public ProgramCoordinators(int programId, int userId, String coordinatorName, String coordinatorEmail,
-			int isPrimaryCoordinator) {
+
+	public ProgramCoordinators(int programId, int userId, String name, String email, int isPrimaryCoordinator) {
 		super();
 		this.programId = programId;
 		this.userId = userId;
-		this.coordinatorName = coordinatorName;
-		this.coordinatorEmail = coordinatorEmail;
+		this.name = name;
+		this.email = email;
 		this.isPrimaryCoordinator = isPrimaryCoordinator;
 	}
 
@@ -63,20 +68,20 @@ public class ProgramCoordinators {
 		this.userId = userId;
 	}
 
-	public String getCoordinatorName() {
-		return coordinatorName;
+	public String getName() {
+		return name;
 	}
 
-	public void setCoordinatorName(String coordinatorName) {
-		this.coordinatorName = coordinatorName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	public String getCoordinatorEmail() {
-		return coordinatorEmail;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setCoordinatorEmail(String coordinatorEmail) {
-		this.coordinatorEmail = coordinatorEmail;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public int getIsPrimaryCoordinator() {
@@ -95,11 +100,19 @@ public class ProgramCoordinators {
 		this.eventId = eventId;
 	}
 
+	public int getIs_preceptor() {
+		return is_preceptor;
+	}
+
+	public void setIs_preceptor(int is_preceptor) {
+		this.is_preceptor = is_preceptor;
+	}
+
 	@Override
 	public String toString() {
-		return "ProgramCoordinators [id=" + id + ", programId=" + programId + ", userId=" + userId
-				+ ", coordinatorName=" + coordinatorName + ", coordinatorEmail=" + coordinatorEmail
-				+ ", isPrimaryCoordinator=" + isPrimaryCoordinator + ", eventId=" + eventId + "]";
+		return "ProgramCoordinators [id=" + id + ", programId=" + programId + ", userId=" + userId + ", name=" + name
+				+ ", email=" + email + ", isPrimaryCoordinator=" + isPrimaryCoordinator + ", eventId=" + eventId
+				+ ", is_preceptor=" + is_preceptor + "]";
 	}
-	
+
 }
