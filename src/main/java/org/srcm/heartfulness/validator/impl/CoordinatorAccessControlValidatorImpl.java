@@ -58,7 +58,8 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 		try{
 			preceptorDetails = coordntrAccssCntrlRepo.getProgramCoordinatorByProgramId(program.getProgramId());
 		}catch(Exception ex){
-			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.INVALID_REQUEST);
+			LOGGER.error("Preceptor not available for event "+pgrmCoordinators.getEventId());
+			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.REQUESTER_INVALID_PRECEPTOR_DETAILS);
 		}
 		
 		if(!approvedBy.equalsIgnoreCase(program.getCoordinatorEmail()) && !approvedBy.equalsIgnoreCase(preceptorDetails.getEmail())){
