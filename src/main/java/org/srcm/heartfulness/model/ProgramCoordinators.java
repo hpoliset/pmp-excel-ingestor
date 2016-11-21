@@ -29,7 +29,7 @@ public class ProgramCoordinators {
 	@JsonProperty("event_id")
 	private String eventId;
 	
-	private int is_preceptor;
+	private int isPreceptor;
 	
 	public ProgramCoordinators() {
 		super();
@@ -100,19 +100,19 @@ public class ProgramCoordinators {
 		this.eventId = eventId;
 	}
 
-	public int getIs_preceptor() {
-		return is_preceptor;
+	public int getIsPreceptor() {
+		return isPreceptor;
 	}
 
-	public void setIs_preceptor(int is_preceptor) {
-		this.is_preceptor = is_preceptor;
+	public void setIsPreceptor(int isPreceptor) {
+		this.isPreceptor = isPreceptor;
 	}
 
 	@Override
 	public String toString() {
 		return "ProgramCoordinators [id=" + id + ", programId=" + programId + ", userId=" + userId + ", name=" + name
 				+ ", email=" + email + ", isPrimaryCoordinator=" + isPrimaryCoordinator + ", eventId=" + eventId
-				+ ", is_preceptor=" + is_preceptor + "]";
+				+ ", isPreceptor=" + isPreceptor + "]";
 	}
 
 }

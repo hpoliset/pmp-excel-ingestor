@@ -398,7 +398,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 						(null == pgrmCoordinators.getName() || pgrmCoordinators.getName().isEmpty() == true) ? "" : pgrmCoordinators.getName() :user.getName());
 				newPgrmCoordinator.setEmail(pgrmCoordinators.getEmail());
 				newPgrmCoordinator.setIsPrimaryCoordinator(0);
-				newPgrmCoordinator.setIs_preceptor(0);
+				newPgrmCoordinator.setIsPreceptor(0);
 				try{
 					coordntrAccssCntrlRepo.createProgramCoordinator(newPgrmCoordinator);
 					//send mail to new coordinator
@@ -512,8 +512,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 								user.setEmail(userProfile.getEmail());
 								user.setFirst_name(userProfile.getFirst_name());
 								user.setLast_name(userProfile.getLast_name());
-								user.setName((userProfile.getFirst_name() + " " + userProfile.getLast_name())
-										.trim());
+								user.setName(userProfile.getName());
 								user.setCity(userProfile.getCity());
 								user.setGender(userProfile.getGender());
 								user.setState((null != userProfile.getState()) ? userProfile.getState().getName()
