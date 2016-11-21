@@ -525,6 +525,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 								// persist coordinator details
 								ProgramCoordinators programCoordinators = new ProgramCoordinators(
 										program.getProgramId(), user.getId(), user.getName(), user.getEmail(), 0);
+								programCoordinators.setIsPreceptor(1);
 								coordntrAccssCntrlRepo.savecoordinatorDetails(programCoordinators);
 
 								if(PMPConstants.CREATED_SOURCE_EXCEL.equalsIgnoreCase(source)){

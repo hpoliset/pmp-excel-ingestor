@@ -108,7 +108,7 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 			Number newId = this.insertProgramCoordinators.executeAndReturnKey(parameterSource);
 			programCoordinators.setId(newId.intValue());
 		}else{
-			this.namedParameterJdbcTemplate.update("UPDATE program_coordinators SET " + "name=:coordinatorName, " + "email=:coordinatorEmail, "
+			this.namedParameterJdbcTemplate.update("UPDATE program_coordinators SET " + "name=:name, " + "email=:email, "
 					+ "is_primary_coordinator=:isPrimaryCoordinator, " + "is_preceptor=:isPreceptor, "	+ "user_id=:userId "+ "WHERE id=:id", parameterSource);
 		}
 
