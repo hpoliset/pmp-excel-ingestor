@@ -64,6 +64,8 @@ public class CoordinatorAccessControlMail {
 	private String coordinatormailforupdatingeventsubject;
 	private String requestMailSubject;
 	private String requestMailTemplate;
+	private String approvalMailSubject;
+	private String approvalMailTemplate;
 
 	@Autowired
 	private MailLogRepository mailLogRepository;
@@ -234,6 +236,22 @@ public class CoordinatorAccessControlMail {
 
 	public void setRequestMailTemplate(String requestMailTemplate) {
 		this.requestMailTemplate = requestMailTemplate;
+	}
+
+	public String getApprovalMailSubject() {
+		return approvalMailSubject;
+	}
+
+	public void setApprovalMailSubject(String approvalMailSubject) {
+		this.approvalMailSubject = approvalMailSubject;
+	}
+
+	public String getApprovalMailTemplate() {
+		return approvalMailTemplate;
+	}
+
+	public void setApprovalMailTemplate(String approvalMailTemplate) {
+		this.approvalMailTemplate = approvalMailTemplate;
 	}
 
 	/**
@@ -818,5 +836,33 @@ public class CoordinatorAccessControlMail {
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
 			Transport.send(message);
 		}
+
+	public void sendMailToNewSecondaryCoordinator(String recipientName, String recipientEmail,String eventId) throws UnsupportedEncodingException, MessagingException {
+		
+		Properties props = System.getProperties();
+		props.put("mail.debug", "true");
+		props.put("mail.smtp.host", hostname);
+		props.put("mail.smtp.port", port);
+		props.put("mail.smtp.ssl.enable", "true");
+		props.put("mail.smtp.auth", "true");
+		props.put("mail.smtp.starttls.enable", "true");
+
+		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(username, password);
+			}
+		});
+		
+		addParameter("NAME",recipientName);
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(frommail, name));
+		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
+		message.setSubject(approvalMailSubject + eventId);
+		message.setContent(getMessageContentbyTemplateName(approvalMailTemplate), "text/html");
+		message.setAllow8bitMIME(true);
+		message.setSentDate(new Date());
+		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+		Transport.send(message);
+	}
 	
 }

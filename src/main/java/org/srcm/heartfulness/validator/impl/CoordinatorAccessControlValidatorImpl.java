@@ -36,14 +36,14 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 	public CoordinatorAccessControlResponse validateCoordinatorRequest(String approvedBy,ProgramCoordinators pgrmCoordinators) {
 
 		if(null == pgrmCoordinators.getEmail() || pgrmCoordinators.getEmail().isEmpty()){
-			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.COORDINATOR_EMAIL_INVALID);
+			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.REQUESTER_EMAIL_INVALID);
 		}
 
 		if(approvedBy.equalsIgnoreCase(pgrmCoordinators.getEmail())){
-			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.PRECEPTOR_SAME_APPROVER_REQUESTER);
+			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.APPROVER_SAME_APPROVER_REQUESTER);
 		}
 
-		Program program = null;
+		Program program = new Program();
 		try{
 			program = coordntrAccssCntrlRepo.getProgramIdByEventId(pgrmCoordinators.getEventId());
 		}catch(Exception ex){
@@ -51,6 +51,18 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 		}
 		if(program.getProgramId() == 0){
 			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.INVALID_EVENT_ID);
+		}
+		
+		//Validate whether person is authorized to approve request
+		ProgramCoordinators preceptorDetails = new ProgramCoordinators();
+		try{
+			preceptorDetails = coordntrAccssCntrlRepo.getProgramCoordinatorByProgramId(program.getProgramId());
+		}catch(Exception ex){
+			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.INVALID_REQUEST);
+		}
+		
+		if(!approvedBy.equalsIgnoreCase(program.getCoordinatorEmail()) && !approvedBy.equalsIgnoreCase(preceptorDetails.getEmail())){
+			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.APPROVER_NO_AUTHORITY);
 		}
 
 		int alreadyApproved = -1;
@@ -60,7 +72,7 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 			LOGGER.error("Request is not already approved for event Id " +pgrmCoordinators.getEventId());
 		}
 		if(alreadyApproved > 0){
-			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.PRECEPTOR_REQUEST_ALREADY_APPROVED);
+			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.APPROVER_REQUEST_ALREADY_APPROVED);
 		}else if(alreadyApproved == -1){
 			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.INVALID_REQUEST);
 		}
@@ -72,9 +84,9 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 			LOGGER.error("Request is not already raised for event Id " +pgrmCoordinators.getEventId());
 		}
 		if(requestCount == 1){
-			return new CoordinatorAccessControlSuccessResponse(ErrorConstants.STATUS_SUCCESS,CoordinatorAccessControlConstants.PRECEPTOR_VALIDATION_SUCCESSFULL);
+			return new CoordinatorAccessControlSuccessResponse(ErrorConstants.STATUS_SUCCESS,CoordinatorAccessControlConstants.APPROVER_VALIDATION_SUCCESSFULL);
 		}else if(requestCount != 1){
-			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.PRECEPTOR_REQUEST_DOESNOT_EXIST);
+			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.APPROVER_REQUEST_DOESNOT_EXIST);
 		}else{
 			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.INVALID_REQUEST);
 		}

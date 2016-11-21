@@ -1,0 +1,18 @@
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<div>
+Dear ${NAME},
+<br/>
+<div style="padding-left: 10px;">
+We are happy to inform that your request hasbeen approved.
+</div>
+<div style="font-style: italic; font-weight: bold;">
+With Regards,
+<br/>
+Heartfulness Team
+</div>
+</body>
+</html>
