@@ -1228,7 +1228,14 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		List<String>  eventIds= this.namedParameterJdbcTemplate.query(
 				"SELECT auto_generated_event_id FROM program WHERE coordinator_email=:email", sqlParameterSource,
 				BeanPropertyRowMapper.newInstance(String.class));
-		return (eventIds.size()>0) ? true : false ;
+		if( eventIds.size() == 0){
+			List<String> programCoordinators = this.namedParameterJdbcTemplate.query(
+					"SELECT id FROM program_coordinators WHERE email=:email", sqlParameterSource,
+					BeanPropertyRowMapper.newInstance(String.class));
+			return (programCoordinators.size()>0) ? true : false ;
+		}else{
+			return true;
+		}
 	}
 
 }
