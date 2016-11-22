@@ -316,4 +316,14 @@ public interface ProgramRepository {
 	 */
 	void updatePreceptorDetails(Program program);
 
+	/**
+	 * Method to find whether there is any events conducted with the logged in
+	 * user.
+	 * 
+	 * @param email
+	 * @return true,if event exists for the given email Id
+	 * @return false,if event doesn't exists with the given email Id.
+	 */
+	boolean isEventCoordinatorExistsWithUserEmailId(String email);
+
 }

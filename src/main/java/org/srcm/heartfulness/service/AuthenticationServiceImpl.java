@@ -15,6 +15,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EndpointConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.helper.AuthorizationHelper;
+import org.srcm.heartfulness.helper.MySRCMIntegrationHelper;
 import org.srcm.heartfulness.model.CurrentUser;
 import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
@@ -43,6 +44,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	@Autowired
 	APIAccessLogService apiAccessLogService;
 	
+	@Autowired
+	MySRCMIntegrationHelper authenticationHelper;
+	
 	/**
 	 * Method to validate the user with MySRCM.
 	 * 
@@ -58,6 +62,40 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		int accessdetailsID = apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
 		accessLogDetails.setId(accessdetailsID);
 		SrcmAuthenticationResponse authenticationResponse = srcmRest.authenticate(authenticationRequest);
+		accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(authenticationResponse));
+		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+		/*authenticationResponse.setAccess_token(encryptDecryptAES.encrypt(authenticationResponse.getAccess_token(),
+				env.getProperty("security.encrypt.token")));
+		authenticationResponse.setRefresh_token(encryptDecryptAES.encrypt(authenticationResponse.getRefresh_token(),
+				env.getProperty("security.encrypt.token")));*/
+		LOGGER.debug("User:{} is validated and token is generated", authenticationRequest.getUsername());
+		authHelper.doAutoLogin(authenticationRequest.getUsername(), authenticationRequest.getPassword());
+		session.setAttribute("Authentication", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+		CurrentUser currentUser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		authenticationResponse.setIspmpAllowed(currentUser.getIsPmpAllowed());
+		authenticationResponse.setIsSahajmargAllowed(currentUser.getIsSahajmargAllowed());
+		return authenticationResponse;
+	}
+	
+	
+	/**
+	 * Method to validate the user with MySRCM.
+	 * 
+	 * @throws ParseException
+	 */
+	@Override
+	public SrcmAuthenticationResponse validateUser(AuthenticationRequest authenticationRequest, HttpSession session,
+			int id, String requestURL) throws HttpClientErrorException, JsonParseException, JsonMappingException,
+			IOException, ParseException {
+		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id,
+				EndpointConstants.AUTHENTICATION_TOKEN_URL, DateUtils.getCurrentTimeInMilliSec(), null,
+				ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(authenticationRequest), null);
+		int accessdetailsID = apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
+		accessLogDetails.setId(accessdetailsID);
+		SrcmAuthenticationResponse authenticationResponse = authenticationHelper
+				.getClientCredentialsandAuthenticateUser(authenticationRequest, requestURL);
 		accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(authenticationResponse));
 		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);

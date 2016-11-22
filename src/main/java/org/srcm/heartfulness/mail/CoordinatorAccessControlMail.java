@@ -443,7 +443,7 @@ public class CoordinatorAccessControlMail {
 
 			try {
 				LOGGER.info("START        :Inserting mail log details in table");
-				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0),
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
 						coordinatorAccessControlEmail.getCoordinatorEmail(),
 						EmailLogConstants.EMAIL_CREATE_PROFILE_AND_DASHBOARD_LINK, EmailLogConstants.STATUS_SUCCESS,
 						null);
@@ -550,7 +550,7 @@ public class CoordinatorAccessControlMail {
 					coordinatorAccessControlEmail.getCoordinatorEmail());
 			try {
 				LOGGER.info("START        :Inserting mail log details in table");
-				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0),
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
 						coordinatorAccessControlEmail.getCoordinatorEmail(),
 						EmailLogConstants.COORDINATOR_EMAIL_TO_UPDATE_PRECEPTOR_ID, EmailLogConstants.STATUS_SUCCESS,
 						null);
@@ -652,7 +652,7 @@ public class CoordinatorAccessControlMail {
 
 			try {
 				LOGGER.info("START        :Inserting mail log details in table");
-				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), coordinator.getCoordinatorEmail(),
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
 						EmailLogConstants.COORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_SUCCESS, null);
 				mailLogRepository.createMailLog(pmpMailLog);
 				LOGGER.info("END        :Completed inserting mail log details in table");
@@ -750,7 +750,7 @@ public class CoordinatorAccessControlMail {
 
 			try {
 				LOGGER.info("START        :Inserting mail log details in table");
-				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), coordinator.getCoordinatorEmail(),
+				PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
 						EmailLogConstants.COORDINATOR_EMAIL_CREATE_PROFILE, EmailLogConstants.STATUS_SUCCESS, null);
 				mailLogRepository.createMailLog(pmpMailLog);
 				LOGGER.info("END        :Completed inserting mail log details in table");

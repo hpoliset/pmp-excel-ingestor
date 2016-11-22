@@ -19,7 +19,6 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.repository.UserRepository;
 
@@ -102,12 +101,6 @@ public class UserRepositoryImpl implements UserRepository {
 				user.setId(userId);
 			}
 		}
-		if (null == user.getRole() && user.getId() == 0)
-			user.setRole(PMPConstants.LOGIN_ROLE_SEEKER);
-		if (null == user.getIsPmpAllowed() && user.getId() == 0)
-			user.setIsPmpAllowed(PMPConstants.REQUIRED_NO);
-		if (null == user.getIsSahajmargAllowed() && user.getId() == 0)
-			user.setIsSahajmargAllowed(PMPConstants.REQUIRED_NO);
 		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
 		if (user.getId() == 0) {
 			Number newId = this.insertUser.executeAndReturnKey(parameterSource);
@@ -119,4 +112,5 @@ public class UserRepositoryImpl implements UserRepository {
 					+ "state=:state, " + "country=:country " + "WHERE id=:id", parameterSource);
 		}
 	}
+
 }
