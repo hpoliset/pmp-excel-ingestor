@@ -188,6 +188,10 @@ public class UserProfileServiceImpl implements UserProfileService {
 			newUser.setLanguagePreference(user.getLanguagePreference());
 		if (null != user.getZipcode() && !user.getZipcode().isEmpty())
 			newUser.setZipcode(user.getZipcode());
+			newUser.setRole((programRepository.isEventCoordinatorExistsWithUserEmailId(user.getEmail())) ? PMPConstants.LOGIN_ROLE_COORDINATOR
+					: PMPConstants.LOGIN_ROLE_SEEKER);
+			newUser.setIsPmpAllowed(PMPConstants.REQUIRED_NO);
+			newUser.setIsSahajmargAllowed(PMPConstants.REQUIRED_NO);
 		userRepository.save(newUser);
 		accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(newUser));
