@@ -573,6 +573,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 								ProgramCoordinators programCoordinators = new ProgramCoordinators(
 										program.getProgramId(), user.getId(), user.getName(), user.getEmail(), 0);
 								programCoordinators.setIsPreceptor(1);
+								programCoordinators.setIsPrimaryCoordinator((user.getEmail().equalsIgnoreCase(program.getCoordinatorEmail())?1:0));
 								coordntrAccssCntrlRepo.savecoordinatorDetails(programCoordinators);
 
 								if(PMPConstants.CREATED_SOURCE_EXCEL.equalsIgnoreCase(source)){

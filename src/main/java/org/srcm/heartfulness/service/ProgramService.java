@@ -313,4 +313,44 @@ public interface ProgramService {
 	 */
 	public Program getProgramDetailsToGenerateEwelcomeIDById(Integer programId);
 
+	/**
+	 * Method to get the count of programs for the given user mail ID based on
+	 * user role.
+	 * 
+	 * @param email
+	 * @param role
+	 * @return total count of events in db.
+	 */
+	public int getProgramCountWithUserRoleAndEmailId(String email, String role);
+
+	/**
+	 * Get the list of events depending on the coordinator email and role.
+	 * 
+	 * @param email
+	 * @param role
+	 * @param offset
+	 * @param pageSize
+	 * @return
+	 */
+	public List<Event> getEventListByEmailAndRole(String email, String role, int offset, int pageSize);
+
+	/**
+	 * Get the list of other coordinator events based on the role.
+	 * @param email
+	 * @param role
+	 * @return
+	 */
+	public int getProgramCountOfOthersEventByEmailIdAndRole(String email, String role);
+
+	/**
+	 *  Get the list of other coordinator events depending on the coordinator email and role.
+	 *  
+	 * @param email
+	 * @param role
+	 * @param offset
+	 * @param pageSize
+	 * @return
+	 */
+	public List<Event> getOthersEventListByEmailIdAndRole(String email, String role, int offset, int pageSize);
+
 }
