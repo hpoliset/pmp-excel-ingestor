@@ -315,5 +315,55 @@ public interface ProgramRepository {
 	 * @param program
 	 */
 	void updatePreceptorDetails(Program program);
+	/**
+	 * Method to find whether there is any events conducted with the logged in
+	 * user.
+	 * 
+	 * @param email
+	 * @return true,if event exists for the given email Id
+	 * @return false,if event doesn't exists with the given email Id.
+	 */
+	boolean isEventCoordinatorExistsWithUserEmailId(String email);
+	
+	/**
+	 * Method to get the count of programs for the given user mail ID based on
+	 * role.
+	 * 
+	 * @param email
+	 * @param role
+	 * @return
+	 */
+	int getProgramCountWithUserRoleAndEmailId(String email, String role);
+
+	/**
+	 * Get the list of programs depending on the coordinator email and role.
+	 * 
+	 * @param email
+	 * @param role
+	 * @param offset
+	 * @param pageSize
+	 * @return
+	 */
+	List<Program> getEventsByEmailAndRole(String email, String role, int offset, int pageSize);
+
+	/**
+	 * Method to get the count of other coordinators programs for the given user mail ID based on
+	 * role.
+	 * 
+	 * @param email
+	 * @param role
+	 * @return
+	 */
+	int getProgramCountOfOthersEventByEmailIdAndRole(String email, String role);
+
+	/**
+	 * Get the list of of other coordinators programs depending on the coordinator email and role.
+	 * @param email
+	 * @param role
+	 * @param offset
+	 * @param pageSize
+	 * @return
+	 */
+	List<Program> getOthersEventListByEmailIdAndRole(String email, String role, int offset, int pageSize);
 
 }

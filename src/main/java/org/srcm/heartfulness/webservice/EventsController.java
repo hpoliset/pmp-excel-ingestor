@@ -376,13 +376,14 @@ public class EventsController {
 			}
 			
 			offset = (eventPagination.getPageIndex() - 1) * eventPagination.getPageSize();
-			//System.out.println("Offset=="+offset + "==Pagesize=="+eventPagination.getPageSize());
 			if (PMPConstants.LOGIN_ROLE_ADMIN.equals(user.getRole())) {
 				isAdmin = true;
 			}
-			eventPagination.setTotalCount(programService.getProgramCount(user.getEmail(),isAdmin));
+			//eventPagination.setTotalCount(programService.getProgramCount(user.getEmail(),isAdmin));
+			eventPagination.setTotalCount(programService.getProgramCountWithUserRoleAndEmailId(user.getEmail(),user.getRole()));
 			LOGGER.info("Trying to get event list for logged in user");
-			eventList = programService.getEventListByEmail(user.getEmail(), isAdmin,offset,eventPagination.getPageSize());
+			//eventList = programService.getEventListByEmail(user.getEmail(), isAdmin,offset,eventPagination.getPageSize());
+			eventList = programService.getEventListByEmailAndRole(user.getEmail(), user.getRole(),offset,eventPagination.getPageSize());
 			eventPagination.setEventList(eventList);
 			
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
