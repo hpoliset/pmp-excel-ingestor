@@ -244,15 +244,6 @@ public interface ProgramService {
 	public Event getEventDetails(String EventId);
 
 	/**
-	 * Retrieve <code>List<Event></code> from the data store by values given in
-	 * the search request.
-	 * 
-	 * @param searchRequest
-	 * @return
-	 */
-	public List<Event> searchEvents(SearchRequest searchRequest, String userEmail, boolean isAdmin, int offset);
-
-	/**
 	 * Retrieve <code>Auto generated eventId</code> from the data store by
 	 * programId.
 	 * 
@@ -294,17 +285,6 @@ public interface ProgramService {
 	public int getProgramCount(String userEmail, boolean isAdmin);
 
 	/**
-	 * Method to get the program count w.r.t the search params provided and with
-	 * user mail ID.
-	 * 
-	 * @param searchRequest
-	 * @param userEmail
-	 * @param isAdmin
-	 * @return
-	 */
-	public int getPgrmCountBySrchParams(SearchRequest searchRequest, String userEmail, boolean isAdmin);
-
-	/**
 	 * Method to get the required program details inorder to generate ewelcome
 	 * Id's for participants.
 	 * 
@@ -333,5 +313,29 @@ public interface ProgramService {
 	 * @return
 	 */
 	public List<Event> getEventListByEmailAndRole(String email, String role, int offset, int pageSize);
+
+	/**
+	 * Method to get the count of programs for the given user mail ID based on
+	 * user role based on user role and user emailID.
+	 * 
+	 * @param searchRequest
+	 * @param email
+	 * @param role
+	 * @return
+	 */
+	public int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role);
+
+	/**
+	 *  Retrieve <code>List<Event></code> from the data store by values given in
+	 * the search request.
+	 * 
+	 * @param searchRequest
+	 * @param email
+	 * @param role
+	 * @param offset
+	 * @return
+	 */
+	public List<Event> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role,
+			int offset);
 
 }

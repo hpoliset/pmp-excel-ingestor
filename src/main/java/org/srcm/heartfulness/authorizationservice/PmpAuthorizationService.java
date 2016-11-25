@@ -22,7 +22,7 @@ public interface PmpAuthorizationService {
 	 * @param modelMap
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_GCONNECT_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_G_CONNECT_ADMIN')")
 	String showReportsForm(ModelMap modelMap);
 
 	/**
@@ -30,7 +30,7 @@ public interface PmpAuthorizationService {
 	 * 
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('ROLE_REGIONAL_ADMIN','ROLE_PRECEPTOR','ROLE_SYSTEM_ADMIN','ROLE_GCONNECT_ADMIN','ROLE_COORDINATOR')")
+	@PreAuthorize("hasAnyRole('ROLE_REGIONAL_ADMIN','ROLE_PRECEPTOR','ROLE_SYSTEM_ADMIN','ROLE_G_CONNECT_ADMIN','ROLE_COORDINATOR')")
 	String showInputForm();
 
 	/**
@@ -38,7 +38,7 @@ public interface PmpAuthorizationService {
 	 * 
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('ROLE_REGIONAL_ADMIN','ROLE_PRECEPTOR','ROLE_SYSTEM_ADMIN','ROLE_GCONNECT_ADMIN','ROLE_COORDINATOR')")
+	@PreAuthorize("hasAnyRole('ROLE_REGIONAL_ADMIN','ROLE_PRECEPTOR','ROLE_SYSTEM_ADMIN','ROLE_G_CONNECT_ADMIN','ROLE_COORDINATOR')")
 	String showBulkUploadForm();
 
 	/**
@@ -46,7 +46,7 @@ public interface PmpAuthorizationService {
 	 * 
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('ROLE_SEEKER','ROLE_PRECEPTOR','ROLE_GCONNECT_ADMIN','ROLE_COORDINATOR')")
+	@PreAuthorize("hasAnyRole('ROLE_SEEKER','ROLE_PRECEPTOR','ROLE_G_CONNECT_ADMIN','ROLE_COORDINATOR')")
 	String showUserProfile();
 
 	/**
@@ -55,7 +55,7 @@ public interface PmpAuthorizationService {
 	 * @param reportVO
 	 * @return
 	 */
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR','ROLE_GCONNECT_ADMIN','ROLE_COORDINATOR')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR','ROLE_G_CONNECT_ADMIN','ROLE_COORDINATOR')")
 	public Collection<ParticipantFullDetails> getParticipants(ReportVO reportVO);
 
 	/**
@@ -63,28 +63,28 @@ public interface PmpAuthorizationService {
 	 * 
 	 * @return Index page
 	 */
-	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_PRECEPTOR','ROLE_SEEKER','ROLE_GCONNECT_ADMIN','ROLE_COORDINATOR')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_PRECEPTOR','ROLE_SEEKER','ROLE_G_CONNECT_ADMIN','ROLE_COORDINATOR')")
 	String showIndexForm();
 
-	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_PRECEPTOR','ROLE_GCONNECT_ADMIN','ROLE_COORDINATOR')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_PRECEPTOR','ROLE_G_CONNECT_ADMIN','ROLE_COORDINATOR')")
 	String showEventsForm();
 
-	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_PRECEPTOR','ROLE_GCONNECT_ADMIN','ROLE_COORDINATOR')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_PRECEPTOR','ROLE_G_CONNECT_ADMIN','ROLE_COORDINATOR')")
 	String showProgramForm(String encryptedProgramId, Model model);
 
 	/* @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')") */
 	ResponseEntity<?> getEventList();
 	
-	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_GCONNECT_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_G_CONNECT_ADMIN')")
 	String showPmpApiLogForm();
 	
-	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_GCONNECT_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_G_CONNECT_ADMIN')")
 	String showPmpApiErrorLogForm();
 	
-	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_GCONNECT_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_G_CONNECT_ADMIN')")
 	String showPmpApiPopupForm();
 	
-	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_GCONNECT_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_G_CONNECT_ADMIN')")
 	String showPmpApiErrorPopupForm();
 
 
