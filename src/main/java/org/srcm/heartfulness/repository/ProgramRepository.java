@@ -346,24 +346,4 @@ public interface ProgramRepository {
 	 */
 	List<Program> getEventsByEmailAndRole(String email, String role, int offset, int pageSize);
 
-	/**
-	 * Method to get the count of other coordinators programs for the given user mail ID based on
-	 * role.
-	 * 
-	 * @param email
-	 * @param role
-	 * @return
-	 */
-	int getProgramCountOfOthersEventByEmailIdAndRole(String email, String role);
-
-	/**
-	 * Get the list of of other coordinators programs depending on the coordinator email and role.
-	 * @param email
-	 * @param role
-	 * @param offset
-	 * @param pageSize
-	 * @return
-	 */
-	List<Program> getOthersEventListByEmailIdAndRole(String email, String role, int offset, int pageSize);
-
 }

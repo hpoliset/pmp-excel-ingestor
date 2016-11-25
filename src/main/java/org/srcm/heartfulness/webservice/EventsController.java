@@ -333,7 +333,6 @@ public class EventsController {
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,StackTraceUtils.convertPojoToJson(eventPagination));
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		List<Event> eventList = new ArrayList<>();
-		boolean isAdmin = false;
 		UserProfile userProfile = null;
 		int offset = 0;
 		try {
@@ -376,9 +375,6 @@ public class EventsController {
 			}
 			
 			offset = (eventPagination.getPageIndex() - 1) * eventPagination.getPageSize();
-			if (PMPConstants.LOGIN_ROLE_ADMIN.equals(user.getRole())) {
-				isAdmin = true;
-			}
 			//eventPagination.setTotalCount(programService.getProgramCount(user.getEmail(),isAdmin));
 			eventPagination.setTotalCount(programService.getProgramCountWithUserRoleAndEmailId(user.getEmail(),user.getRole()));
 			LOGGER.info("Trying to get event list for logged in user");

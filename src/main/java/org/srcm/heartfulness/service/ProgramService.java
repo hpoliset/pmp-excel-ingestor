@@ -334,23 +334,4 @@ public interface ProgramService {
 	 */
 	public List<Event> getEventListByEmailAndRole(String email, String role, int offset, int pageSize);
 
-	/**
-	 * Get the list of other coordinator events based on the role.
-	 * @param email
-	 * @param role
-	 * @return
-	 */
-	public int getProgramCountOfOthersEventByEmailIdAndRole(String email, String role);
-
-	/**
-	 *  Get the list of other coordinator events depending on the coordinator email and role.
-	 *  
-	 * @param email
-	 * @param role
-	 * @param offset
-	 * @param pageSize
-	 * @return
-	 */
-	public List<Event> getOthersEventListByEmailIdAndRole(String email, String role, int offset, int pageSize);
-
 }

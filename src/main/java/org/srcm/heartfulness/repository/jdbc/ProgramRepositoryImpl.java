@@ -7,10 +7,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -1246,7 +1244,6 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	@Override
 	public int getProgramCountWithUserRoleAndEmailId(String email, String role) {
 		StringBuilder whereCondition = new StringBuilder("");
-		StringBuilder programCoordinatorsWhereCondition = new StringBuilder("");
 		Map<String, Object> params = new HashMap<>();
 		params.put("coordinator_email", email);
 		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
@@ -1255,8 +1252,9 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			if(!role.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)){
 				whereCondition = new StringBuilder("");
 				whereCondition.append("coordinator_email=:coordinator_email");
-				programCoordinatorsWhereCondition.append("email=:coordinator_email");
-			}			
+			}else{
+				whereCondition.append("OR coordinator_email=:coordinator_email");
+			}
 		}
 		List<Integer> programCoordinatorIds = this.namedParameterJdbcTemplate.queryForList(
 				"SELECT DISTINCT program_id FROM program"
@@ -1264,7 +1262,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		
 		/*List<Integer> programIds = this.namedParameterJdbcTemplate.queryForList(
 				"SELECT DISTINCT program_id FROM program_coordinators"
-						+ (programCoordinatorsWhereCondition.length() > 0 ? " WHERE " + programCoordinatorsWhereCondition : ""),  sqlParameterSource, Integer.class);
+						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""),  sqlParameterSource, Integer.class);
 		
 		Set<Integer> programcount = new HashSet<Integer>();
 		if(programIds.size()>0)
@@ -1278,7 +1276,6 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	@Override
 	public List<Program> getEventsByEmailAndRole(String email, String role, int offset, int pageSize) {
 		List<Program> programs=new ArrayList<Program>();
-		StringBuilder programCoordinatorsWhereCondition = new StringBuilder("");
 		StringBuilder whereCondition = new StringBuilder("");
 		StringBuilder limitCondition = new StringBuilder("");
 		Map<String, Object> params = new HashMap<>();
@@ -1288,9 +1285,10 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		if (!role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
 			whereCondition.append("program_channel NOT LIKE '%G-Connect%' ");
 			if(!role.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)){
-				whereCondition.append("and coordinator_email=:coordinator_email");
-				params.put("coordinator_email", email);
-				programCoordinatorsWhereCondition.append("email=:coordinator_email");
+				whereCondition = new StringBuilder("");
+				whereCondition.append("coordinator_email=:coordinator_email");
+			}else{
+				whereCondition.append("OR coordinator_email=:coordinator_email");
 			}			
 		}
 		
@@ -1311,7 +1309,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		
 	/*	List<Integer> secondaryprogramIds=this.namedParameterJdbcTemplate.queryForList(
 				"SELECT DISTINCT program_id FROM program_coordinators"
-						+ (programCoordinatorsWhereCondition.length() > 0 ? " WHERE " + programCoordinatorsWhereCondition : ""),  sqlParameterSource, Integer.class);
+						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""),  sqlParameterSource, Integer.class);
 		
 		for (Integer secondaryprogramId : secondaryprogramIds) {
 			params = new HashMap<>();
@@ -1331,55 +1329,6 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			}
 		}*/
 		return programs;
-	}
-
-	@Override
-	public int getProgramCountOfOthersEventByEmailIdAndRole(String email, String role) {
-		StringBuilder whereCondition = new StringBuilder("");
-		Map<String, Object> params = new HashMap<>();
-		if (!role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
-			whereCondition.append("program_channel NOT LIKE '%G-Connect%' ");
-			if(!role.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)){
-				whereCondition.append("and coordinator_email!=:coordinator_email");
-				params.put("coordinator_email", email);
-			}			
-		}
-		int programCount = this.namedParameterJdbcTemplate.queryForObject(
-				"SELECT count(DISTINCT program_id ) FROM program"
-						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""), params, Integer.class);
-
-		return programCount;
-	}
-
-	@Override
-	public List<Program> getOthersEventListByEmailIdAndRole(String email, String role, int offset, int pageSize) {
-		List<Program> program = null;
-		StringBuilder whereCondition = new StringBuilder("");
-		StringBuilder limitCondition = new StringBuilder("");
-		Map<String, Object> params = new HashMap<>();
-		if (!role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
-			whereCondition.append("program_channel NOT LIKE '%G-Connect%' ");
-			if(!role.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)){
-				whereCondition.append("and coordinator_email!=:coordinator_email");
-				params.put("coordinator_email", email);
-			}			
-		}
-		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
-		if ((offset != 0 && pageSize != 0) || (offset == 0 && pageSize != 0)) {
-			limitCondition.append(" LIMIT " + offset + "," + pageSize);
-		}
-		program = this.namedParameterJdbcTemplate.query(
-				"SELECT program_id,program_channel,program_start_date,program_end_date,"
-						+ "coordinator_name,coordinator_email,coordinator_mobile,event_place,"
-						+ "event_city,event_state,event_country,organization_department,"
-						+ "organization_name,organization_web_site,organization_contact_name,"
-						+ "organization_contact_email,organization_contact_mobile,preceptor_name,"
-						+ "preceptor_id_card_number,welcome_card_signed_by_name,welcome_card_signer_Id_card_number,"
-						+ "remarks,auto_generated_event_id,auto_generated_intro_id" + " FROM program"
-						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : "")
-						+ (limitCondition.length() > 0 ? limitCondition : ""), sqlParameterSource,
-				BeanPropertyRowMapper.newInstance(Program.class));
-		return program;
 	}
 
 }
