@@ -261,7 +261,7 @@ public interface ProgramRepository {
 	void updateDeletedParticipant(Participant deletedParticipant, String deletedBy);
 
 	/**
-	 * Method to search the events from the HFN Backend using few params
+	 * Method to search the events from the HFN Backend using few params.
 	 * 
 	 * @param searchRequest
 	 * @param userEmail
@@ -315,5 +315,56 @@ public interface ProgramRepository {
 	 * @param program
 	 */
 	void updatePreceptorDetails(Program program);
+	/**
+	 * Method to find whether there is any events conducted with the logged in
+	 * user.
+	 * 
+	 * @param email
+	 * @return true,if event exists for the given email Id
+	 * @return false,if event doesn't exists with the given email Id.
+	 */
+	boolean isEventCoordinatorExistsWithUserEmailId(String email);
+	
+	/**
+	 * Method to get the count of programs for the given user mail ID based on
+	 * role.
+	 * 
+	 * @param email
+	 * @param role
+	 * @return
+	 */
+	int getProgramCountWithUserRoleAndEmailId(String email, String role);
+
+	/**
+	 * Get the list of programs depending on the coordinator email and role.
+	 * 
+	 * @param email
+	 * @param role
+	 * @param offset
+	 * @param pageSize
+	 * @return
+	 */
+	List<Program> getEventsByEmailAndRole(String email, String role, int offset, int pageSize);
+
+	/**
+	 * Method to get the program count w.r.t the search params provided and with
+	 * user mail ID and role.
+	 * 
+	 * @param searchRequest
+	 * @param email
+	 * @param role
+	 * @return
+	 */
+	int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role);
+
+	/**
+	 * Method to search the events from the HFN Backend using few params.
+	 * @param searchRequest
+	 * @param email
+	 * @param role
+	 * @param offset
+	 * @return
+	 */
+	List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role, int offset);
 
 }

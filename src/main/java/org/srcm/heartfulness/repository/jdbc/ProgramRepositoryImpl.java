@@ -973,59 +973,6 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 	}
 
-	/*@Override
-	public List<Program> searchEvents(SearchRequest searchRequest) {
-		List<Program> program = null;
-		StringBuilder whereCondition = new StringBuilder("");
-		StringBuilder orderBy = new StringBuilder("");
-		Map<String, Object> params = new HashMap<>();
-		if (!("ALL".equals(searchRequest.getSearchField())) && null != searchRequest.getSearchField()
-				&& !searchRequest.getSearchField().isEmpty()) {
-			if (null != searchRequest.getSearchText() && !searchRequest.getSearchText().isEmpty()) {
-				whereCondition.append(whereCondition.length() > 0 ? " and " + searchRequest.getSearchField()
-						+ " LIKE '%" + searchRequest.getSearchText() + "%'" : searchRequest.getSearchField()
-						+ " LIKE '%" + searchRequest.getSearchText() + "%'");
-			}
-		}
-		if ((searchRequest.getDateFrom() != null && !searchRequest.getDateFrom().isEmpty())) {
-			try {
-				whereCondition.append(whereCondition.length() > 0 ? " and program_start_date >=:program_start_date "
-						: " program_start_date >=:program_start_date ");
-				params.put("program_start_date", DateUtils.parseToSqlDate(searchRequest.getDateFrom()));
-			} catch (ParseException e) {
-				LOGGER.error("Error While converting date", e);
-			}
-		}
-
-		if (searchRequest.getDateTo() != null && !searchRequest.getDateTo().isEmpty()) {
-			try {
-				whereCondition
-						.append(whereCondition.length() > 0 ? " and CASE WHEN program_end_date IS NOT NULL THEN program_end_date <=:program_end_date ELSE TRUE END "
-								: " CASE WHEN program_end_date IS NOT NULL THEN program_end_date <=:program_end_date ELSE TRUE END ");
-				params.put("program_end_date", DateUtils.parseToSqlDate(searchRequest.getDateTo()));
-			} catch (ParseException e) {
-				LOGGER.error("Error While converting date", e);
-			}
-		}
-		if (null != searchRequest.getSortBy() && !searchRequest.getSortBy().isEmpty()) {
-			orderBy.append(orderBy.length() > 0 ? ", " + searchRequest.getSortBy() : searchRequest.getSortBy());
-			if (null != searchRequest.getSortDirection() && !searchRequest.getSortDirection().isEmpty()) {
-				orderBy.append(searchRequest.getSortDirection().equalsIgnoreCase("0") ? " asc" : " desc");
-			}
-		}
-
-		program = this.namedParameterJdbcTemplate.query(
-				"SELECT auto_generated_event_id,program_channel,program_name,program_start_date,program_end_date,"
-						+ "coordinator_name,coordinator_email,coordinator_mobile,event_place,"
-						+ "event_city,event_state,event_country,preceptor_name," + "preceptor_id_card_number"
-						+ " FROM program" + (whereCondition.length() > 0 ? " WHERE " + whereCondition : "")
-						+ (orderBy.length() > 0 ? " ORDER BY " + orderBy : ""), params,
-				BeanPropertyRowMapper.newInstance(Program.class));
-
-		return program;
-
-	}
-	 */
 	@Override
 	public List<Program> searchEvents(SearchRequest searchRequest,String userEmail,boolean isAdmin,int offset) {
 		List<Program> program = null;
@@ -1196,6 +1143,28 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 						params, BeanPropertyRowMapper.newInstance(Program.class));
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.repository.ProgramRepository#isEventCoordinatorExistsWithUserEmailId(java.lang.String)
+	 */
+	@Override
+	public boolean isEventCoordinatorExistsWithUserEmailId(String email) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("email", email);
+		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+		List<String>  eventIds= this.namedParameterJdbcTemplate.query(
+				"SELECT auto_generated_event_id FROM program WHERE coordinator_email=:email", sqlParameterSource,
+				BeanPropertyRowMapper.newInstance(String.class));
+		if( eventIds.size() == 0){
+			List<String> programCoordinators = this.namedParameterJdbcTemplate.query(
+					"SELECT id FROM program_coordinators WHERE email=:email", sqlParameterSource,
+					BeanPropertyRowMapper.newInstance(String.class));
+			return (programCoordinators.size()>0) ? true : false ;
+		}else{
+			return true;
+		}
+	}
+	
 	/**
 	 * Method to update the preceptor details after validating the preceptor ID
 	 * against MYSRCM.
@@ -1219,5 +1188,220 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 	}
 
+	@Override
+	public int getProgramCountWithUserRoleAndEmailId(String email, String role) {
+		StringBuilder whereCondition = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		params.put("coordinator_email", email);
+		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+		
+		if (!role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
+			whereCondition.append(whereCondition.length() > 0 ?" and (program_channel NOT LIKE '%G-Connect%' OR coordinator_email=:coordinator_email) ": "(program_channel NOT LIKE '%G-Connect%' OR coordinator_email=:coordinator_email)");
+			params.put("coordinator_email", email);
+			if(!role.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)){
+				whereCondition.append(" and coordinator_email=:coordinator_email");
+			}
+		}
+		
+		List<Integer> programCoordinatorIds = this.namedParameterJdbcTemplate.queryForList(
+				"SELECT DISTINCT program_id FROM program"
+						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""), sqlParameterSource, Integer.class);
+		
+		/*List<Integer> programIds = this.namedParameterJdbcTemplate.queryForList(
+				"SELECT DISTINCT program_id FROM program_coordinators"
+						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""),  sqlParameterSource, Integer.class);
+		
+		Set<Integer> programcount = new HashSet<Integer>();
+		if(programIds.size()>0)
+		programcount.addAll(programIds);
+		if(programCoordinatorIds.size()>0)
+		programcount.addAll(programCoordinatorIds);*/
+		
+		return programCoordinatorIds.size();
+	}
+
+	@Override
+	public List<Program> getEventsByEmailAndRole(String email, String role, int offset, int pageSize) {
+		List<Program> programs=new ArrayList<Program>();
+		StringBuilder whereCondition = new StringBuilder("");
+		StringBuilder limitCondition = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		params.put("coordinator_email", email);
+		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+
+		if (!role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
+			whereCondition.append(whereCondition.length() > 0 ?" and (program_channel NOT LIKE '%G-Connect%' OR coordinator_email=:coordinator_email) ": "(program_channel NOT LIKE '%G-Connect%' OR coordinator_email=:coordinator_email)");
+			params.put("coordinator_email", email);
+			if(!role.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)){
+				whereCondition.append("and coordinator_email=:coordinator_email");
+			}
+		}
+		
+		if ((offset != 0 && pageSize != 0) || (offset == 0 && pageSize != 0)) {
+			limitCondition.append(" LIMIT " + offset + "," + pageSize);
+		}
+		programs = this.namedParameterJdbcTemplate.query(
+				"SELECT program_id,program_channel,program_start_date,program_end_date,"
+						+ "coordinator_name,coordinator_email,coordinator_mobile,event_place,"
+						+ "event_city,event_state,event_country,organization_department,"
+						+ "organization_name,organization_web_site,organization_contact_name,"
+						+ "organization_contact_email,organization_contact_mobile,preceptor_name,"
+						+ "preceptor_id_card_number,welcome_card_signed_by_name,welcome_card_signer_Id_card_number,"
+						+ "remarks,auto_generated_event_id,auto_generated_intro_id" + " FROM program"
+						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : "")
+						+ (limitCondition.length() > 0 ? limitCondition : ""), sqlParameterSource,
+				BeanPropertyRowMapper.newInstance(Program.class));
+		
+	/*	List<Integer> secondaryprogramIds=this.namedParameterJdbcTemplate.queryForList(
+				"SELECT DISTINCT program_id FROM program_coordinators"
+						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""),  sqlParameterSource, Integer.class);
+		
+		for (Integer secondaryprogramId : secondaryprogramIds) {
+			params = new HashMap<>();
+			params.put("program_id", secondaryprogramId);
+			Program secondaryProgram=this.namedParameterJdbcTemplate.queryForObject(
+					"SELECT program_id,program_channel,program_start_date,program_end_date,"
+							+ "coordinator_name,coordinator_email,coordinator_mobile,event_place,"
+							+ "event_city,event_state,event_country,organization_department,"
+							+ "organization_name,organization_web_site,organization_contact_name,"
+							+ "organization_contact_email,organization_contact_mobile,preceptor_name,"
+							+ "preceptor_id_card_number,welcome_card_signed_by_name,welcome_card_signer_Id_card_number,"
+							+ "remarks,auto_generated_event_id,auto_generated_intro_id" + " FROM program"
+							+ " WHERE program_id=:program_id", params,BeanPropertyRowMapper.newInstance(Program.class));
+			
+			if(!programs.contains(secondaryProgram)){
+				programs.add(secondaryProgram);
+			}
+		}*/
+		return programs;
+	}
+
+	@Override
+	public int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role) {
+		StringBuilder whereCondition = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		StringBuilder orderBy = new StringBuilder("");
+		params.put("coordinator_email", email);
+		
+		if (!("ALL".equals(searchRequest.getSearchField())) && null != searchRequest.getSearchField()
+				&& !searchRequest.getSearchField().isEmpty()) {
+			if (null != searchRequest.getSearchText() && !searchRequest.getSearchText().isEmpty()) {
+				whereCondition.append(whereCondition.length() > 0 ? " and " + searchRequest.getSearchField()
+						+ " LIKE '%" + searchRequest.getSearchText() + "%'" : searchRequest.getSearchField()
+						+ " LIKE '%" + searchRequest.getSearchText() + "%'");
+			}
+		}
+		if ((searchRequest.getDateFrom() != null && !searchRequest.getDateFrom().isEmpty())) {
+			try {
+				whereCondition.append(whereCondition.length() > 0 ? " and program_start_date >=:program_start_date "
+						: " program_start_date >=:program_start_date ");
+				params.put("program_start_date", DateUtils.parseToSqlDate(searchRequest.getDateFrom()));
+			} catch (ParseException e) {
+				LOGGER.error("Error While converting date", e);
+			}
+		}
+
+		if (searchRequest.getDateTo() != null && !searchRequest.getDateTo().isEmpty()) {
+			try {
+				whereCondition
+				.append(whereCondition.length() > 0 ? " and CASE WHEN program_end_date IS NOT NULL THEN program_end_date <=:program_end_date ELSE TRUE END "
+						: " CASE WHEN program_end_date IS NOT NULL THEN program_end_date <=:program_end_date ELSE TRUE END ");
+				params.put("program_end_date", DateUtils.parseToSqlDate(searchRequest.getDateTo()));
+			} catch (ParseException e) {
+				LOGGER.error("Error While converting date", e);
+			}
+		}
+		if (null != searchRequest.getSortBy() && !searchRequest.getSortBy().isEmpty()) {
+			orderBy.append(orderBy.length() > 0 ? ", " + searchRequest.getSortBy() : searchRequest.getSortBy());
+			if (null != searchRequest.getSortDirection() && !searchRequest.getSortDirection().isEmpty()) {
+				orderBy.append(searchRequest.getSortDirection().equalsIgnoreCase("0") ? " asc" : " desc");
+			}
+		}
+		
+		if (!role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
+			whereCondition.append(whereCondition.length() > 0 ?" and (program_channel NOT LIKE '%G-Connect%' OR coordinator_email=:coordinator_email) ": "(program_channel NOT LIKE '%G-Connect%' OR coordinator_email=:coordinator_email)");
+			params.put("coordinator_email", email);
+			if(!role.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)){
+				whereCondition.append("and coordinator_email=:coordinator_email");
+			}
+		}
+
+		int programCount = this.namedParameterJdbcTemplate.queryForObject(
+				"SELECT count(DISTINCT program_id ) FROM program"
+						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""), params, Integer.class);
+
+		return programCount;
+	}
+
+	@Override
+	public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role,
+			int offset) {
+		List<Program> program = null;
+		StringBuilder whereCondition = new StringBuilder("");
+		StringBuilder isAdminCondition = new StringBuilder("");
+		//StringBuilder limitCondition = new StringBuilder("");
+		StringBuilder orderBy = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		if (!("ALL".equals(searchRequest.getSearchField())) && null != searchRequest.getSearchField()
+				&& !searchRequest.getSearchField().isEmpty()) {
+			if (null != searchRequest.getSearchText() && !searchRequest.getSearchText().isEmpty()) {
+				whereCondition.append(whereCondition.length() > 0 ? " and " + searchRequest.getSearchField()
+						+ " LIKE '%" + searchRequest.getSearchText() + "%'" : searchRequest.getSearchField()
+						+ " LIKE '%" + searchRequest.getSearchText() + "%'");
+			}
+		}
+		if ((searchRequest.getDateFrom() != null && !searchRequest.getDateFrom().isEmpty())) {
+			try {
+				whereCondition.append(whereCondition.length() > 0 ? " and program_start_date >=:program_start_date "
+						: " program_start_date >=:program_start_date ");
+				params.put("program_start_date", DateUtils.parseToSqlDate(searchRequest.getDateFrom()));
+			} catch (ParseException e) {
+				LOGGER.error("Error While converting date", e);
+			}
+		}
+
+		if (searchRequest.getDateTo() != null && !searchRequest.getDateTo().isEmpty()) {
+			try {
+				whereCondition
+				.append(whereCondition.length() > 0 ? " and CASE WHEN program_end_date IS NOT NULL THEN program_end_date <=:program_end_date ELSE TRUE END "
+						: " CASE WHEN program_end_date IS NOT NULL THEN program_end_date <=:program_end_date ELSE TRUE END ");
+				params.put("program_end_date", DateUtils.parseToSqlDate(searchRequest.getDateTo()));
+			} catch (ParseException e) {
+				LOGGER.error("Error While converting date", e);
+			}
+		}
+		if (null != searchRequest.getSortBy() && !searchRequest.getSortBy().isEmpty()) {
+			orderBy.append(orderBy.length() > 0 ? ", " + searchRequest.getSortBy() : searchRequest.getSortBy());
+			if (null != searchRequest.getSortDirection() && !searchRequest.getSortDirection().isEmpty()) {
+				orderBy.append(searchRequest.getSortDirection().equalsIgnoreCase("0") ? " asc" : " desc");
+			}
+		}
+
+		//is admin validation && email validation
+		if (!role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
+			whereCondition.append(whereCondition.length() > 0 ?" and (program_channel NOT LIKE '%G-Connect%' OR coordinator_email=:coordinator_email) ": "(program_channel NOT LIKE '%G-Connect%' OR coordinator_email=:coordinator_email)");
+			params.put("coordinator_email", email);
+			if(!role.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)){
+				whereCondition.append(" and coordinator_email=:coordinator_email");
+			}
+		}
+
+		//offset and pgsize validation
+		/*if(isLimit){
+			limitCondition.append(" LIMIT "+offset+","+searchRequest.getPageSize());
+		}
+		 */
+		program = this.namedParameterJdbcTemplate.query(
+				"SELECT auto_generated_event_id,program_channel,program_name,program_start_date,program_end_date,"
+						+ "coordinator_name,coordinator_email,coordinator_mobile,event_place,"
+						+ "event_city,event_state,event_country,preceptor_name," + "preceptor_id_card_number"
+						+ " FROM program" + (whereCondition.length() > 0 ? " WHERE " + whereCondition : "")
+						+ (isAdminCondition.length() > 0 ? isAdminCondition : "")
+						+ (orderBy.length() > 0 ? " ORDER BY " + orderBy : "")
+						+ " LIMIT "+offset+","+searchRequest.getPageSize(), params,
+						BeanPropertyRowMapper.newInstance(Program.class));
+
+		return program;
+	}
 
 }
