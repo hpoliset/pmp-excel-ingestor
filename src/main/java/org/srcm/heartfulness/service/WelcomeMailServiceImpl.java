@@ -402,12 +402,13 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	@Override
 	public void getGeneratedEwelcomeIdAndSendToCoordinators() {
 		LOGGER.info("Fetching co-ordinator details and e-welcomeID details..!");
-		//List<CoordinatorEmail> coordinatorEmails = new ArrayList<>();
 		try{
 			Map<CoordinatorEmail, List<Participant>> eWelcomeIdDetails = welcomeMailRepository.getGeneratedEwelcomeIdDetails();
 			LOGGER.info("Count of coordinators to send email - "+eWelcomeIdDetails.size());
 			if(!eWelcomeIdDetails.isEmpty()){
 				for(Entry<CoordinatorEmail, List<Participant>> map:eWelcomeIdDetails.entrySet()){
+					//System.out.println("Iterating for - "+map.getKey().getCoordinatorEmail());
+					LOGGER.info("Event: {} ,Coordinatoremail : {} "+map.getKey().getEventID(),map.getKey().getCoordinatorEmail());
 					List<Integer> listOfParticipantId = new ArrayList<>();
 					if(null != map.getKey()){
 						if(map.getKey().getCoordinatorEmail()!=null && !map.getKey().getCoordinatorEmail().isEmpty()){
@@ -418,9 +419,17 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								coordinatorEmail.setCoordinatorEmail(map.getKey().getCoordinatorEmail());
 								coordinatorEmail.setEventID(programRepository.getEventIdByProgramID(Integer.parseInt(map.getKey().getProgramId())));
 								List<Participant> failedParticipants = participantRepository.getEWelcomeIdGenerationFailedParticipants(map.getKey().getProgramId());
-								LOGGER.info("Failed participants : "+failedParticipants.size() + ", EventID : "+map.getKey().getEventID());
+								LOGGER.info("Failed participants : "+failedParticipants.size() + ", programID : "+map.getKey().getProgramId());
 								List<Participant> eWelcomeIDParticipants = participantRepository.getEWelcomeIdGeneratedParticipants(map.getKey().getProgramId());
-								LOGGER.info("eWelcomeIDParticipants : "+eWelcomeIDParticipants.size() + ", EventID : "+map.getKey().getEventID());
+								LOGGER.info("eWelcomeIDParticipants : "+eWelcomeIDParticipants.size() + ", programID : "+map.getKey().getProgramId());
+								for(Participant failedParticipant : failedParticipants){
+									listOfParticipantId.add(failedParticipant.getId());
+									//System.out.println("participant id "+participant.getId()+" inserted");
+								}
+								for(Participant eWelcomeIDParticipant : eWelcomeIDParticipants){
+									listOfParticipantId.add(eWelcomeIDParticipant.getId());
+									//System.out.println("participant id "+participant.getId()+" inserted");
+								}
 								sendEmailNotification.sendGeneratedEwelcomeIdDetailslToCoordinator(coordinatorEmail,eWelcomeIDParticipants,failedParticipants);
 								try{
 									LOGGER.info("Inserting log details in table.");
@@ -431,15 +440,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 									mailLogRepository.createMailLog(pmpMailLog);
 									LOGGER.info("Completed inserting log details in table.");
 								}catch(Exception ex){
-									LOGGER.error("Exception while inserting log details in table."+ex.getMessage());
-								}
-								for(Participant participant : failedParticipants){
-									listOfParticipantId.add(participant.getId());
-									//System.out.println("participant id "+participant.getId()+" inserted");
-								}
-								for(Participant participant : eWelcomeIDParticipants){
-									listOfParticipantId.add(participant.getId());
-									//System.out.println("participant id "+participant.getId()+" inserted");
+									LOGGER.error("Exception while inserting log details in table.");
 								}
 								LOGGER.info("E-mail sent to - "+map.getKey().getCoordinatorEmail());
 							}catch(AddressException aex){
@@ -450,9 +451,9 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 													EmailLogConstants.STATUS_FAILED,aex.toString());
 									mailLogRepository.createMailLog(pmpMailLog);
 								}catch(Exception ex){
-									LOGGER.error("EXCEPTION  :Failed to update mail log table"+ex.getMessage());
+									LOGGER.error("EXCEPTION  :Failed to update mail log table");
 								}
-								LOGGER.error("ADDRESS_EXCEPTION  :Failed to send mail to {} - Exception : {} " , map.getKey().getCoordinatorEmail() ,aex.getMessage());
+								LOGGER.error("ADDRESS_EXCEPTION  :Failed to sent mail to {} :Exception : " + map.getKey().getCoordinatorEmail(), aex.getMessage());
 								LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
 							}catch(MessagingException mex){
 								try{
@@ -464,7 +465,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								}catch(Exception ex){
 									LOGGER.error("EXCEPTION  :Failed to update mail log table");
 								}
-								LOGGER.error("MESSAGING_EXCEPTION  :Failed to send mail to {} - Exception : {} " , map.getKey().getCoordinatorEmail() ,mex.getMessage());
+								LOGGER.error("ADDRESS_EXCEPTION  :Failed to sent mail to {} :Exception : " + map.getKey().getCoordinatorEmail(), mex.getMessage());
 								LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
 							}catch(Exception ex){
 								try{
@@ -476,7 +477,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								}catch(Exception exx){
 									LOGGER.error("EXCEPTION  :Failed to update mail log table");
 								}
-								LOGGER.error("EXCEPTION - Failed to send mail to {} - Exception : {} " , map.getKey().getCoordinatorEmail() ,ex.getMessage());
+								LOGGER.error("ADDRESS_EXCEPTION  :Failed to sent mail to {} :Exception : " + map.getKey().getCoordinatorEmail(), ex.getMessage());
 								LOGGER.error("ADDRESS_EXCEPTION - Looking for next coordinator if available");
 							}
 						}else{

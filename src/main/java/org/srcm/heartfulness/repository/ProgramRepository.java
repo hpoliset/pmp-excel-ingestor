@@ -366,5 +366,26 @@ public interface ProgramRepository {
 	 * @return
 	 */
 	List<Program> getOthersEventListByEmailIdAndRole(String email, String role, int offset, int pageSize);
+	
+	/**
+	 * Method to get the program count w.r.t the search params provided and with
+	 * user mail ID and role.
+	 * 
+	 * @param searchRequest
+	 * @param email
+	 * @param role
+	 * @return
+	 */
+	int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role);
+
+	/**
+	 * Method to search the events from the HFN Backend using few params.
+	 * @param searchRequest
+	 * @param email
+	 * @param role
+	 * @param offset
+	 * @return
+	 */
+	List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role, int offset);
 
 }

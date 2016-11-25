@@ -352,5 +352,29 @@ public interface ProgramService {
 	 * @return
 	 */
 	public List<Event> getOthersEventListByEmailIdAndRole(String email, String role, int offset, int pageSize);
+	
+	/**
+	 * Method to get the count of programs for the given user mail ID based on
+	 * user role based on user role and user emailID.
+	 * 
+	 * @param searchRequest
+	 * @param email
+	 * @param role
+	 * @return
+	 */
+	public int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role);
+
+	/**
+	 *  Retrieve <code>List<Event></code> from the data store by values given in
+	 * the search request.
+	 * 
+	 * @param searchRequest
+	 * @param email
+	 * @param role
+	 * @param offset
+	 * @return
+	 */
+	public List<Event> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role,
+			int offset);
 
 }
