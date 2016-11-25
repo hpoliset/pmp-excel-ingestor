@@ -1247,24 +1247,32 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	public int getProgramCountWithUserRoleAndEmailId(String email, String role) {
 		StringBuilder whereCondition = new StringBuilder("");
 		StringBuilder programCoordinatorsWhereCondition = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		params.put("coordinator_email", email);
+		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
 		if (!role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
 			whereCondition.append("program_channel NOT LIKE '%G-Connect%' ");
 			if(!role.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)){
-				whereCondition.append("and coordinator_email=?");
-				programCoordinatorsWhereCondition.append("email=?");
+				whereCondition = new StringBuilder("");
+				whereCondition.append("coordinator_email=:coordinator_email");
+				programCoordinatorsWhereCondition.append("email=:coordinator_email");
 			}			
 		}
-		List<Integer> programCoordinatorIds = this.jdbcTemplate.queryForList(
+		List<Integer> programCoordinatorIds = this.namedParameterJdbcTemplate.queryForList(
 				"SELECT DISTINCT program_id FROM program"
-						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""), new Object[] { email }, Integer.class);
+						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""), sqlParameterSource, Integer.class);
 		
-		List<Integer> programIds = this.jdbcTemplate.queryForList(
+		/*List<Integer> programIds = this.namedParameterJdbcTemplate.queryForList(
 				"SELECT DISTINCT program_id FROM program_coordinators"
-						+ (whereCondition.length() > 0 ? " WHERE " + programCoordinatorsWhereCondition : ""), new Object[] { email }, Integer.class);
+						+ (programCoordinatorsWhereCondition.length() > 0 ? " WHERE " + programCoordinatorsWhereCondition : ""),  sqlParameterSource, Integer.class);
+		
 		Set<Integer> programcount = new HashSet<Integer>();
+		if(programIds.size()>0)
 		programcount.addAll(programIds);
-		programcount.addAll(programCoordinatorIds);
-		return programcount.size();
+		if(programCoordinatorIds.size()>0)
+		programcount.addAll(programCoordinatorIds);*/
+		
+		return programCoordinatorIds.size();
 	}
 
 	@Override
@@ -1282,7 +1290,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			if(!role.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)){
 				whereCondition.append("and coordinator_email=:coordinator_email");
 				params.put("coordinator_email", email);
-				programCoordinatorsWhereCondition.append("email=?");
+				programCoordinatorsWhereCondition.append("email=:coordinator_email");
 			}			
 		}
 		
@@ -1301,9 +1309,9 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 						+ (limitCondition.length() > 0 ? limitCondition : ""), sqlParameterSource,
 				BeanPropertyRowMapper.newInstance(Program.class));
 		
-		List<Integer> secondaryprogramIds=this.jdbcTemplate.queryForList(
+	/*	List<Integer> secondaryprogramIds=this.namedParameterJdbcTemplate.queryForList(
 				"SELECT DISTINCT program_id FROM program_coordinators"
-						+ (whereCondition.length() > 0 ? " WHERE " + programCoordinatorsWhereCondition : ""), new Object[] { email }, Integer.class);
+						+ (programCoordinatorsWhereCondition.length() > 0 ? " WHERE " + programCoordinatorsWhereCondition : ""),  sqlParameterSource, Integer.class);
 		
 		for (Integer secondaryprogramId : secondaryprogramIds) {
 			params = new HashMap<>();
@@ -1321,7 +1329,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			if(!programs.contains(secondaryProgram)){
 				programs.add(secondaryProgram);
 			}
-		}
+		}*/
 		return programs;
 	}
 
