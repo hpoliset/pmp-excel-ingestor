@@ -135,8 +135,6 @@ public class AuthenticationController {
 		} catch (HttpClientErrorException e) {
 			ErrorResponse error = new ErrorResponse("Invalid Credentials.", ErrorConstants.STATUS_FAILED);
 			LOGGER.error("Error occured while authenticating :{}", authenticationRequest.getUsername(), e);
-			LOGGER.info("Error occured while authenticating :{}", authenticationRequest.getUsername(), e);
-			LOGGER.debug("Error occured while authenticating :{}", authenticationRequest.getUsername(), e);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
