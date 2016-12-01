@@ -8,7 +8,6 @@ import javax.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +21,7 @@ import org.srcm.heartfulness.service.WelcomeMailService;
  *
  */
 @RestController
-@RequestMapping("/api/welcomemail/")
+@RequestMapping("/api/")
 public class WelcomeMailController {
 
 	@Autowired
@@ -55,7 +54,8 @@ public class WelcomeMailController {
 		}
 	}
 
-	@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") 
+	//@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") 
+	@RequestMapping(value = "ftpupload", method = RequestMethod.POST)
 	public void uploadDailyWelcomeMailidsToFTP() {
 		try {
 			LOGGER.info("Upload File to FTP called.");
@@ -68,10 +68,10 @@ public class WelcomeMailController {
 
 	/**
 	 * Controller is used to send email to the coordinators with event details
-	 * about the participants who have received welcome emails.It is a crob job
+	 * about the participants who have received welcome emails.It is a cron job
 	 * running at a scheduled time.
 	 */
-	@RequestMapping(value = "informcoordinatorswitheventdetails", method = RequestMethod.POST)
+	@RequestMapping(value = "informwelcomemailgeneration", method = RequestMethod.POST)
 	//@Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}") 
 	public void sendEmailToCoordinator() {
 		LOGGER.info("START		:Cron job started to fetch participants to whom welcome mail already sent");
@@ -79,7 +79,7 @@ public class WelcomeMailController {
 		LOGGER.info("END		:Cron job completed to fetch participants to whom welcome mail already sent");
 	}
 
-	@RequestMapping(value = "informcoordinatorswithewelcomeids", method = RequestMethod.POST)
+	@RequestMapping(value = "informewelcomeidgeneration", method = RequestMethod.POST)
 	//@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}") 
 	public void sendGeneratedEwelcomeIdToCoordinators() {
 		LOGGER.info("START		:Cron job started to send mails to coordinator to inform participant ewelcomeid's");
