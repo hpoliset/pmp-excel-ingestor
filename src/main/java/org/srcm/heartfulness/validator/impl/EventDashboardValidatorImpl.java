@@ -332,9 +332,9 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			errors.add("Program start date is required.");
 		}
 		
-		if(!validateParticipantCompletedPreliminarySittings(participantInput)){
+		/*if(!validateParticipantCompletedPreliminarySittings(participantInput)){
 			errors.add("Participant not completed preliminary sittings.");
-		}
+		}*/
 		
 		if(participantInput.getProgram().getFirstSittingBy() == 0){
 			String isValid=programService.validatePreceptorIDCardNumber(participantInput.getProgram(), id);
