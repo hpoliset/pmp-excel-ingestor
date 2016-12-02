@@ -1188,7 +1188,7 @@ public class EventsController {
 	 * @return
 	 * @throws IOException
 	 */
-	@RequestMapping(value = "/createevent", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createEvent(@RequestBody Event event,
 			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest) {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
