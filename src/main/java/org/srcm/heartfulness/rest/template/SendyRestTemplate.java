@@ -53,7 +53,7 @@ import com.sun.mail.smtp.SMTPMessage;
  */
 @Component
 @PropertySource("classpath:application.properties")
-@ConfigurationProperties(locations = "classpath:prod.sendy.api.properties", ignoreUnknownFields = false, prefix = "sendy")
+@ConfigurationProperties(locations = "classpath:dev.sendy.api.properties", ignoreUnknownFields = false, prefix = "sendy")
 public class SendyRestTemplate extends RestTemplate {
 	
 	private String subscribeUri;
