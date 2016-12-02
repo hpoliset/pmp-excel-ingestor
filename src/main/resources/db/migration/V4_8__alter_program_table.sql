@@ -9,19 +9,3 @@ ADD `organization_full_address` VARCHAR(255) NULL DEFAULT NULL AFTER `organizati
 ADD `organization_decision_maker_name` VARCHAR(150) NULL DEFAULT NULL AFTER `organization_contact_mobile`,
 ADD `organization_decision_maker_email` VARCHAR(150) NULL DEFAULT NULL AFTER `organization_decision_maker_name`,
 ADD `organization_decision_maker_phone_no` VARCHAR(50) NULL DEFAULT NULL AFTER `organization_decision_maker_email`;
-
-CREATE TABLE IF NOT EXISTS `session_details` (
-  `session_id` int(4) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `program_id` int(4) unsigned NOT NULL,
-  `session_number` VARCHAR(150) NOT NULL,
-  `session_date` date NOT NULL,
-  `no_of_participants` int(5) NOT NULL,
-  `no_of_new_participants` int(5) NOT NULL,
-  `topic_covered` VARCHAR(500) NOT NULL,
-  `preceptor_name` VARCHAR(150) NOT NULL,
-  `preceptor_id` int(45) NOT NULL,
-  `comments` VARCHAR(500) DEFAULT NULL,
-  `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_time` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-   CONSTRAINT `session_details_fk` FOREIGN KEY (`program_id`) REFERENCES `program`(`program_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-)
