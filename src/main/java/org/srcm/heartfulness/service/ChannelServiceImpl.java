@@ -12,8 +12,6 @@ import org.srcm.heartfulness.repository.ChannelRepository;
 @Service
 public class ChannelServiceImpl implements ChannelService{
 
-	private static Logger LOGGER = LoggerFactory.getLogger(ChannelServiceImpl.class);
-
 	@Autowired
 	private ChannelRepository channelRepository;
 
@@ -21,6 +19,11 @@ public class ChannelServiceImpl implements ChannelService{
 	@Override
 	public List<Channel> findAllActiveChannels() {
 		return channelRepository.findAllActiveChannels();
+	}
+	
+	@Override
+	public List<String> findAllActiveChannelNames() {
+		return channelRepository.findAllActiveChannelNames();
 	}
 	
 	

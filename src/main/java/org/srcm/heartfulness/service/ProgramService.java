@@ -338,4 +338,6 @@ public interface ProgramService {
 	public List<Event> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role,
 			int offset);
 
+	public void createOrUpdateProgram(Event event, int id) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
+
 }

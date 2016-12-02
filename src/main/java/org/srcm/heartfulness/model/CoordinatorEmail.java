@@ -113,6 +113,7 @@ public class CoordinatorEmail {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((coordinatorEmail == null) ? 0 : coordinatorEmail.hashCode());
 		result = prime * result + ((programId == null) ? 0 : programId.hashCode());
 		return result;
 	}
@@ -126,6 +127,11 @@ public class CoordinatorEmail {
 		if (getClass() != obj.getClass())
 			return false;
 		CoordinatorEmail other = (CoordinatorEmail) obj;
+		if (coordinatorEmail == null) {
+			if (other.coordinatorEmail != null)
+				return false;
+		} else if (!coordinatorEmail.equals(other.coordinatorEmail))
+			return false;
 		if (programId == null) {
 			if (other.programId != null)
 				return false;
@@ -133,4 +139,5 @@ public class CoordinatorEmail {
 			return false;
 		return true;
 	}
+
 }

@@ -44,4 +44,15 @@ public class ChannelRepositoryImpl implements ChannelRepository{
 		return listOfChannels;
 	}
 
+	@Override
+	public List<String> findAllActiveChannelNames() {
+		Map<String, Object> params = new HashMap<>();
+		params.put("active", 1);
+		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+		List<String> listOfChannels = this.namedParameterJdbcTemplate.queryForList(
+				"SELECT name FROM channel WHERE active=:active", sqlParameterSource,
+				String.class);
+		return listOfChannels;
+	}
+
 }
