@@ -39,7 +39,7 @@ public class ChannelController {
 	@Autowired
 	APIAccessLogService apiAccessLogService;
 
-	@RequestMapping(value = "channel", method = RequestMethod.POST)
+	@RequestMapping(value = "channel", method = RequestMethod.GET)
 	public ResponseEntity<?> getchannelList(ModelMap model, @Context HttpServletRequest httpRequest) {
 		LOGGER.info("START : Get channel list called.");
 		PMPAPIAccessLog accessLog = null;
