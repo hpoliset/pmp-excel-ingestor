@@ -3,7 +3,6 @@
  */
 package org.srcm.heartfulness.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -50,11 +49,12 @@ public class SessionDetailsServiceImpl implements SessionDetailsService {
 		try{
 			response = sessionDtlsRepo.saveOrUpdateSessionDetails(sessionDetails);
 		}catch(DataAccessException dae){
+			dae.printStackTrace();
 			LOGGER.error("DAE Failed to save session id details for event id " + sessionDetails.getEventId());
-			new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.SESSION_CREATION_FAILED);
+			response = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.SESSION_CREATION_FAILED);
 		}catch(Exception ex){
 			LOGGER.error("EX Failed to save sessiond idetails for event id " + sessionDetails.getEventId());
-			new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.SESSION_CREATION_FAILED);
+			response = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.SESSION_CREATION_FAILED);
 		}
 		return response;
 	}
