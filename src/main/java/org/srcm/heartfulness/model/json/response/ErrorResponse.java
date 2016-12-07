@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ErrorResponse {
+public class ErrorResponse implements PMPResponse {
 
 	@JsonProperty("error_description")
 	private String error_description;

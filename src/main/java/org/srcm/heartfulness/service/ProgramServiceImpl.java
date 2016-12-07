@@ -44,6 +44,11 @@ import org.srcm.heartfulness.validator.EventDashboardValidator;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+/**
+ * @author Koustav Dutta
+ *
+ */
+
 @Service
 public class ProgramServiceImpl implements ProgramService {
 

@@ -1,5 +1,7 @@
 package org.srcm.heartfulness.webservice;
 
+
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -47,6 +49,11 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+
+/**
+ * @author Koustav Dutta
+ *
+ */
 @RestController
 @RequestMapping("/api/event")
 public class EventsController {

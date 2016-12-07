@@ -36,6 +36,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
+ * @author Koustav Dutta
  * Validator Implementation to streamline all Event Dashboard validation
  * implementation.
  * 
