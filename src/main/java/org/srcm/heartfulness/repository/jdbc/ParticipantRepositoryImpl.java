@@ -334,7 +334,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	public List<Integer> getProgramIDsToGenerateEwelcomeIds() {
 
 		return this.jdbcTemplate.queryForList("SELECT DISTINCT(pr.program_id) FROM program p,participant pr"
-				+ " WHERE p.program_id = pr.program_id AND pr.create_time < CURRENT_TIMESTAMP"
+				+ " WHERE p.program_id = pr.program_id AND pr.create_time < CURDATE()"
 				+ " AND pr.ewelcome_id_state = 'T' AND ("
 				+ "pr.welcome_card_number IS NULL OR pr.welcome_card_number = '')", null, Integer.class);
 	}
@@ -348,7 +348,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 						+ ",first_name,date_of_birth,email,third_sitting_date,third_sitting,city,state,country,welcome_card_number,"
 						+ "welcome_card_date,id,mobile_phone,introduction_date,address_line1,address_line2,"
 						+ "ewelcome_id_state,ewelcome_id_remarks,seqId from participant "
-						+ " WHERE program_id=:programId AND create_time < CURRENT_TIMESTAMP"
+						+ " WHERE program_id=:programId AND create_time < CURDATE()"
 						+ " AND ewelcome_id_state = 'T' AND ("
 						+ "welcome_card_number IS NULL OR welcome_card_number = '')", params,
 						BeanPropertyRowMapper.newInstance(Participant.class));
