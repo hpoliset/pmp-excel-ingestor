@@ -205,4 +205,6 @@ public interface WelcomeMailRepository {
 	Map<CoordinatorEmail, List<Participant>> getGeneratedEwelcomeIdDetails();
 
 	int updateEwelcomeIDInformedStatus(String key);
+
+	int getCountofIsWelcomeIdInformedcordinators();
 }

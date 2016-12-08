@@ -403,6 +403,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	public void getGeneratedEwelcomeIdAndSendToCoordinators() {
 		LOGGER.info("Fetching co-ordinator details and e-welcomeID details..!");
 		try{
+			LOGGER.info("Total count of coordinators available in DB with is ewelcome id informed as active - "+welcomeMailRepository.getCountofIsWelcomeIdInformedcordinators());
 			Map<CoordinatorEmail, List<Participant>> eWelcomeIdDetails = welcomeMailRepository.getGeneratedEwelcomeIdDetails();
 			LOGGER.info("Count of coordinators to send email - "+eWelcomeIdDetails.size());
 			if(!eWelcomeIdDetails.isEmpty()){

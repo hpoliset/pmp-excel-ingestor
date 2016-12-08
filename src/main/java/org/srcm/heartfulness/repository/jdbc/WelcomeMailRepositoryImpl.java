@@ -528,10 +528,8 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 									participant.setEwelcomeIdState(resultSet.getString(12));
 									participant.setEwelcomeIdRemarks(resultSet.getString(13));
 									if(eWelcomeIdDetails.containsKey(coordinatorEmail)){
-										LOGGER.info("Adding to existing record in map"+coordinatorEmail.toString());
 										eWelcomeIdDetails.get(coordinatorEmail).add(participant);
 									}else{
-										LOGGER.info("creating new record in map"+coordinatorEmail.toString());
 										List<Participant> participants = new ArrayList<Participant>();
 										participants.add(participant);
 										eWelcomeIdDetails.put(coordinatorEmail, participants);
@@ -549,6 +547,16 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 
 		return this.jdbcTemplate.update("UPDATE participant SET is_ewelcome_id_informed = 1 "
 				+  " WHERE id=? ", new Object[] {Id});
+	}
+
+	@Override
+	public int getCountofIsWelcomeIdInformedcordinators() {
+		return this.jdbcTemplate.queryForObject(
+				"SELECT count(p.program_id) FROM program p,participant pr WHERE p.program_id = pr.program_id"
+						+	" AND pr.is_ewelcome_id_informed = 0 AND "
+						+"((pr.ewelcome_id_state='C' AND pr.welcome_card_number IS NOT NULL AND pr.welcome_card_number<>'')"
+						+" OR (pr.ewelcome_id_state='F' AND (pr.welcome_card_number IS NULL OR pr.welcome_card_number='')))", null, Integer.class);
+		 
 	}
 
 }
