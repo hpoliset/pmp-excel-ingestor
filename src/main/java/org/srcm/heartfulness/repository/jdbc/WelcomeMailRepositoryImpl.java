@@ -9,6 +9,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -27,6 +29,8 @@ import org.srcm.heartfulness.repository.WelcomeMailRepository;
 
 @Repository
 public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(WelcomeMailRepositoryImpl.class);
 
 	private final JdbcTemplate jdbcTemplate;
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -498,7 +502,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	public Map<CoordinatorEmail, List<Participant>> getGeneratedEwelcomeIdDetails() {
 
 		return this.jdbcTemplate.query(
-				"SELECT p.program_channel,p.coordinator_name,p.coordinator_email,p.program_id,pr.print_name,pr.email,pr.welcome_card_number,pr.id,pr.mobile_phone,pr.introduction_date,pr.ewelcome_id_state,pr.ewelcome_id_remarks FROM program p,participant pr"
+				"SELECT p.program_channel,p.coordinator_name,p.coordinator_email,p.program_id,p.auto_generated_event_id,pr.print_name,pr.email,pr.welcome_card_number,pr.id,pr.mobile_phone,pr.introduction_date,pr.ewelcome_id_state,pr.ewelcome_id_remarks FROM program p,participant pr"
 						+	" WHERE p.program_id = pr.program_id"
 						+	" AND pr.is_ewelcome_id_informed = 0 AND "
 						+"((pr.ewelcome_id_state='C' AND pr.welcome_card_number IS NOT NULL AND pr.welcome_card_number<>'')"
@@ -514,17 +518,20 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 									coordinatorEmail.setCoordinatorName(resultSet.getString(2));
 									coordinatorEmail.setCoordinatorEmail(resultSet.getString(3));
 									coordinatorEmail.setProgramId(resultSet.getString(4));
-									participant.setPrintName(resultSet.getString(5));
-									participant.setEmail(resultSet.getString(6));
-									participant.setWelcomeCardNumber(resultSet.getString(7));
-									participant.setId(Integer.parseInt(resultSet.getString(8)));
-									participant.setMobilePhone(resultSet.getString(9));
-									participant.setIntroductionDate(resultSet.getDate(10));
-									participant.setEwelcomeIdState(resultSet.getString(11));
-									participant.setEwelcomeIdRemarks(resultSet.getString(12));
+									coordinatorEmail.setEventID(resultSet.getString(5));
+									participant.setPrintName(resultSet.getString(6));
+									participant.setEmail(resultSet.getString(7));
+									participant.setWelcomeCardNumber(resultSet.getString(8));
+									participant.setId(Integer.parseInt(resultSet.getString(9)));
+									participant.setMobilePhone(resultSet.getString(10));
+									participant.setIntroductionDate(resultSet.getDate(11));
+									participant.setEwelcomeIdState(resultSet.getString(12));
+									participant.setEwelcomeIdRemarks(resultSet.getString(13));
 									if(eWelcomeIdDetails.containsKey(coordinatorEmail)){
+										LOGGER.info("Adding to existing record in map"+coordinatorEmail.toString());
 										eWelcomeIdDetails.get(coordinatorEmail).add(participant);
 									}else{
+										LOGGER.info("creating new record in map"+coordinatorEmail.toString());
 										List<Participant> participants = new ArrayList<Participant>();
 										participants.add(participant);
 										eWelcomeIdDetails.put(coordinatorEmail, participants);
@@ -534,6 +541,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 							}
 						});
 	}
+
 
 
 	@Override

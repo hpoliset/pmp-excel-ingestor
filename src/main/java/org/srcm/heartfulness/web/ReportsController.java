@@ -108,6 +108,8 @@ public class ReportsController {
 		reportVO.setState(state);
 		reportVO.setCity(city);
 
+		authHelper.setcurrentUsertoContext(request.getSession());
+		pmpAuthService.setRoleAndUsernameFromContext(reportVO);
 		Collection<ParticipantFullDetails> participants = reportService.getParticipants(reportVO);
 
 		StringBuilder sb = new StringBuilder();

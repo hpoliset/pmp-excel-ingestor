@@ -71,7 +71,7 @@ public class PmpAuthorizationServiceImpl implements PmpAuthorizationService {
 		List<String> eventTypes = reportService.getEventTypes();
 		modelMap.addAttribute("eventCountries", eventCountries);
 		modelMap.addAttribute("eventTypes", eventTypes);
-		modelMap.addAttribute("programChannels", channelService.findAllActiveChannels());
+		modelMap.addAttribute("programChannels", channelService.findAllActiveChannelsBasedOnRole(role));
 		// }
 		return "reportsForm";
 	}
@@ -93,7 +93,7 @@ public class PmpAuthorizationServiceImpl implements PmpAuthorizationService {
 
 	@Override
 	public Collection<ParticipantFullDetails> getParticipants(ReportVO reportVO) {
-		getPrincipal();
+		setRoleAndUsernameFromContext(reportVO);
 		/*
 		 * if (PMPConstants.LOGIN_ROLE_PRECEPTOR.equals(role)) {
 		 * reportVO.setCoordinator(username); }
@@ -104,7 +104,8 @@ public class PmpAuthorizationServiceImpl implements PmpAuthorizationService {
 	/**
 	 * Method to get the principal from the context holder.
 	 */
-	private void getPrincipal() {
+	@Override
+	public void getPrincipal() {
 		UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		role = principal.getAuthorities().toString().replaceAll("[\\[\\]]", "").trim();
 		username = principal.getUsername().toString();
@@ -181,6 +182,14 @@ public class PmpAuthorizationServiceImpl implements PmpAuthorizationService {
 	@Override
 	public String showPmpApiErrorPopupForm() {
 		return "errorlogdetailsform";
+	}
+
+	@Override
+	public ReportVO setRoleAndUsernameFromContext(ReportVO reportVO) {
+		UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		reportVO.setUserRole(principal.getAuthorities().toString().replaceAll("[\\[\\]]", "").trim());
+		reportVO.setUsername(principal.getUsername().toString());
+		return reportVO;
 	}
 
 

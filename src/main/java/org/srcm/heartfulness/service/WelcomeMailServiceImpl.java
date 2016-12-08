@@ -407,8 +407,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			LOGGER.info("Count of coordinators to send email - "+eWelcomeIdDetails.size());
 			if(!eWelcomeIdDetails.isEmpty()){
 				for(Entry<CoordinatorEmail, List<Participant>> map:eWelcomeIdDetails.entrySet()){
-					//System.out.println("Iterating for - "+map.getKey().getCoordinatorEmail());
-					LOGGER.info("Event: {} ,Coordinatoremail : {} "+map.getKey().getEventID(),map.getKey().getCoordinatorEmail());
+					LOGGER.info("Event: {} ,Coordinatoremail : {} ",map.getKey().getEventID(),map.getKey().getCoordinatorEmail());
 					List<Integer> listOfParticipantId = new ArrayList<>();
 					if(null != map.getKey()){
 						if(map.getKey().getCoordinatorEmail()!=null && !map.getKey().getCoordinatorEmail().isEmpty()){
@@ -417,11 +416,12 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								coordinatorEmail.setEventName(map.getKey().getEventName());
 								coordinatorEmail.setCoordinatorName(map.getKey().getCoordinatorName());
 								coordinatorEmail.setCoordinatorEmail(map.getKey().getCoordinatorEmail());
-								coordinatorEmail.setEventID(programRepository.getEventIdByProgramID(Integer.parseInt(map.getKey().getProgramId())));
+								coordinatorEmail.setProgramId(map.getKey().getProgramId());
+								coordinatorEmail.setEventID(map.getKey().getEventID());
 								List<Participant> failedParticipants = participantRepository.getEWelcomeIdGenerationFailedParticipants(map.getKey().getProgramId());
-								LOGGER.info("Failed participants : "+failedParticipants.size() + ", programID : "+map.getKey().getProgramId());
+								LOGGER.info("Failed participants : "+failedParticipants.size() + ", EventID : "+map.getKey().getEventID());
 								List<Participant> eWelcomeIDParticipants = participantRepository.getEWelcomeIdGeneratedParticipants(map.getKey().getProgramId());
-								LOGGER.info("eWelcomeIDParticipants : "+eWelcomeIDParticipants.size() + ", programID : "+map.getKey().getProgramId());
+								LOGGER.info("eWelcomeIDParticipants : "+eWelcomeIDParticipants.size() + ", EventID : "+map.getKey().getEventID());
 								for(Participant failedParticipant : failedParticipants){
 									listOfParticipantId.add(failedParticipant.getId());
 									//System.out.println("participant id "+participant.getId()+" inserted");
