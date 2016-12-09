@@ -12,5 +12,7 @@ import org.srcm.heartfulness.model.Channel;
 public interface ChannelRepository {
 
 	public List<Channel> findAllActiveChannels();
+
+	public List<Channel> findAllActiveChannelsBasedOnRole(String role);
 	
 }

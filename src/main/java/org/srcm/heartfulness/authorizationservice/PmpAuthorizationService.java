@@ -74,18 +74,21 @@ public interface PmpAuthorizationService {
 
 	/* @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_PRECEPTOR')") */
 	ResponseEntity<?> getEventList();
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_G_CONNECT_ADMIN')")
 	String showPmpApiLogForm();
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_G_CONNECT_ADMIN')")
 	String showPmpApiErrorLogForm();
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_G_CONNECT_ADMIN')")
 	String showPmpApiPopupForm();
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_SYSTEM_ADMIN','ROLE_G_CONNECT_ADMIN')")
 	String showPmpApiErrorPopupForm();
 
+	void getPrincipal();
+
+	ReportVO setRoleAndUsernameFromContext(ReportVO reportVO);
 
 }

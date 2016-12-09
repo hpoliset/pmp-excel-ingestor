@@ -301,6 +301,8 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 									coordinatorEmail.setPctptAlreadyRcvdWlcmMailCount(String.valueOf(wlcmEmailRcvdPctptCount));
 									coordinatorEmail.setPctptRcvdWlcmMailYstrdayCount(map.getValue().get(0));
 									coordinatorEmail.setProgramCreateDate(map.getValue().get(4));
+									coordinatorEmail.setEventPlace(map.getValue().get(5));
+									coordinatorEmail.setEventCity(map.getValue().get(6));
 									sendEmailNotification.sendMailNotificationToCoordinator(coordinatorEmail);
 									try{
 										LOGGER.debug("START        :Inserting mail log details in table");
@@ -403,12 +405,12 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	public void getGeneratedEwelcomeIdAndSendToCoordinators() {
 		LOGGER.info("Fetching co-ordinator details and e-welcomeID details..!");
 		try{
+			LOGGER.info("Total count of coordinators available in DB with is ewelcome id informed as active - "+welcomeMailRepository.getCountofIsWelcomeIdInformedcordinators());
 			Map<CoordinatorEmail, List<Participant>> eWelcomeIdDetails = welcomeMailRepository.getGeneratedEwelcomeIdDetails();
 			LOGGER.info("Count of coordinators to send email - "+eWelcomeIdDetails.size());
 			if(!eWelcomeIdDetails.isEmpty()){
 				for(Entry<CoordinatorEmail, List<Participant>> map:eWelcomeIdDetails.entrySet()){
-					//System.out.println("Iterating for - "+map.getKey().getCoordinatorEmail());
-					LOGGER.info("Event: {} ,Coordinatoremail : {} "+map.getKey().getEventID(),map.getKey().getCoordinatorEmail());
+					LOGGER.info("Event: {} ,Coordinatoremail : {} ",map.getKey().getEventID(),map.getKey().getCoordinatorEmail());
 					List<Integer> listOfParticipantId = new ArrayList<>();
 					if(null != map.getKey()){
 						if(map.getKey().getCoordinatorEmail()!=null && !map.getKey().getCoordinatorEmail().isEmpty()){
@@ -417,11 +419,15 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								coordinatorEmail.setEventName(map.getKey().getEventName());
 								coordinatorEmail.setCoordinatorName(map.getKey().getCoordinatorName());
 								coordinatorEmail.setCoordinatorEmail(map.getKey().getCoordinatorEmail());
-								coordinatorEmail.setEventID(programRepository.getEventIdByProgramID(Integer.parseInt(map.getKey().getProgramId())));
+								coordinatorEmail.setProgramId(map.getKey().getProgramId());
+								coordinatorEmail.setEventID(map.getKey().getEventID());
+								coordinatorEmail.setEventCity(map.getKey().getEventCity());
+								coordinatorEmail.setEventPlace(map.getKey().getEventPlace());
+								coordinatorEmail.setProgramCreateDate(map.getKey().getProgramCreateDate());
 								List<Participant> failedParticipants = participantRepository.getEWelcomeIdGenerationFailedParticipants(map.getKey().getProgramId());
-								LOGGER.info("Failed participants : "+failedParticipants.size() + ", programID : "+map.getKey().getProgramId());
+								LOGGER.info("Failed participants : "+failedParticipants.size() + ", EventID : "+map.getKey().getEventID());
 								List<Participant> eWelcomeIDParticipants = participantRepository.getEWelcomeIdGeneratedParticipants(map.getKey().getProgramId());
-								LOGGER.info("eWelcomeIDParticipants : "+eWelcomeIDParticipants.size() + ", programID : "+map.getKey().getProgramId());
+								LOGGER.info("eWelcomeIDParticipants : "+eWelcomeIDParticipants.size() + ", EventID : "+map.getKey().getEventID());
 								for(Participant failedParticipant : failedParticipants){
 									listOfParticipantId.add(failedParticipant.getId());
 									//System.out.println("participant id "+participant.getId()+" inserted");

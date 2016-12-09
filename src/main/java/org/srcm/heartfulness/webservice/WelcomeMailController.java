@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.mail.SendMail;
@@ -22,7 +21,7 @@ import org.srcm.heartfulness.service.WelcomeMailService;
  *
  */
 @RestController
-@RequestMapping("/api/welcomemail/")
+@RequestMapping("/api/")
 public class WelcomeMailController {
 
 	@Autowired
@@ -71,6 +70,7 @@ public class WelcomeMailController {
 	 * about the participants who have received welcome emails.It is a crob job
 	 * running at a scheduled time.
 	 */
+	//@RequestMapping(value = "informcoordinatorwithwelcomemail", method = RequestMethod.POST)
 	@Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}") 
 	public void sendEmailToCoordinator() {
 		LOGGER.info("START		:Cron job started to fetch participants to whom welcome mail already sent");
