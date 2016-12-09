@@ -334,7 +334,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	}
 
 	@Override
-	public List<Participant> getParticipantwithProgramIdTogenerateEwelcomeId(Integer programId) {
+	public List<Participant> getParticipantwithProgramIdToGenerateEwelcomeId(Integer programId) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("programId", programId);
 		return this.namedParameterJdbcTemplate.query("SELECT print_name"

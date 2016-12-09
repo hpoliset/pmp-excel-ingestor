@@ -12,6 +12,7 @@ import org.srcm.heartfulness.model.json.request.SearchRequest;
  * Created by vsonnathi on 11/23/15.
  */
 public interface ParticipantRepository {
+	
 	/**
 	 * Retrieve <code>Participant</code>s from the data store by hashCode.
 	 *
@@ -79,8 +80,6 @@ public interface ParticipantRepository {
 	 */
 	List<Participant> getParticipantList(SearchRequest searchRequest);
 
-	/* List<Participant> getParticipantListToGenerateEWelcomeID(); */
-
 	/**
 	 * Method to get the list of participants whose ewelcomeId generation got
 	 * failed.
@@ -114,7 +113,7 @@ public interface ParticipantRepository {
 	 * @param programId
 	 * @return
 	 */
-	List<Participant> getParticipantwithProgramIdTogenerateEwelcomeId(Integer programId);
+	List<Participant> getParticipantwithProgramIdToGenerateEwelcomeId(Integer programId);
 
 	/**
 	 * Method to update the participant ewelcomeID details

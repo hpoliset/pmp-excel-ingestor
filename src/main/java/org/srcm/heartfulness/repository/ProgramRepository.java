@@ -261,17 +261,6 @@ public interface ProgramRepository {
 	void updateDeletedParticipant(Participant deletedParticipant, String deletedBy);
 
 	/**
-	 * Method to search the events from the HFN Backend using few params.
-	 * 
-	 * @param searchRequest
-	 * @param userEmail
-	 * @param isAdmin
-	 * @param offset
-	 * @return
-	 */
-	List<Program> searchEvents(SearchRequest searchRequest, String userEmail, boolean isAdmin, int offset);
-
-	/**
 	 * Method to get event ID by using program Id.
 	 * 
 	 * @param programId
@@ -287,17 +276,6 @@ public interface ProgramRepository {
 	 * @return
 	 */
 	int getProgramCount(String userEmail, boolean isAdmin);
-
-	/**
-	 * Method to get the program count w.r.t the search params provided and with
-	 * user mail ID.
-	 * 
-	 * @param searchRequest
-	 * @param userEmail
-	 * @param isAdmin
-	 * @return
-	 */
-	int getPgrmCountBySrchParams(SearchRequest searchRequest, String userEmail, boolean isAdmin);
 
 	/**
 	 * Method to get the required program details inorder to generate ewelcome

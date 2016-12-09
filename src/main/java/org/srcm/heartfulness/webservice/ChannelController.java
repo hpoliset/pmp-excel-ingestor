@@ -23,6 +23,7 @@ import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
 
 /**
+ * Controller for managing <code>Channel</code> domain objects.
  * 
  * @author himasreev
  *
@@ -39,8 +40,16 @@ public class ChannelController {
 	@Autowired
 	APIAccessLogService apiAccessLogService;
 
+	/**
+	 * Web service end point to get the list of channels from the Heartfulness
+	 * backend.
+	 * 
+	 * @param model
+	 * @param httpRequest
+	 * @return <code>List<String></code>
+	 */
 	@RequestMapping(value = "channel", method = RequestMethod.GET)
-	public ResponseEntity<?> getchannelList(ModelMap model, @Context HttpServletRequest httpRequest) {
+	public ResponseEntity<?> getChannelList(ModelMap model, @Context HttpServletRequest httpRequest) {
 		LOGGER.info("START : Get channel list called.");
 		PMPAPIAccessLog accessLog = null;
 		try {
