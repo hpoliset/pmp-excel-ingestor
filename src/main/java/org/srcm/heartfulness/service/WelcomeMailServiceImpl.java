@@ -301,6 +301,8 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 									coordinatorEmail.setPctptAlreadyRcvdWlcmMailCount(String.valueOf(wlcmEmailRcvdPctptCount));
 									coordinatorEmail.setPctptRcvdWlcmMailYstrdayCount(map.getValue().get(0));
 									coordinatorEmail.setProgramCreateDate(map.getValue().get(4));
+									coordinatorEmail.setEventPlace(map.getValue().get(5));
+									coordinatorEmail.setEventCity(map.getValue().get(6));
 									sendEmailNotification.sendMailNotificationToCoordinator(coordinatorEmail);
 									try{
 										LOGGER.debug("START        :Inserting mail log details in table");
@@ -419,6 +421,9 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								coordinatorEmail.setCoordinatorEmail(map.getKey().getCoordinatorEmail());
 								coordinatorEmail.setProgramId(map.getKey().getProgramId());
 								coordinatorEmail.setEventID(map.getKey().getEventID());
+								coordinatorEmail.setEventCity(map.getKey().getEventCity());
+								coordinatorEmail.setEventPlace(map.getKey().getEventPlace());
+								coordinatorEmail.setProgramCreateDate(map.getKey().getProgramCreateDate());
 								List<Participant> failedParticipants = participantRepository.getEWelcomeIdGenerationFailedParticipants(map.getKey().getProgramId());
 								LOGGER.info("Failed participants : "+failedParticipants.size() + ", EventID : "+map.getKey().getEventID());
 								List<Participant> eWelcomeIDParticipants = participantRepository.getEWelcomeIdGeneratedParticipants(map.getKey().getProgramId());

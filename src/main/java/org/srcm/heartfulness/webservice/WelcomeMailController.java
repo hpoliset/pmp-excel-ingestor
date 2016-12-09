@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.mail.SendMail;
@@ -22,7 +21,7 @@ import org.srcm.heartfulness.service.WelcomeMailService;
  *
  */
 @RestController
-@RequestMapping("/api/welcomemail/")
+@RequestMapping("/api/")
 public class WelcomeMailController {
 
 	@Autowired
@@ -55,7 +54,7 @@ public class WelcomeMailController {
 		}
 	}
 
-	/*@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") */
+	@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") 
 	public void uploadDailyWelcomeMailidsToFTP() {
 		try {
 			LOGGER.info("Upload File to FTP called.");
@@ -71,15 +70,16 @@ public class WelcomeMailController {
 	 * about the participants who have received welcome emails.It is a crob job
 	 * running at a scheduled time.
 	 */
-	/*@Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}") */
+	//@RequestMapping(value = "informcoordinatorwithwelcomemail", method = RequestMethod.POST)
+	@Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}") 
 	public void sendEmailToCoordinator() {
 		LOGGER.info("START		:Cron job started to fetch participants to whom welcome mail already sent");
 		WelcomeMailService.getCoordinatorListAndSendMail();
 		LOGGER.info("END		:Cron job completed to fetch participants to whom welcome mail already sent");
 	}
 
-	@RequestMapping(value = "informcoordinatorswithewelcomeids", method = RequestMethod.POST)
-	//@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}") 
+	//@RequestMapping(value = "informcoordinatorswithewelcomeids", method = RequestMethod.POST)
+	@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}") 
 	public void sendGeneratedEwelcomeIdToCoordinators() {
 		LOGGER.info("START		:Cron job started to send mails to coordinator to inform participant ewelcomeid's");
 		WelcomeMailService.getGeneratedEwelcomeIdAndSendToCoordinators();
@@ -87,7 +87,7 @@ public class WelcomeMailController {
 	}
 	
 	//@RequestMapping(value = "sendwelcomemail", method = RequestMethod.POST)
-	/*@Scheduled(cron = "${welcome.mail.to.hfnlist.cron.time}") */
+	@Scheduled(cron = "${welcome.mail.to.hfnlist.cron.time}") 
 	public void sendWelcomeMail() {
 		try {
 			LOGGER.info("Sending mail to hfn list called.");
