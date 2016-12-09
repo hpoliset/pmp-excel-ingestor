@@ -26,4 +26,6 @@ public interface ChannelService {
 	 * @return <code>String<Channel></code> list of channel names.
 	 */
 	List<String> findAllActiveChannelNames();
+	
+	public List<Channel> findAllActiveChannelsBasedOnRole(String role);
 }

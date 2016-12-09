@@ -33,6 +33,7 @@ import org.srcm.heartfulness.util.StackTraceUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
+ * Controller - Login authentication services.
  * 
  * @author HimaSree
  *
@@ -72,7 +73,8 @@ public class AuthenticationController {
 			ModelMap model, @Context HttpServletRequest httpRequest) {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(authenticationRequest.getUsername(),
 				httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), DateUtils.getCurrentTimeInMilliSec(), null,
-				ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(authenticationRequest.getUsername()), null);
+				ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(authenticationRequest
+						.getUsername()), null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		try {
 			LOGGER.info("Trying to Authenticate :  {}", authenticationRequest.getUsername());

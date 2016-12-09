@@ -2,23 +2,27 @@ package org.srcm.heartfulness.vo;
 
 /**
  * 
- * This class is used to hold the values from the reports screen
- * which will be used in the service and dao 
+ * This class is used to hold the values from the reports screen which will be
+ * used in the service and DAO.
  *
  */
 public class ReportVO {
-	
+
 	private String channel;
-	
+
 	private String fromDate;
-	
+
 	private String tillDate;
-	
+
 	private String country;
-	
+
 	private String state;
-	
+
 	private String city;
+
+	private String username;
+
+	private String userRole;
 
 	public ReportVO() {
 		super();
@@ -32,6 +36,19 @@ public class ReportVO {
 		this.country = country;
 		this.state = state;
 		this.city = city;
+	}
+
+	public ReportVO(String channel, String fromDate, String tillDate, String country, String state, String city,
+			String username, String userRole) {
+		super();
+		this.channel = channel;
+		this.fromDate = fromDate;
+		this.tillDate = tillDate;
+		this.country = country;
+		this.state = state;
+		this.city = city;
+		this.username = username;
+		this.userRole = userRole;
 	}
 
 	public String getChannel() {
@@ -82,11 +99,27 @@ public class ReportVO {
 		this.city = city;
 	}
 
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getUserRole() {
+		return userRole;
+	}
+
+	public void setUserRole(String userRole) {
+		this.userRole = userRole;
+	}
+
 	@Override
 	public String toString() {
 		return "ReportVO [channel=" + channel + ", fromDate=" + fromDate + ", tillDate=" + tillDate + ", country="
-				+ country + ", state=" + state + ", city=" + city + "]";
+				+ country + ", state=" + state + ", city=" + city + ", username=" + username + ", userRole=" + userRole
+				+ "]";
 	}
-	
-	
+
 }

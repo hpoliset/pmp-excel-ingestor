@@ -296,7 +296,7 @@ public interface ProgramService {
 	 * @return
 	 */
 	public Program getProgramDetailsToGenerateEwelcomeIDById(Integer programId);
-	
+
 	/**
 	 * Method to get the count of programs for the given user mail ID based on
 	 * user role.
@@ -330,7 +330,7 @@ public interface ProgramService {
 	public int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role);
 
 	/**
-	 *  Retrieve <code>List<Event></code> from the data store by values given in
+	 * Retrieve <code>List<Event></code> from the data store by values given in
 	 * the search request.
 	 * 
 	 * @param searchRequest
@@ -342,6 +342,18 @@ public interface ProgramService {
 	public List<Event> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role,
 			int offset);
 
-	public void createOrUpdateProgram(Event event, int id) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException;
+	/**
+	 * Method to create a new event when event Id doesn't exists and updates an
+	 * event when event Id exists.
+	 * 
+	 * @param event
+	 * @param id
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	public void createOrUpdateProgram(Event event, int id) throws HttpClientErrorException, JsonParseException,
+			JsonMappingException, IOException;
 
 }

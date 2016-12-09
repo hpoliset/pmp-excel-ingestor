@@ -39,5 +39,10 @@ public class ChannelServiceImpl implements ChannelService {
 	public List<String> findAllActiveChannelNames() {
 		return channelRepository.findAllActiveChannelNames();
 	}
+	
+	@Override
+	public List<Channel> findAllActiveChannelsBasedOnRole(String role) {
+		return channelRepository.findAllActiveChannelsBasedOnRole(role);		
+	}
 
 }

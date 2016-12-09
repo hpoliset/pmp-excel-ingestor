@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
+ * Class to hold the user profile in the result of MYSRCM get user
+ * profile API.
  * 
  * @author HimaSree
  *

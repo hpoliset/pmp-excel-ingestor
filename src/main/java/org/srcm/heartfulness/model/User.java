@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
- * This class is to hold the user details and response user Profile by srcm
+ * This class is to hold the user details and response user Profile from MYSRCM.
  * 
  * @author HimaSree
  *

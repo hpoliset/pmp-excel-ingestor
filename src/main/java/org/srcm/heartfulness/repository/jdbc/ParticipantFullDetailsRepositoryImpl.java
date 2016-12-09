@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.model.ParticipantFullDetails;
 import org.srcm.heartfulness.repository.ParticipantFullDetailsRepository;
 import org.srcm.heartfulness.util.DateUtils;
@@ -49,6 +50,11 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 			whereCondition.append(whereCondition.length() > 0 ? " and pg.program_channel = ? "
 					: " pg.program_channel = ? ");
 			parameters.add(reportVO.getChannel());
+		}else{
+			if (reportVO.getUserRole() != null && !(reportVO.getUserRole()).equalsIgnoreCase(PMPConstants.ROLE_PREFIX+PMPConstants.LOGIN_GCONNECT_ADMIN)) {
+				whereCondition.append(whereCondition.length() > 0 ?" and (pg.program_channel NOT LIKE '%G-Connect%' OR pg.coordinator_email= ? ) ": "(pg.program_channel NOT LIKE '%G-Connect%' OR pg.coordinator_email= ? )");
+				parameters.add(reportVO.getUsername());
+			}
 		}
 
 	/*	if ((reportVO.getFromDate() != null && !reportVO.getFromDate().isEmpty())) {

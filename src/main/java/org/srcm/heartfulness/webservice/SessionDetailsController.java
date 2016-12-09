@@ -1,9 +1,5 @@
-/**
- * 
- */
 package org.srcm.heartfulness.webservice;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,59 +47,53 @@ public class SessionDetailsController {
 	@Autowired
 	SessionDetailsService sessionDtlsSrcv;
 
-
-	@RequestMapping(value = "/session", method = RequestMethod.POST, 
-			consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/session", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createOrUpdateSessionDetails(@RequestHeader(value = "Authorization") String authToken,
-			@RequestBody SessionDetails sessionDetails,@Context HttpServletRequest httpRequest){
-		
+			@RequestBody SessionDetails sessionDetails, @Context HttpServletRequest httpRequest) {
+
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,StackTraceUtils.convertPojoToJson(sessionDetails));
-		try{
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
+				StackTraceUtils.convertPojoToJson(sessionDetails));
+		try {
 			apiAccessLogService.createPmpAPIAccessLog(accessLog);
-		}catch(Exception ex){
+		} catch (Exception ex) {
 			LOGGER.error("Failed to create access log details");
 		}
 
-
-		PMPResponse tokenResponse = sessionDtlsHlpr.validateAuthToken(authToken,accessLog);
-		if(tokenResponse instanceof ErrorResponse){
-			return new ResponseEntity<PMPResponse>(tokenResponse,HttpStatus.OK);
+		PMPResponse tokenResponse = sessionDtlsHlpr.validateAuthToken(authToken, accessLog);
+		if (tokenResponse instanceof ErrorResponse) {
+			return new ResponseEntity<PMPResponse>(tokenResponse, HttpStatus.OK);
 		}
 
-
-		PMPResponse validationResponse = sessionDtlsHlpr.validateSessionDetailsParams(sessionDetails,accessLog);
-		if(validationResponse instanceof ErrorResponse){
-			return new ResponseEntity<PMPResponse>(validationResponse,HttpStatus.OK);
+		PMPResponse validationResponse = sessionDtlsHlpr.validateSessionDetailsParams(sessionDetails, accessLog);
+		if (validationResponse instanceof ErrorResponse) {
+			return new ResponseEntity<PMPResponse>(validationResponse, HttpStatus.OK);
 		}
-
 
 		PMPResponse serviceResponse = sessionDtlsSrcv.saveOrUpdateSessionDetails(sessionDetails);
 
-		if(serviceResponse instanceof SuccessResponse){
+		if (serviceResponse instanceof SuccessResponse) {
 
 			accessLog.setErrorMessage("");
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(sessionDetails));
-			if(((SuccessResponse) serviceResponse).getSuccess_description().equals(ErrorConstants.SESSION_SUCCESSFULLY_CREATED)){
-				try{
+			if (((SuccessResponse) serviceResponse).getSuccess_description().equals(
+					ErrorConstants.SESSION_SUCCESSFULLY_CREATED)) {
+				try {
 					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-				}catch(Exception ex){
-					LOGGER.error("Exception while updating logger",ex);
+				} catch (Exception ex) {
+					LOGGER.error("Exception while updating logger", ex);
 				}
-				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-				System.out.println("date=="+sessionDetails.getSessionDate());
-				System.out.println("get date=="+sessionDetails.getSessionDate());
-				
-				return  new ResponseEntity<SessionDetails>(sessionDetails,HttpStatus.OK);
-			}else if(((SuccessResponse) serviceResponse).getSuccess_description().equals(ErrorConstants.SESSION_SUCCESSFULLY_UPDATED)){
-				try{
+				return new ResponseEntity<SessionDetails>(sessionDetails, HttpStatus.OK);
+			} else if (((SuccessResponse) serviceResponse).getSuccess_description().equals(
+					ErrorConstants.SESSION_SUCCESSFULLY_UPDATED)) {
+				try {
 					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-				}catch(Exception ex){
-					LOGGER.error("Exception while updating logger",ex);
+				} catch (Exception ex) {
+					LOGGER.error("Exception while updating logger", ex);
 				}
-				return  new ResponseEntity<PMPResponse>(serviceResponse,HttpStatus.OK);
+				return new ResponseEntity<PMPResponse>(serviceResponse, HttpStatus.OK);
 			}
 
 		}
@@ -111,100 +101,94 @@ public class SessionDetailsController {
 		accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 		accessLog.setErrorMessage(StackTraceUtils.convertPojoToJson(serviceResponse));
 		accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(serviceResponse));
-		try{
+		try {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-		}catch(Exception ex){
-			LOGGER.error("Exception while updating logger",ex);
+		} catch (Exception ex) {
+			LOGGER.error("Exception while updating logger", ex);
 		}
 
-
-		return new ResponseEntity<PMPResponse>(serviceResponse,HttpStatus.OK);
+		return new ResponseEntity<PMPResponse>(serviceResponse, HttpStatus.OK);
 	}
 
-
-	@RequestMapping(value = "/session/delete", method = RequestMethod.DELETE, 
-			consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/session/delete", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> deleteSessionDetails(@RequestHeader(value = "Authorization") String authToken,
-			@RequestBody SessionDetails sessionDetails,@Context HttpServletRequest httpRequest){
+			@RequestBody SessionDetails sessionDetails, @Context HttpServletRequest httpRequest) {
 
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,StackTraceUtils.convertPojoToJson(sessionDetails));
-		try{
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
+				StackTraceUtils.convertPojoToJson(sessionDetails));
+		try {
 			apiAccessLogService.createPmpAPIAccessLog(accessLog);
-		}catch(Exception ex){
+		} catch (Exception ex) {
 			LOGGER.error("Failed to create access log details");
 		}
 
+		PMPResponse tokenResponse = sessionDtlsHlpr.validateAuthToken(authToken, accessLog);
+		if (tokenResponse instanceof ErrorResponse) {
+			return new ResponseEntity<PMPResponse>(tokenResponse, HttpStatus.OK);
+		}
 
-		PMPResponse tokenResponse = sessionDtlsHlpr.validateAuthToken(authToken,accessLog);
-		if(tokenResponse instanceof ErrorResponse){
-			return new ResponseEntity<PMPResponse>(tokenResponse,HttpStatus.OK);
-		}	
-
-
-		PMPResponse validationResponse = sessionDtlsHlpr.validateDeleteSessionDetailParams(sessionDetails,accessLog);
-		if(validationResponse instanceof ErrorResponse){
-			return new ResponseEntity<PMPResponse>(validationResponse,HttpStatus.OK);
+		PMPResponse validationResponse = sessionDtlsHlpr.validateDeleteSessionDetailParams(sessionDetails, accessLog);
+		if (validationResponse instanceof ErrorResponse) {
+			return new ResponseEntity<PMPResponse>(validationResponse, HttpStatus.OK);
 		}
 
 		PMPResponse serviceResponse = sessionDtlsSrcv.deleteSessionDetail(sessionDetails);
 
-		if(serviceResponse instanceof SuccessResponse){
+		if (serviceResponse instanceof SuccessResponse) {
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 			accessLog.setErrorMessage("");
-		}else{
+		} else {
 			accessLog.setErrorMessage(StackTraceUtils.convertPojoToJson(serviceResponse));
 		}
 
 		accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 		accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(serviceResponse));
-		try{
+		try {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-		}catch(Exception ex){
-			LOGGER.error("Exception while updating logger",ex);
+		} catch (Exception ex) {
+			LOGGER.error("Exception while updating logger", ex);
 		}
 
-		return new ResponseEntity<PMPResponse>(serviceResponse,HttpStatus.OK);
+		return new ResponseEntity<PMPResponse>(serviceResponse, HttpStatus.OK);
 	}
 
-
-	@RequestMapping(value = "/session/sessionlist", method = RequestMethod.POST, 
-			consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/session/sessionlist", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getSessionDetails(@RequestHeader(value = "Authorization") String authToken,
-			@RequestBody SessionDetails sessionDetails,@Context HttpServletRequest httpRequest){
+			@RequestBody SessionDetails sessionDetails, @Context HttpServletRequest httpRequest) {
 
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,StackTraceUtils.convertPojoToJson(sessionDetails));
-		try{
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
+				StackTraceUtils.convertPojoToJson(sessionDetails));
+		try {
 			apiAccessLogService.createPmpAPIAccessLog(accessLog);
-		}catch(Exception ex){
+		} catch (Exception ex) {
 			LOGGER.error("Failed to create access log details");
 		}
 
-
-		PMPResponse tokenResponse = sessionDtlsHlpr.validateAuthToken(authToken,accessLog);
-		if(tokenResponse instanceof ErrorResponse){
-			return new ResponseEntity<PMPResponse>(tokenResponse,HttpStatus.OK);
+		PMPResponse tokenResponse = sessionDtlsHlpr.validateAuthToken(authToken, accessLog);
+		if (tokenResponse instanceof ErrorResponse) {
+			return new ResponseEntity<PMPResponse>(tokenResponse, HttpStatus.OK);
 		}
 
-		PMPResponse validationResponse = sessionDtlsHlpr.validateGetSessionDetailsParams(sessionDetails,accessLog);
-		if(validationResponse instanceof ErrorResponse){
-			return new ResponseEntity<PMPResponse>(validationResponse,HttpStatus.OK);
+		PMPResponse validationResponse = sessionDtlsHlpr.validateGetSessionDetailsParams(sessionDetails, accessLog);
+		if (validationResponse instanceof ErrorResponse) {
+			return new ResponseEntity<PMPResponse>(validationResponse, HttpStatus.OK);
 		}
 
-		List<SessionDetails> sessionDtlsList = sessionDtlsSrcv.getSessionDetails(sessionDetails.getProgramId(),sessionDetails.getEventId());
+		List<SessionDetails> sessionDtlsList = sessionDtlsSrcv.getSessionDetails(sessionDetails.getProgramId(),
+				sessionDetails.getEventId());
 
 		accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 		accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 		accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(sessionDtlsList));
-		try{
+		try {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-		}catch(Exception ex){
-			LOGGER.error("Exception while updating logger",ex);
+		} catch (Exception ex) {
+			LOGGER.error("Exception while updating logger", ex);
 		}
 
-		return new ResponseEntity<List<SessionDetails>>(sessionDtlsList,HttpStatus.OK);
+		return new ResponseEntity<List<SessionDetails>>(sessionDtlsList, HttpStatus.OK);
 	}
-
 
 }

@@ -527,8 +527,11 @@ public class SendMail {
 		addParameter("WLCM_MAIL_ALRDY_RCVD_PARTICIPANT_COUNT", crdntrEmail.getPctptAlreadyRcvdWlcmMailCount());
 		addParameter("WLCM_MAIL_RCVD_YSTRDY_PARTICIPANT_COUNT", crdntrEmail.getPctptRcvdWlcmMailYstrdayCount());
 		addParameter("EVENT_NAME", crdntrEmail.getEventName());
+		addParameter("EVENT_PLACE", crdntrEmail.getEventPlace());
+		addParameter("EVENT_CITY", crdntrEmail.getEventCity());
+		
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -1);
+		//cal.add(Calendar.DATE, -1);
 		SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
 		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
 		Date pgrmCreateDate = inputsdf.parse(crdntrEmail.getProgramCreateDate());
@@ -569,10 +572,13 @@ public class SendMail {
 		addParameter("COORDINATOR_NAME",
 				coordinatorEmail.getCoordinatorName() != null ? getName(coordinatorEmail.getCoordinatorName()) : "");
 		addParameter("EVENT_NAME", coordinatorEmail.getEventName());
+		addParameter("EVENT_PLACE", coordinatorEmail.getEventPlace());
+		addParameter("EVENT_CITY", coordinatorEmail.getEventCity());
+		addParameter("EVENT_START_DATE", coordinatorEmail.getProgramCreateDate());
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 		StringBuilder sb = new StringBuilder();
 		if (!participants.isEmpty()) {
-			sb.append("<p>The following e-welcome ID's has been generated for the below given participants of the event - " );
+			sb.append("<p>The following e-welcome ID's has been generated for the below given participants : " );
 			sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
 			sb.append("</p>");
 			sb.append("<table border=\"1\" style=\"width: 75%;border-collapse: collapse;\">");
@@ -604,7 +610,7 @@ public class SendMail {
 			if (!failedParticipants.isEmpty()) {
 				sb.append("</table>");
 				sb.append("</p>");
-				sb.append("<p>The following participant's haven't received e-welcome ID for the event - " );
+				sb.append("<p>The following participant's haven't received e-welcome ID : " );
 				sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
 				sb.append("</p>");
 				sb.append("<table border=\"1\" style=\"width: 75%;border-collapse: collapse;\">");
@@ -637,7 +643,7 @@ public class SendMail {
 				sb.append("</p>");
 			}
 		} else if (!failedParticipants.isEmpty()) {
-			sb.append("<p>The following participant's haven't received e-welcome ID for the event - " );
+			sb.append("<p>The following participant's haven't received e-welcome ID : " );
 			sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
 			sb.append("</p>");
 			sb.append("<table border=\"1\" style=\"width: 75%;border-collapse: collapse;\">");

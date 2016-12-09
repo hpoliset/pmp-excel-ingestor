@@ -4,33 +4,34 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * This class is the request for changing the admin for the event
+ * This class is the request for changing the admin for the event.
+ * 
  * @author himasreev
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EventAdminChangeRequest {
-	
+
 	@JsonIgnore
 	private int id;
-	
+
 	private String eventId;
-	
+
 	@JsonIgnore
 	private String oldCoordinatorEmail;
-	
+
 	@JsonIgnore
 	private int programId;
-	
+
 	private String newCoordinatorEmail;
-	
+
 	private String coordinatorName;
-	
+
 	private String coordinatorMobile;
-	
+
 	@JsonIgnore
 	private String createdBy;
-	
+
 	public EventAdminChangeRequest() {
 		super();
 	}
@@ -119,5 +120,5 @@ public class EventAdminChangeRequest {
 				+ ", coordinatorName=" + coordinatorName + ", coordinatorMobile=" + coordinatorMobile + ", createdBy="
 				+ createdBy + "]";
 	}
-	
+
 }

@@ -14,6 +14,8 @@ import org.srcm.heartfulness.model.CurrentUser;
 import org.srcm.heartfulness.service.UserProfileService;
 
 /**
+ * Class to authenticate and authorize the user and popoluate details in
+ * security context holder.
  * 
  * @author himasreev
  *
@@ -25,7 +27,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 	private UserProfileService userProfileService;
 
 	/**
-	 * method to get the user details and create authorities for the user and
+	 * Method to get the user details and create authorities for the user and
 	 * stores in spring user object
 	 */
 	@Override
@@ -35,16 +37,16 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		org.srcm.heartfulness.model.User user = userProfileService.loadUserByEmail(username);
 		if (null == user) {
 			user = new org.srcm.heartfulness.model.User();
-			user.setRole(PMPConstants.ROLE_PREFIX+PMPConstants.LOGIN_ROLE_SEEKER);
+			user.setRole(PMPConstants.ROLE_PREFIX + PMPConstants.LOGIN_ROLE_SEEKER);
 			user.setEmail(username);
 			user.setPassword(password);
 			user.setIsPmpAllowed(PMPConstants.REQUIRED_NO);
 			user.setIsSahajmargAllowed(PMPConstants.REQUIRED_NO);
 		} else {
 			if (user.getIsPmpAllowed().equalsIgnoreCase(PMPConstants.REQUIRED_NO)) {
-				user.setRole(PMPConstants.ROLE_PREFIX+PMPConstants.LOGIN_ACCESS_DENIED);
-			}else{
-				user.setRole(PMPConstants.ROLE_PREFIX+user.getRole());
+				user.setRole(PMPConstants.ROLE_PREFIX + PMPConstants.LOGIN_ACCESS_DENIED);
+			} else {
+				user.setRole(PMPConstants.ROLE_PREFIX + user.getRole());
 			}
 		}
 		CurrentUser currentUser = new CurrentUser(user.getEmail(), password, user.getRole(), user.getIsPmpAllowed(),

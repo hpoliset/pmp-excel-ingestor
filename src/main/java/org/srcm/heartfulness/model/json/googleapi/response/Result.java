@@ -6,6 +6,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Class to hold the address details in the response of GOOGLE MAPS API.
+ * 
+ * @author himasreev
+ *
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Result {
 
@@ -14,7 +20,7 @@ public class Result {
 	@JsonIgnore
 	private Object geometry;
 
-	@JsonProperty(value="address_components")
+	@JsonProperty(value = "address_components")
 	private List<AddressComponents> address_components;
 
 	@JsonIgnore
@@ -65,9 +71,8 @@ public class Result {
 
 	@Override
 	public String toString() {
-		return "Result [formatted_address=" + formatted_address  +  ", geometry="
-				+ geometry + ", address_components=" + address_components + ", types=" + types + ", place_id="
-				+ place_id + "]";
+		return "Result [formatted_address=" + formatted_address + ", geometry=" + geometry + ", address_components="
+				+ address_components + ", types=" + types + ", place_id=" + place_id + "]";
 	}
 
 }

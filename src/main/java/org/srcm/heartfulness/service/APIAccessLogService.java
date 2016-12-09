@@ -5,6 +5,12 @@ import java.util.List;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 
+/**
+ * Service provider class for the logger details of PMP API's.
+ * 
+ * @author himasreev
+ *
+ */
 public interface APIAccessLogService {
 
 	/**

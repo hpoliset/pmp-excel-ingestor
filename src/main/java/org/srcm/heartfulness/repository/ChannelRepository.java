@@ -23,8 +23,16 @@ public interface ChannelRepository {
 	/**
 	 * Method to get the active channel list from the Heartfulness backend.
 	 * 
-	 * @return <code>String<Channel></code> list of channel names.
+	 * @return <code>List<String></code> list of channel names.
 	 */
 	public List<String> findAllActiveChannelNames();
+
+	/**
+	 * Method to get the list of active channels based on the user role.
+	 * 
+	 * @param role
+	 * @return <code>List<Channel></code> list of channel names.
+	 */
+	public List<Channel> findAllActiveChannelsBasedOnRole(String role);
 
 }
