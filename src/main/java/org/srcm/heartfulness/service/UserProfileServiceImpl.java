@@ -20,7 +20,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
- * 
+ * This class is service implementation for the user profile based actions.
  * @author HimaSree
  *
  */
@@ -36,29 +36,27 @@ public class UserProfileServiceImpl implements UserProfileService {
 	@Autowired
 	APIAccessLogService apiAccessLogService;
 	
-	/**
-	 * method to save the user details
-	 * org.srcm.heartfulness.service.UserService#
-	 * save(org.srcm.heartfulness.model.User)
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.service.UserProfileService#save(org.srcm.heartfulness.model.User)
 	 */
 	@Override
 	public void save(User user) {
 		userRepository.save(user);
 	}
 
-	/**
-	 * method to load the user details with reference to email
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.service.UserProfileService#loadUserByEmail(java.lang.String)
 	 */
 	@Override
 	public User loadUserByEmail(String email) {
 		return userRepository.findByEmail(email);
 	}
 
-	/**
-	 * method to get the user profile from srcm
-	 * 
-	 * @throws ParseException
-	 *
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.service.UserProfileService#getUserProfile(java.lang.String, int)
 	 */
 	@Override
 	public Result getUserProfile(String accessToken, int id)

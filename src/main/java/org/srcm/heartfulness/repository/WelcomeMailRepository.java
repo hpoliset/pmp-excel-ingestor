@@ -153,6 +153,7 @@ public interface WelcomeMailRepository {
 
 	/**
 	 * Method to check whether the email is subscribed or not.
+	 * 
 	 * @param mail
 	 * @return
 	 */
@@ -160,40 +161,43 @@ public interface WelcomeMailRepository {
 
 	/**
 	 * Method to check whether the email subscription is confirmed or not.
+	 * 
 	 * @param mailID
 	 * @return
 	 */
 	int checkForconfirmStatusOfSubscription(String mailID);
 
 	/**
-	 * Repository access method to get the coordinator emails 
-	 * with participant and event details.
-	 * @return Map<String,List<String>> Map of coordinator 
-	 * email with some participant details and event details.
+	 * Repository access method to get the coordinator emails with participant
+	 * and event details.
+	 * 
+	 * @return Map<String,List<String>> Map of coordinator email with some
+	 *         participant details and event details.
 	 */
 
-	public Map<String,List<String>> getCoordinatorWithEmailDetails();
-
+	public Map<String, List<String>> getCoordinatorWithEmailDetails();
 
 	/**
-	 * To get the count of participants for a particular 
-	 * program id.
+	 * To get the count of participants for a particular program id.
+	 * 
 	 * @param programId
 	 * @return count of participants for a given program id.
 	 */
 	int getPctptCountByPgrmId(String programId);
 
 	/**
-	 * Rteurns the count of participants who have already received
-	 * welcome id for a given program id.
+	 * Rteurns the count of participants who have already received welcome id
+	 * for a given program id.
+	 * 
 	 * @param programId
 	 * @return count of participants who have already received welcome email.
 	 */
 	int wlcmMailRcvdPctptCount(String programId);
 
 	/**
-	 * Method returns 1 or 0 depending on whether database 
-	 * value is updated or not.
+	 * Method returns 1 or 0 depending on whether database value is updated or
+	 * not.
+	 * 
 	 * @return 1 if database is updated else returns 0.
 	 */
 	public int updateCoordinatorInformedStatus(String programId);
@@ -201,10 +205,29 @@ public interface WelcomeMailRepository {
 	int checkForMailIdInWelcomeLog(String email);
 
 	void updateVerificationStatus(String email, int status);
-	
+
+	/**
+	 * Method to get the event and particpant details to whom PMP processed
+	 * ewelcome Id generation.
+	 * 
+	 * @return
+	 */
 	Map<CoordinatorEmail, List<Participant>> getGeneratedEwelcomeIdDetails();
 
+	/**
+	 * Method to update the status after sending ewelcome id details to the
+	 * event coordinator.
+	 * 
+	 * @param key
+	 * @return
+	 */
 	int updateEwelcomeIDInformedStatus(String key);
 
+	/**
+	 * Method to get the count of events to which ewelcomeid generation
+	 * processed and need to send mail to coordinators.
+	 * 
+	 * @return
+	 */
 	int getCountofIsWelcomeIdInformedcordinators();
 }

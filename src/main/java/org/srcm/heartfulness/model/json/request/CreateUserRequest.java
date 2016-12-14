@@ -3,9 +3,16 @@ package org.srcm.heartfulness.model.json.request;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Class to hold the request details of user to create profile MYSRCM and
+ * Heartfulness.
+ * 
+ * @author himasreev
+ *
+ */
 @JsonIgnoreProperties(ignoreUnknown = true, allowGetters = false)
 public class CreateUserRequest {
-	
+
 	private String name;
 
 	@JsonProperty("first_name")
@@ -17,7 +24,7 @@ public class CreateUserRequest {
 	private String gender;
 
 	private String email;
-	
+
 	private String mobile;
 
 	private String password;
@@ -34,13 +41,13 @@ public class CreateUserRequest {
 	private String state;
 
 	private String country;
-	
+
 	@JsonProperty("user_type")
 	private String userType;
-	
+
 	@JsonProperty("abyasi_id")
 	private String abyasiId;
-	
+
 	public CreateUserRequest() {
 		super();
 	}
@@ -169,7 +176,7 @@ public class CreateUserRequest {
 	public void setCountry(String country) {
 		this.country = country;
 	}
-	
+
 	public String getUserType() {
 		return userType;
 	}

@@ -3,6 +3,8 @@ package org.srcm.heartfulness.model.json.response;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
+ * Class to hold the user profile of abhyasi in the result of MYSRCM get Abhyasi
+ * profile API.
  * 
  * @author HimaSree
  *
@@ -27,23 +29,22 @@ public class AbhyasiUserProfile {
 	private AbhyasiSrcmGroup srcm_group;
 
 	private boolean is_prefect;
-	
+
 	private String date_of_joining;
-	
+
 	private String date_of_birth;
-	
+
 	private String city;
-	
+
 	private AbhaysiCityID city_id;
-	
+
 	private AbhyasiState state;
-	
+
 	private AbhyasiCountry country;
 
 	private Integer prefect_id;
 
 	private String abhyasi_status;
-
 
 	public Integer getId() {
 		return id;
@@ -189,5 +190,5 @@ public class AbhyasiUserProfile {
 				+ ", date_of_birth=" + date_of_birth + ", city=" + city + ", city_id=" + city_id + ", state=" + state
 				+ ", country=" + country + ", prefect_id=" + prefect_id + ", abhyasi_status=" + abhyasi_status + "]";
 	}
-	
+
 }

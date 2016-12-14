@@ -552,7 +552,7 @@ public class ParticipantsController {
 					map.put("status", ErrorConstants.STATUS_FAILED);
 					return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
 				} else {
-					List<UpdateIntroductionResponse> result = participantService.deleteparticipantsBySeqID(
+					List<UpdateIntroductionResponse> result = participantService.deleteParticipantsBySeqID(
 							participantRequest, userProfile.getEmail());
 					accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 					accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(result));

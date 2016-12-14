@@ -6,6 +6,8 @@ import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 
 /**
+ *  Repository interface for managing <code>Channel</code> domain objects.
+ * 
  * @author himasreev
  *
  */

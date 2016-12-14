@@ -552,7 +552,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	}
 
 	@Override
-	public List<UpdateIntroductionResponse> deleteparticipantsBySeqID(
+	public List<UpdateIntroductionResponse> deleteParticipantsBySeqID(
 			ParticipantIntroductionRequest participantRequest, String userEmailID) {
 		List<UpdateIntroductionResponse> result = new ArrayList<UpdateIntroductionResponse>();
 		List<String> description = null;

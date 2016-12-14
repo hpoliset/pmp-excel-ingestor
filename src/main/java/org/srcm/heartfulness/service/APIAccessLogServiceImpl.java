@@ -12,6 +12,12 @@ import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 import org.srcm.heartfulness.repository.APIAccesslogRepository;
 
+/**
+ * Service implementation class for the logger details of PMP API's.
+ * 
+ * @author himasreev
+ *
+ */
 @Service
 public class APIAccessLogServiceImpl implements APIAccessLogService {
 

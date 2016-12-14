@@ -3,7 +3,7 @@ package org.srcm.heartfulness.model.json.request;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * This class is the request for the login through MYSRCM
+ * This class is the request for the login through MYSRCM.
  * 
  * @author HimaSree
  *

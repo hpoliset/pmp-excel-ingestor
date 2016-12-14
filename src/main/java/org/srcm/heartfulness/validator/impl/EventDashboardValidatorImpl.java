@@ -36,6 +36,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
+ * @author Koustav Dutta
  * Validator Implementation to streamline all Event Dashboard validation
  * implementation.
  * 
@@ -128,12 +129,12 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			errors.put("eventId", "event Id is required");
 		} else if (null != participantRequest.getEventId() && !participantRequest.getEventId().matches("^E[0-9]{6}$")) {
 			errors.put("eventId", "event Id invalid");
-		} else {
-			int programID = programService.getProgramIdByEventId(participantRequest.getEventId());
+		} else{
+			int programID=programService.getProgramIdByEventId(participantRequest.getEventId());
 			if (0 == programID) {
 				errors.put("eventId", "Invalid EventId - No event exists for the given event Id");
 			} else {
-				Program program = programService.getProgramById(programID);
+				Program program=programService.getProgramById(programID);
 				String errorMessage = programService.validatePreceptorIDCardNumber(program, id);
 				if (null != errorMessage) {
 					errors.put("Preceptor ID card number", errorMessage);
@@ -266,6 +267,14 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		} else if (!event.getOrganizationContactEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
 			errors.put("organizationContactEmail", "Invalid email format");
 		}
+		
+		if (null != event.getOrganizationDecisionMakerEmail() && !event.getOrganizationDecisionMakerEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
+			errors.put("organizationDecisionMakerEmail", "Invalid email format");
+		}
+		
+		if (null != event.getOrganizationDecisionMakerPhoneNo() && !event.getOrganizationDecisionMakerPhoneNo().matches(ExpressionConstants.MOBILE_REGEX)) {
+			errors.put("organizationDecisionMakerPhoneNo", "Invalid mobile number format");
+		}
 
 		return errors;
 	}
@@ -318,61 +327,53 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	public List<String> checkParticipantIntroductionMandatoryFields(Participant participantInput, int id) {
 		List<String> errors = new ArrayList<String>();
 		if (null == participantInput.getCity() || participantInput.getCity().isEmpty()) {
-			if (null == participantInput.getProgram().getEventCity()
-					|| participantInput.getProgram().getEventCity().isEmpty()) {
+			if(null == participantInput.getProgram().getEventCity() || participantInput.getProgram().getEventCity().isEmpty() ){
 				errors.add("City is required.");
-			} else {
+			}else{
 				participantInput.setCity(participantInput.getProgram().getEventCity());
 			}
 		}
 
 		if (null == participantInput.getState() || participantInput.getState().isEmpty()) {
-			if (null == participantInput.getProgram().getEventState()
-					|| participantInput.getProgram().getEventState().isEmpty()) {
+			if(null == participantInput.getProgram().getEventState() || participantInput.getProgram().getEventState().isEmpty() ){
 				errors.add("State is required.");
-			} else {
+			}else{
 				participantInput.setState(participantInput.getProgram().getEventState());
 			}
 		}
 
 		if (null == participantInput.getCountry() || participantInput.getCountry().isEmpty()) {
-			// errors.add("Country is required.");
+			//errors.add("Country is required.");
 			participantInput.setCountry(PMPConstants.COUNTRY_INDIA);
 		}
 
 		if (null == participantInput.getProgram().getProgramStartDate()) {
 			errors.add("Program start date is required.");
 		}
-
-		/*
-		  if(!validateParticipantCompletedPreliminarySittings(participantInput)){ 
-		  			errors.add("Participant not completed preliminary sittings."); 
-		  }
-		 */
-
-		if (participantInput.getProgram().getFirstSittingBy() == 0) {
-			String isValid = programService.validatePreceptorIDCardNumber(participantInput.getProgram(), id);
-			if (null != isValid) {
+		
+		/*if(!validateParticipantCompletedPreliminarySittings(participantInput)){
+			errors.add("Participant not completed preliminary sittings.");
+		}*/
+		
+		if(participantInput.getProgram().getFirstSittingBy() == 0){
+			String isValid=programService.validatePreceptorIDCardNumber(participantInput.getProgram(), id);
+			if(null != isValid){
 				errors.add(isValid);
 			}
 		}
-
-		return errors;
+		
+return errors;
 	}
-
-	public boolean validateParticipantCompletedPreliminarySittings(Participant participantInput) {
-		if (1 == participantInput.getIntroduced()
-				&& (null == participantInput.getWelcomeCardNumber() || participantInput.getWelcomeCardNumber()
-						.isEmpty())) {
+	
+	public boolean validateParticipantCompletedPreliminarySittings(Participant participantInput){
+		if(1 == participantInput.getIntroduced() && (null == participantInput.getWelcomeCardNumber() ||  participantInput.getWelcomeCardNumber().isEmpty())){
 			return true;
-			/*
-			 * }else if ((null == participantInput.getFirstSittingDate()) &&
-			 * (null == participantInput.getFirstSitting() || 0 ==
-			 * participantInput.getFirstSitting())) { return false; } else if
-			 * ((null == participantInput.getSecondSittingDate()) && (null ==
-			 * participantInput.getSecondSitting() || 0 ==
-			 * participantInput.getSecondSitting())) { return false;
-			 */
+		/*}else if ((null == participantInput.getFirstSittingDate())
+				&& (null == participantInput.getFirstSitting() || 0 == participantInput.getFirstSitting())) {
+			return false;
+		} else if ((null == participantInput.getSecondSittingDate())
+				&& (null == participantInput.getSecondSitting() || 0 == participantInput.getSecondSitting())) {
+			return false;*/
 		} else if ((null == participantInput.getThirdSittingDate())
 				&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())) {
 			return false;
@@ -391,13 +392,13 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		}
 		return errors;
 	}
-
+	
 	@Override
 	public String validatePaginationProperties(EventPagination eventPagination) {
-		if (eventPagination.getPageIndex() <= 0) {
+		if(eventPagination.getPageIndex() <= 0 ){
 			return "Invalid page index";
 		}
-		if (eventPagination.getPageSize() <= 0) {
+		if(eventPagination.getPageSize() <= 0){
 			return "Invalid page size";
 		}
 		return "";

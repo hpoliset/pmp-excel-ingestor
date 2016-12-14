@@ -1,6 +1,12 @@
 package org.srcm.heartfulness.enumeration;
 
-
+/**
+ * Enumeration to identify the participant table column names used to search participant
+ * details of an event in Heartfulness.
+ * 
+ * @author himasreev
+ *
+ */
 public enum ParticipantSearchField {
 	
 	printName("print_name"),
@@ -13,7 +19,6 @@ public enum ParticipantSearchField {
 	state("state"),
 	country("country"),
 	introducedStatus("introduced"),
-	//introductionDate(""),
 	introducedBy("introduced_by"),
 	abhyasiId("abhyasi_id");
 	

@@ -28,7 +28,7 @@ public class AuthorizationHelper {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizationHelper.class);
 
 	/**
-	 * method to auto login with username and password through spring API
+	 * Method to auto login with username and password through spring API
 	 * 
 	 * @param username
 	 * @param password
@@ -49,7 +49,7 @@ public class AuthorizationHelper {
 	}
 
 	/**
-	 * method to set the authentication object to the security context holder
+	 * Method to set the authentication object to the security context holder
 	 * 
 	 * @param session
 	 */

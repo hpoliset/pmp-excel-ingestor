@@ -17,6 +17,12 @@ import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
 import org.srcm.heartfulness.service.SubscriptionService;
 
+/**
+ * Controller - Implementation of Subscription to Heartfulness.
+ * 
+ * @author himasreev
+ *
+ */
 @Controller
 public class MailSubscriptionController {
 
@@ -61,6 +67,7 @@ public class MailSubscriptionController {
 
 	/**
 	 * Method to decrypt the id to extract the emailID.
+	 * 
 	 * @param id
 	 * @return
 	 * @throws IllegalBlockSizeException

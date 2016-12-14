@@ -269,11 +269,9 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		}
 	}
 
-	/**
-	 * Service method that will get the list of coordinators with 
-	 * details of the participant count who have received welcome 
-	 * emails,event name,coordinator name and send mails to the respective
-	 *  coordinators with the details.
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.service.WelcomeMailService#getCoordinatorListAndSendMail()
 	 */
 	@Override
 	public void getCoordinatorListAndSendMail() {
@@ -401,6 +399,10 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.service.WelcomeMailService#getGeneratedEwelcomeIdAndSendToCoordinators()
+	 */
 	@Override
 	public void getGeneratedEwelcomeIdAndSendToCoordinators() {
 		LOGGER.info("Fetching co-ordinator details and e-welcomeID details..!");
@@ -534,6 +536,10 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		}
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.service.WelcomeMailService#sendWelcomeMailToHfnList()
+	 */
 	@Override
 	public void sendWelcomeMailToHfnList() {
 		try {

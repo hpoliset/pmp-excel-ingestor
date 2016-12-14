@@ -32,6 +32,7 @@ import org.srcm.heartfulness.util.StackTraceUtils;
 import org.srcm.heartfulness.validator.UserProfileManagementValidator;
 
 /**
+ * Controller - User Profile Management
  * 
  * @author HimaSree
  *
@@ -39,9 +40,9 @@ import org.srcm.heartfulness.validator.UserProfileManagementValidator;
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
-	
+
 	@Autowired
 	private UserProfileService userProfileService;
 
@@ -50,10 +51,10 @@ public class UserController {
 
 	@Autowired
 	APIAccessLogService apiAccessLogService;
-	
+
 	@Autowired
 	UserProfileManagementValidator uservalidator;
-	
+
 	/**
 	 * Method to get the user profile from the MySRCM and persists user details
 	 * in PMP DB, if the user details is not available in PMP.
@@ -71,8 +72,11 @@ public class UserController {
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile srcmProfile = null;
 		try {
-			/*Result result = userProfileService.getUserProfile(
-					encryptDecryptAES.decrypt(token, env.getProperty("security.encrypt.token")), id);*/
+			/*
+			 * Result result = userProfileService.getUserProfile(
+			 * encryptDecryptAES.decrypt(token,
+			 * env.getProperty("security.encrypt.token")), id);
+			 */
 			Result result = userProfileService.getUserProfile(token, id);
 			srcmProfile = result.getUserProfile()[0];
 			User user = userProfileService.loadUserByEmail(srcmProfile.getEmail());
@@ -93,7 +97,7 @@ public class UserController {
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
 			LOGGER.error("Error occured while fecthing user :{}", e);
-			Response error = new Response(ErrorConstants.STATUS_FAILED,"Invalid auth token.");
+			Response error = new Response(ErrorConstants.STATUS_FAILED, "Invalid auth token.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(e.getResponseBodyAsString()));
@@ -102,7 +106,7 @@ public class UserController {
 			return new ResponseEntity<Response>(error, e.getStatusCode());
 		} catch (IOException e) {
 			LOGGER.error("Error occured while fecthing user :{}", e);
-			Response error = new Response(ErrorConstants.STATUS_FAILED,"IOException occured.");
+			Response error = new Response(ErrorConstants.STATUS_FAILED, "IOException occured.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
@@ -165,7 +169,7 @@ public class UserController {
 			return new ResponseEntity<String>(e.getResponseBodyAsString(), e.getStatusCode());
 		} catch (IOException e) {
 			LOGGER.error("Error occured while update user :{}", e);
-			ErrorResponse error = new ErrorResponse("IOException occured.",ErrorConstants.STATUS_FAILED);
+			ErrorResponse error = new ErrorResponse("IOException occured.", ErrorConstants.STATUS_FAILED);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
@@ -174,7 +178,7 @@ public class UserController {
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.REQUEST_TIMEOUT);
 		} catch (Exception e) {
 			LOGGER.error("Error occured while update user :{}", e);
-			ErrorResponse error = new ErrorResponse("Internal Server Error.",ErrorConstants.STATUS_FAILED);
+			ErrorResponse error = new ErrorResponse("Internal Server Error.", ErrorConstants.STATUS_FAILED);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
@@ -184,5 +188,5 @@ public class UserController {
 		}
 
 	}
-	
+
 }

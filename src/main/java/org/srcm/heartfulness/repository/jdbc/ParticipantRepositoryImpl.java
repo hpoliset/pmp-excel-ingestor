@@ -142,12 +142,11 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 					participant.setSeqId(seqId);
 					Map<String, Object> params = new HashMap<>();
 					params.put("participantId", participantId);
-					Participant oldParticipantDetails = this.namedParameterJdbcTemplate.queryForObject(
+					Participant oldParticipantDetails=this.namedParameterJdbcTemplate.queryForObject(
 							"SELECT * FROM participant WHERE id=:participantId", params,
 							BeanPropertyRowMapper.newInstance(Participant.class));
-					if (null != oldParticipantDetails) {
-						if (null != oldParticipantDetails.getWelcomeCardNumber()
-								&& !oldParticipantDetails.getWelcomeCardNumber().isEmpty()) {
+					if(null != oldParticipantDetails){
+						if(null != oldParticipantDetails.getWelcomeCardNumber() && !oldParticipantDetails.getWelcomeCardNumber().isEmpty()){
 							participant.setWelcomeCardNumber(oldParticipantDetails.getWelcomeCardNumber());
 							participant.setEwelcomeIdState(oldParticipantDetails.getEwelcomeIdState());
 							participant.setIntroduced(oldParticipantDetails.getIntroduced());
@@ -184,8 +183,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 					+ "third_sitting=:thirdSitting," + "first_sitting_date=:firstSittingDate, "
 					+ "second_sitting_date=:secondSittingDate, " + "third_sitting_date=:thirdSittingDate, "
 					+ "is_ewelcome_id_informed=:isEwelcomeIdInformed, " + "batch=:batch, " + "introduced=:introduced, "
-					+ "seqId=:seqId, " + "ewelcome_id_state=:ewelcomeIdState, "
-					+ "ewelcome_id_remarks=:ewelcomeIdRemarks " + "WHERE id=:id", parameterSource);
+					+ "seqId=:seqId, " + "ewelcome_id_state=:ewelcomeIdState, " + "ewelcome_id_remarks=:ewelcomeIdRemarks " + "WHERE id=:id", parameterSource);
 		}
 	}
 
@@ -287,6 +285,18 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 	}
 
+	/*@Override
+	public List<Participant> getParticipantListToGenerateEWelcomeID() {
+
+		List<Participant> participants = this.namedParameterJdbcTemplate.query(
+				"SELECT * FROM participant WHERE create_time <= CURRENT_TIMESTAMP" 
+						+ " AND ewelcome_id_state = 'T' AND ("
+						+ "welcome_card_number IS NULL" + " OR welcome_card_number = '')",
+				BeanPropertyRowMapper.newInstance(Participant.class));
+		return participants;
+
+	}*/
+
 	@Override
 	public List<Participant> getEWelcomeIdGenerationFailedParticipants(String programId) {
 		Map<String, Object> params = new HashMap<>();
@@ -313,7 +323,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 		
 		return participants;
 	}
-
+	
 	@Override
 	public List<Integer> getProgramIDsToGenerateEwelcomeIds() {
 
@@ -324,7 +334,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	}
 
 	@Override
-	public List<Participant> getParticipantwithProgramIdTogenerateEwelcomeId(Integer programId) {
+	public List<Participant> getParticipantwithProgramIdToGenerateEwelcomeId(Integer programId) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("programId", programId);
 		return this.namedParameterJdbcTemplate
@@ -337,7 +347,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 						+ "welcome_card_number IS NULL OR welcome_card_number = '')", params,
 						BeanPropertyRowMapper.newInstance(Participant.class));
 	}
-
+	
 	@Override
 	public void UpdateParticipantEwelcomeIDDetails(Participant participant) {
 		Map<String, Object> params = new HashMap<>();
@@ -358,5 +368,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 					+ "ewelcome_id_remarks=:ewelcomeIdRemarks " + "WHERE id=:id", params);
 		}
 	}
+
+
 
 }

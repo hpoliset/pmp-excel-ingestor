@@ -405,7 +405,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	public Map<String, List<String>> getCoordinatorWithEmailDetails() {
 
 		return this.jdbcTemplate
-				.query("SELECT pgrm.coordinator_email,COUNT(pctpt.id),pgrm.program_channel,pgrm.coordinator_name,pgrm.program_id,pgrm.program_start_date,pgrm.event_place,pgrm.event_city FROM program pgrm,participant pctpt"
+				.query("SELECT pgrm.coordinator_email,COUNT(pctpt.id),pgrm.program_channel,pgrm.coordinator_name,pgrm.program_id,pgrm.update_time FROM program pgrm,participant pctpt"
 						+ " WHERE pgrm.program_id = pctpt.program_id"
 						+ " AND pctpt.welcome_mail_sent = 1 AND pctpt.is_co_ordinator_informed = 0"
 						+ " GROUP BY pctpt.program_id ", new Object[] {},
@@ -421,8 +421,6 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 									eventDetails.add(resultSet.getString(4));
 									eventDetails.add(resultSet.getString(1));
 									eventDetails.add(String.valueOf(resultSet.getDate(6)));
-									eventDetails.add(resultSet.getString(7));
-									eventDetails.add(resultSet.getString(8));
 									details.put(resultSet.getString(5), eventDetails);
 								}
 								/*
@@ -512,6 +510,12 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 						params);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.WelcomeMailRepository#
+	 * getGeneratedEwelcomeIdDetails()
+	 */
 	@Override
 	public Map<CoordinatorEmail, List<Participant>> getGeneratedEwelcomeIdDetails() {
 
@@ -561,6 +565,12 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 						});
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.WelcomeMailRepository#
+	 * updateEwelcomeIDInformedStatus(java.lang.String)
+	 */
 	@Override
 	public int updateEwelcomeIDInformedStatus(String Id) {
 
@@ -568,6 +578,12 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 				new Object[] { Id });
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.WelcomeMailRepository#
+	 * getCountofIsWelcomeIdInformedcordinators()
+	 */
 	@Override
 	public int getCountofIsWelcomeIdInformedcordinators() {
 		return this.jdbcTemplate

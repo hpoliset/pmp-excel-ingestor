@@ -12,9 +12,11 @@ import org.srcm.heartfulness.model.json.request.SubscriptionRequest;
 public interface SubscriptionValidator {
 
 	/**
-	 * Method to validate the mandatory fields in the request for subscription and unsubscription.
+	 * Method to validate the mandatory fields in the request for subscription
+	 * and unsubscription.
+	 * 
 	 * @param subscriptionRequest
-	 * @return 
+	 * @return
 	 */
 	Map<String, String> checkMandatoryFieldsinSubscriptionRequest(SubscriptionRequest subscriptionRequest);
 

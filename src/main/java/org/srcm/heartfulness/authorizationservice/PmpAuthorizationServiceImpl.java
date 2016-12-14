@@ -52,57 +52,61 @@ public class PmpAuthorizationServiceImpl implements PmpAuthorizationService {
 	@Autowired
 	ChannelService channelService;
 
-	/**
-	 * Method to show reports form.
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.authorizationservice.PmpAuthorizationService#showReportsForm(org.springframework.ui.ModelMap)
 	 */
 	@Override
 	public String showReportsForm(ModelMap modelMap) {
 		getPrincipal();
-		/*
-		 * if (PMPConstants.LOGIN_ROLE_PRECEPTOR.equals(role)) { List<String>
-		 * eventCountries = reportService.getCountriesByPreceptor(username);
-		 * List<String> eventTypes =
-		 * reportService.getEventTypesByPreceptor(username);
-		 * modelMap.addAttribute("eventCountries", eventCountries);
-		 * modelMap.addAttribute("eventTypes", eventTypes); }else if
-		 * (PMPConstants.LOGIN_ROLE_ADMIN.equals(role)) {
-		 */
 		List<String> eventCountries = reportService.getCountries();
 		List<String> eventTypes = reportService.getEventTypes();
 		modelMap.addAttribute("eventCountries", eventCountries);
 		modelMap.addAttribute("eventTypes", eventTypes);
 		modelMap.addAttribute("programChannels", channelService.findAllActiveChannelsBasedOnRole(role));
-		// }
 		return "reportsForm";
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.authorizationservice.PmpAuthorizationService#showUserProfile()
+	 */
 	@Override
 	public String showUserProfile() {
 		return "profile";
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.authorizationservice.PmpAuthorizationService#showInputForm()
+	 */
 	@Override
 	public String showInputForm() {
 		return "ingestionForm";
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.authorizationservice.PmpAuthorizationService#showBulkUploadForm()
+	 */
 	@Override
 	public String showBulkUploadForm() {
 		return "bulkUploadIngestionForm";
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.authorizationservice.PmpAuthorizationService#getParticipants(org.srcm.heartfulness.vo.ReportVO)
+	 */
 	@Override
 	public Collection<ParticipantFullDetails> getParticipants(ReportVO reportVO) {
 		setRoleAndUsernameFromContext(reportVO);
-		/*
-		 * if (PMPConstants.LOGIN_ROLE_PRECEPTOR.equals(role)) {
-		 * reportVO.setCoordinator(username); }
-		 */
 		return reportService.getParticipants(reportVO);
 	}
 
-	/**
-	 * Method to get the principal from the context holder.
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.authorizationservice.PmpAuthorizationService#getPrincipal()
 	 */
 	@Override
 	public void getPrincipal() {
@@ -111,27 +115,33 @@ public class PmpAuthorizationServiceImpl implements PmpAuthorizationService {
 		username = principal.getUsername().toString();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.authorizationservice.PmpAuthorizationService#showIndexForm()
+	 */
 	@Override
 	public String showIndexForm() {
 		return "indexTemplate";
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.authorizationservice.PmpAuthorizationService#showEventsForm()
+	 */
 	@Override
 	public String showEventsForm() {
 		return "eventform";
 	}
 
-	/**
-	 * Method to show the program/event form to create and update the event
-	 * details with reference of ID.
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.authorizationservice.PmpAuthorizationService#showProgramForm(java.lang.String, org.springframework.ui.Model)
 	 */
 	@Override
 	public String showProgramForm(String encryptedProgramId, Model model) {
-		// Program program = null;
 		if (null == encryptedProgramId) {
 			model.addAttribute("program", new Program());
 		} else {
-			// write service to get the program
 			String decryptedProgramId = aesEncryptDecrypt.decrypt(encryptedProgramId,
 					env.getProperty("security.encrypt.token"));
 			Program program = programService.getProgramById(Integer.valueOf(decryptedProgramId));
@@ -139,12 +149,12 @@ public class PmpAuthorizationServiceImpl implements PmpAuthorizationService {
 			model.addAttribute("encryptedProgramId", encryptedProgramId);
 			model.addAttribute("participantList", program.getParticipantList());
 		}
-		// model.addAttribute("program",new Program());
 		return "programform";
 	}
 
-	/**
-	 * Method to show the get the available event list for the user.
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.authorizationservice.PmpAuthorizationService#getEventList()
 	 */
 	@Override
 	public ResponseEntity<?> getEventList() {
@@ -163,27 +173,47 @@ public class PmpAuthorizationServiceImpl implements PmpAuthorizationService {
 		return new ResponseEntity<List<Program>>(programList, HttpStatus.OK);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.authorizationservice.PmpAuthorizationService#showPmpApiLogForm()
+	 */
 	@Override
 	public String showPmpApiLogForm() {
 		return "logform";
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.authorizationservice.PmpAuthorizationService#showPmpApiErrorLogForm()
+	 */
 	@Override
 	public String showPmpApiErrorLogForm() {
 		return "errorlogform";
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.authorizationservice.PmpAuthorizationService#showPmpApiPopupForm()
+	 */
 	@Override
 	public String showPmpApiPopupForm() {
 		return "logdetailsform";
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.authorizationservice.PmpAuthorizationService#showPmpApiErrorPopupForm()
+	 */
 	@Override
 	public String showPmpApiErrorPopupForm() {
 		return "errorlogdetailsform";
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.authorizationservice.PmpAuthorizationService#setRoleAndUsernameFromContext(org.srcm.heartfulness.vo.ReportVO)
+	 */
 	@Override
 	public ReportVO setRoleAndUsernameFromContext(ReportVO reportVO) {
 		UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

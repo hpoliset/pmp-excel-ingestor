@@ -14,6 +14,7 @@ import org.srcm.heartfulness.service.ProgramService;
 import org.srcm.heartfulness.service.SMSIntegrationService;
 
 /**
+ * Controller - SMS Integration Implementation
  * 
  * @author HimaSree
  *
@@ -26,21 +27,27 @@ public class SmsGatewayController {
 
 	@Autowired
 	private ProgramService programService;
-	
-	
+
 	@Autowired
 	private SMSIntegrationService smsIntegrationService;
-	
+
 	/**
-	 * 	To create new event via SMS
+	 * To create new event via SMS
 	 * 
-	 * @param mobileNo		- Sender mobile number
-	 * @param smsContent	- Content of the SMS
-	 * @param operator		- Mobile operator
-	 * @param carrier		- Mobile carrier
-	 * @param datetime		- Date & time of message
-	 * @param hostName		- host
-	 * @param request		- HTTP request
+	 * @param mobileNo
+	 *            - Sender mobile number
+	 * @param smsContent
+	 *            - Content of the SMS
+	 * @param operator
+	 *            - Mobile operator
+	 * @param carrier
+	 *            - Mobile carrier
+	 * @param datetime
+	 *            - Date & time of message
+	 * @param hostName
+	 *            - host
+	 * @param request
+	 *            - HTTP request
 	 * @return the response
 	 */
 	@RequestMapping(value = "createevent", method = { RequestMethod.POST, RequestMethod.GET })
@@ -48,27 +55,33 @@ public class SmsGatewayController {
 			@RequestParam(value = "what", required = false) String smsContent,
 			@RequestParam(value = "operator", required = false) String operator,
 			@RequestParam(value = "carrier", required = false) String carrier,
-			@RequestParam(value = "datetime", required = false) String datetime,
-			HttpServletRequest request){
+			@RequestParam(value = "datetime", required = false) String datetime, HttpServletRequest request) {
 		LOGGER.info("--------------- Start Create Event----------------------");
-		//LOGGER.debug("Host Name"+hostName);
-		String response= "FAILURE";
-		SMS sms = new SMS(mobileNo,smsContent,operator,carrier,datetime);
+		// LOGGER.debug("Host Name"+hostName);
+		String response = "FAILURE";
+		SMS sms = new SMS(mobileNo, smsContent, operator, carrier, datetime);
 		response = smsIntegrationService.createEvent(sms);
 		LOGGER.info("--------------- End Create Event----------------------");
 		return response;
 	}
-	
+
 	/**
-	 * 	To create new event via SMS
+	 * To create new event via SMS
 	 * 
-	 * @param mobileNo		- Sender mobile number
-	 * @param smsContent	- Content of the SMS
-	 * @param operator		- Mobile operator
-	 * @param carrier		- Mobile carrier
-	 * @param datetime		- Date & time of message
-	 * @param hostName		- host
-	 * @param request		- HTTP request
+	 * @param mobileNo
+	 *            - Sender mobile number
+	 * @param smsContent
+	 *            - Content of the SMS
+	 * @param operator
+	 *            - Mobile operator
+	 * @param carrier
+	 *            - Mobile carrier
+	 * @param datetime
+	 *            - Date & time of message
+	 * @param hostName
+	 *            - host
+	 * @param request
+	 *            - HTTP request
 	 * @return the response
 	 */
 	@RequestMapping(value = "updateevent", method = { RequestMethod.POST, RequestMethod.GET })
@@ -76,27 +89,33 @@ public class SmsGatewayController {
 			@RequestParam(value = "what", required = false) String smsContent,
 			@RequestParam(value = "operator", required = false) String operator,
 			@RequestParam(value = "carrier", required = false) String carrier,
-			@RequestParam(value = "datetime", required = false) String datetime,
-			HttpServletRequest request){
+			@RequestParam(value = "datetime", required = false) String datetime, HttpServletRequest request) {
 		LOGGER.info("--------------- Start Update Event----------------------");
-		//LOGGER.debug("Host Name"+hostName);
-		String response= "FAILURE";
-		SMS sms = new SMS(mobileNo,smsContent,operator,carrier,datetime);
+		// LOGGER.debug("Host Name"+hostName);
+		String response = "FAILURE";
+		SMS sms = new SMS(mobileNo, smsContent, operator, carrier, datetime);
 		response = smsIntegrationService.updateEvent(sms);
 		LOGGER.info("--------------- End Update Event----------------------");
 		return response;
 	}
-	
+
 	/**
-	 * 	To register for the particular event via SMS
+	 * To register for the particular event via SMS
 	 * 
-	 * @param mobileNo		- Sender mobile number
-	 * @param smsContent	- Content of the SMS
-	 * @param operator		- Mobile operator
-	 * @param carrier		- Mobile carrier
-	 * @param datetime		- Date & time of message
-	 * @param hostName		- host
-	 * @param request		- HTTP request
+	 * @param mobileNo
+	 *            - Sender mobile number
+	 * @param smsContent
+	 *            - Content of the SMS
+	 * @param operator
+	 *            - Mobile operator
+	 * @param carrier
+	 *            - Mobile carrier
+	 * @param datetime
+	 *            - Date & time of message
+	 * @param hostName
+	 *            - host
+	 * @param request
+	 *            - HTTP request
 	 * @return the response
 	 */
 	@RequestMapping(value = "registerevent", method = { RequestMethod.POST, RequestMethod.GET })
@@ -104,24 +123,30 @@ public class SmsGatewayController {
 			@RequestParam(value = "what", required = false) String smsContent,
 			@RequestParam(value = "operator", required = false) String operator,
 			@RequestParam(value = "carrier", required = false) String carrier,
-			@RequestParam(value = "datetime", required = false) String datetime,
-			HttpServletRequest request){
-		String response= "FAILURE";
-		SMS sms = new SMS(mobileNo,smsContent,operator,carrier,datetime);
+			@RequestParam(value = "datetime", required = false) String datetime, HttpServletRequest request) {
+		String response = "FAILURE";
+		SMS sms = new SMS(mobileNo, smsContent, operator, carrier, datetime);
 		response = smsIntegrationService.createParticipant(sms);
 		return response;
 	}
-	
+
 	/**
-	 * 	To introduce participant for the particular event via SMS
+	 * To introduce participant for the particular event via SMS
 	 * 
-	 * @param mobileNo		- Sender mobile number
-	 * @param smsContent	- Content of the SMS
-	 * @param operator		- Mobile operator
-	 * @param carrier		- Mobile carrier
-	 * @param datetime		- Date & time of message
-	 * @param hostName		- host
-	 * @param request		- HTTP request
+	 * @param mobileNo
+	 *            - Sender mobile number
+	 * @param smsContent
+	 *            - Content of the SMS
+	 * @param operator
+	 *            - Mobile operator
+	 * @param carrier
+	 *            - Mobile carrier
+	 * @param datetime
+	 *            - Date & time of message
+	 * @param hostName
+	 *            - host
+	 * @param request
+	 *            - HTTP request
 	 * @return the response
 	 */
 	@RequestMapping(value = "introduceparticipant", method = { RequestMethod.POST, RequestMethod.GET })
@@ -129,23 +154,30 @@ public class SmsGatewayController {
 			@RequestParam(value = "what", required = false) String smsContent,
 			@RequestParam(value = "operator", required = false) String operator,
 			@RequestParam(value = "carrier", required = false) String carrier,
-			@RequestParam(value = "datetime", required = false) String datetime,
-			HttpServletRequest request){
-		String response= "FAILURE";
-		SMS sms = new SMS(mobileNo,smsContent,operator,carrier,datetime);
+			@RequestParam(value = "datetime", required = false) String datetime, HttpServletRequest request) {
+		String response = "FAILURE";
+		SMS sms = new SMS(mobileNo, smsContent, operator, carrier, datetime);
 		response = smsIntegrationService.updateParticipant(sms);
 		return response;
 	}
+
 	/**
-	 * 	To get the registered participants count via SMS
+	 * To get the registered participants count via SMS
 	 * 
-	 * @param mobileNo		- Sender mobile number
-	 * @param smsContent	- Content of the SMS
-	 * @param operator		- Mobile operator
-	 * @param carrier		- Mobile carrier
-	 * @param datetime		- Date & time of message
-	 * @param hostName		- host
-	 * @param request		- HTTP request
+	 * @param mobileNo
+	 *            - Sender mobile number
+	 * @param smsContent
+	 *            - Content of the SMS
+	 * @param operator
+	 *            - Mobile operator
+	 * @param carrier
+	 *            - Mobile carrier
+	 * @param datetime
+	 *            - Date & time of message
+	 * @param hostName
+	 *            - host
+	 * @param request
+	 *            - HTTP request
 	 * @return the response
 	 */
 	@RequestMapping(value = "registeredparticipantscount", method = { RequestMethod.POST, RequestMethod.GET })
@@ -153,24 +185,30 @@ public class SmsGatewayController {
 			@RequestParam(value = "what", required = false) String smsContent,
 			@RequestParam(value = "operator", required = false) String operator,
 			@RequestParam(value = "carrier", required = false) String carrier,
-			@RequestParam(value = "datetime", required = false) String datetime,
-			HttpServletRequest request){
-		String response= "FAILURE";
-		SMS sms = new SMS(mobileNo,smsContent,operator,carrier,datetime);
+			@RequestParam(value = "datetime", required = false) String datetime, HttpServletRequest request) {
+		String response = "FAILURE";
+		SMS sms = new SMS(mobileNo, smsContent, operator, carrier, datetime);
 		response = smsIntegrationService.getCountOfRegisteredParticipants(sms);
 		return response;
 	}
-	
+
 	/**
-	 * 	To get the introduced participants count via SMS
+	 * To get the introduced participants count via SMS
 	 * 
-	 * @param mobileNo		- Sender mobile number
-	 * @param smsContent	- Content of the SMS
-	 * @param operator		- Mobile operator
-	 * @param carrier		- Mobile carrier
-	 * @param datetime		- Date & time of message
-	 * @param hostName		- host
-	 * @param request		- HTTP request
+	 * @param mobileNo
+	 *            - Sender mobile number
+	 * @param smsContent
+	 *            - Content of the SMS
+	 * @param operator
+	 *            - Mobile operator
+	 * @param carrier
+	 *            - Mobile carrier
+	 * @param datetime
+	 *            - Date & time of message
+	 * @param hostName
+	 *            - host
+	 * @param request
+	 *            - HTTP request
 	 * @return the response
 	 */
 	@RequestMapping(value = "introducedparticipantscount", method = { RequestMethod.POST, RequestMethod.GET })
@@ -178,24 +216,30 @@ public class SmsGatewayController {
 			@RequestParam(value = "what", required = false) String smsContent,
 			@RequestParam(value = "operator", required = false) String operator,
 			@RequestParam(value = "carrier", required = false) String carrier,
-			@RequestParam(value = "datetime", required = false) String datetime,
-			HttpServletRequest request){
-		String response= "FAILURE";
-		SMS sms = new SMS(mobileNo,smsContent,operator,carrier,datetime);
+			@RequestParam(value = "datetime", required = false) String datetime, HttpServletRequest request) {
+		String response = "FAILURE";
+		SMS sms = new SMS(mobileNo, smsContent, operator, carrier, datetime);
 		response = smsIntegrationService.getCountOfIntroducedParticipants(sms);
 		return response;
 	}
-	
+
 	/**
-	 * 	To get the introduced participants count via SMS
+	 * To get the introduced participants count via SMS
 	 * 
-	 * @param mobileNo		- Sender mobile number
-	 * @param smsContent	- Content of the SMS
-	 * @param operator		- Mobile operator
-	 * @param carrier		- Mobile carrier
-	 * @param datetime		- Date & time of message
-	 * @param hostName		- host
-	 * @param request		- HTTP request
+	 * @param mobileNo
+	 *            - Sender mobile number
+	 * @param smsContent
+	 *            - Content of the SMS
+	 * @param operator
+	 *            - Mobile operator
+	 * @param carrier
+	 *            - Mobile carrier
+	 * @param datetime
+	 *            - Date & time of message
+	 * @param hostName
+	 *            - host
+	 * @param request
+	 *            - HTTP request
 	 * @return the response
 	 */
 	@RequestMapping(value = "gethelpsms", method = { RequestMethod.POST, RequestMethod.GET })
@@ -203,24 +247,30 @@ public class SmsGatewayController {
 			@RequestParam(value = "what", required = false) String smsContent,
 			@RequestParam(value = "operator", required = false) String operator,
 			@RequestParam(value = "carrier", required = false) String carrier,
-			@RequestParam(value = "datetime", required = false) String datetime,
-			HttpServletRequest request){
-		String response= "FAILURE";
-		SMS sms = new SMS(mobileNo,smsContent,operator,carrier,datetime);
+			@RequestParam(value = "datetime", required = false) String datetime, HttpServletRequest request) {
+		String response = "FAILURE";
+		SMS sms = new SMS(mobileNo, smsContent, operator, carrier, datetime);
 		response = smsIntegrationService.getHelpContent(sms);
 		return response;
 	}
-	
+
 	/**
-	 * 	To hanldle the invalid subkeyword
+	 * To handle the invalid subkeyword
 	 * 
-	 * @param mobileNo		- Sender mobile number
-	 * @param smsContent	- Content of the SMS
-	 * @param operator		- Mobile operator
-	 * @param carrier		- Mobile carrier
-	 * @param datetime		- Date & time of message
-	 * @param hostName		- host
-	 * @param request		- HTTP request
+	 * @param mobileNo
+	 *            - Sender mobile number
+	 * @param smsContent
+	 *            - Content of the SMS
+	 * @param operator
+	 *            - Mobile operator
+	 * @param carrier
+	 *            - Mobile carrier
+	 * @param datetime
+	 *            - Date & time of message
+	 * @param hostName
+	 *            - host
+	 * @param request
+	 *            - HTTP request
 	 * @return the response
 	 */
 	@RequestMapping(value = "invalidformat", method = { RequestMethod.POST, RequestMethod.GET })
@@ -228,10 +278,9 @@ public class SmsGatewayController {
 			@RequestParam(value = "what", required = false) String smsContent,
 			@RequestParam(value = "operator", required = false) String operator,
 			@RequestParam(value = "carrier", required = false) String carrier,
-			@RequestParam(value = "datetime", required = false) String datetime,
-			HttpServletRequest request){
-		String response= "FAILURE";
-		SMS sms = new SMS(mobileNo,smsContent,operator,carrier,datetime);
+			@RequestParam(value = "datetime", required = false) String datetime, HttpServletRequest request) {
+		String response = "FAILURE";
+		SMS sms = new SMS(mobileNo, smsContent, operator, carrier, datetime);
 		response = smsIntegrationService.handleInvalidSubkeyword(sms);
 		return response;
 	}

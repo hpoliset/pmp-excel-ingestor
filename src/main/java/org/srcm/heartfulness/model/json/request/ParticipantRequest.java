@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * This class is the request to create or update the paricipant for the event
+ * This class is the request to create or update the participant for the event.
  * 
  * @author himasreev
  *
@@ -64,14 +64,14 @@ public class ParticipantRequest {
 	private String introducedBy;
 
 	private String abhyasiId;
-	
+
 	private String eWelcomeID;
 
 	@JsonIgnore
 	private int excelSheetSequenceNumber;
-	
+
 	private String ewelcomeIdRemarks;
-	
+
 	public int getExcelSheetSequenceNumber() {
 		return excelSheetSequenceNumber;
 	}
@@ -279,7 +279,7 @@ public class ParticipantRequest {
 	public void setThirdSitting(String thirdSitting) {
 		this.thirdSitting = thirdSitting;
 	}
-	
+
 	public String geteWelcomeID() {
 		return eWelcomeID;
 	}
@@ -287,7 +287,7 @@ public class ParticipantRequest {
 	public void seteWelcomeID(String eWelcomeID) {
 		this.eWelcomeID = eWelcomeID;
 	}
-	
+
 	public String getEwelcomeIdRemarks() {
 		return ewelcomeIdRemarks;
 	}

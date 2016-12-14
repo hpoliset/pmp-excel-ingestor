@@ -1,13 +1,19 @@
 package org.srcm.heartfulness.model.json.googleapi.response;
 
+/**
+ * Class to hold the address.
+ * 
+ * @author himasreev
+ *
+ */
 public class Address {
-	
+
 	private String city;
-	
+
 	private String state;
-	
+
 	private String country;
-	
+
 	private String pincode;
 
 	public String getCity() {
@@ -46,5 +52,5 @@ public class Address {
 	public String toString() {
 		return "Address [city=" + city + ", state=" + state + ", country=" + country + ", pincode=" + pincode + "]";
 	}
-	
+
 }

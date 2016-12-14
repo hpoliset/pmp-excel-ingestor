@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * This class is the response for the updating introduced status for the
- * participants
+ * participants.
  * 
  * @author himasreev
  *
@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class UpdateIntroductionResponse {
 
 	private String seqId;
-	
+
 	private String participantName;
 
 	private String status;
@@ -29,7 +29,7 @@ public class UpdateIntroductionResponse {
 	public void setSeqId(String seqId) {
 		this.seqId = seqId;
 	}
-	
+
 	public String getParticipantName() {
 		return participantName;
 	}

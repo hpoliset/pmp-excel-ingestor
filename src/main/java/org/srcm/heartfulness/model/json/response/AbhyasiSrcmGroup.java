@@ -3,6 +3,8 @@ package org.srcm.heartfulness.model.json.response;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
+ * Class to hold the srcm group details of abhyasi in the result of MYSRCM get
+ * Abhyasi profile API.
  * 
  * @author HimaSree
  *
@@ -34,5 +36,5 @@ public class AbhyasiSrcmGroup {
 	public String toString() {
 		return "AbhyasiSrcmGroup [id=" + id + ", name=" + name + "]";
 	}
-	
+
 }
