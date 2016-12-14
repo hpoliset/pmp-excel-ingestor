@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -165,6 +166,8 @@ public class SessionDetailsHelper {
 				accessLog.setErrorMessage(ErrorConstants.INVALID_EVENT_ID);
 				setPMPAccessLogAndPersist(accessLog,eResponse);
 				return eResponse;
+			}else{
+				sessionDetails.setProgramId(programId);
 			}
 		}
 
@@ -174,16 +177,15 @@ public class SessionDetailsHelper {
 			accessLog.setErrorMessage(ErrorConstants.EMPTY_SESSION_NUMBER);
 			setPMPAccessLogAndPersist(accessLog,eResponse);
 			return eResponse;
-		}else if(null == sessionDetails.getSessionDate()){
+		}else if(null == sessionDetails.getSessionStringDate() || sessionDetails.getSessionStringDate().isEmpty()){
 			eResponse.setError_description(ErrorConstants.EMPTY_SESSION_DATE);
 			accessLog.setErrorMessage(ErrorConstants.EMPTY_SESSION_DATE);
 			setPMPAccessLogAndPersist(accessLog,eResponse);
 			return eResponse;
 		}else{
-			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 			try {
-				String formattedDate = sdf.format(sessionDetails.getSessionDate());
-				DateUtils.parseDate(formattedDate);
+				Date sessionDate = DateUtils.parseDate(sessionDetails.getSessionStringDate());
+				sessionDetails.setSessionDate(sessionDate);
 			} catch (Exception e) {
 				eResponse.setError_description(ErrorConstants.INVALID_DATE_FORMAT);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
