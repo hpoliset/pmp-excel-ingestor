@@ -186,6 +186,8 @@ public class SessionDetailsHelper {
 			try {
 				Date sessionDate = DateUtils.parseDate(sessionDetails.getSessionStringDate());
 				sessionDetails.setSessionDate(sessionDate);
+				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+				sessionDetails.setSessionStringDate(sdf.format(sessionDetails.getSessionDate()));
 			} catch (Exception e) {
 				eResponse.setError_description(ErrorConstants.INVALID_DATE_FORMAT);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
