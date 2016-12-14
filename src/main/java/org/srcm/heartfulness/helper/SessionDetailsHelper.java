@@ -165,6 +165,8 @@ public class SessionDetailsHelper {
 				accessLog.setErrorMessage(ErrorConstants.INVALID_EVENT_ID);
 				setPMPAccessLogAndPersist(accessLog,eResponse);
 				return eResponse;
+			}else{
+				sessionDetails.setProgramId(programId);
 			}
 		}
 
@@ -182,8 +184,10 @@ public class SessionDetailsHelper {
 		}else{
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 			try {
+				LOGGER.debug("Before formatted Session Date=="+sessionDetails.getSessionDate());
 				String formattedDate = sdf.format(sessionDetails.getSessionDate());
 				DateUtils.parseDate(formattedDate);
+				LOGGER.debug("After formatted Session Date=="+DateUtils.parseDate(formattedDate));
 			} catch (Exception e) {
 				eResponse.setError_description(ErrorConstants.INVALID_DATE_FORMAT);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
