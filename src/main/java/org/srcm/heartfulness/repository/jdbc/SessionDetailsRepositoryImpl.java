@@ -79,7 +79,7 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 		}
 
 		if (sessionDetails.getSessionId() == 0) {
-			LOGGER.debug("In Repository=="+sessionDetails.getSessionDate());
+			LOGGER.info("In Repository=="+sessionDetails.getSessionDate());
 			this.saveSessionDetails.executeAndReturnKey(parameterSource);
 			return new SuccessResponse(ErrorConstants.STATUS_SUCCESS, ErrorConstants.SESSION_SUCCESSFULLY_CREATED);
 		}else {

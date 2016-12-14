@@ -184,10 +184,10 @@ public class SessionDetailsHelper {
 		}else{
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 			try {
-				LOGGER.debug("Before formatted Session Date=="+sessionDetails.getSessionDate());
+				LOGGER.info("Before formatted Session Date=="+sessionDetails.getSessionDate());
 				String formattedDate = sdf.format(sessionDetails.getSessionDate());
 				DateUtils.parseDate(formattedDate);
-				LOGGER.debug("After formatted Session Date=="+DateUtils.parseDate(formattedDate));
+				LOGGER.info("After formatted Session Date=="+DateUtils.parseDate(formattedDate));
 			} catch (Exception e) {
 				eResponse.setError_description(ErrorConstants.INVALID_DATE_FORMAT);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
