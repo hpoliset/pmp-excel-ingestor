@@ -242,12 +242,12 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if (null == event.getCoordinatorEmail() || event.getCoordinatorEmail().isEmpty()) {
 			errors.put("coordinatorEmail", "Coordinator email is required");
 		} else if (!event.getCoordinatorEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
-			errors.put("coordinatorEmail", "Invalid email format");
+			errors.put("coordinatorEmail", "Coordinator email is invalid");
 		}
 		if (null == event.getCoordinatorMobile() || event.getCoordinatorMobile().isEmpty()) {
 			errors.put("coordinatorMobile", "Coordinator mobile is required");
 		} else if (!event.getCoordinatorMobile().matches(ExpressionConstants.MOBILE_REGEX)) {
-			errors.put("coordinatorMobile", "Invalid mobile number format");
+			errors.put("coordinatorMobile", "Coordinator mobile number is invalid");
 		}
 
 		if (null == event.getOrganizationName() || event.getOrganizationName().isEmpty()) {
@@ -259,21 +259,21 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if (null == event.getOrganizationContactMobile() || event.getOrganizationContactMobile().isEmpty()) {
 			errors.put("organizationContactMobile", "Organization contact mobile is required");
 		} else if (!event.getOrganizationContactMobile().matches(ExpressionConstants.MOBILE_REGEX)) {
-			errors.put("organizationContactMobile", "Invalid mobile number format");
+			errors.put("organizationContactMobile", "Organization contact person mobile number is invalid");
 		}
 
 		if (null == event.getOrganizationContactEmail() || event.getOrganizationContactEmail().isEmpty()) {
 			errors.put("organizationContactEmail", "Organization contact email is required");
 		} else if (!event.getOrganizationContactEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
-			errors.put("organizationContactEmail", "Invalid email format");
+			errors.put("organizationContactEmail", "Organization contact person email is invalid");
 		}
 		
 		if (null != event.getOrganizationDecisionMakerEmail() && !event.getOrganizationDecisionMakerEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
-			errors.put("organizationDecisionMakerEmail", "Invalid email format");
+			errors.put("organizationDecisionMakerEmail", "Organization decision maker email is invalid");
 		}
 		
 		if (null != event.getOrganizationDecisionMakerPhoneNo() && !event.getOrganizationDecisionMakerPhoneNo().matches(ExpressionConstants.MOBILE_REGEX)) {
-			errors.put("organizationDecisionMakerPhoneNo", "Invalid mobile number format");
+			errors.put("organizationDecisionMakerPhoneNo", "Organization decision maker mobile number is invalid");
 		}
 
 		return errors;
