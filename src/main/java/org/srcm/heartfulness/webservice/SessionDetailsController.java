@@ -46,7 +46,23 @@ public class SessionDetailsController {
 
 	@Autowired
 	SessionDetailsService sessionDtlsSrcv;
-
+	
+	/**
+	 * Web service endpoint to create and update a session details for a particular event. The HTTP request
+	 * body is expected to contain a SessionDetails object in JSON format. The
+	 * SessionDetails is persisted in the data repository.
+	 * 
+	 * If created or updated successfully, the service returns an success response body with
+	 * HTTP status 200.
+	 * 
+	 * If not created successfully, the service returns error messages.
+	 * 
+	 * @param authToken Token to be validated against mysrcm endpoint.
+	 * @param sessionDetails SessionDetails object to be created in PMP backend.
+	 * @param httpRequest to track the ip address from where request is coming.
+	 * @return SessionDetails json object if SessionDetails is created successfully.
+	 * 
+	 */
 	@RequestMapping(value = "/session", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createOrUpdateSessionDetails(@RequestHeader(value = "Authorization") String authToken,
 			@RequestBody SessionDetails sessionDetails, @Context HttpServletRequest httpRequest) {
@@ -109,7 +125,26 @@ public class SessionDetailsController {
 
 		return new ResponseEntity<PMPResponse>(serviceResponse, HttpStatus.OK);
 	}
+	
 
+	/**
+	 *  Web service endpoint to delete a session details for a particular event. The HTTP request
+	 * body is expected to contain a SessionDetails object in JSON format. The
+	 * SessionDetails is deleted from the data repository.
+	 * 
+	 * If session details is deleted successfully, the service returns an success response body with
+	 * HTTP status 200.
+	 * 
+	 * If not created successfully, the service returns error messages.
+	 * 
+	 * 
+	 * @param authToken authToken Token to be validated against mysrcm endpoint.
+	 * @param sessionDetails SessionDetails object to get the auto generated session id 
+	 * for deleting session details.
+	 * @param httpRequest to track the ip address from where request is coming.
+	 * @return Success response if Session details is successfully deleted.
+	 * 
+	 */
 	@RequestMapping(value = "/session/delete", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> deleteSessionDetails(@RequestHeader(value = "Authorization") String authToken,
 			@RequestBody SessionDetails sessionDetails, @Context HttpServletRequest httpRequest) {
@@ -153,6 +188,24 @@ public class SessionDetailsController {
 		return new ResponseEntity<PMPResponse>(serviceResponse, HttpStatus.OK);
 	}
 
+	
+	
+	/**
+	 *  Web service endpoint to get a list of  session details for a particular event. The HTTP request
+	 * body is expected to contain a SessionDetails object in JSON format.
+	 * 
+	 * If session details are avaibale for a particular event, it is returned in a list format with
+	 * HTTP status 200.
+	 * 
+	 * If not an empty list is returned.
+	 * 
+	 * @param authToken Token to be validated against mysrcm endpoint.
+	 * @param sessionDetails SessionDetails object to get the auto generated event id and get a list of SessionDetails
+	 * for that particular event.
+	 * @param httpRequest to track the ip address from where request is coming.
+	 * @return list of SessionDetails for a particular event.
+	 * 
+	 */
 	@RequestMapping(value = "/session/sessionlist", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getSessionDetails(@RequestHeader(value = "Authorization") String authToken,
 			@RequestBody SessionDetails sessionDetails, @Context HttpServletRequest httpRequest) {

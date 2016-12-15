@@ -62,10 +62,13 @@ public class SessionDetailsHelper {
 	SessionDetailsRepository sessionDtlsRepo;
 
 	/**
+	 * This method is used to validate the authentication token against
+	 * MYSRCM.If the token is successfully authenticated then a successresponse 
+	 * is returned else an error response is returned.
 	 * 
-	 * @param authToken
-	 * @param accessLog
-	 * @return
+	 * @param authToken authToken Token to authenticate with mysrcm.
+	 * @param accessLog to persist the api log details.
+	 * @return PMPResponse success or failure response 
 	 */
 	public PMPResponse validateAuthToken(String authToken,PMPAPIAccessLog accessLog){
 
@@ -117,9 +120,10 @@ public class SessionDetailsHelper {
 	}
 
 
-
 	/**
-	 * 
+	 * Method is used to set the PMP API access log details.
+	 * @param accessLog accessLog to persist the api log details.
+	 * @param eResponse to set the error response.
 	 */
 	private void setPMPAccessLogAndPersist(PMPAPIAccessLog accessLog,ErrorResponse eResponse){
 
@@ -137,10 +141,13 @@ public class SessionDetailsHelper {
 
 
 	/**
+	 * Method is used to validate the mandatory session details parameters.
+	 * If all the parameters are correct a success response is returned else
+	 * an error response is returned.
 	 * 
-	 * @param sessionDetails
-	 * @param accessLog
-	 * @return
+	 * @param sessionDetails To validate mandatory session details parameters.
+	 * @param accessLog to create the pmp api access log details in db.
+	 * @return success response is returned else an error response is returned
 	 */
 	public PMPResponse validateSessionDetailsParams(SessionDetails sessionDetails,PMPAPIAccessLog accessLog){
 
@@ -265,8 +272,16 @@ public class SessionDetailsHelper {
 		setPMPAPIAccessLogDetailsAndPersist(accessLogDetails,userProfile);
 		return new SuccessResponse(ErrorConstants.STATUS_SUCCESS, "Session Details validation successfull");	
 	}
+	
 
-
+	/**
+	 * Method is used to persist the pmp api access log details data 
+	 * in db.
+	 * 
+	 * @param accessLogDetails to set the pmp api access log details data.
+	 * @param responseBody to set the response body which we get after calling
+	 *  MYSRCM api to validate preceptor details.
+	 */
 	private void setPMPAPIAccessLogDetailsAndPersist(PMPAPIAccessLogDetails accessLogDetails,Object responseBody){
 		try{
 			accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(responseBody));
@@ -277,6 +292,14 @@ public class SessionDetailsHelper {
 		}
 	}
 
+	
+	/**
+	 * Method is used to generate an auto generated 
+	 * session id for every session details object.
+	 * 
+	 * @param digit to set the limit of auto generated id.
+	 * @return an auto generated session id.
+	 */
 	public String generateSessionId(int digit){
 		String generatedNumber = new String();
 		SecureRandom secureRandomGenerator;
@@ -293,7 +316,15 @@ public class SessionDetailsHelper {
 	}
 
 
-
+	/**
+	 * Method is used to validate the delete  session details api
+	 * call parameters.For a particular event and a particular session
+	 * this method will validate the parameters provided are correct or wrong.
+	 * 
+	 * @param sessionDetails to get the auto generated event and session id.
+	 * @param accessLog to persist the access log details in db.
+	 * @return success or error response depending on the parameters validated.
+	 */
 	public PMPResponse validateDeleteSessionDetailParams(SessionDetails sessionDetails,PMPAPIAccessLog accessLog) {
 		
 		ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"");
@@ -345,9 +376,15 @@ public class SessionDetailsHelper {
 		return new SuccessResponse(ErrorConstants.STATUS_SUCCESS, "Delete Session Details validation successfull");
 		
 	}
+	
 
-
-
+	/**
+	 * Method is used to validate the get session details list parametrs.
+	 * 
+	 * @param sessionDetails object is used to get the auto generated event id.
+	 * @param accessLog is used to create log details in pmp.
+	 * @return success or error response depending on the validation.
+	 */
 	public PMPResponse validateGetSessionDetailsParams(SessionDetails sessionDetails, PMPAPIAccessLog accessLog) {
 		
 		ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"");
