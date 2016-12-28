@@ -1,8 +1,7 @@
-/**
- * 
- */
 package org.srcm.heartfulness.service;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -10,9 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Service;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.model.SessionDetails;
+import org.srcm.heartfulness.model.SessionFiles;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.PMPResponse;
 import org.srcm.heartfulness.model.json.response.SuccessResponse;
@@ -90,6 +91,31 @@ public class SessionDetailsServiceImpl implements SessionDetailsService {
 			LOGGER.error("EX Failed to retrieve session details for event Id :"+eventId);
 		}
 		return sessionDetailsList;
+	}
+
+
+	@Override
+	public int getSessionDetailsIdBySessionIdandProgramId(String sessionId, int programId) {
+	/*	int sessionDetailsId = this.jdbcTemplate.query("SELECT program_id from program where auto_generated_event_id=?",
+				new Object[] { eventId }, new ResultSetExtractor<Integer>() {
+					@Override
+					public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+						if (resultSet.next()) {
+							return resultSet.getInt(1);
+						}
+						return 0;
+					}
+				});
+
+		return sessionDetailsId;*/
+		return 0;
+	}
+
+
+	@Override
+	public void saveSessionFiles(SessionFiles sessionFiles) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
