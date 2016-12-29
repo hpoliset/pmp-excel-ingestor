@@ -6,6 +6,7 @@ package org.srcm.heartfulness.repository;
 import java.util.List;
 
 import org.srcm.heartfulness.model.SessionDetails;
+import org.srcm.heartfulness.model.SessionImageDetails;
 import org.srcm.heartfulness.model.json.response.PMPResponse;
 
 /**
@@ -53,5 +54,13 @@ public interface SessionDetailsRepository {
 	 * @return list of session details for a particular id.
 	 */
 	public List<SessionDetails> getSessionDetails(int programId);
+
+	public int getSessionDetailsIdBySessionIdandProgramId(String sessionId, int programId);
+
+	public void saveSessionFiles(SessionImageDetails sessionFiles);
+
+	public int getCountOfSessionImages(int sessionDetailsId);
+
+	public List<SessionImageDetails> getListOfSessionImages(int sessionDetailsId);
 
 }

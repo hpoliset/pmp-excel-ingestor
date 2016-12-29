@@ -2,17 +2,20 @@ package org.srcm.heartfulness.validator;
 
 import org.springframework.web.multipart.MultipartFile;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
-import org.srcm.heartfulness.model.json.response.ErrorResponse;
+import org.srcm.heartfulness.model.json.response.Response;
 
 public interface AmazonS3RequestValidator {
 
-	ErrorResponse uploadPermissionLetterRequest(String eventId, MultipartFile multipartFile, PMPAPIAccessLog accessLog,
+	Response uploadPermissionLetterRequest(String eventId, MultipartFile multipartFile, PMPAPIAccessLog accessLog,
 			String token);
 
-	ErrorResponse downloadPermissionLetterRequest(String fileName, String eventId, PMPAPIAccessLog accessLog,
+	Response downloadPermissionLetterRequest(String fileName, String eventId, PMPAPIAccessLog accessLog,
 			String token);
 
-	ErrorResponse uploadSessionFilesRequest(String eventId, String sessionId, MultipartFile[] multipartFiles,
-			PMPAPIAccessLog accessLog, String token, String fileType);
+	Response uploadSessionFilesRequest(String eventId, String sessionId, MultipartFile[] multipartFiles,
+			PMPAPIAccessLog accessLog, String token);
+
+	Response downloadSessionImagesRequest(String sessionId, String eventId, PMPAPIAccessLog accessLog, String token);
+
 
 }

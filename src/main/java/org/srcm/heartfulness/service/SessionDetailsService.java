@@ -3,7 +3,7 @@ package org.srcm.heartfulness.service;
 import java.util.List;
 
 import org.srcm.heartfulness.model.SessionDetails;
-import org.srcm.heartfulness.model.SessionFiles;
+import org.srcm.heartfulness.model.SessionImageDetails;
 import org.srcm.heartfulness.model.json.response.PMPResponse;
 
 /**
@@ -46,6 +46,10 @@ public interface SessionDetailsService {
 
 	public int getSessionDetailsIdBySessionIdandProgramId(String sessionId, int programId);
 
-	public void saveSessionFiles(SessionFiles sessionFiles);
+	public void saveSessionFiles(SessionImageDetails sessionFiles);
+
+	public int getCountOfSessionImages(int sessionDetailsId);
+
+	public List<SessionImageDetails> getListOfSessionImages(int sessionDetailsId);
 
 }

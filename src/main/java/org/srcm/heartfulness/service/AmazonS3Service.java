@@ -13,8 +13,9 @@ public interface AmazonS3Service {
 
 	ResponseEntity<Response> createPresignedURL(String eventId, String fileName, PMPAPIAccessLog accessLog);
 
-	ResponseEntity<List<Response>> uploadListOfObjectsInAWSForSession(String eventId, String sessionId, String fileType,
-			MultipartFile[] multipartFiles, PMPAPIAccessLog accessLog);
+	ResponseEntity<List<Response>> uploadListOfObjectsInAWSForSession(String eventId, String sessionId, MultipartFile[] multipartFiles, PMPAPIAccessLog accessLog);
+
+	ResponseEntity<?> createPresignedURLForSessionImages(String eventId, String sessionId, PMPAPIAccessLog accessLog);
 
 
 }
