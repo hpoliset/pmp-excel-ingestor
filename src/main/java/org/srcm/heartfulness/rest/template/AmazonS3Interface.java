@@ -1,8 +1,8 @@
 package org.srcm.heartfulness.rest.template;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -20,6 +20,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 /**
@@ -93,9 +94,18 @@ public class AmazonS3Interface {
 		} else {
 			s3client = new AmazonS3Client(credentials);
 		}
+
+		// File file =
+		// Files.write(Paths.get(multipartFile.getOriginalFilename()),
+		// multipartFile.getBytes()).toFile();
+
+	/*	File file = new File(multipartFile.getOriginalFilename());
+		multipartFile.transferTo(file);
+		System.out.println(file.getAbsolutePath());
+		System.out.println(file.getName());*/
 		// uploading file into S3 bucket
-		s3client.putObject(new PutObjectRequest(bucketname, fileDestinationPath, Files.write(
-				Paths.get(multipartFile.getOriginalFilename()), multipartFile.getBytes()).toFile())
+		InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes());
+		s3client.putObject(new PutObjectRequest(bucketname, fileDestinationPath,inputStream,new ObjectMetadata())
 				.withCannedAcl(CannedAccessControlList.Private));
 	}
 
