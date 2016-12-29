@@ -59,7 +59,7 @@ public class AmazonS3Controller {
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	@RequestMapping(value = "/permissionletter/upload", method = RequestMethod.POST)
+	@RequestMapping(value = "/upload/event/permissionletter", method = RequestMethod.POST)
 	public ResponseEntity<?> uploadPermissionLetterForEvent(@RequestHeader(value = "Authorization") String token,
 			@RequestParam String eventId, @RequestParam("file") MultipartFile multipartFile,
 			@Context HttpServletRequest httpRequest) throws ParseException, IOException {
@@ -107,7 +107,7 @@ public class AmazonS3Controller {
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	@RequestMapping(value = "/permissionletter/download", method = RequestMethod.POST)
+	@RequestMapping(value = "/download/event/permissionletter", method = RequestMethod.POST)
 	public ResponseEntity<?> createPresignedURLForPermissionLetter(
 			@RequestHeader(value = "Authorization") String token, @RequestParam("eventId") String eventId,
 			@RequestParam("fileName") String fileName, @Context HttpServletRequest httpRequest) throws ParseException,
@@ -148,7 +148,7 @@ public class AmazonS3Controller {
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	@RequestMapping(value = "/session/upload", method = RequestMethod.POST)
+	@RequestMapping(value = "/upload/session/images", method = RequestMethod.POST)
 	public ResponseEntity<?> uploadImagesForSession(@RequestHeader(value = "Authorization") String token,
 			@RequestParam String eventId, @RequestParam String sessionId,
 			@RequestParam("file") MultipartFile multipartFiles[], @Context HttpServletRequest httpRequest)
@@ -189,7 +189,7 @@ public class AmazonS3Controller {
 	 * @throws ParseException
 	 * @throws IOException
 	 */
-	@RequestMapping(value = "/session/download", method = RequestMethod.POST)
+	@RequestMapping(value = "/download/session/images", method = RequestMethod.POST)
 	public ResponseEntity<?> createPresignedURLForSessionImages(@RequestHeader(value = "Authorization") String token,
 			@RequestParam String eventId, @RequestParam String sessionId, @Context HttpServletRequest httpRequest)
 			throws ParseException, IOException {
