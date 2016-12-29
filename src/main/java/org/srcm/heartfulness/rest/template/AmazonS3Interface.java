@@ -22,6 +22,11 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
+/**
+ * 
+ * @author himasreev
+ *
+ */
 @Component
 @ConfigurationProperties(locations = "classpath:dev.aws.s3.properties", ignoreUnknownFields = true, prefix = "aws.s3")
 public class AmazonS3Interface {
@@ -34,6 +39,8 @@ public class AmazonS3Interface {
 	private String secretkey;
 
 	private String bucketname;
+
+	private long urlexpirytime;
 
 	public String getAccesskeyid() {
 		return accesskeyid;
@@ -59,8 +66,25 @@ public class AmazonS3Interface {
 		this.bucketname = bucketname;
 	}
 
-	public void uploadObjectInAWS(MultipartFile multipartFile, String fileDestinationPath) throws IOException, AmazonServiceException,
-			AmazonClientException {
+	public long getUrlexpirytime() {
+		return urlexpirytime;
+	}
+
+	public void setUrlexpirytime(long urlexpirytime) {
+		this.urlexpirytime = urlexpirytime;
+	}
+
+	/**
+	 * Method to upload the provided image to AWS S3 server.
+	 * 
+	 * @param multipartFile
+	 * @param fileDestinationPath
+	 * @throws IOException
+	 * @throws AmazonServiceException
+	 * @throws AmazonClientException
+	 */
+	public void uploadObjectInAWS(MultipartFile multipartFile, String fileDestinationPath) throws IOException,
+			AmazonServiceException, AmazonClientException {
 		AWSCredentials credentials = new BasicAWSCredentials(accesskeyid, secretkey);
 		ClientConfiguration config = proxyHelper.setProxyToAWSS3();
 		AmazonS3 s3client = null;
@@ -70,13 +94,20 @@ public class AmazonS3Interface {
 			s3client = new AmazonS3Client(credentials);
 		}
 		// uploading file into S3 bucket
-		s3client.putObject(new PutObjectRequest(bucketname,fileDestinationPath, Files.write(
+		s3client.putObject(new PutObjectRequest(bucketname, fileDestinationPath, Files.write(
 				Paths.get(multipartFile.getOriginalFilename()), multipartFile.getBytes()).toFile())
 				.withCannedAcl(CannedAccessControlList.Private));
 	}
 
-	public String generatePresignedUrl(String fileName) throws AmazonServiceException,
-	AmazonClientException {
+	/**
+	 * Method to generate the presigned URL to the given image.
+	 * 
+	 * @param fileName
+	 * @return
+	 * @throws AmazonServiceException
+	 * @throws AmazonClientException
+	 */
+	public String generatePresignedUrl(String fileName) throws AmazonServiceException, AmazonClientException {
 		AWSCredentials credentials = new BasicAWSCredentials(accesskeyid, secretkey);
 		ClientConfiguration config = proxyHelper.setProxyToAWSS3();
 		AmazonS3 s3client = null;
@@ -87,14 +118,13 @@ public class AmazonS3Interface {
 		}
 		java.util.Date expiration = new java.util.Date();
 		long milliSeconds = expiration.getTime();
-		milliSeconds += 1000 * 60 * 1; // Add 1 min.
+		milliSeconds += urlexpirytime;
 		expiration.setTime(milliSeconds);
-		GeneratePresignedUrlRequest generatePresignedUrlRequest = 
-				new GeneratePresignedUrlRequest(bucketname,fileName);
-		generatePresignedUrlRequest.setMethod(HttpMethod.GET); 
+		GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketname, fileName);
+		generatePresignedUrlRequest.setMethod(HttpMethod.GET);
 		generatePresignedUrlRequest.setExpiration(expiration);
-		return s3client.generatePresignedUrl(generatePresignedUrlRequest).toString(); 
-		
+		return s3client.generatePresignedUrl(generatePresignedUrlRequest).toString();
+
 	}
 
 }

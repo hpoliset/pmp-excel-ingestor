@@ -26,6 +26,11 @@ import org.srcm.heartfulness.util.StackTraceUtils;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 
+/**
+ * 
+ * @author himasreev
+ *
+ */
 @Service
 public class AmazonS3ServiceImpl implements AmazonS3Service {
 
@@ -43,6 +48,14 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 	@Autowired
 	SessionDetailsService sessionDetailsService;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.service.AmazonS3Service#uploadObjectInAWSAndUpdateEvent
+	 * (java.lang.String, org.springframework.web.multipart.MultipartFile,
+	 * org.srcm.heartfulness.model.PMPAPIAccessLog)
+	 */
 	@Override
 	public ResponseEntity<Response> uploadObjectInAWSAndUpdateEvent(String eventId, MultipartFile multipartFile,
 			PMPAPIAccessLog accessLog) {
@@ -94,6 +107,14 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.service.AmazonS3Service#createPresignedURL(java
+	 * .lang.String, java.lang.String,
+	 * org.srcm.heartfulness.model.PMPAPIAccessLog)
+	 */
 	@Override
 	public ResponseEntity<Response> createPresignedURL(String eventId, String fileName, PMPAPIAccessLog accessLog) {
 		Response response = null;
@@ -142,6 +163,14 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.service.AmazonS3Service#
+	 * uploadListOfObjectsInAWSForSession(java.lang.String, java.lang.String,
+	 * org.springframework.web.multipart.MultipartFile[],
+	 * org.srcm.heartfulness.model.PMPAPIAccessLog)
+	 */
 	@Override
 	public ResponseEntity<List<Response>> uploadListOfObjectsInAWSForSession(String eventId, String sessionId,
 			MultipartFile[] multipartFiles, PMPAPIAccessLog accessLog) {
@@ -204,6 +233,13 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 		return new ResponseEntity<List<Response>>(listOfResponse, HttpStatus.OK);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.service.AmazonS3Service#
+	 * createPresignedURLForSessionImages(java.lang.String, java.lang.String,
+	 * org.srcm.heartfulness.model.PMPAPIAccessLog)
+	 */
 	@Override
 	public ResponseEntity<?> createPresignedURLForSessionImages(String eventId, String sessionId,
 			PMPAPIAccessLog accessLog) {

@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
-import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.Response;
 import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.AmazonS3Service;
@@ -48,6 +47,18 @@ public class AmazonS3Controller {
 	@Autowired
 	APIAccessLogService apiAccessLogService;
 
+	/**
+	 * Webservice endpoint to upload the coordinator permission letter to the
+	 * event.
+	 * 
+	 * @param token
+	 * @param eventId
+	 * @param multipartFile
+	 * @param httpRequest
+	 * @return
+	 * @throws ParseException
+	 * @throws IOException
+	 */
 	@RequestMapping(value = "/permissionletter/upload", method = RequestMethod.POST)
 	public ResponseEntity<?> uploadPermissionLetterForEvent(@RequestHeader(value = "Authorization") String token,
 			@RequestParam String eventId, @RequestParam("file") MultipartFile multipartFile,
@@ -84,6 +95,18 @@ public class AmazonS3Controller {
 
 	}
 
+	/**
+	 * Webservice endpoint to get the permission letter download path by
+	 * creating a presigned URL which is valid for a particular time.
+	 * 
+	 * @param token
+	 * @param eventId
+	 * @param fileName
+	 * @param httpRequest
+	 * @return
+	 * @throws ParseException
+	 * @throws IOException
+	 */
 	@RequestMapping(value = "/permissionletter/download", method = RequestMethod.POST)
 	public ResponseEntity<?> createPresignedURLForPermissionLetter(
 			@RequestHeader(value = "Authorization") String token, @RequestParam("eventId") String eventId,
@@ -95,8 +118,8 @@ public class AmazonS3Controller {
 				StackTraceUtils.convertPojoToJson("eventId : " + eventId + " , fileName : " + fileName));
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		try {
-			Response eResponse = amazonS3RequestValidator.downloadPermissionLetterRequest(fileName, eventId,
-					accessLog, token);
+			Response eResponse = amazonS3RequestValidator.downloadPermissionLetterRequest(fileName, eventId, accessLog,
+					token);
 			if (null != eResponse) {
 				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
 			}
@@ -113,6 +136,18 @@ public class AmazonS3Controller {
 		}
 	}
 
+	/**
+	 * Webservice endpoint to upload multiple images to a session.
+	 * 
+	 * @param token
+	 * @param eventId
+	 * @param sessionId
+	 * @param multipartFiles
+	 * @param httpRequest
+	 * @return
+	 * @throws ParseException
+	 * @throws IOException
+	 */
 	@RequestMapping(value = "/session/upload", method = RequestMethod.POST)
 	public ResponseEntity<?> uploadImagesForSession(@RequestHeader(value = "Authorization") String token,
 			@RequestParam String eventId, @RequestParam String sessionId,
@@ -124,8 +159,8 @@ public class AmazonS3Controller {
 				StackTraceUtils.convertPojoToJson("eventId : " + eventId + " , fileCount : " + multipartFiles.length));
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		try {
-			Response eResponse = amazonS3RequestValidator.uploadSessionFilesRequest(eventId, sessionId,
-					multipartFiles, accessLog, token);
+			Response eResponse = amazonS3RequestValidator.uploadSessionFilesRequest(eventId, sessionId, multipartFiles,
+					accessLog, token);
 			if (null != eResponse) {
 				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
 			}
@@ -142,6 +177,18 @@ public class AmazonS3Controller {
 		}
 	}
 
+	/**
+	 * Webservice endpoint to get the list of images of a session along with
+	 * their presigned URL which is valid for a particular time.
+	 * 
+	 * @param token
+	 * @param eventId
+	 * @param sessionId
+	 * @param httpRequest
+	 * @return
+	 * @throws ParseException
+	 * @throws IOException
+	 */
 	@RequestMapping(value = "/session/download", method = RequestMethod.POST)
 	public ResponseEntity<?> createPresignedURLForSessionImages(@RequestHeader(value = "Authorization") String token,
 			@RequestParam String eventId, @RequestParam String sessionId, @Context HttpServletRequest httpRequest)
@@ -152,8 +199,8 @@ public class AmazonS3Controller {
 				StackTraceUtils.convertPojoToJson("eventId : " + eventId + " , sessionId " + sessionId));
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		try {
-			Response eResponse = amazonS3RequestValidator.downloadSessionImagesRequest(sessionId, eventId,
-					accessLog, token);
+			Response eResponse = amazonS3RequestValidator.downloadSessionImagesRequest(sessionId, eventId, accessLog,
+					token);
 			if (null != eResponse) {
 				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
 			}

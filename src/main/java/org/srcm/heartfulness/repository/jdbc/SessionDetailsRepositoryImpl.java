@@ -42,6 +42,7 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SessionDetailsRepositoryImpl.class);
 
 	private final JdbcTemplate jdbcTemplate;
+	private SimpleJdbcInsert saveSessionDetails;
 	private SimpleJdbcInsert saveSessionImages;
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -51,6 +52,8 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 	@Autowired
 	public SessionDetailsRepositoryImpl(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.saveSessionDetails = new SimpleJdbcInsert(dataSource).withTableName("session_details")
+				.usingGeneratedKeyColumns("session_id");
 		this.saveSessionImages = new SimpleJdbcInsert(dataSource).withTableName("session_images")
 				.usingGeneratedKeyColumns("image_id");
 		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
@@ -103,7 +106,6 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 	 * @param autoGnrtdSessionId
 	 * @return
 	 */
-
 	private int checkAutoGnrtdSessionIdAlreadyExists(String autoGnrtdSessionId) {
 		int sessionIdCount = 0;
 		try {
@@ -130,10 +132,12 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 		return sessionIdCount;
 	}
 
-	/**
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param autoGnrtdSessionId
-	 * @return
+	 * @see
+	 * org.srcm.heartfulness.repository.SessionDetailsRepository#getSessionId
+	 * (java.lang.String)
 	 */
 	@Override
 	public int getSessionId(String autoGnrtdSessionId) {
@@ -161,6 +165,13 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 		return sessionId;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.SessionDetailsRepository#deleteSessionDetail
+	 * (org.srcm.heartfulness.model.SessionDetails)
+	 */
 	@Override
 	public int deleteSessionDetail(SessionDetails sessionDetails) {
 
@@ -170,6 +181,13 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 		return isUpdated;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.SessionDetailsRepository#getSessionDetails
+	 * (int)
+	 */
 	@Override
 	public List<SessionDetails> getSessionDetails(int programId) {
 		List<SessionDetails> sessionList = null;
@@ -201,6 +219,12 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 		return sessionList;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.SessionDetailsRepository#
+	 * getSessionDetailsIdBySessionIdandProgramId(java.lang.String, int)
+	 */
 	@Override
 	public int getSessionDetailsIdBySessionIdandProgramId(String sessionId, int programId) {
 		int sessionDetailsId = this.jdbcTemplate.query(
@@ -219,6 +243,13 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.SessionDetailsRepository#saveSessionFiles
+	 * (org.srcm.heartfulness.model.SessionImageDetails)
+	 */
 	@Override
 	public void saveSessionFiles(SessionImageDetails sessionFiles) {
 		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(sessionFiles);
@@ -248,6 +279,12 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.SessionDetailsRepository#
+	 * getCountOfSessionImages(int)
+	 */
 	@Override
 	public int getCountOfSessionImages(int sessionDetailsId) {
 		return this.jdbcTemplate.query("SELECT count(image_id) FROM session_images WHERE session_id= ?",
@@ -262,6 +299,12 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 				});
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.SessionDetailsRepository#
+	 * getListOfSessionImages(int)
+	 */
 	@Override
 	public List<SessionImageDetails> getListOfSessionImages(int sessionDetailsId) {
 		Map<String, Object> params = new HashMap<>();
