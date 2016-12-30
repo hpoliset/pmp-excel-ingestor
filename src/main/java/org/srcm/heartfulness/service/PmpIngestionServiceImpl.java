@@ -93,7 +93,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	 */
 	@Override
 	@Transactional
-	public ExcelUploadResponse parseAndPersistExcelFile(String fileName, byte[] fileContent) {
+	public ExcelUploadResponse parseAndPersistExcelFile(String fileName, byte[] fileContent,String eWelcomeIdCheckbox) {
 		LOGGER.info("Started parsing and persisting Excel file.");
 		ExcelUploadResponse response = new ExcelUploadResponse();
 		response.setFileName(fileName);
@@ -112,7 +112,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 				} else {
 					// Persist the program
 					try {
-						Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version);
+						Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version,eWelcomeIdCheckbox);
 						program.setCreatedSource("Excel");
 						programRepository.save(program);
 						// preceptor ID card number validation
@@ -357,7 +357,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	 * @see {@link ExcelUploadResponse}
 	 */
 	@Override
-	public List<ExcelUploadResponse> parseAndPersistExcelFile(MultipartFile[] excelFiles) throws IOException {
+	public List<ExcelUploadResponse> parseAndPersistExcelFile(MultipartFile[] excelFiles,String eWelcomeIdCheckbox) throws IOException {
 
 		List<ExcelUploadResponse> responseList = new LinkedList<ExcelUploadResponse>();
 		// sorting the files based on excel file name
@@ -368,7 +368,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			}
 		});
 		for (MultipartFile multipartFile : excelFiles) {
-			responseList.add(parseAndPersistExcelFile(multipartFile.getOriginalFilename(), multipartFile.getBytes()));
+			responseList.add(parseAndPersistExcelFile(multipartFile.getOriginalFilename(), multipartFile.getBytes(),eWelcomeIdCheckbox));
 		}
 		return responseList;
 	}

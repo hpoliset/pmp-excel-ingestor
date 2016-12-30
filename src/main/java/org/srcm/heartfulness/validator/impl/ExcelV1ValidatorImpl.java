@@ -133,7 +133,9 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 		int rowCount = sheet.getPhysicalNumberOfRows();
 		for (int i = 15; i < rowCount; i++) {
 			Row currentRow = sheet.getRow(i);
-			eventErrorList.addAll(parseParticipantData(currentRow, i + 1));
+			if (!currentRow.getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()) {
+				eventErrorList.addAll(parseParticipantData(currentRow, i + 1));
+			}
 		}
 		LOGGER.info("INFO : Participants detail field validation completed for altered 1.0 template.");
 	}

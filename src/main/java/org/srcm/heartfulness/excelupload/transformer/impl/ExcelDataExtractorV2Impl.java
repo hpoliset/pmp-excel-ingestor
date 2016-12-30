@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractor;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
@@ -34,12 +35,16 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 	}
 
 	@Override
-	public Program extractExcel(Workbook workbook) throws InvalidExcelFileException {
+	public Program extractExcel(Workbook workbook,String eWelcomeIdCheckbox) throws InvalidExcelFileException {
 		Program program =  new Program();
 		Sheet eventSheet = workbook.getSheet("Event Details");
 		Sheet participantSheet =  workbook.getSheet("Participants Details");
-		program = parseProgram(eventSheet);
-		program.setParticipantList(getParticipantList(participantSheet));
+		boolean disableEwelcomeIdGeneration = false;
+		if(eWelcomeIdCheckbox.equals("on")){
+			disableEwelcomeIdGeneration = true;
+		}
+		program = parseProgram(eventSheet,disableEwelcomeIdGeneration);
+		program.setParticipantList(getParticipantList(participantSheet,disableEwelcomeIdGeneration));
 		return program;
 	}
 
@@ -56,7 +61,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 	}*/
 
 
-	private List<Participant> getParticipantList(Sheet participantsSheet) throws InvalidExcelFileException {
+	private List<Participant> getParticipantList(Sheet participantsSheet,boolean disableEwelcomeIdGeneration) throws InvalidExcelFileException {
 		LOGGER.info("Started extracting participant for V2 template");
 		List<Participant> participantList = new ArrayList<Participant>();
 		int totalRows = participantsSheet.getPhysicalNumberOfRows();
@@ -64,9 +69,9 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		int j = 1;
 		for (int i=1; i < totalRows; i++) {
 			Row currentRow = participantsSheet.getRow(i);
-			Participant participant = parseParticipantRow(currentRow);
 			// this will go away
 			if(!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
+				Participant participant = parseParticipantRow(currentRow,disableEwelcomeIdGeneration);
 				if (participant.getExcelSheetSequenceNumber() == 0) {
 					participant.setExcelSheetSequenceNumber(j);
 				}
@@ -78,7 +83,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		return participantList;
 	}
 
-	private Participant parseParticipantRow(Row participantRow) throws InvalidExcelFileException {
+	private Participant parseParticipantRow(Row participantRow,boolean disableEwelcomeIdGeneration) throws InvalidExcelFileException {
 		Participant participant = new Participant();
 		if(!participantRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){		
 			participant.setPrintName(participantRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim());
@@ -156,7 +161,26 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			participant.setGender(participantRow.getCell(13, Row.CREATE_NULL_AS_BLANK).toString().trim());
 			participant.setAgeGroup(participantRow.getCell(14, Row.CREATE_NULL_AS_BLANK).toString().trim());
 			participant.setLanguage(participantRow.getCell(15, Row.CREATE_NULL_AS_BLANK).toString().trim());
-			participant.setWelcomeCardNumber(participantRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString().trim());
+			
+			String welcomeCardNo = participantRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString().trim();
+			if(welcomeCardNo.isEmpty()){
+				if(disableEwelcomeIdGeneration){
+					participant.setEwelcomeIdState(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
+				}
+			}else{
+				participant.setWelcomeCardNumber(welcomeCardNo);
+				String welcomeCardDateStr = participantRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString().trim();
+				Date welcomeCardDate = null;
+				try {
+					welcomeCardDate = DateUtils.parseDate(welcomeCardDateStr);
+				} catch (ParseException e) {
+					throw new InvalidExcelFileException(
+							"Unable to part v2 file: welcome card date: [" + welcomeCardDateStr + "]");
+				}
+				participant.setWelcomeCardDate(welcomeCardDate);
+			}
+			
+			/*participant.setWelcomeCardNumber(participantRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString().trim());
 			String welcomeCardDateStr = participantRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			Date welcomeCardDate = null;
 			try {
@@ -166,13 +190,15 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 						"Unable to part v2 file: welcome card date: [" + welcomeCardDateStr + "]");
 			}
 
-			participant.setWelcomeCardDate(welcomeCardDate);
+			participant.setWelcomeCardDate(welcomeCardDate);*/
+			
+			
 			participant.setRemarks(participantRow.getCell(18, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		}
 		return participant;
 	}
 
-	private Program parseProgram(Sheet eventSheet) throws InvalidExcelFileException {
+	private Program parseProgram(Sheet eventSheet,boolean disableEwelcomeIdGeneration) throws InvalidExcelFileException {
 		LOGGER.info("Started extracting program for V2 template");
 		Program program = new Program();
 		program.setProgramChannel(eventSheet.getRow(2).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
@@ -228,6 +254,11 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		}
 		program.setWelcomeCardSignedByName(eventSheet.getRow(13).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		program.setWelcomeCardSignerIdCardNumber(eventSheet.getRow(14).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		if(disableEwelcomeIdGeneration){
+			program.setIsEventDisabled(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
+		}else{
+			program.setIsEventDisabled(EventDetailsUploadConstants.EWELCOME_ID_ENABLED_STATE);
+		}
 		LOGGER.info("Completed extracting program for V2 template");
 		return program;
 	}

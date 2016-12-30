@@ -8,3 +8,5 @@ CREATE TABLE `session_images` (
   `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
    CONSTRAINT `session_images_fk` FOREIGN KEY (`session_id`) REFERENCES `session_details`(`session_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE program ADD is_event_disabled varchar(1) DEFAULT 'E';
