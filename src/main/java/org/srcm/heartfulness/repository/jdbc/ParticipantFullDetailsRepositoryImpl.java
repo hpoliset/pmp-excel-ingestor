@@ -46,7 +46,6 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 
 		StringBuilder whereCondition = new StringBuilder("");
 		List<Object> parameters = new ArrayList<>();
-		
 		if (!("ALL".equals(reportVO.getChannel()))) {
 			whereCondition.append(whereCondition.length() > 0 ? " and pg.program_channel = ? "
 					: " pg.program_channel = ? ");
@@ -109,7 +108,7 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 					: " pg.event_city = ? ");
 			parameters.add(reportVO.getCity());
 		}
-		
+
 		FullParticipantRowCallbackHandler rowCallbackHandler = new FullParticipantRowCallbackHandler();
 
 		jdbcTemplate.query("select "

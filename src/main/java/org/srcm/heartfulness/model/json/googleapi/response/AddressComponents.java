@@ -4,20 +4,25 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+/**
+ * Class to hold the address components in the response of GOOGLE MAPS API.
+ * 
+ * @author himasreev
+ *
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AddressComponents {
-	
+
 	private String long_name;
-	
+
 	private String short_name;
-	
+
 	private List<String> types;
-	
+
 	public AddressComponents() {
 		super();
 	}
 
-	
 	public String getLong_name() {
 		return long_name;
 	}
@@ -38,15 +43,13 @@ public class AddressComponents {
 		return types;
 	}
 
-
 	public void setTypes(List<String> types) {
 		this.types = types;
 	}
-
 
 	@Override
 	public String toString() {
 		return "AddressComponents [long_name=" + long_name + ", short_name=" + short_name + ", types=" + types + "]";
 	}
-	
+
 }

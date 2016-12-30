@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * This class is the response for the successful login from MYSRCM
+ * This class is the response for the successful login from MYSRCM.
  * 
  * @author HimaSree
  *

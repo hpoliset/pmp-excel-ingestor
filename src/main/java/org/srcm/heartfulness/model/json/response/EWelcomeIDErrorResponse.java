@@ -4,15 +4,21 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+/**
+ * Parser class to hold the error response of MYSRCM create abhyasi API.
+ * 
+ * @author himasreev
+ *
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EWelcomeIDErrorResponse {
-	
+
 	private List<String> email;
-	
+
 	private List<String> validation;
-	
+
 	private String error;
-	
+
 	private List<String> mobile;
 
 	public List<String> getEmail() {
@@ -22,7 +28,7 @@ public class EWelcomeIDErrorResponse {
 	public void setEmail(List<String> email) {
 		this.email = email;
 	}
-	
+
 	public List<String> getValidation() {
 		return validation;
 	}
@@ -30,7 +36,7 @@ public class EWelcomeIDErrorResponse {
 	public void setValidation(List<String> validation) {
 		this.validation = validation;
 	}
-	
+
 	public String getError() {
 		return error;
 	}
@@ -38,7 +44,7 @@ public class EWelcomeIDErrorResponse {
 	public void setError(String error) {
 		this.error = error;
 	}
-	
+
 	public List<String> getMobile() {
 		return mobile;
 	}

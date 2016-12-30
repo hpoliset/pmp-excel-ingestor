@@ -80,7 +80,7 @@ public interface PmpParticipantService {
 	 * @param userEmailID
 	 * @return List <code>UpdateIntroductionResponse</code>
 	 */
-	public List<UpdateIntroductionResponse> deleteparticipantsBySeqID(ParticipantIntroductionRequest participantRequest,String userEmailID);
+	public List<UpdateIntroductionResponse> deleteParticipantsBySeqID(ParticipantIntroductionRequest participantRequest,String userEmailID);
 
 	/**
 	 * Service to update the participant ewelcome Id status and remarks.

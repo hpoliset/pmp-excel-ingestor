@@ -3,7 +3,7 @@ package org.srcm.heartfulness.model.json.response;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * This class holds the success response for the webservice endpoint.
+ * This class holds the success response for the web service endpoints.
  * 
  * @author HimaSree
  *

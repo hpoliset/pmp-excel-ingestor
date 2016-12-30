@@ -22,9 +22,11 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
- * Validator to streamline all Event dashboard validation implementation.
+ * @author Koustav Dutta Validator to streamline all Event dashboard validation
+ *         implementation.
  * 
  */
+
 @Component
 public interface EventDashboardValidator {
 
@@ -43,10 +45,11 @@ public interface EventDashboardValidator {
 	 * status.
 	 * 
 	 * @param participantRequest
-	 * @param id 
+	 * @param id
 	 * @return
 	 */
-	public Map<String, String> checkIntroductionRequestMandatoryFields(ParticipantIntroductionRequest participantRequest, int id);
+	public Map<String, String> checkIntroductionRequestMandatoryFields(
+			ParticipantIntroductionRequest participantRequest, int id);
 
 	/**
 	 * Method to validate the values given in
@@ -79,10 +82,11 @@ public interface EventDashboardValidator {
 	 *             while parsing JSON data.
 	 * @throws JsonMappingException
 	 * @throws IOException
-	 * @throws ParseException 
+	 * @throws ParseException
 	 */
-	public UserProfile validateToken(String token,int id) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException, IllegalBlockSizeException, NumberFormatException, BadPaddingException, ParseException;
+	public UserProfile validateToken(String token, int id) throws HttpClientErrorException, JsonParseException,
+			JsonMappingException, IOException, IllegalBlockSizeException, NumberFormatException, BadPaddingException,
+			ParseException;
 
 	/**
 	 * Method to validate the values given in ParticipantIntroductionRequest
@@ -94,11 +98,11 @@ public interface EventDashboardValidator {
 	public Map<String, String> checkDeleteRequestMandatoryFields(ParticipantIntroductionRequest participantRequest);
 
 	public List<String> checkParticipantIntroductionMandatoryFields(Participant participantInput, int id);
-	
+
 	public boolean validateParticipantCompletedPreliminarySittings(Participant participantInput);
 
 	public Map<String, String> checkUpdateParticipantMandatoryFields(ParticipantRequest participant);
-	
+
 	public String validatePaginationProperties(EventPagination eventPagination);
 
 }

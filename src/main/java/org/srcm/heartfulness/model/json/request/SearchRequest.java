@@ -3,6 +3,7 @@ package org.srcm.heartfulness.model.json.request;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * 
  * @author Koustav Dutta
@@ -10,37 +11,37 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 
 public class SearchRequest {
-	
+
 	@JsonProperty("searchfield")
 	private String searchField;
-	
+
 	@JsonProperty("searchtext")
 	private String searchText;
-	
+
 	@JsonProperty("datefrom")
 	private String dateFrom;
-	
+
 	@JsonProperty("dateto")
 	private String dateTo;
-	
+
 	@JsonProperty("sortby")
 	private String sortBy;
-	
+
 	@JsonProperty("sortdirection")
 	private String sortDirection;
-	
+
 	@JsonProperty("totalcount")
-	private int  totalCount;
-	
+	private int totalCount;
+
 	@JsonProperty("pageindex")
 	private int pageIndex;
-	
+
 	@JsonProperty("pagesize")
 	private int pageSize;
-	
+
 	@JsonProperty("eventlist")
 	private List<Event> eventList;
-	
+
 	public String getSearchField() {
 		return searchField;
 	}
@@ -120,5 +121,5 @@ public class SearchRequest {
 	public void setEventList(List<Event> eventList) {
 		this.eventList = eventList;
 	}
-	
+
 }

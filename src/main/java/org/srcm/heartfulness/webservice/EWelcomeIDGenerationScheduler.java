@@ -22,6 +22,7 @@ import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
 
 /**
+ * Controller for managing ewelcomeId related functionalities.
  * 
  * @author himasreev
  *
@@ -49,8 +50,8 @@ public class EWelcomeIDGenerationScheduler {
 	/**
 	 * Cron to generate EWelcomeIDs for the participants.
 	 */
-	//@RequestMapping(value = "generateewelcomeid", method =RequestMethod.POST)
-	@Scheduled(cron = "${welcome.mailids.generation.cron.time}")
+	// @RequestMapping(value = "generateewelcomeid", method =RequestMethod.POST)
+	 @Scheduled(cron = "${welcome.mailids.generation.cron.time}") 
 	public void generateEWelcomeIDsForParticipants() {
 		LOGGER.info("START : CRON : EWELCOMEID GENERATION : Scheduler to generate EwelcomeID's for the participants started at - "
 				+ new Date());
@@ -60,7 +61,7 @@ public class EWelcomeIDGenerationScheduler {
 		if (!programIds.isEmpty() && programIds.size() > 0) {
 			for (Integer programId : programIds) {
 				List<Participant> participants = participantRepository
-						.getParticipantwithProgramIdTogenerateEwelcomeId(programId);
+						.getParticipantwithProgramIdToGenerateEwelcomeId(programId);
 				Program program = programService.getProgramDetailsToGenerateEwelcomeIDById(programId);
 				LOGGER.info(
 						"CRON : EWELCOMEID GENERATION : EventID: {} - Total no. of participants to generate eWelcomeID : {} ",

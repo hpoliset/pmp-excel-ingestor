@@ -6,6 +6,12 @@ import java.io.StringWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Stack Trace conversion utilities
+ * 
+ * @author himasreev
+ *
+ */
 public class StackTraceUtils {
 
 	public static String convertStackTracetoString(Exception exception) {

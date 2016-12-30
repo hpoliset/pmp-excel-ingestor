@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
  * @author himasreev
  *
  */
+@SuppressWarnings("serial")
 public class CurrentUser extends org.springframework.security.core.userdetails.User {
 
 	private User user;

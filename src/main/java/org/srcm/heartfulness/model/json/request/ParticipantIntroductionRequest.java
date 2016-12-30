@@ -5,21 +5,23 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * This class is the request to hold the introduction status for the list of participant IDs
+ * This class is the request to hold the introduction status for the list of
+ * participant ID's.
+ * 
  * @author himasreev
  *
  */
 public class ParticipantIntroductionRequest {
-	
+
 	@JsonProperty("introduced")
 	private String introduced;
-	
+
 	@JsonProperty("eventId")
 	private String eventId;
-	
+
 	@JsonProperty("participantIds")
 	private List<ParticipantRequest> participantIds;
-	
+
 	public String getIntroduced() {
 		return introduced;
 	}
@@ -49,6 +51,5 @@ public class ParticipantIntroductionRequest {
 		return "ParticipantIntroductionRequest [introduced=" + introduced + ", eventId=" + eventId
 				+ ", participantIds=" + participantIds + "]";
 	}
-	
-	
+
 }
