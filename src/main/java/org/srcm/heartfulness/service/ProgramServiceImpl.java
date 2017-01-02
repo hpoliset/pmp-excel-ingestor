@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EndpointConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
+import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.enumeration.EventSearchField;
@@ -429,6 +430,16 @@ public class ProgramServiceImpl implements ProgramService {
 				program.setWelcomeCardSignedByName(event.getWelcomeCardSignedByName());
 				program.setWelcomeCardSignerIdCardNumber(event.getWelcomeCardSignerIdCardNumber());
 				program.setRemarks(event.getRemarks());
+				if(null == event.getIsEventDisabled() || event.getIsEventDisabled().trim().isEmpty()){
+					program.setIsEventDisabled(EventDetailsUploadConstants.EWELCOME_ID_ENABLED_STATE);
+					event.setIsEventDisabled(EventDetailsUploadConstants.EWELCOME_ID_ENABLED_STATE);
+				}else if(event.getIsEventDisabled().trim().equals(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE)){
+					program.setIsEventDisabled(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
+					event.setIsEventDisabled(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
+				}else{
+					program.setIsEventDisabled(EventDetailsUploadConstants.EWELCOME_ID_ENABLED_STATE);
+					event.setIsEventDisabled(EventDetailsUploadConstants.EWELCOME_ID_ENABLED_STATE);
+				}
 
 				if (errors.isEmpty()) {
 					Program persistedPgrm = programRepository.saveProgram(program);
@@ -725,7 +736,7 @@ public class ProgramServiceImpl implements ProgramService {
 		eventDetails.setWelcomeCardSignedByName(program.getWelcomeCardSignedByName());
 		eventDetails.setWelcomeCardSignerIdCardNumber(program.getWelcomeCardSignerIdCardNumber());
 		eventDetails.setRemarks(program.getRemarks());
-
+		eventDetails.setIsEventDisabled(program.getIsEventDisabled());
 		return eventDetails;
 	}
 

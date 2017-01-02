@@ -588,7 +588,9 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 					+ "program_zone=:programZone, "+ "program_center=:programCenter, "+ "organization_batch_no=:organizationBatchNo, "
 					+ "organization_city=:organizationCity, "+ "organization_location=:organizationLocation, "+ "organization_full_address=:organizationFullAddress, "
 					+ "organization_decision_maker_name=:organizationDecisionMakerName, "+ "organization_decision_maker_email=:organizationDecisionMakerEmail, "
-					+ "organization_decision_maker_phone_no=:organizationDecisionMakerPhoneNo "+ "WHERE program_id=:programId", parameterSource);
+					+ "organization_decision_maker_phone_no=:organizationDecisionMakerPhoneNo, "
+					+ "is_event_disabled=:isEventDisabled "
+					+ "WHERE program_id=:programId", parameterSource);
 		}
 		return program;
 	}
