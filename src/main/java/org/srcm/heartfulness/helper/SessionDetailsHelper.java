@@ -28,12 +28,13 @@ import org.srcm.heartfulness.model.json.response.PMPResponse;
 import org.srcm.heartfulness.model.json.response.SuccessResponse;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.repository.ProgramRepository;
-import org.srcm.heartfulness.repository.SessionDetailsRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
 import org.srcm.heartfulness.service.APIAccessLogService;
+import org.srcm.heartfulness.service.SessionDetailsService;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
 import org.srcm.heartfulness.validator.EventDashboardValidator;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -57,139 +58,143 @@ public class SessionDetailsHelper {
 
 	@Autowired
 	ProgramRepository programRepository;
-	
+
 	@Autowired
-	SessionDetailsRepository sessionDtlsRepo;
+	SessionDetailsService sessionDtlsSrcv;
 
 	/**
 	 * This method is used to validate the authentication token against
-	 * MYSRCM.If the token is successfully authenticated then a successresponse 
+	 * MYSRCM.If the token is successfully authenticated then a successresponse
 	 * is returned else an error response is returned.
 	 * 
-	 * @param authToken authToken Token to authenticate with mysrcm.
-	 * @param accessLog to persist the api log details.
-	 * @return PMPResponse success or failure response 
+	 * @param authToken
+	 *            authToken Token to authenticate with mysrcm.
+	 * @param accessLog
+	 *            to persist the api log details.
+	 * @return PMPResponse success or failure response
 	 */
-	public PMPResponse validateAuthToken(String authToken,PMPAPIAccessLog accessLog){
+	public PMPResponse validateAuthToken(String authToken, PMPAPIAccessLog accessLog) {
 
-		ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"");
+		ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "");
 		UserProfile userProfile = null;
 		try {
 			userProfile = eventDashboardValidator.validateToken(authToken, accessLog.getId());
-		}catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
+		} catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
 			eResponse.setError_description("Invalid authorization token");
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			setPMPAccessLogAndPersist(accessLog,eResponse);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
 		} catch (HttpClientErrorException httpcee) {
 			eResponse.setError_description("Invalid client credentials");
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(httpcee));
-			setPMPAccessLogAndPersist(accessLog,eResponse);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
 		} catch (JsonParseException jpe) {
 			eResponse.setError_description("Error while fetching profile from MySRCM");
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(jpe));
-			setPMPAccessLogAndPersist(accessLog,eResponse);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
 		} catch (JsonMappingException jme) {
 			eResponse.setError_description("Error while fetching profile from MySRCM");
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(jme));
-			setPMPAccessLogAndPersist(accessLog,eResponse);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
 		} catch (IOException ioe) {
 			eResponse.setError_description("Error while fetching profile from MySRCM");
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ioe));
-			setPMPAccessLogAndPersist(accessLog,eResponse);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
 		} catch (Exception e) {
 			eResponse.setError_description("Invalid request");
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			setPMPAccessLogAndPersist(accessLog,eResponse);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
-		} 
+		}
 		if (null == userProfile) {
 			eResponse.setError_description(ErrorConstants.INVALID_CREDENTIALS);
 			accessLog.setErrorMessage("UserProfile doesnot exists in MySrcm database");
-			setPMPAccessLogAndPersist(accessLog,eResponse);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
-		}else{
+		} else {
 			accessLog.setUsername(userProfile.getEmail());
-			SuccessResponse sResponse = new SuccessResponse(ErrorConstants.STATUS_SUCCESS, "Token validation successfull");
+			SuccessResponse sResponse = new SuccessResponse(ErrorConstants.STATUS_SUCCESS,
+					"Token validation successfull");
 			return sResponse;
 		}
 	}
 
-
 	/**
 	 * Method is used to set the PMP API access log details.
-	 * @param accessLog accessLog to persist the api log details.
-	 * @param eResponse to set the error response.
+	 * 
+	 * @param accessLog
+	 *            accessLog to persist the api log details.
+	 * @param eResponse
+	 *            to set the error response.
 	 */
-	private void setPMPAccessLogAndPersist(PMPAPIAccessLog accessLog,ErrorResponse eResponse){
+	private void setPMPAccessLogAndPersist(PMPAPIAccessLog accessLog, ErrorResponse eResponse) {
 
-		try{
+		try {
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-		}catch(Exception ex){
+		} catch (Exception ex) {
 			LOGGER.error("Failed to create or update access log ");
 		}
 
 	}
 
-
-
 	/**
-	 * Method is used to validate the mandatory session details parameters.
-	 * If all the parameters are correct a success response is returned else
-	 * an error response is returned.
+	 * Method is used to validate the mandatory session details parameters. If
+	 * all the parameters are correct a success response is returned else an
+	 * error response is returned.
 	 * 
-	 * @param sessionDetails To validate mandatory session details parameters.
-	 * @param accessLog to create the pmp api access log details in db.
+	 * @param sessionDetails
+	 *            To validate mandatory session details parameters.
+	 * @param accessLog
+	 *            to create the pmp api access log details in db.
 	 * @return success response is returned else an error response is returned
 	 */
-	public PMPResponse validateSessionDetailsParams(SessionDetails sessionDetails,PMPAPIAccessLog accessLog){
+	public PMPResponse validateSessionDetailsParams(SessionDetails sessionDetails, PMPAPIAccessLog accessLog) {
 
-		ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"");
+		ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "");
 		PMPAPIAccessLogDetails accessLogDetails = null;
 		AbhyasiUserProfile userProfile = null;
 
-		if(null == sessionDetails.getEventId() || sessionDetails.getEventId().isEmpty()){
+		if (null == sessionDetails.getEventId() || sessionDetails.getEventId().isEmpty()) {
 			eResponse.setError_description(ErrorConstants.EMPTY_EVENT_ID);
 			accessLog.setErrorMessage(ErrorConstants.EMPTY_EVENT_ID);
-			setPMPAccessLogAndPersist(accessLog,eResponse);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
-		}else {
-			int programId= 0;
-			try{
-				programId= programRepository.getProgramIdByEventId(sessionDetails.getEventId());
-			}catch(Exception ex){
-				LOGGER.error("Program Id is not available for AutoGenerated Id :"+sessionDetails.getEventId());
+		} else {
+			int programId = 0;
+			try {
+				programId = programRepository.getProgramIdByEventId(sessionDetails.getEventId());
+			} catch (Exception ex) {
+				LOGGER.error("Program Id is not available for AutoGenerated Id :" + sessionDetails.getEventId());
 			}
 
-			if(programId <= 0){
+			if (programId <= 0) {
 				eResponse.setError_description(ErrorConstants.INVALID_EVENT_ID);
 				accessLog.setErrorMessage(ErrorConstants.INVALID_EVENT_ID);
-				setPMPAccessLogAndPersist(accessLog,eResponse);
+				setPMPAccessLogAndPersist(accessLog, eResponse);
 				return eResponse;
-			}else{
+			} else {
 				sessionDetails.setProgramId(programId);
 			}
 		}
 
-
-		if(null == sessionDetails.getSessionNumber() || sessionDetails.getSessionNumber().isEmpty()){
+		if (null == sessionDetails.getSessionNumber() || sessionDetails.getSessionNumber().isEmpty()) {
 			eResponse.setError_description(ErrorConstants.EMPTY_SESSION_NUMBER);
 			accessLog.setErrorMessage(ErrorConstants.EMPTY_SESSION_NUMBER);
-			setPMPAccessLogAndPersist(accessLog,eResponse);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
-		}else if(null == sessionDetails.getSessionStringDate() || sessionDetails.getSessionStringDate().isEmpty()){
+		} else if (null == sessionDetails.getSessionStringDate() || sessionDetails.getSessionStringDate().isEmpty()) {
 			eResponse.setError_description(ErrorConstants.EMPTY_SESSION_DATE);
 			accessLog.setErrorMessage(ErrorConstants.EMPTY_SESSION_DATE);
-			setPMPAccessLogAndPersist(accessLog,eResponse);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
-		}else{
+		} else {
 			try {
 				Date sessionDate = DateUtils.parseDate(sessionDetails.getSessionStringDate());
 				sessionDetails.setSessionDate(sessionDate);
@@ -198,109 +203,110 @@ public class SessionDetailsHelper {
 			} catch (Exception e) {
 				eResponse.setError_description(ErrorConstants.INVALID_DATE_FORMAT);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-				setPMPAccessLogAndPersist(accessLog,eResponse);
+				setPMPAccessLogAndPersist(accessLog, eResponse);
 				return eResponse;
-			} 
+			}
 		}
 
-		if(sessionDetails.getNumberOfParticipants() <= 0){
+		if (sessionDetails.getNumberOfParticipants() <= 0) {
 			eResponse.setError_description(ErrorConstants.INVALID_PCTPT_COUNT);
 			accessLog.setErrorMessage(ErrorConstants.INVALID_PCTPT_COUNT);
-			setPMPAccessLogAndPersist(accessLog,eResponse);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
 		}
 
-		if(sessionDetails.getNumberOfNewParticipants() < 0 ){
+		if (sessionDetails.getNumberOfNewParticipants() < 0) {
 			eResponse.setError_description(ErrorConstants.INVALID_NEW_PCTPT_COUNT);
 			accessLog.setErrorMessage(ErrorConstants.INVALID_NEW_PCTPT_COUNT);
-			setPMPAccessLogAndPersist(accessLog,eResponse);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
 		}
 
 		String preceptorCardNo = sessionDetails.getPreceptorIdCardNo();
-		if(null == preceptorCardNo || preceptorCardNo.isEmpty()){
+		if (null == preceptorCardNo || preceptorCardNo.isEmpty()) {
 			eResponse.setError_description(ErrorConstants.EMPTY_PRECEPTOR_ID_CARD_NO);
 			accessLog.setErrorMessage(ErrorConstants.EMPTY_PRECEPTOR_ID_CARD_NO);
-			setPMPAccessLogAndPersist(accessLog,eResponse);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
-		}else{
+		} else {
 
 			accessLogDetails = new PMPAPIAccessLogDetails(accessLog.getId(), EndpointConstants.GET_USER_PROFILE,
-					DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,preceptorCardNo,null);
-			setPMPAPIAccessLogDetailsAndPersist(accessLogDetails,null);
+					DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null, preceptorCardNo,
+					null);
+			setPMPAPIAccessLogDetailsAndPersist(accessLogDetails, null);
 
 			try {
 
 				userProfile = srcmRestTemplate.getAbyasiProfile(preceptorCardNo).getUserProfile()[0];
 
-				if(null == userProfile){
+				if (null == userProfile) {
 					eResponse.setError_description(ErrorConstants.INVALID_PRECEPTOR_ID_CARD_NO);
 					accessLogDetails.setErrorMessage(ErrorConstants.INVALID_PRECEPTOR_ID_CARD_NO);
-					setPMPAPIAccessLogDetailsAndPersist(accessLogDetails,eResponse);
+					setPMPAPIAccessLogDetailsAndPersist(accessLogDetails, eResponse);
 					accessLog.setErrorMessage(ErrorConstants.INVALID_PRECEPTOR_ID_CARD_NO);
-					setPMPAccessLogAndPersist(accessLog,eResponse);
+					setPMPAccessLogAndPersist(accessLog, eResponse);
 					return eResponse;
 				}
-				if(null == sessionDetails.getPreceptorName()){
+				if (null == sessionDetails.getPreceptorName()) {
 					sessionDetails.setPreceptorName(userProfile.getName());
 				}
-			} catch (HttpClientErrorException httpcee ) {
+			} catch (HttpClientErrorException httpcee) {
 				eResponse.setError_description(ErrorConstants.INVALID_PRECEPTOR_ID_CARD_NO);
 				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(httpcee));
-				setPMPAPIAccessLogDetailsAndPersist(accessLogDetails,eResponse);
+				setPMPAPIAccessLogDetailsAndPersist(accessLogDetails, eResponse);
 				accessLog.setErrorMessage(ErrorConstants.INVALID_PRECEPTOR_ID_CARD_NO);
-				setPMPAccessLogAndPersist(accessLog,eResponse);
+				setPMPAccessLogAndPersist(accessLog, eResponse);
 				return eResponse;
-			} catch (JsonParseException  | JsonMappingException e) {
+			} catch (JsonParseException | JsonMappingException e) {
 				eResponse.setError_description(ErrorConstants.INVALID_PRECEPTOR_ID_CARD_NO);
 				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-				setPMPAPIAccessLogDetailsAndPersist(accessLogDetails,eResponse);
+				setPMPAPIAccessLogDetailsAndPersist(accessLogDetails, eResponse);
 				accessLog.setErrorMessage(ErrorConstants.INVALID_PRECEPTOR_ID_CARD_NO);
-				setPMPAccessLogAndPersist(accessLog,eResponse);
+				setPMPAccessLogAndPersist(accessLog, eResponse);
 				return eResponse;
-			} catch( Exception ex){
+			} catch (Exception ex) {
 				eResponse.setError_description(ErrorConstants.INVALID_PRECEPTOR_ID_CARD_NO);
 				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
-				setPMPAPIAccessLogDetailsAndPersist(accessLogDetails,eResponse);
+				setPMPAPIAccessLogDetailsAndPersist(accessLogDetails, eResponse);
 				accessLog.setErrorMessage(ErrorConstants.INVALID_PRECEPTOR_ID_CARD_NO);
-				setPMPAccessLogAndPersist(accessLog,eResponse);
+				setPMPAccessLogAndPersist(accessLog, eResponse);
 				return eResponse;
 			}
 		}
 		accessLogDetails.setErrorMessage("");
 		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
-		setPMPAPIAccessLogDetailsAndPersist(accessLogDetails,userProfile);
-		return new SuccessResponse(ErrorConstants.STATUS_SUCCESS, "Session Details validation successfull");	
+		setPMPAPIAccessLogDetailsAndPersist(accessLogDetails, userProfile);
+		return new SuccessResponse(ErrorConstants.STATUS_SUCCESS, "Session Details validation successfull");
 	}
-	
 
 	/**
-	 * Method is used to persist the pmp api access log details data 
-	 * in db.
+	 * Method is used to persist the pmp api access log details data in db.
 	 * 
-	 * @param accessLogDetails to set the pmp api access log details data.
-	 * @param responseBody to set the response body which we get after calling
-	 *  MYSRCM api to validate preceptor details.
+	 * @param accessLogDetails
+	 *            to set the pmp api access log details data.
+	 * @param responseBody
+	 *            to set the response body which we get after calling MYSRCM api
+	 *            to validate preceptor details.
 	 */
-	private void setPMPAPIAccessLogDetailsAndPersist(PMPAPIAccessLogDetails accessLogDetails,Object responseBody){
-		try{
+	private void setPMPAPIAccessLogDetailsAndPersist(PMPAPIAccessLogDetails accessLogDetails, Object responseBody) {
+		try {
 			accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(responseBody));
 			accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
-		}catch(Exception ex){
+		} catch (Exception ex) {
 			LOGGER.error("Failed to create or update access log details");
 		}
 	}
 
-	
 	/**
-	 * Method is used to generate an auto generated 
-	 * session id for every session details object.
+	 * Method is used to generate an auto generated session id for every session
+	 * details object.
 	 * 
-	 * @param digit to set the limit of auto generated id.
+	 * @param digit
+	 *            to set the limit of auto generated id.
 	 * @return an auto generated session id.
 	 */
-	public String generateSessionId(int digit){
+	public String generateSessionId(int digit) {
 		String generatedNumber = new String();
 		SecureRandom secureRandomGenerator;
 		try {
@@ -315,103 +321,106 @@ public class SessionDetailsHelper {
 		return generatedNumber.substring(0, digit);
 	}
 
-
 	/**
-	 * Method is used to validate the delete  session details api
-	 * call parameters.For a particular event and a particular session
-	 * this method will validate the parameters provided are correct or wrong.
+	 * Method is used to validate the delete session details api call
+	 * parameters.For a particular event and a particular session this method
+	 * will validate the parameters provided are correct or wrong.
 	 * 
-	 * @param sessionDetails to get the auto generated event and session id.
-	 * @param accessLog to persist the access log details in db.
+	 * @param sessionDetails
+	 *            to get the auto generated event and session id.
+	 * @param accessLog
+	 *            to persist the access log details in db.
 	 * @return success or error response depending on the parameters validated.
 	 */
-	public PMPResponse validateDeleteSessionDetailParams(SessionDetails sessionDetails,PMPAPIAccessLog accessLog) {
-		
-		ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"");
-		
-		if(null == sessionDetails.getEventId() || sessionDetails.getEventId().isEmpty()){
+	public PMPResponse validateDeleteSessionDetailParams(SessionDetails sessionDetails, PMPAPIAccessLog accessLog) {
+
+		ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "");
+
+		if (null == sessionDetails.getEventId() || sessionDetails.getEventId().isEmpty()) {
 			eResponse.setError_description(ErrorConstants.EMPTY_EVENT_ID);
 			accessLog.setErrorMessage(ErrorConstants.EMPTY_EVENT_ID);
-			setPMPAccessLogAndPersist(accessLog,eResponse);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
-		}else {
-			int programId= 0;
-			try{
-				programId= programRepository.getProgramIdByEventId(sessionDetails.getEventId());
-			}catch(Exception ex){
-				LOGGER.error("Program Id is not available for AutoGenerated Id :"+sessionDetails.getEventId());
+		} else {
+			int programId = 0;
+			try {
+				programId = programRepository.getProgramIdByEventId(sessionDetails.getEventId());
+			} catch (Exception ex) {
+				LOGGER.error("Program Id is not available for AutoGenerated Id :" + sessionDetails.getEventId());
 			}
 
-			if(programId <= 0){
+			if (programId <= 0) {
 				eResponse.setError_description(ErrorConstants.INVALID_EVENT_ID);
 				accessLog.setErrorMessage(ErrorConstants.INVALID_EVENT_ID);
-				setPMPAccessLogAndPersist(accessLog,eResponse);
+				setPMPAccessLogAndPersist(accessLog, eResponse);
 				return eResponse;
-			}else{
+			} else {
 				sessionDetails.setProgramId(programId);
 			}
 		}
-		
-		if(null == sessionDetails.getAutoGeneratedSessionId() || sessionDetails.getAutoGeneratedSessionId().isEmpty()){
+
+		if (null == sessionDetails.getAutoGeneratedSessionId() || sessionDetails.getAutoGeneratedSessionId().isEmpty()) {
 			eResponse.setError_description(ErrorConstants.EMPTY_SESSION_ID);
 			accessLog.setErrorMessage(ErrorConstants.EMPTY_SESSION_ID);
-			setPMPAccessLogAndPersist(accessLog,eResponse);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
-		}else {
+		} else {
 			int sessionId = 0;
-			try{
-				sessionId = sessionDtlsRepo.getSessionId(sessionDetails.getAutoGeneratedSessionId());
-			}catch(Exception ex){
-				LOGGER.error("Session Id is not available for AutoGenerated Id :"+sessionDetails.getAutoGeneratedSessionId());
+			try {
+				sessionId = sessionDtlsSrcv.getSessionId(sessionDetails.getAutoGeneratedSessionId());
+			} catch (Exception ex) {
+				LOGGER.error("Session Id is not available for AutoGenerated Id :"
+						+ sessionDetails.getAutoGeneratedSessionId());
 			}
-			
-			if(sessionId <= 0){
+
+			if (sessionId <= 0) {
 				eResponse.setError_description(ErrorConstants.INVALID_SESSION_ID);
 				accessLog.setErrorMessage(ErrorConstants.INVALID_SESSION_ID);
-				setPMPAccessLogAndPersist(accessLog,eResponse);
+				setPMPAccessLogAndPersist(accessLog, eResponse);
 				return eResponse;
 			}
 		}
-		
+
 		return new SuccessResponse(ErrorConstants.STATUS_SUCCESS, "Delete Session Details validation successfull");
-		
+
 	}
-	
 
 	/**
 	 * Method is used to validate the get session details list parametrs.
 	 * 
-	 * @param sessionDetails object is used to get the auto generated event id.
-	 * @param accessLog is used to create log details in pmp.
+	 * @param sessionDetails
+	 *            object is used to get the auto generated event id.
+	 * @param accessLog
+	 *            is used to create log details in pmp.
 	 * @return success or error response depending on the validation.
 	 */
 	public PMPResponse validateGetSessionDetailsParams(SessionDetails sessionDetails, PMPAPIAccessLog accessLog) {
-		
-		ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"");
-		
-		if(null == sessionDetails.getEventId() || sessionDetails.getEventId().isEmpty()){
+
+		ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "");
+
+		if (null == sessionDetails.getEventId() || sessionDetails.getEventId().isEmpty()) {
 			eResponse.setError_description(ErrorConstants.EMPTY_EVENT_ID);
 			accessLog.setErrorMessage(ErrorConstants.EMPTY_EVENT_ID);
-			setPMPAccessLogAndPersist(accessLog,eResponse);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
-		}else {
-			int programId= 0;
-			try{
-				programId= programRepository.getProgramIdByEventId(sessionDetails.getEventId());
-			}catch(Exception ex){
-				LOGGER.error("Program Id is not available for AutoGenerated Id :"+sessionDetails.getEventId());
+		} else {
+			int programId = 0;
+			try {
+				programId = programRepository.getProgramIdByEventId(sessionDetails.getEventId());
+			} catch (Exception ex) {
+				LOGGER.error("Program Id is not available for AutoGenerated Id :" + sessionDetails.getEventId());
 			}
 
-			if(programId <= 0){
+			if (programId <= 0) {
 				eResponse.setError_description(ErrorConstants.INVALID_EVENT_ID);
 				accessLog.setErrorMessage(ErrorConstants.INVALID_EVENT_ID);
-				setPMPAccessLogAndPersist(accessLog,eResponse);
+				setPMPAccessLogAndPersist(accessLog, eResponse);
 				return eResponse;
-			}else{
+			} else {
 				sessionDetails.setProgramId(programId);
 			}
 		}
-		
+
 		return new SuccessResponse(ErrorConstants.STATUS_SUCCESS, "Get Session Details validation successfull");
 	}
 
