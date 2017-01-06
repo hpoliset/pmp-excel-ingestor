@@ -88,6 +88,6 @@ public interface PmpParticipantService {
 	 * @param eWelcomeIDStatus
 	 * @param remarks
 	 */
-	public void updatePartcipantEWelcomeIDStatuswithParticipantID(int programId, String eWelcomeIDStatus, String remarks);
+	public void updatePartcipantEWelcomeIDStatuswithProgramID(int programId, String eWelcomeIDStatus, String remarks);
 
 }
