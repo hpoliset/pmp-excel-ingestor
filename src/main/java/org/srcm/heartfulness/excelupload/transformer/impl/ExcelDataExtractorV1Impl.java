@@ -156,9 +156,9 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 		}
 		program.setProgramStartDate(eventDate);
 		if(disableEwelcomeIdGeneration){
-			program.setIsEventDisabled(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
+			program.setIsEwelcomeIdGenerationDisabled(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
 		}else{
-			program.setIsEventDisabled(EventDetailsUploadConstants.EWELCOME_ID_ENABLED_STATE);
+			program.setIsEwelcomeIdGenerationDisabled(EventDetailsUploadConstants.EWELCOME_ID_ENABLED_STATE);
 		}
 		LOGGER.info("Parsing program data completed for altered 1.0 template.");
 		return program;

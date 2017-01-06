@@ -626,7 +626,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
 		} else {
 			if (eWelcomeIDStatus.equals(PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE)
-					&& program.getIsEventDisabled().equals(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE)) {
+					&& program.getIsEwelcomeIdGenerationDisabled().equals(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE)) {
 				participant.setEwelcomeIdRemarks(remarks);
 				participant.setEwelcomeIdState(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
 				participant.setIsEwelcomeIdInformed(0);

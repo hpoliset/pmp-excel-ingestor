@@ -255,9 +255,9 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		program.setWelcomeCardSignedByName(eventSheet.getRow(13).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		program.setWelcomeCardSignerIdCardNumber(eventSheet.getRow(14).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		if(disableEwelcomeIdGeneration){
-			program.setIsEventDisabled(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
+			program.setIsEwelcomeIdGenerationDisabled(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
 		}else{
-			program.setIsEventDisabled(EventDetailsUploadConstants.EWELCOME_ID_ENABLED_STATE);
+			program.setIsEwelcomeIdGenerationDisabled(EventDetailsUploadConstants.EWELCOME_ID_ENABLED_STATE);
 		}
 		LOGGER.info("Completed extracting program for V2 template");
 		return program;
