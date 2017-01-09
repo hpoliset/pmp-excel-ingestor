@@ -14,12 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.srcm.heartfulness.constants.ErrorConstants;
+import org.srcm.heartfulness.helper.AmazonS3Helper;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.SessionImageDetails;
 import org.srcm.heartfulness.model.json.response.Response;
 import org.srcm.heartfulness.repository.ProgramRepository;
-import org.srcm.heartfulness.rest.template.AmazonS3Interface;
+import org.srcm.heartfulness.rest.template.AmazonS3RestTemplate;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
 
@@ -37,7 +38,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AmazonS3ServiceImpl.class);
 
 	@Autowired
-	AmazonS3Interface amazonS3Interface;
+	AmazonS3RestTemplate amazonS3Interface;
 
 	@Autowired
 	ProgramRepository programRepository;
@@ -47,6 +48,9 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 
 	@Autowired
 	SessionDetailsService sessionDetailsService;
+
+	@Autowired
+	AmazonS3Helper amazonS3Helper;
 
 	/*
 	 * (non-Javadoc)
@@ -281,5 +285,49 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 		}
 		return new ResponseEntity<Map<String, String>>(response, HttpStatus.OK);
 	}
+
+	@Override
+	public ResponseEntity<?> uploadFileToAWS(MultipartFile multipartFile) {
+
+		try {
+			// Create payload sha1Hash
+			String hashedPayload = amazonS3Helper.computeHashedRequestPayload(multipartFile);
+			LOGGER.info("------------------------------------------------------------------");
+			LOGGER.info("Hex Encode of Requestpayload : " + hashedPayload);
+
+			// Create canonical request
+			String hashedCanonicalRequest = amazonS3Helper.computeHashedCanonicalRequest(hashedPayload,
+					multipartFile.getOriginalFilename());
+
+			// Create string to sign
+			String stringToSign = amazonS3Helper.getStringToSign(hashedPayload, multipartFile.getOriginalFilename(),
+					hashedCanonicalRequest);
+			LOGGER.info("------------------------------------------------------------------");
+			LOGGER.info("stringToSign : " + stringToSign);
+
+			// Create signing key
+			byte[] singingKey = amazonS3Helper.computeSigningKey();
+			LOGGER.info("------------------------------------------------------------------");
+			LOGGER.info("singingKey : " + singingKey);
+
+			// create signature
+			byte[] byeSignatureForm = amazonS3Helper.HmacSHA256(stringToSign, singingKey);
+			String signature = amazonS3Helper.bytesToHexString(byeSignatureForm);
+			LOGGER.info("------------------------------------------------------------------");
+			LOGGER.info("signature : " + signature +"--------------"+signature.length());
+			LOGGER.info("------------------------------------------------------------------");
+
+			// call rest template
+			amazonS3Interface.upload(multipartFile.getBytes(), multipartFile.getOriginalFilename(), signature,
+					hashedPayload);
+			
+			return new ResponseEntity<String>("File Uploaded successfully",HttpStatus.OK);
+
+		}  catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<String>("Failed to upload file.",HttpStatus.OK);
+		}
+	}
+	
 
 }
