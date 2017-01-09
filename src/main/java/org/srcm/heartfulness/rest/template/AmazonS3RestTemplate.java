@@ -8,14 +8,6 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +15,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -201,8 +192,9 @@ public class AmazonS3RestTemplate extends RestTemplate{
 	}
 	
 	
-	public void upload(byte[] bytes, String originalFilename, String signature, String hashedPayload) throws AmazonServiceException, AmazonClientException, IOException {
-		setProxy();
+	public void upload(byte[] bytes, String originalFilename, String signature, String hashedPayload) {
+		//setProxy();
+		try{
 		String binaryFileContent = toBinary(bytes);
 		String fullDateAndTime = getUTCDateAndTime();
 		String URL=AmazonS3Constants.URI_PROTOCOL+host+AmazonS3Constants.PATH_SEPARATER+originalFilename;
@@ -221,6 +213,9 @@ public class AmazonS3RestTemplate extends RestTemplate{
 		HttpEntity<?> httpEntity = new HttpEntity<Object>(binaryFileContent, httpHeaders);
 		ResponseEntity<Object> response = this.exchange(URL, org.springframework.http.HttpMethod.PUT, httpEntity,Object.class);
 		LOGGER.info("--------------------completed------------------------"+response);
+		}catch(Exception e){
+			logger.error("Exception : {}",e);
+		}
 		
 	}
 	
@@ -230,7 +225,7 @@ public class AmazonS3RestTemplate extends RestTemplate{
 	 */
 	private void setProxy() {
 
-		CredentialsProvider credsProvider = new BasicCredentialsProvider();
+	/*	CredentialsProvider credsProvider = new BasicCredentialsProvider();
 		credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 				new UsernamePasswordCredentials("koustavd", "123Welcome1"));
 		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
@@ -241,7 +236,7 @@ public class AmazonS3RestTemplate extends RestTemplate{
 		CloseableHttpClient client = clientBuilder.build();
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
 		factory.setHttpClient(client);
-		this.setRequestFactory(factory);
+		this.setRequestFactory(factory);*/
 
 	}
 	
