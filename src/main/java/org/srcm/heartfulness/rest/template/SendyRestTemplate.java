@@ -22,8 +22,10 @@ import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -52,6 +54,7 @@ import com.sun.mail.smtp.SMTPMessage;
  *
  */
 @Component
+@PropertySource("classpath:application.properties")
 @ConfigurationProperties(locations = "classpath:dev.sendy.api.properties", ignoreUnknownFields = false, prefix = "sendy")
 public class SendyRestTemplate extends RestTemplate {
 
@@ -75,6 +78,21 @@ public class SendyRestTemplate extends RestTemplate {
 	private String errorAlertMailSubject;
 	private String errorMailTemplate;
 	private String host;
+
+	@Value("${proxy}")
+	private boolean proxy;
+
+	@Value("${proxyHost}")
+	private String proxyHost;
+
+	@Value("${proxyPort}")
+	private int proxyPort;
+
+	@Value("${proxyUser}")
+	private String proxyUser;
+
+	@Value("${proxyPassword}")
+	private String proxyPassword;
 
 	private VelocityContext context;
 
@@ -194,7 +212,7 @@ public class SendyRestTemplate extends RestTemplate {
 	 */
 	public String addNewSubscriber(SendySubscriber sendySubscriberDetails) throws HttpClientErrorException,
 			JsonParseException, JsonMappingException, IOException {
-		proxyHelper.setProxy();
+		setProxy();
 		body = new LinkedMultiValueMap<String, String>();
 
 		body.add("name", sendySubscriberDetails.getNameToSendMail());
@@ -224,7 +242,7 @@ public class SendyRestTemplate extends RestTemplate {
 	 */
 	public String sendWelcomeMail() throws HttpClientErrorException, JsonParseException, JsonMappingException,
 			IOException {
-		proxyHelper.setProxy();
+		setProxy();
 		StringBuffer content = new StringBuffer("");
 		VelocityEngine ve = new VelocityEngine();
 		ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
@@ -263,7 +281,7 @@ public class SendyRestTemplate extends RestTemplate {
 	 */
 	public String executeCronJob() throws HttpClientErrorException, JsonParseException, JsonMappingException,
 			IOException {
-		proxyHelper.setProxy();
+		setProxy();
 		body = new LinkedMultiValueMap<String, String>();
 		httpHeaders = new HttpHeaders();
 		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
@@ -285,7 +303,7 @@ public class SendyRestTemplate extends RestTemplate {
 	 */
 	public String unsubscribeUser(WelcomeMailDetails welcomeMailDetails) throws HttpClientErrorException,
 			JsonParseException, JsonMappingException, IOException {
-		proxyHelper.setProxy();
+		setProxy();
 		body = new LinkedMultiValueMap<String, String>();
 		body.add("email", welcomeMailDetails.getEmail());
 		body.add("boolean", sendFlag);
@@ -312,7 +330,7 @@ public class SendyRestTemplate extends RestTemplate {
 	 */
 	public String unsubscribeUserFromMonthlyNewsletterList(WelcomeMailDetails welcomeMailDetails)
 			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
-		proxyHelper.setProxy();
+		setProxy();
 		body = new LinkedMultiValueMap<String, String>();
 		body.add("email", welcomeMailDetails.getEmail());
 		body.add("boolean", sendFlag);
@@ -386,6 +404,28 @@ public class SendyRestTemplate extends RestTemplate {
 		StringWriter stringWriter = new StringWriter();
 		template.merge(getParameter(), stringWriter);
 		return stringWriter.toString();
+	}
+
+	/**
+	 * Method to set the proxy (development use only)
+	 */
+	public void setProxy() {
+		if (proxy) {
+
+		/*	CredentialsProvider credsProvider = new BasicCredentialsProvider();
+			credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
+					new UsernamePasswordCredentials(proxyUser, proxyPassword));
+			HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+			clientBuilder.useSystemProperties();
+			clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
+			clientBuilder.setDefaultCredentialsProvider(credsProvider);
+			clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
+			CloseableHttpClient client = clientBuilder.build();
+			HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+			factory.setHttpClient(client);
+			this.setRequestFactory(factory);*/
+		}
+
 	}
 
 	public VelocityContext getParameter() {

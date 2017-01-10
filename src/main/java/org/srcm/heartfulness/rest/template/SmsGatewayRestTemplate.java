@@ -3,8 +3,10 @@ package org.srcm.heartfulness.rest.template;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 @Component
+@PropertySource("classpath:application.properties")
 @ConfigurationProperties(locations = "classpath:dev.sms.gateway.properties", ignoreUnknownFields = false, prefix = "gateway")
 public class SmsGatewayRestTemplate extends RestTemplate {
 
@@ -53,10 +56,25 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 	private MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
 	private HttpEntity<?> httpEntity;
 
+	@Value("${proxy}")
+	private boolean proxy;
+
+	@Value("${proxyHost}")
+	private String proxyHost;
+
+	@Value("${proxyPort}")
+	private int proxyPort;
+
+	@Value("${proxyUser}")
+	private String proxyUser;
+
+	@Value("${proxyPassword}")
+	private String proxyPassword;
+
 	public SMSResponse sendSMS(String mobileNumber, String textMessage) throws HttpClientErrorException,
 			JsonParseException, JsonMappingException, IOException {
 
-		proxyHelper.setProxy();
+		setProxy();
 
 		Account account = new Account();
 		account.setUser(username);
@@ -87,7 +105,7 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 
 	public GoogleResponse getLocationdetails(String address, String pincode) throws HttpClientErrorException,
 			JsonParseException, JsonMappingException, IOException {
-		proxyHelper.setProxy();
+		setProxy();
 		httpHeaders = new HttpHeaders();
 		httpHeaders.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
@@ -95,6 +113,31 @@ public class SmsGatewayRestTemplate extends RestTemplate {
 				+ address + "" + "&components=postal_code:" + pincode + "&sensor=false", HttpMethod.GET, httpEntity,
 				String.class);
 		return mapper.readValue(response.getBody(), GoogleResponse.class);
+	}
+
+	/**
+	 * Method to set the proxy (development use only)
+	 */
+	public void setProxy() {
+		if (proxy) {
+
+			/*
+			 * CredentialsProvider credsProvider = new
+			 * BasicCredentialsProvider(); credsProvider.setCredentials(new
+			 * AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), new
+			 * UsernamePasswordCredentials(proxyUser, proxyPassword));
+			 * HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+			 * clientBuilder.useSystemProperties(); clientBuilder.setProxy(new
+			 * HttpHost(proxyHost, proxyPort));
+			 * clientBuilder.setDefaultCredentialsProvider(credsProvider);
+			 * clientBuilder.setProxyAuthenticationStrategy(new
+			 * ProxyAuthenticationStrategy()); CloseableHttpClient client =
+			 * clientBuilder.build(); HttpComponentsClientHttpRequestFactory
+			 * factory = new HttpComponentsClientHttpRequestFactory();
+			 * factory.setHttpClient(client); this.setRequestFactory(factory);
+			 */
+		}
+
 	}
 
 	public void setUsername(String username) {

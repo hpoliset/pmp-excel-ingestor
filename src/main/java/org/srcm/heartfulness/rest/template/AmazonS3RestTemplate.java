@@ -3,7 +3,9 @@ package org.srcm.heartfulness.rest.template;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +35,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
  *
  */
 @Component
+@PropertySource("classpath:application.properties")
 @ConfigurationProperties(locations = "classpath:dev.aws.s3.properties", ignoreUnknownFields = true, prefix = "aws.s3")
 public class AmazonS3RestTemplate extends RestTemplate {
 
@@ -57,6 +60,21 @@ public class AmazonS3RestTemplate extends RestTemplate {
 	private String service;
 
 	private String host;
+	
+	@Value("${proxy}")
+	private boolean proxy;
+
+	@Value("${proxyHost}")
+	private String proxyHost;
+
+	@Value("${proxyPort}")
+	private int proxyPort;
+
+	@Value("${proxyUser}")
+	private String proxyUser;
+
+	@Value("${proxyPassword}")
+	private String proxyPassword;
 
 	public String getAccesskeyid() {
 		return accesskeyid;
@@ -133,6 +151,7 @@ public class AmazonS3RestTemplate extends RestTemplate {
 	 */
 	public ResponseEntity<Object> uploadObjectToAWS(byte[] objectBinaryContent, String signature, String hashedPayload,
 			String objectPath) throws HttpClientErrorException {
+		setProxy();
 		String fullDateAndTime = amazonS3Helper.getUTCDateAndTime();
 		String URL = AmazonS3Constants.URI_PROTOCOL + host + AmazonS3Constants.PATH_SEPARATER + objectPath;
 		String authorization = AmazonS3Constants.ALGORITHM_TO_CALCULATE_SIGNATURE + AmazonS3Constants.SPACE_SEPARATER
@@ -178,6 +197,30 @@ public class AmazonS3RestTemplate extends RestTemplate {
 		generatePresignedUrlRequest.setMethod(HttpMethod.GET);
 		generatePresignedUrlRequest.setExpiration(expiration);
 		return s3client.generatePresignedUrl(generatePresignedUrlRequest).toString();
+	}
+	
+	
+	/**
+	 * Method to set the proxy (development use only)
+	 */
+	public void setProxy() {
+		if (proxy) {
+
+			/*CredentialsProvider credsProvider = new BasicCredentialsProvider();
+			credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
+					new UsernamePasswordCredentials(proxyUser, proxyPassword));
+			HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+			clientBuilder.useSystemProperties();
+			clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
+			clientBuilder.setDefaultCredentialsProvider(credsProvider);
+			clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
+			CloseableHttpClient client = clientBuilder.build();
+			HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+			factory.setHttpClient(client);
+			this.setRequestFactory(factory);*/
+
+		}
+
 	}
 
 }
