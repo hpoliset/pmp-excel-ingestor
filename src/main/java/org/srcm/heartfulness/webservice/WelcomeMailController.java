@@ -37,7 +37,6 @@ public class WelcomeMailController {
 			LOGGER.info("Scheduler started at - " + new Date());
 			WelcomeMailService.addNewSubscriber();
 		} catch (HttpClientErrorException | IOException | MessagingException e) {
-			// e.printStackTrace();
 			LOGGER.error("Exception while Subscribe - {} " + e.getMessage());
 		}
 	}
@@ -48,7 +47,6 @@ public class WelcomeMailController {
 			LOGGER.info("Unsubcribe user called.");
 			WelcomeMailService.unsubscribeUsers();
 		} catch (HttpClientErrorException | IOException e) {
-			// e.printStackTrace();
 			LOGGER.error("Exception while Unsubscribe - {} " + e.getMessage());
 		}
 	}
@@ -76,8 +74,6 @@ public class WelcomeMailController {
 		LOGGER.info("END		:Cron job completed to fetch participants to whom welcome mail already sent");
 	}
 
-	// @RequestMapping(value = "informcoordinatorswithewelcomeids", method =
-	// RequestMethod.POST)
 	/* @Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}") */
 	public void sendGeneratedEwelcomeIdToCoordinators() {
 		LOGGER.info("START		:Cron job started to send mails to coordinator to inform participant ewelcomeid's");
@@ -85,7 +81,6 @@ public class WelcomeMailController {
 		LOGGER.info("END		:Cron job completed to send mails to coordinator to inform participant ewelcomeid's");
 	}
 
-	// @RequestMapping(value = "sendwelcomemail", method = RequestMethod.POST)
 	/* @Scheduled(cron = "${welcome.mail.to.hfnlist.cron.time}") */
 	public void sendWelcomeMail() {
 		try {

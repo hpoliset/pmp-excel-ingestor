@@ -74,7 +74,6 @@ public class AmazonS3Controller {
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 
 		try {
-
 			Response eResponse = amazonS3RequestValidator.uploadPermissionLetterRequest(eventId, multipartFile,
 					accessLog, token);
 			if (null != eResponse) {

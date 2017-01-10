@@ -46,21 +46,26 @@ public class SessionDetailsController {
 
 	@Autowired
 	SessionDetailsService sessionDtlsSrcv;
-	
+
 	/**
-	 * Web service endpoint to create and update a session details for a particular event. The HTTP request
-	 * body is expected to contain a SessionDetails object in JSON format. The
-	 * SessionDetails is persisted in the data repository.
+	 * Web service endpoint to create and update a session details for a
+	 * particular event. The HTTP request body is expected to contain a
+	 * SessionDetails object in JSON format. The SessionDetails is persisted in
+	 * the data repository.
 	 * 
-	 * If created or updated successfully, the service returns an success response body with
-	 * HTTP status 200.
+	 * If created or updated successfully, the service returns an success
+	 * response body with HTTP status 200.
 	 * 
 	 * If not created successfully, the service returns error messages.
 	 * 
-	 * @param authToken Token to be validated against mysrcm endpoint.
-	 * @param sessionDetails SessionDetails object to be created in PMP backend.
-	 * @param httpRequest to track the ip address from where request is coming.
-	 * @return SessionDetails json object if SessionDetails is created successfully.
+	 * @param authToken
+	 *            Token to be validated against mysrcm endpoint.
+	 * @param sessionDetails
+	 *            SessionDetails object to be created in PMP backend.
+	 * @param httpRequest
+	 *            to track the ip address from where request is coming.
+	 * @return SessionDetails json object if SessionDetails is created
+	 *         successfully.
 	 * 
 	 */
 	@RequestMapping(value = "/session", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -70,11 +75,7 @@ public class SessionDetailsController {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
 				StackTraceUtils.convertPojoToJson(sessionDetails));
-		try {
-			apiAccessLogService.createPmpAPIAccessLog(accessLog);
-		} catch (Exception ex) {
-			LOGGER.error("Failed to create access log details");
-		}
+		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 
 		PMPResponse tokenResponse = sessionDtlsHlpr.validateAuthToken(authToken, accessLog);
 		if (tokenResponse instanceof ErrorResponse) {
@@ -117,31 +118,29 @@ public class SessionDetailsController {
 		accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 		accessLog.setErrorMessage(StackTraceUtils.convertPojoToJson(serviceResponse));
 		accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(serviceResponse));
-		try {
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-		} catch (Exception ex) {
-			LOGGER.error("Exception while updating logger", ex);
-		}
+		apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 
 		return new ResponseEntity<PMPResponse>(serviceResponse, HttpStatus.OK);
 	}
-	
 
 	/**
-	 *  Web service endpoint to delete a session details for a particular event. The HTTP request
-	 * body is expected to contain a SessionDetails object in JSON format. The
-	 * SessionDetails is deleted from the data repository.
+	 * Web service endpoint to delete a session details for a particular event.
+	 * The HTTP request body is expected to contain a SessionDetails object in
+	 * JSON format. The SessionDetails is deleted from the data repository.
 	 * 
-	 * If session details is deleted successfully, the service returns an success response body with
-	 * HTTP status 200.
+	 * If session details is deleted successfully, the service returns an
+	 * success response body with HTTP status 200.
 	 * 
 	 * If not created successfully, the service returns error messages.
 	 * 
 	 * 
-	 * @param authToken authToken Token to be validated against mysrcm endpoint.
-	 * @param sessionDetails SessionDetails object to get the auto generated session id 
-	 * for deleting session details.
-	 * @param httpRequest to track the ip address from where request is coming.
+	 * @param authToken
+	 *            authToken Token to be validated against mysrcm endpoint.
+	 * @param sessionDetails
+	 *            SessionDetails object to get the auto generated session id for
+	 *            deleting session details.
+	 * @param httpRequest
+	 *            to track the ip address from where request is coming.
 	 * @return Success response if Session details is successfully deleted.
 	 * 
 	 */
@@ -152,11 +151,7 @@ public class SessionDetailsController {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
 				StackTraceUtils.convertPojoToJson(sessionDetails));
-		try {
-			apiAccessLogService.createPmpAPIAccessLog(accessLog);
-		} catch (Exception ex) {
-			LOGGER.error("Failed to create access log details");
-		}
+		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 
 		PMPResponse tokenResponse = sessionDtlsHlpr.validateAuthToken(authToken, accessLog);
 		if (tokenResponse instanceof ErrorResponse) {
@@ -179,30 +174,28 @@ public class SessionDetailsController {
 
 		accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 		accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(serviceResponse));
-		try {
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-		} catch (Exception ex) {
-			LOGGER.error("Exception while updating logger", ex);
-		}
+		apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 
 		return new ResponseEntity<PMPResponse>(serviceResponse, HttpStatus.OK);
 	}
 
-	
-	
 	/**
-	 *  Web service endpoint to get a list of  session details for a particular event. The HTTP request
-	 * body is expected to contain a SessionDetails object in JSON format.
+	 * Web service endpoint to get a list of session details for a particular
+	 * event. The HTTP request body is expected to contain a SessionDetails
+	 * object in JSON format.
 	 * 
-	 * If session details are avaibale for a particular event, it is returned in a list format with
-	 * HTTP status 200.
+	 * If session details are avaibale for a particular event, it is returned in
+	 * a list format with HTTP status 200.
 	 * 
 	 * If not an empty list is returned.
 	 * 
-	 * @param authToken Token to be validated against mysrcm endpoint.
-	 * @param sessionDetails SessionDetails object to get the auto generated event id and get a list of SessionDetails
-	 * for that particular event.
-	 * @param httpRequest to track the ip address from where request is coming.
+	 * @param authToken
+	 *            Token to be validated against mysrcm endpoint.
+	 * @param sessionDetails
+	 *            SessionDetails object to get the auto generated event id and
+	 *            get a list of SessionDetails for that particular event.
+	 * @param httpRequest
+	 *            to track the ip address from where request is coming.
 	 * @return list of SessionDetails for a particular event.
 	 * 
 	 */
@@ -213,11 +206,7 @@ public class SessionDetailsController {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
 				StackTraceUtils.convertPojoToJson(sessionDetails));
-		try {
-			apiAccessLogService.createPmpAPIAccessLog(accessLog);
-		} catch (Exception ex) {
-			LOGGER.error("Failed to create access log details");
-		}
+		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 
 		PMPResponse tokenResponse = sessionDtlsHlpr.validateAuthToken(authToken, accessLog);
 		if (tokenResponse instanceof ErrorResponse) {
@@ -235,11 +224,7 @@ public class SessionDetailsController {
 		accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 		accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 		accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(sessionDtlsList));
-		try {
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-		} catch (Exception ex) {
-			LOGGER.error("Exception while updating logger", ex);
-		}
+		apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 
 		return new ResponseEntity<List<SessionDetails>>(sessionDtlsList, HttpStatus.OK);
 	}

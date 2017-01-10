@@ -72,11 +72,6 @@ public class UserController {
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		UserProfile srcmProfile = null;
 		try {
-			/*
-			 * Result result = userProfileService.getUserProfile(
-			 * encryptDecryptAES.decrypt(token,
-			 * env.getProperty("security.encrypt.token")), id);
-			 */
 			Result result = userProfileService.getUserProfile(token, id);
 			srcmProfile = result.getUserProfile()[0];
 			User user = userProfileService.loadUserByEmail(srcmProfile.getEmail());

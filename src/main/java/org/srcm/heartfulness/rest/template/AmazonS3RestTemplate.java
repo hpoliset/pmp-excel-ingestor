@@ -2,8 +2,6 @@ package org.srcm.heartfulness.rest.template;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpEntity;
@@ -34,13 +32,11 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
  */
 @Component
 @ConfigurationProperties(locations = "classpath:dev.aws.s3.properties", ignoreUnknownFields = true, prefix = "aws.s3")
-public class AmazonS3RestTemplate extends RestTemplate{
-	
-	private static final Logger LOGGER = LoggerFactory.getLogger(AmazonS3RestTemplate.class);
-	
+public class AmazonS3RestTemplate extends RestTemplate {
+
 	@Autowired
 	AmazonS3Helper amazonS3Helper;
-	
+
 	@Autowired
 	ProxyHelper proxyHelper;
 
@@ -51,7 +47,7 @@ public class AmazonS3RestTemplate extends RestTemplate{
 	private String bucketname;
 
 	private long urlexpirytime;
-	
+
 	private String signedheaders;
 
 	private String region;
@@ -59,7 +55,7 @@ public class AmazonS3RestTemplate extends RestTemplate{
 	private String service;
 
 	private String host;
-	
+
 	public String getAccesskeyid() {
 		return accesskeyid;
 	}
@@ -91,7 +87,7 @@ public class AmazonS3RestTemplate extends RestTemplate{
 	public void setUrlexpirytime(long urlexpirytime) {
 		this.urlexpirytime = urlexpirytime;
 	}
-	
+
 	public String getSignedheaders() {
 		return signedheaders;
 	}
@@ -133,22 +129,25 @@ public class AmazonS3RestTemplate extends RestTemplate{
 	 * @throws AmazonServiceException
 	 * @throws AmazonClientException
 	 */
-	public ResponseEntity<Object> upload(byte[] objectBinaryContent,String signature, String hashedPayload, String objectPath) throws HttpClientErrorException {
+	public ResponseEntity<Object> upload(byte[] objectBinaryContent, String signature, String hashedPayload,
+			String objectPath) throws HttpClientErrorException {
 		String fullDateAndTime = amazonS3Helper.getUTCDateAndTime();
-		String URL=AmazonS3Constants.URI_PROTOCOL+host+AmazonS3Constants.PATH_SEPARATER+objectPath;
-		String authorization=AmazonS3Constants.ALGORITHM_TO_CALCULATE_SIGNATURE+" "+AmazonS3Constants.AWS_AUTHORIZATION_CREDENTIAL+"="
-		+accesskeyid+AmazonS3Constants.PATH_SEPARATER+fullDateAndTime.split("T")[0]
-				+AmazonS3Constants.PATH_SEPARATER+region+AmazonS3Constants.PATH_SEPARATER+service
-				+AmazonS3Constants.PATH_SEPARATER+AmazonS3Constants.AWS4_REQUEST+","
-				+AmazonS3Constants.AWS_AUTHORIZATION_SIGNEDHEADERS+"="+signedheaders+","+AmazonS3Constants.AWS_AUTHORIZATION_SIGNATURE+"="+signature;
-		LOGGER.info("authorization : "+authorization);
+		String URL = AmazonS3Constants.URI_PROTOCOL + host + AmazonS3Constants.PATH_SEPARATER + objectPath;
+		String authorization = AmazonS3Constants.ALGORITHM_TO_CALCULATE_SIGNATURE + AmazonS3Constants.SPACE_SEPARATER
+				+ AmazonS3Constants.AWS_AUTHORIZATION_CREDENTIAL + accesskeyid + AmazonS3Constants.PATH_SEPARATER
+				+ fullDateAndTime.split("T")[0] + AmazonS3Constants.PATH_SEPARATER + region
+				+ AmazonS3Constants.PATH_SEPARATER + service + AmazonS3Constants.PATH_SEPARATER
+				+ AmazonS3Constants.AWS4_REQUEST + AmazonS3Constants.COMMA_SEPARATER
+				+ AmazonS3Constants.AWS_AUTHORIZATION_SIGNEDHEADERS + signedheaders + AmazonS3Constants.COMMA_SEPARATER
+				+ AmazonS3Constants.AWS_AUTHORIZATION_SIGNATURE + signature;
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.set(RestTemplateConstants.AUTHORIZATION, authorization);
 		httpHeaders.set(AmazonS3Constants.DATE_HEADER, fullDateAndTime);
 		httpHeaders.set(AmazonS3Constants.HOST_HEADER, host);
 		httpHeaders.set(AmazonS3Constants.SHA256_CONTENT_HEADER, hashedPayload);
 		HttpEntity<?> httpEntity = new HttpEntity<Object>(objectBinaryContent, httpHeaders);
-		ResponseEntity<Object> response = this.exchange(URL, org.springframework.http.HttpMethod.PUT, httpEntity,Object.class);
+		ResponseEntity<Object> response = this.exchange(URL, org.springframework.http.HttpMethod.PUT, httpEntity,
+				Object.class);
 		return response;
 	}
 
@@ -177,7 +176,6 @@ public class AmazonS3RestTemplate extends RestTemplate{
 		generatePresignedUrlRequest.setMethod(HttpMethod.GET);
 		generatePresignedUrlRequest.setExpiration(expiration);
 		return s3client.generatePresignedUrl(generatePresignedUrlRequest).toString();
-
 	}
-	
+
 }
