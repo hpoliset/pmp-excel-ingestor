@@ -209,8 +209,8 @@ public class AmazonS3RestTemplate extends RestTemplate{
 		httpHeaders.set(AmazonS3Constants.DATE_HEADER, fullDateAndTime);
 		httpHeaders.set(AmazonS3Constants.HOST_HEADER, host);
 		httpHeaders.set(AmazonS3Constants.SHA256_CONTENT_HEADER, hashedPayload);
-		InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes());
-		HttpEntity<?> httpEntity = new HttpEntity<Object>(inputStream, httpHeaders);
+	//	InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes());
+		HttpEntity<?> httpEntity = new HttpEntity<Object>(multipartFile.getBytes(), httpHeaders);
 		ResponseEntity<Object> response = this.exchange(URL, org.springframework.http.HttpMethod.PUT, httpEntity,Object.class);
 		LOGGER.info("--------------------completed------------------------"+response);
 	

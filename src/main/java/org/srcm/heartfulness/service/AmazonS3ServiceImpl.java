@@ -325,7 +325,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 
 		}  catch (Exception e) {
 			e.printStackTrace();
-			LOGGER.info("Exception : "+e);
+			LOGGER.info("Exception : "+StackTraceUtils.convertStackTracetoString(e));
 			return new ResponseEntity<String>("Failed to upload file.",HttpStatus.OK);
 		}
 	}
