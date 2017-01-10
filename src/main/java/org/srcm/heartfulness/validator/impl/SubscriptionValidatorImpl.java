@@ -9,8 +9,7 @@ import org.srcm.heartfulness.model.json.request.SubscriptionRequest;
 import org.srcm.heartfulness.validator.SubscriptionValidator;
 
 /**
- * Validator implementation to streamline all Event dashboard validation
- * implementation.
+ * Validator to streamline all Subscribe/Unsubscribe requests to HFN.
  * 
  * @author himasreev
  */

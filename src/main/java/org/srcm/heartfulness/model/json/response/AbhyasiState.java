@@ -3,7 +3,9 @@ package org.srcm.heartfulness.model.json.response;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * Class to hold the state details of abhyasi in the result of MYSRCM get Abhyasi profile API.
+ * Class to hold the state details of abhyasi in the result of MYSRCM get
+ * Abhyasi profile API.
+ * 
  * @author HimaSree
  *
  */
@@ -34,5 +36,5 @@ public class AbhyasiState {
 	public String toString() {
 		return "AbhyasiState [id=" + id + ", name=" + name + "]";
 	}
-	
+
 }

@@ -6,6 +6,12 @@ import org.springframework.stereotype.Component;
 
 import com.amazonaws.ClientConfiguration;
 
+/**
+ * Helper Class - To Set Proxy (Development use)
+ * 
+ * @author himasreev
+ *
+ */
 @Component
 @PropertySource("classpath:application.properties")
 public class ProxyHelper {
@@ -32,7 +38,7 @@ public class ProxyHelper {
 	 * @return
 	 */
 	public ClientConfiguration setProxyToAWSS3() {
-		ClientConfiguration cfg=null;
+		ClientConfiguration cfg = null;
 		if (proxy) {
 			cfg = new ClientConfiguration();
 			cfg.setProxyHost(proxyHost);
@@ -44,24 +50,27 @@ public class ProxyHelper {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Method to set the proxy (development use only)
 	 */
 	public void setProxy() {
-		if (proxy){
-		/*CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
-				new UsernamePasswordCredentials(proxyUser, proxyPassword));
-		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-		clientBuilder.useSystemProperties();
-		clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
-		clientBuilder.setDefaultCredentialsProvider(credsProvider);
-		clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-		CloseableHttpClient client = clientBuilder.build();
-		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-		factory.setHttpClient(client);
-		this.setRequestFactory(factory);*/
+		if (proxy) {
+			/*
+			 * CredentialsProvider credsProvider = new
+			 * BasicCredentialsProvider(); credsProvider.setCredentials(new
+			 * AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), new
+			 * UsernamePasswordCredentials(proxyUser, proxyPassword));
+			 * HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+			 * clientBuilder.useSystemProperties(); clientBuilder.setProxy(new
+			 * HttpHost(proxyHost, proxyPort));
+			 * clientBuilder.setDefaultCredentialsProvider(credsProvider);
+			 * clientBuilder.setProxyAuthenticationStrategy(new
+			 * ProxyAuthenticationStrategy()); CloseableHttpClient client =
+			 * clientBuilder.build(); HttpComponentsClientHttpRequestFactory
+			 * factory = new HttpComponentsClientHttpRequestFactory();
+			 * factory.setHttpClient(client); this.setRequestFactory(factory);
+			 */
 		}
 
 	}

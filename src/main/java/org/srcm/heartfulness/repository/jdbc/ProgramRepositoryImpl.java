@@ -780,13 +780,13 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	}
 
 	/**
-	 * update the co-ordinator details in the datbase after changing the admin
+	 * Update the coordinator details in the database after changing the admin
 	 * for the event
 	 * 
 	 * @param eventAdminChangeRequest
 	 */
 	@Override
-	public void updateCoOrdinatorStatistics(EventAdminChangeRequest eventAdminChangeRequest) {
+	public void updateCoordinatorStatistics(EventAdminChangeRequest eventAdminChangeRequest) {
 		try {
 			Map<String, Object> params = new HashMap<>();
 			params.put("auto_generated_event_id", eventAdminChangeRequest.getEventId());
@@ -836,15 +836,15 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	}
 
 	/**
-	 * updates the participant introduced status for the given participant Ids
-	 * of the goven eventId
+	 * Updates the participant introduced status for the given participant Ids
+	 * of the given eventId
 	 * 
 	 * @param participantIds
 	 * @param eventId
 	 * @param introduced
 	 */
 	@Override
-	public void UpdateParticipantsStatus(String participantIds, String eventId, String introduced, String userEmailID) {
+	public void updateParticipantsStatus(String participantIds, String eventId, String introduced, String userEmailID) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("introduced", PMPConstants.REQUIRED_YES.equalsIgnoreCase(introduced) ? 1 : 0);
 		params.put("introducedBy", userEmailID);
@@ -881,7 +881,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	}
 
 	/**
-	 * gets the all available co-ordinators from the database
+	 * gets the all available coordinators from the database
 	 * 
 	 * @return List<Coordinator>
 	 */
@@ -1055,19 +1055,6 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 				"SELECT DISTINCT program_id FROM program"
 						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""), sqlParameterSource,
 				Integer.class);
-
-		/*
-		 * List<Integer> programIds =
-		 * this.namedParameterJdbcTemplate.queryForList(
-		 * "SELECT DISTINCT program_id FROM program_coordinators" +
-		 * (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""),
-		 * sqlParameterSource, Integer.class);
-		 * 
-		 * Set<Integer> programcount = new HashSet<Integer>();
-		 * if(programIds.size()>0) programcount.addAll(programIds);
-		 * if(programCoordinatorIds.size()>0)
-		 * programcount.addAll(programCoordinatorIds);
-		 */
 
 		return programCoordinatorIds.size();
 	}

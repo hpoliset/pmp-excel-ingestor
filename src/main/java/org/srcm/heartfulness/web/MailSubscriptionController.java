@@ -53,7 +53,7 @@ public class MailSubscriptionController {
 				model.addAttribute("message", "Invalid ID.");
 				return "eventsuccess";
 			}
-			String response = subscriptionService.updateconfirmSubscribedStatus(mailID);
+			String response = subscriptionService.updateConfirmSubscribedStatus(mailID);
 			model.addAttribute("message", response);
 			return "eventsuccess";
 		} catch (IllegalBlockSizeException | NumberFormatException e) {

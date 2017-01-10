@@ -29,6 +29,9 @@ import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
 
 /**
+ * 
+ * Session Details Rest Controller
+ * 
  * @author Koustav Dutta
  *
  */

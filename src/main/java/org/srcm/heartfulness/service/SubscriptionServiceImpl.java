@@ -66,7 +66,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	 * @param name
 	 */
 	@Override
-	public Response subscribetoMailAlerts(SubscriptionRequest subscriptionRequest) {
+	public Response subscribeToMailAlerts(SubscriptionRequest subscriptionRequest) {
 		if (1 == welcomeMailRepository.checkMailSubscribedStatus(subscriptionRequest.getMailID())) {
 			LOGGER.info("Already subscribed - mail : {} , name : {}", subscriptionRequest.getMailID(),
 					subscriptionRequest.getName());
@@ -101,7 +101,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	 * @param mailID
 	 */
 	@Override
-	public String updateconfirmSubscribedStatus(String mailID) {
+	public String updateConfirmSubscribedStatus(String mailID) {
 		if (1 == welcomeMailRepository.checkMailSubscribedStatus(mailID)) {
 			if (1 == welcomeMailRepository.checkForconfirmStatusOfSubscription(mailID)) {
 				LOGGER.info("Already you have confirmed your mail ID. - mail : {}", mailID);
@@ -128,7 +128,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 	 * @return
 	 */
 	@Override
-	public int checkForconfirmStatusOfSubscription(String mailID) {
+	public int checkForConfirmStatusOfSubscription(String mailID) {
 		return welcomeMailRepository.checkForconfirmStatusOfSubscription(mailID);
 	}
 	

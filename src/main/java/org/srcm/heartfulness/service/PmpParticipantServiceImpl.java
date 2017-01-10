@@ -507,7 +507,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 								participantInput.getSeqId(), participantInput.getEmail());
 						eWelcomeID = programService.generateeWelcomeID(participantInput, id);
 						if ("success".equalsIgnoreCase(eWelcomeID)) {
-							programService.UpdateParticipantsStatus(participant.getSeqId(),
+							programService.updateParticipantsStatus(participant.getSeqId(),
 									participantRequest.getEventId(), participantRequest.getIntroduced(), userEmailID);
 							description = new ArrayList<String>();
 							description.add("Participant eWelcomeID : " + participantInput.getWelcomeCardNumber());
@@ -530,7 +530,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				} else {
 					LOGGER.info("START - {} : Updating participant Status : {} ", participantInput.getSeqId(),
 							participantInput.getEmail());
-					programService.UpdateParticipantsStatus(participant.getSeqId(), participantRequest.getEventId(),
+					programService.updateParticipantsStatus(participant.getSeqId(), participantRequest.getEventId(),
 							participantRequest.getIntroduced(), userEmailID);
 					description = new ArrayList<String>();
 					description.add("Participant introduced status updated successfully.");
@@ -599,7 +599,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 		Program program = programrepository.findById(programId);
 		for (Participant participant : participants) {
 			setParticipantEWelcomeIDStatus(program, participant, eWelcomeIDStatus, remarks);
-			participantRepository.UpdateParticipantEwelcomeIDDetails(participant);
+			participantRepository.updateParticipantEwelcomeIDDetails(participant);
 		}
 	}
 

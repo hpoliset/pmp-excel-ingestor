@@ -526,8 +526,8 @@ public class ProgramServiceImpl implements ProgramService {
 	 * @param introduced
 	 */
 	@Override
-	public void UpdateParticipantsStatus(String participantIds, String eventId, String introduced, String userEmailID) {
-		programRepository.UpdateParticipantsStatus(participantIds, eventId, introduced, userEmailID);
+	public void updateParticipantsStatus(String participantIds, String eventId, String introduced, String userEmailID) {
+		programRepository.updateParticipantsStatus(participantIds, eventId, introduced, userEmailID);
 	}
 
 	/**
@@ -591,7 +591,7 @@ public class ProgramServiceImpl implements ProgramService {
 	 */
 	@Override
 	public void updateCoOrdinatorStatistics(EventAdminChangeRequest eventAdminChangeRequest) {
-		programRepository.updateCoOrdinatorStatistics(eventAdminChangeRequest);
+		programRepository.updateCoordinatorStatistics(eventAdminChangeRequest);
 	}
 
 	/**
@@ -773,7 +773,7 @@ public class ProgramServiceImpl implements ProgramService {
 												participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
 												participant.setIntroductionDate(new Date());
 												participant.setIntroduced(1);
-												participantRepository.UpdateParticipantEwelcomeIDDetails(participant);
+												participantRepository.updateParticipantEwelcomeIDDetails(participant);
 												return "success";
 											} else {
 												return "Error While generating eWelcomeID";
@@ -878,7 +878,7 @@ public class ProgramServiceImpl implements ProgramService {
 						StackTraceUtils.convertPojoToJson("Request: Participant Email:" + participant.getEmail()
 								+ ", Participant Name:" + participant.getPrintName()));
 				apiAccessLogService.createPmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
-				AbhyasiResult abhyasiResult = srcmRestTemplate.fetchparticipanteWelcomeID(participant.getEmail());
+				AbhyasiResult abhyasiResult = srcmRestTemplate.fetchParticipantEWelcomeID(participant.getEmail());
 				fetchEwelcomeIDAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				fetchEwelcomeIDAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(abhyasiResult));
 				fetchEwelcomeIDAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
@@ -896,7 +896,7 @@ public class ProgramServiceImpl implements ProgramService {
 								participant.setIntroduced(1);
 								participant.setEwelcomeIdRemarks(null);
 								participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
-								participantRepository.UpdateParticipantEwelcomeIDDetails(participant);
+								participantRepository.updateParticipantEwelcomeIDDetails(participant);
 								return "success";
 							} else {
 								return "Email already in use with participant name "

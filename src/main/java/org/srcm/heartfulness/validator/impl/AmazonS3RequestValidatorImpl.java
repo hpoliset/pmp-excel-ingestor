@@ -31,6 +31,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
+ * Validator to streamline all requests to upload and download objects through
+ * Amazon S3.
  * 
  * @author himasreev
  *
@@ -62,7 +64,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 	 * org.srcm.heartfulness.model.PMPAPIAccessLog, java.lang.String)
 	 */
 	@Override
-	public Response uploadPermissionLetterRequest(String eventId, MultipartFile multipartFile,
+	public Response validateUploadPermissionLetterRequest(String eventId, MultipartFile multipartFile,
 			PMPAPIAccessLog accessLog, String token) {
 		Response eResponse = new Response(ErrorConstants.STATUS_FAILED, "");
 		UserProfile userProfile = null;
@@ -152,7 +154,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 	 * org.srcm.heartfulness.model.PMPAPIAccessLog, java.lang.String)
 	 */
 	@Override
-	public Response downloadPermissionLetterRequest(String fileName, String eventId, PMPAPIAccessLog accessLog,
+	public Response validateDownloadPermissionLetterRequest(String fileName, String eventId, PMPAPIAccessLog accessLog,
 			String token) {
 		Response eResponse = new Response(ErrorConstants.STATUS_FAILED, "");
 		UserProfile userProfile = null;
@@ -242,7 +244,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 	 * org.srcm.heartfulness.model.PMPAPIAccessLog, java.lang.String)
 	 */
 	@Override
-	public Response uploadSessionFilesRequest(String eventId, String sessionId, MultipartFile[] multipartFiles,
+	public Response validateUploadSessionFilesRequest(String eventId, String sessionId, MultipartFile[] multipartFiles,
 			PMPAPIAccessLog accessLog, String token) {
 		Response eResponse = new Response(ErrorConstants.STATUS_FAILED, "");
 		UserProfile userProfile = null;
@@ -341,7 +343,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 	 * org.srcm.heartfulness.model.PMPAPIAccessLog, java.lang.String)
 	 */
 	@Override
-	public Response downloadSessionImagesRequest(String sessionId, String eventId, PMPAPIAccessLog accessLog,
+	public Response validateDownloadSessionImagesRequest(String sessionId, String eventId, PMPAPIAccessLog accessLog,
 			String token) {
 		Response eResponse = new Response(ErrorConstants.STATUS_FAILED, "");
 		UserProfile userProfile = null;

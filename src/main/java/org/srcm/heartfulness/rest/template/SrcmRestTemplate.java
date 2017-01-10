@@ -258,7 +258,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public AbhyasiResult fetchparticipanteWelcomeID(String email) throws HttpClientErrorException, JsonParseException,
+	public AbhyasiResult fetchParticipantEWelcomeID(String email) throws HttpClientErrorException, JsonParseException,
 			JsonMappingException, IOException {
 		proxyHelper.setProxy();
 		MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<String, String>();

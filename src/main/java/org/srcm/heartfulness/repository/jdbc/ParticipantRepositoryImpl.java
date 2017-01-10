@@ -349,7 +349,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	}
 
 	@Override
-	public void UpdateParticipantEwelcomeIDDetails(Participant participant) {
+	public void updateParticipantEwelcomeIDDetails(Participant participant) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("id", participant.getId());
 		params.put("welcomeCardNumber", participant.getWelcomeCardNumber());

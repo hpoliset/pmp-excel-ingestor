@@ -5,6 +5,8 @@ import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.json.response.Response;
 
 /**
+ * Validator to streamline all requests to upload and download objects through
+ * Amazon S3.
  * 
  * @author himasreev
  *
@@ -20,8 +22,8 @@ public interface AmazonS3RequestValidator {
 	 * @param token
 	 * @return
 	 */
-	Response uploadPermissionLetterRequest(String eventId, MultipartFile multipartFile, PMPAPIAccessLog accessLog,
-			String token);
+	Response validateUploadPermissionLetterRequest(String eventId, MultipartFile multipartFile,
+			PMPAPIAccessLog accessLog, String token);
 
 	/**
 	 * Method to validate the request to download the permission letter to the
@@ -33,7 +35,8 @@ public interface AmazonS3RequestValidator {
 	 * @param token
 	 * @return
 	 */
-	Response downloadPermissionLetterRequest(String fileName, String eventId, PMPAPIAccessLog accessLog, String token);
+	Response validateDownloadPermissionLetterRequest(String fileName, String eventId, PMPAPIAccessLog accessLog,
+			String token);
 
 	/**
 	 * Method to validate the request to upload multiple images to the session.
@@ -45,7 +48,7 @@ public interface AmazonS3RequestValidator {
 	 * @param token
 	 * @return
 	 */
-	Response uploadSessionFilesRequest(String eventId, String sessionId, MultipartFile[] multipartFiles,
+	Response validateUploadSessionFilesRequest(String eventId, String sessionId, MultipartFile[] multipartFiles,
 			PMPAPIAccessLog accessLog, String token);
 
 	/**
@@ -58,6 +61,7 @@ public interface AmazonS3RequestValidator {
 	 * @param token
 	 * @return
 	 */
-	Response downloadSessionImagesRequest(String sessionId, String eventId, PMPAPIAccessLog accessLog, String token);
+	Response validateDownloadSessionImagesRequest(String sessionId, String eventId, PMPAPIAccessLog accessLog,
+			String token);
 
 }

@@ -26,6 +26,8 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 
 /**
+ * Template class to communicate with AWS S3 and upload and download object
+ * to/from AWS S3.
  * 
  * @author himasreev
  *
@@ -129,7 +131,7 @@ public class AmazonS3RestTemplate extends RestTemplate {
 	 * @throws AmazonServiceException
 	 * @throws AmazonClientException
 	 */
-	public ResponseEntity<Object> upload(byte[] objectBinaryContent, String signature, String hashedPayload,
+	public ResponseEntity<Object> uploadObjectToAWS(byte[] objectBinaryContent, String signature, String hashedPayload,
 			String objectPath) throws HttpClientErrorException {
 		String fullDateAndTime = amazonS3Helper.getUTCDateAndTime();
 		String URL = AmazonS3Constants.URI_PROTOCOL + host + AmazonS3Constants.PATH_SEPARATER + objectPath;

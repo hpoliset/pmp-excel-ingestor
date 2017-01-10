@@ -159,7 +159,7 @@ public interface ProgramService {
 	 * @param eventId
 	 * @param introduced
 	 */
-	public void UpdateParticipantsStatus(String participantIds, String eventId, String introduced, String userEmailID);
+	public void updateParticipantsStatus(String participantIds, String eventId, String introduced, String userEmailID);
 
 	/**
 	 * Service to get the all available event categories from the database

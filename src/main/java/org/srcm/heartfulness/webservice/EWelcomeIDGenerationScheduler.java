@@ -49,7 +49,6 @@ public class EWelcomeIDGenerationScheduler {
 	/**
 	 * Cron to generate EWelcomeIDs for the participants.
 	 */
-	// @RequestMapping(value = "generateewelcomeid", method =RequestMethod.POST)
 	/* @Scheduled(cron = "${welcome.mailids.generation.cron.time}") */
 	public void generateEWelcomeIDsForParticipants() {
 		LOGGER.info("START : CRON : EWELCOMEID GENERATION : Scheduler to generate EwelcomeID's for the participants started at - "
@@ -97,7 +96,7 @@ public class EWelcomeIDGenerationScheduler {
 									participant.setEwelcomeIdRemarks(eWelcomeID);
 									participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
 									participant.setIsEwelcomeIdInformed(0);
-									participantRepository.UpdateParticipantEwelcomeIDDetails(participant);
+									participantRepository.updateParticipantEwelcomeIDDetails(participant);
 								} catch (Exception e) {
 									LOGGER.error("Exception while persisting participant details : {} ",
 											StackTraceUtils.convertPojoToJson(e));
@@ -118,7 +117,7 @@ public class EWelcomeIDGenerationScheduler {
 									participant2.setEwelcomeIdRemarks(isvalid);
 									participant2.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
 									participant2.setIsEwelcomeIdInformed(0);
-									participantRepository.UpdateParticipantEwelcomeIDDetails(participant2);
+									participantRepository.updateParticipantEwelcomeIDDetails(participant2);
 								}
 								break;
 							} catch (Exception e) {

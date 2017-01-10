@@ -277,25 +277,9 @@ public class ParticipantsController {
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		} catch (IOException e) {
-			e.printStackTrace();
-			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"input/output-error ; Please try after sometime");
-			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
-			/*
-			 * StringWriter stack = new StringWriter(); e.printStackTrace(new
-			 * PrintWriter(stack)); LOGGER.error("Exception" +
-			 * stack.toString());
-			 */
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Please try after sometime.");
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Error while fecthing particpant details.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -383,20 +367,10 @@ public class ParticipantsController {
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		} catch (IOException e) {
-			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"input/output-error ; Please try after sometime");
-			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			e.printStackTrace();
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Please try after sometime.");
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Error while creating particpant.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));

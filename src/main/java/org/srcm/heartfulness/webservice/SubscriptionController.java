@@ -69,7 +69,7 @@ public class SubscriptionController {
 				httpRequest.getRequestURI(), DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED,
 				null, StackTraceUtils.convertPojoToJson(subscriptionRequest), null);
 		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
-		LOGGER.info(" logger ID: {} :Unsubcribe user called - {} ",id, subscriptionRequest.getName());
+		LOGGER.info(" logger ID: {} :Unsubcribe user called - {} ", id, subscriptionRequest.getName());
 		Map<String, String> map = subscriptionValidator.checkMandatoryFieldsinSubscriptionRequest(subscriptionRequest);
 		if (!map.isEmpty()) {
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -105,8 +105,8 @@ public class SubscriptionController {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(subscriptionRequest.getMailID(), httpRequest.getRemoteAddr(),
 				httpRequest.getRequestURI(), DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED,
 				null, StackTraceUtils.convertPojoToJson(subscriptionRequest), null);
-		int id =apiAccessLogService.createPmpAPIAccessLog(accessLog);
-		LOGGER.debug(" logger ID: {} : subcribe user called - {} ",id, subscriptionRequest.getName());
+		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		LOGGER.debug(" logger ID: {} : subcribe user called - {} ", id, subscriptionRequest.getName());
 		Map<String, String> map = subscriptionValidator.checkMandatoryFieldsinSubscriptionRequest(subscriptionRequest);
 		if (!map.isEmpty()) {
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -116,7 +116,7 @@ public class SubscriptionController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
 		} else {
-			Response response = subscriptionService.subscribetoMailAlerts(subscriptionRequest);
+			Response response = subscriptionService.subscribeToMailAlerts(subscriptionRequest);
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());

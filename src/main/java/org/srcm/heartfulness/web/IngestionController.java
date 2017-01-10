@@ -41,7 +41,7 @@ public class IngestionController {
 	@RequestMapping(value = "/ingest/inputForm", method = RequestMethod.GET)
 	public String showUploadForm(HttpServletRequest request,RedirectAttributes redirectAttributes) {
 		try{
-			authHelper.setcurrentUsertoContext(request.getSession());
+			authHelper.setCurrentUsertoContext(request.getSession());
 			return pmpAuthService.showInputForm();
 		}catch(AccessDeniedException e){
 			return "accessdenied";
@@ -78,7 +78,7 @@ public class IngestionController {
 	@RequestMapping(value = "/ingest/bulkUploadForm", method = RequestMethod.GET)
 	public String showBulkUploadForm(HttpServletRequest request,RedirectAttributes redirectAttributes) {
 		try{
-			authHelper.setcurrentUsertoContext(request.getSession());
+			authHelper.setCurrentUsertoContext(request.getSession());
 			return pmpAuthService.showBulkUploadForm();
 		}catch(AccessDeniedException e){
 			return "accessdenied";

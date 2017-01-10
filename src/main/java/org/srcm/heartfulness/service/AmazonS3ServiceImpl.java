@@ -33,6 +33,7 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 
 /**
+ * Service Implementation class for upload and download images from AWS S3.
  * 
  * @author himasreev
  *
@@ -94,7 +95,8 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
 		} catch (InvalidKeyException | NoSuchAlgorithmException | IllegalStateException ex) {
-			LOGGER.error("Exception occured while uploading file. Problem while generating signature.  Exception : {}", ex);
+			LOGGER.error("Exception occured while uploading file. Problem while generating signature.  Exception : {}",
+					ex);
 			response = new Response(ErrorConstants.STATUS_FAILED, "Failed to upload "
 					+ multipartFile.getOriginalFilename());
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -116,21 +118,43 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 		}
 	}
 
+	/**
+	 * Method to calculate the signature for the given object and upload the
+	 * given object to AWS with the calculated signature.
+	 * 
+	 * @param multipartFile
+	 * @param permissionLetterPath
+	 * @throws IOException
+	 * @throws InvalidKeyException
+	 * @throws NoSuchAlgorithmException
+	 * @throws IllegalStateException
+	 * @throws HttpClientErrorException
+	 */
 	private void calculateSignatureAndUploadObjectToAWS(MultipartFile multipartFile, String permissionLetterPath)
 			throws IOException, InvalidKeyException, NoSuchAlgorithmException, IllegalStateException,
 			HttpClientErrorException {
 		// Calculate payload sha1Hash
 		String hashedPayload = amazonS3Helper.computeHashedRequestPayload(multipartFile);
-
 		// calculate the signature
 		String signature = calculateAWSAuthorizationSignature(multipartFile, hashedPayload, permissionLetterPath);
-
 		// upload file to aws
-		System.out.println("Response------------"+amazonS3Interface.upload(multipartFile.getBytes(), signature, hashedPayload,
-				permissionLetterPath));
-
+		ResponseEntity<Object> response = amazonS3Interface.uploadObjectToAWS(multipartFile.getBytes(), signature, hashedPayload,
+				permissionLetterPath);
+		LOGGER.info("Response------------" + response);
 	}
 
+	/**
+	 * Method to calculate the signature to validate the object in AWS.
+	 * 
+	 * @param multipartFile
+	 * @param hashedPayload
+	 * @param permissionLetterPath
+	 * @return
+	 * @throws InvalidKeyException
+	 * @throws NoSuchAlgorithmException
+	 * @throws IllegalStateException
+	 * @throws UnsupportedEncodingException
+	 */
 	private String calculateAWSAuthorizationSignature(MultipartFile multipartFile, String hashedPayload,
 			String permissionLetterPath) throws InvalidKeyException, NoSuchAlgorithmException, IllegalStateException,
 			UnsupportedEncodingException {
@@ -139,19 +163,17 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 		String canonicalRequest = amazonS3Helper.computeCanonicalRequest(hashedPayload, permissionLetterPath);
 
 		// Create Hash of canonical request
-		String hashedCanonicalRequest = amazonS3Helper.computeHashedCanonicalRequest(hashedPayload,
-				permissionLetterPath, canonicalRequest);
+		String hashedCanonicalRequest = amazonS3Helper.computeHashedCanonicalRequest(canonicalRequest);
 
 		// Create string to sign
-		String stringToSign = amazonS3Helper.getStringToSign(hashedPayload, multipartFile.getOriginalFilename(),
-				hashedCanonicalRequest);
+		String stringToSign = amazonS3Helper.getStringToSign(hashedCanonicalRequest);
 
 		// Create signing key
 		byte[] singingKey = amazonS3Helper.computeSigningKey();
 
 		// Create signature
-		byte[] byeSignatureForm = amazonS3Helper.HmacSHA256(stringToSign, singingKey);
-		return amazonS3Helper.bytesToHexString(byeSignatureForm);
+		byte[] byeSignatureForm = amazonS3Helper.getHmacSHA256Content(stringToSign, singingKey);
+		return amazonS3Helper.convertBytesToHexString(byeSignatureForm);
 	}
 
 	/*
@@ -238,7 +260,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 				String signature = calculateAWSAuthorizationSignature(multipartFile, hashedPayload, sessionFilesPath);
 
 				// upload file to aws
-				System.out.println(amazonS3Interface.upload(multipartFile.getBytes(), signature, hashedPayload,
+				System.out.println(amazonS3Interface.uploadObjectToAWS(multipartFile.getBytes(), signature, hashedPayload,
 						sessionFilesPath));
 
 				SessionImageDetails sessionFiles = new SessionImageDetails(sessionDetailsId,
@@ -262,7 +284,9 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 				listOfResponse.add(response);
 			} catch (InvalidKeyException | NoSuchAlgorithmException | IllegalStateException ex) {
-				LOGGER.error("Exception occured while uploading file. Problem while generating signature.  Exception : {}", ex);
+				LOGGER.error(
+						"Exception occured while uploading file. Problem while generating signature.  Exception : {}",
+						ex);
 				response = new Response(ErrorConstants.STATUS_FAILED, "Failed to upload "
 						+ multipartFile.getOriginalFilename());
 				accessLog.setStatus(ErrorConstants.STATUS_FAILED);

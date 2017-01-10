@@ -74,7 +74,7 @@ public class AmazonS3Controller {
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 
 		try {
-			Response eResponse = amazonS3RequestValidator.uploadPermissionLetterRequest(eventId, multipartFile,
+			Response eResponse = amazonS3RequestValidator.validateUploadPermissionLetterRequest(eventId, multipartFile,
 					accessLog, token);
 			if (null != eResponse) {
 				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
@@ -117,7 +117,7 @@ public class AmazonS3Controller {
 				StackTraceUtils.convertPojoToJson("eventId : " + eventId + " , fileName : " + fileName));
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		try {
-			Response eResponse = amazonS3RequestValidator.downloadPermissionLetterRequest(fileName, eventId, accessLog,
+			Response eResponse = amazonS3RequestValidator.validateDownloadPermissionLetterRequest(fileName, eventId, accessLog,
 					token);
 			if (null != eResponse) {
 				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
@@ -158,7 +158,7 @@ public class AmazonS3Controller {
 				StackTraceUtils.convertPojoToJson("eventId : " + eventId + " , fileCount : " + multipartFiles.length));
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		try {
-			Response eResponse = amazonS3RequestValidator.uploadSessionFilesRequest(eventId, sessionId, multipartFiles,
+			Response eResponse = amazonS3RequestValidator.validateUploadSessionFilesRequest(eventId, sessionId, multipartFiles,
 					accessLog, token);
 			if (null != eResponse) {
 				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
@@ -198,7 +198,7 @@ public class AmazonS3Controller {
 				StackTraceUtils.convertPojoToJson("eventId : " + eventId + " , sessionId " + sessionId));
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		try {
-			Response eResponse = amazonS3RequestValidator.downloadSessionImagesRequest(sessionId, eventId, accessLog,
+			Response eResponse = amazonS3RequestValidator.validateDownloadSessionImagesRequest(sessionId, eventId, accessLog,
 					token);
 			if (null != eResponse) {
 				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
