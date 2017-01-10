@@ -10,6 +10,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 import org.srcm.heartfulness.repository.APIAccesslogRepository;
+import org.srcm.heartfulness.webservice.ParticipantsController;
 
 /**
  * @author himasreev
@@ -29,10 +32,12 @@ import org.srcm.heartfulness.repository.APIAccesslogRepository;
 @Repository
 public class APIAccessLogrepositoryImpl implements APIAccesslogRepository {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(APIAccessLogrepositoryImpl.class);
+
 	private SimpleJdbcInsert insertPmpAPIAccessLog;
 	private SimpleJdbcInsert insertPmpAPIAccessLogDetails;
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-	
+
 	private final JdbcTemplate jdbcTemplate;
 
 	@Autowired
@@ -53,24 +58,32 @@ public class APIAccessLogrepositoryImpl implements APIAccesslogRepository {
 	 */
 	@Override
 	public int createOrUpdatePmpAPIAccessLog(PMPAPIAccessLog accessLog) {
-		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(accessLog);
-		if (accessLog.getId() == 0) {
-			Number id = this.insertPmpAPIAccessLog.executeAndReturnKey(parameterSource);
-			accessLog.setId(id.intValue());
-		}else {
-			this.namedParameterJdbcTemplate.update("UPDATE pmp_api_access_log SET "
-					+  	"username=:username, "
-					+ 	"ip_address=:ipAddress, "
-					+	"api_name=:apiName, " 
-					+  	"total_requested_time=:totalRequestedTime, " 
-					+  	"total_response_time=:totalResponseTime, "
-					+   "status=:status, "
-					+ 	"error_message=:errorMessage, "
-					+ 	"request_body=:requestBody, "
-					+ 	"response_body=:responseBody "
-					+ 	"WHERE id=:id", parameterSource);
+		try{
+			BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(accessLog);
+			if (accessLog.getId() == 0) {
+				Number id = this.insertPmpAPIAccessLog.executeAndReturnKey(parameterSource);
+				accessLog.setId(id.intValue());
+			}else {
+				this.namedParameterJdbcTemplate.update("UPDATE pmp_api_access_log SET "
+						+  	"username=:username, "
+						+ 	"ip_address=:ipAddress, "
+						+	"api_name=:apiName, " 
+						+  	"total_requested_time=:totalRequestedTime, " 
+						+  	"total_response_time=:totalResponseTime, "
+						+   "status=:status, "
+						+ 	"error_message=:errorMessage, "
+						+ 	"request_body=:requestBody, "
+						+ 	"response_body=:responseBody "
+						+ 	"WHERE id=:id", parameterSource);
+			}
+			return accessLog.getId();
+		}catch(DataAccessException daex){
+			LOGGER.error("Failed to create/update PMP API Access Log",daex);
+			return 0;
+		}catch(Exception ex){
+			LOGGER.error("Failed to create/update PMP API Access Log",ex);
+			return 0;
 		}
-		return accessLog.getId();
 	}
 
 	/**
@@ -80,25 +93,35 @@ public class APIAccessLogrepositoryImpl implements APIAccesslogRepository {
 	 */
 	@Override
 	public int createOrUpdatePmpAPIAccesslogDetails(PMPAPIAccessLogDetails accessLogDetails) {
-		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(accessLogDetails);
-		if (accessLogDetails.getId() == 0) {
-			Number id = this.insertPmpAPIAccessLogDetails.executeAndReturnKey(parameterSource);
-			accessLogDetails.setId(id.intValue());
-		}else {
-			this.namedParameterJdbcTemplate.update("UPDATE pmp_api_access_log_details SET "
-					+	"pmp_access_log_id=:pmpAccessLogId, "
-					+  	"endpoint=:endpoint, "
-					+  	"requested_time=:requestedTime, " 
-					+  	"response_time=:responseTime, "
-					+   "status=:status, "
-					+ 	"error_message=:errorMessage, "
-					+ 	"request_body=:requestBody, "
-					+ 	"response_body=:responseBody "
-					+ 	"WHERE id=:id", parameterSource);
+
+		try{
+			BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(accessLogDetails);
+			if (accessLogDetails.getId() == 0) {
+				Number id = this.insertPmpAPIAccessLogDetails.executeAndReturnKey(parameterSource);
+				accessLogDetails.setId(id.intValue());
+			}else {
+				this.namedParameterJdbcTemplate.update("UPDATE pmp_api_access_log_details SET "
+						+	"pmp_access_log_id=:pmpAccessLogId, "
+						+  	"endpoint=:endpoint, "
+						+  	"requested_time=:requestedTime, " 
+						+  	"response_time=:responseTime, "
+						+   "status=:status, "
+						+ 	"error_message=:errorMessage, "
+						+ 	"request_body=:requestBody, "
+						+ 	"response_body=:responseBody "
+						+ 	"WHERE id=:id", parameterSource);
+			}
+			return accessLogDetails.getId();
+		}catch(DataAccessException daex){
+			LOGGER.error("Failed to create/update PMP API Access Log Details",daex);
+			return 0;
+		}catch(Exception ex){
+			LOGGER.error("Failed to create/update PMP API Access Log Details",ex);
+			return 0;
 		}
-		return accessLogDetails.getId();
+
 	}
-	
+
 	@Override
 	public List<PMPAPIAccessLog> fetchPmpApiAccessLogData() {
 		List<PMPAPIAccessLog> accessLogData = this.jdbcTemplate.query("SELECT id,username,"
@@ -118,8 +141,8 @@ public class APIAccessLogrepositoryImpl implements APIAccesslogRepository {
 				});
 		return accessLogData;
 	}
-	
-	
+
+
 	@Override
 	public List<PMPAPIAccessLog> fetchPmpApiAccessErrorLogData(String accessLogId) {
 		List<PMPAPIAccessLog> accessLogData = this.jdbcTemplate.query("SELECT error_message,request_body,response_body FROM pmp_api_access_log "
@@ -140,8 +163,8 @@ public class APIAccessLogrepositoryImpl implements APIAccesslogRepository {
 				});
 		return accessLogData;
 	}
-	
-	
+
+
 	@Override
 	public List<PMPAPIAccessLogDetails> fetchPmpApiLogDetailsData(String accessLogId){
 		List<PMPAPIAccessLogDetails> logDetails = null;
