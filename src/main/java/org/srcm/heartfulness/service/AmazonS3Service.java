@@ -62,6 +62,4 @@ public interface AmazonS3Service {
 	 */
 	ResponseEntity<?> createPresignedURLForSessionImages(String eventId, String sessionId, PMPAPIAccessLog accessLog);
 
-	ResponseEntity<?> uploadFileToAWS(MultipartFile multipartFile);
-
 }

@@ -1,12 +1,6 @@
 package org.srcm.heartfulness.rest.template;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.TimeZone;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +10,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 import org.srcm.heartfulness.constants.AmazonS3Constants;
 import org.srcm.heartfulness.constants.RestTemplateConstants;
+import org.srcm.heartfulness.helper.AmazonS3Helper;
 import org.srcm.heartfulness.proxy.ProxyHelper;
 
 import com.amazonaws.AmazonClientException;
@@ -30,10 +25,7 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 
 /**
  * 
@@ -45,6 +37,9 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 public class AmazonS3RestTemplate extends RestTemplate{
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(AmazonS3RestTemplate.class);
+	
+	@Autowired
+	AmazonS3Helper amazonS3Helper;
 	
 	@Autowired
 	ProxyHelper proxyHelper;
@@ -138,29 +133,23 @@ public class AmazonS3RestTemplate extends RestTemplate{
 	 * @throws AmazonServiceException
 	 * @throws AmazonClientException
 	 */
-	public void uploadObjectInAWS(MultipartFile multipartFile, String fileDestinationPath) throws IOException,
-			AmazonServiceException, AmazonClientException {
-		AWSCredentials credentials = new BasicAWSCredentials(accesskeyid, secretkey);
-		ClientConfiguration config = proxyHelper.setProxyToAWSS3();
-		AmazonS3 s3client = null;
-		if (null != config) {
-			s3client = new AmazonS3Client(credentials, config);
-		} else {
-			s3client = new AmazonS3Client(credentials);
-		}
-
-		// File file =
-		// Files.write(Paths.get(multipartFile.getOriginalFilename()),
-		// multipartFile.getBytes()).toFile();
-
-	/*	File file = new File(multipartFile.getOriginalFilename());
-		multipartFile.transferTo(file);
-		LOGGER.info(file.getAbsolutePath());
-		LOGGER.info(file.getName());*/
-		// uploading file into S3 bucket
-		InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes());
-		s3client.putObject(new PutObjectRequest(bucketname, fileDestinationPath,inputStream,new ObjectMetadata())
-				.withCannedAcl(CannedAccessControlList.Private));
+	public ResponseEntity<Object> upload(byte[] objectBinaryContent,String signature, String hashedPayload, String objectPath) throws HttpClientErrorException {
+		String fullDateAndTime = amazonS3Helper.getUTCDateAndTime();
+		String URL=AmazonS3Constants.URI_PROTOCOL+host+AmazonS3Constants.PATH_SEPARATER+objectPath;
+		String authorization=AmazonS3Constants.ALGORITHM_TO_CALCULATE_SIGNATURE+" "+AmazonS3Constants.AWS_AUTHORIZATION_CREDENTIAL+"="
+		+accesskeyid+AmazonS3Constants.PATH_SEPARATER+fullDateAndTime.split("T")[0]
+				+AmazonS3Constants.PATH_SEPARATER+region+AmazonS3Constants.PATH_SEPARATER+service
+				+AmazonS3Constants.PATH_SEPARATER+AmazonS3Constants.AWS4_REQUEST+","
+				+AmazonS3Constants.AWS_AUTHORIZATION_SIGNEDHEADERS+"="+signedheaders+","+AmazonS3Constants.AWS_AUTHORIZATION_SIGNATURE+"="+signature;
+		LOGGER.info("authorization : "+authorization);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.set(RestTemplateConstants.AUTHORIZATION, authorization);
+		httpHeaders.set(AmazonS3Constants.DATE_HEADER, fullDateAndTime);
+		httpHeaders.set(AmazonS3Constants.HOST_HEADER, host);
+		httpHeaders.set(AmazonS3Constants.SHA256_CONTENT_HEADER, hashedPayload);
+		HttpEntity<?> httpEntity = new HttpEntity<Object>(objectBinaryContent, httpHeaders);
+		ResponseEntity<Object> response = this.exchange(URL, org.springframework.http.HttpMethod.PUT, httpEntity,Object.class);
+		return response;
 	}
 
 	/**
@@ -190,52 +179,5 @@ public class AmazonS3RestTemplate extends RestTemplate{
 		return s3client.generatePresignedUrl(generatePresignedUrlRequest).toString();
 
 	}
-	
-	
-	public ResponseEntity<Object> upload(byte[] objectBinaryContent,String signature, String hashedPayload, String objectPath) throws IOException {
-		//setProxy();
-		String fullDateAndTime = getUTCDateAndTime();
-		String URL=AmazonS3Constants.URI_PROTOCOL+host+AmazonS3Constants.PATH_SEPARATER+objectPath;
-		String authorization=AmazonS3Constants.ALGORITHM_TO_CALCULATE_SIGNATURE+" "+AmazonS3Constants.AWS_AUTHORIZATION_CREDENTIAL+"="
-		+accesskeyid+AmazonS3Constants.PATH_SEPARATER+fullDateAndTime.split("T")[0]
-				+AmazonS3Constants.PATH_SEPARATER+region+AmazonS3Constants.PATH_SEPARATER+service
-				+AmazonS3Constants.PATH_SEPARATER+AmazonS3Constants.AWS4_REQUEST+","
-				+AmazonS3Constants.AWS_AUTHORIZATION_SIGNEDHEADERS+"="+signedheaders+","+AmazonS3Constants.AWS_AUTHORIZATION_SIGNATURE+"="+signature;
-		LOGGER.info("authorization : "+authorization);
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.set(RestTemplateConstants.AUTHORIZATION, authorization);
-		httpHeaders.set(AmazonS3Constants.DATE_HEADER, fullDateAndTime);
-		httpHeaders.set(AmazonS3Constants.HOST_HEADER, host);
-		httpHeaders.set(AmazonS3Constants.SHA256_CONTENT_HEADER, hashedPayload);
-		HttpEntity<?> httpEntity = new HttpEntity<Object>(objectBinaryContent, httpHeaders);
-		ResponseEntity<Object> response = this.exchange(URL, org.springframework.http.HttpMethod.PUT, httpEntity,Object.class);
-		return response;
-		
-	}
-	
-	
-	String getUTCDateAndTime(){
-
-		TimeZone timeZone = TimeZone.getTimeZone(AmazonS3Constants.UTC_TIME_FORMAT);
-		Calendar calendar = Calendar.getInstance(timeZone);
-		SimpleDateFormat simpleDateFormat = 
-				new SimpleDateFormat(AmazonS3Constants.S3_DATE_FORMAT, Locale.US);
-		simpleDateFormat.setTimeZone(timeZone);
-		String date=  simpleDateFormat.format(calendar.getTime());
-		//date.replace('9' , 'T');
-		String[] str=date.split(" ");
-		String str2=str[0]+"T"+str[1]+"Z";
-		return str2;
-	}
-	
-	String toBinary( byte[] bytes )
-	{
-	    StringBuilder sb = new StringBuilder(bytes.length * Byte.SIZE);
-	    for( int i = 0; i < Byte.SIZE * bytes.length; i++ )
-	        sb.append((bytes[i / Byte.SIZE] << i % Byte.SIZE & 0x80) == 0 ? '0' : '1');
-	    return sb.toString();
-	}
-
-	
 	
 }

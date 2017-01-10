@@ -1,6 +1,8 @@
 package org.srcm.heartfulness.helper;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -19,13 +21,13 @@ import org.srcm.heartfulness.constants.AmazonS3Constants;
 @Component
 @ConfigurationProperties(locations = "classpath:dev.aws.s3.properties", ignoreUnknownFields = true, prefix = "aws.s3")
 public class AmazonS3Helper {
-	
+
 	private String secretkey;
-	
+
 	private String httpmethod;
 
 	private String algorithm;
-	
+
 	private String signedheaders;
 
 	private String region;
@@ -33,7 +35,7 @@ public class AmazonS3Helper {
 	private String service;
 
 	private String host;
-	
+
 	public String getSecretkey() {
 		return secretkey;
 	}
@@ -89,8 +91,8 @@ public class AmazonS3Helper {
 	public void setHost(String host) {
 		this.host = host;
 	}
-
-	public String computeHashedCanonicalRequest(String hashedPayload, String fileName) {
+	
+	public String computeCanonicalRequest(String hashedPayload, String fileName) {
 		String canonicalQueryString = "";
 		String canonicalURI = AmazonS3Constants.PATH_SEPARATER.trim() + fileName;
 		String CanonicalHeaders = AmazonS3Constants.HOST_HEADER + AmazonS3Constants.COLON_HEADER_SEPARATER + host
@@ -101,8 +103,10 @@ public class AmazonS3Helper {
 		String canonicalRequest = httpmethod.trim() + AmazonS3Constants.NEXT_LINE + canonicalURI.trim()
 				+ AmazonS3Constants.NEXT_LINE + canonicalQueryString + AmazonS3Constants.NEXT_LINE + CanonicalHeaders
 				+ AmazonS3Constants.NEXT_LINE + signedheaders.trim() + AmazonS3Constants.NEXT_LINE + hashedPayload;
-		System.out.println("canonical request \n" + canonicalRequest);
-		System.out.println("------------------------------------------------------------------");
+		return canonicalRequest;
+	}
+
+	public String computeHashedCanonicalRequest(String hashedPayload, String fileName,String canonicalRequest) {
 		MessageDigest mDigest = null;
 		try {
 			mDigest = MessageDigest.getInstance(AmazonS3Constants.ALGORITHM_SHA256);
@@ -114,8 +118,6 @@ public class AmazonS3Helper {
 		for (int i = 0; i < result.length; i++) {
 			sb.append(Integer.toString((result[i] & 0xff) + 0x100, 16).substring(1));
 		}
-		System.out.println("Hashed canonical request \n" + sb.toString());
-		System.out.println("------------------------------------------------------------------");
 		return sb.toString();
 	}
 
@@ -154,7 +156,8 @@ public class AmazonS3Helper {
 	public byte[] computeSigningKey() {
 
 		try {
-			byte[] byteSingingKey = getSignatureKey(secretkey.trim(), getUTCDateAndTime().split("T")[0].trim(), region, service);
+			byte[] byteSingingKey = getSignatureKey(secretkey.trim(), getUTCDateAndTime().split("T")[0].trim(), region,
+					service);
 			return byteSingingKey;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -162,7 +165,8 @@ public class AmazonS3Helper {
 		return null;
 	}
 
-	byte[] getSignatureKey(String key, String dateStamp, String regionName, String serviceName) throws Exception {
+	byte[] getSignatureKey(String key, String dateStamp, String regionName, String serviceName)
+			throws NoSuchAlgorithmException, IllegalStateException, UnsupportedEncodingException, InvalidKeyException {
 		byte[] kSecret = (AmazonS3Constants.AWS_SIGNATURE_VERSION + key).getBytes(AmazonS3Constants.UTF8_ENCODE);
 		byte[] kDate = HmacSHA256(dateStamp, kSecret);
 		byte[] kRegion = HmacSHA256(regionName, kDate);
@@ -171,7 +175,8 @@ public class AmazonS3Helper {
 		return kSigning;
 	}
 
-	public byte[] HmacSHA256(String data, byte[] key) throws Exception {
+	public byte[] HmacSHA256(String data, byte[] key) throws NoSuchAlgorithmException, IllegalStateException,
+			UnsupportedEncodingException, InvalidKeyException {
 		String algorithm = AmazonS3Constants.ALGORITHM_HMACSHA256;
 		Mac mac = Mac.getInstance(algorithm);
 		mac.init(new SecretKeySpec(key, algorithm));
@@ -186,8 +191,7 @@ public class AmazonS3Helper {
 		return sb.toString();
 	}
 
-	String getUTCDateAndTime() {
-
+	public String getUTCDateAndTime() {
 		TimeZone timeZone = TimeZone.getTimeZone(AmazonS3Constants.UTC_TIME_FORMAT);
 		Calendar calendar = Calendar.getInstance(timeZone);
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(AmazonS3Constants.S3_DATE_FORMAT, Locale.US);
