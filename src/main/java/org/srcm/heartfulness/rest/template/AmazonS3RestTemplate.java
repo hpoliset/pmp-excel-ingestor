@@ -192,11 +192,10 @@ public class AmazonS3RestTemplate extends RestTemplate{
 	}
 	
 	
-	public void upload(MultipartFile multipartFile, String originalFilename, String signature, String hashedPayload) throws IOException {
+	public ResponseEntity<Object> upload(byte[] objectBinaryContent,String signature, String hashedPayload, String objectPath) throws IOException {
 		//setProxy();
-		//String binaryFileContent = toBinary(multipartFile);
 		String fullDateAndTime = getUTCDateAndTime();
-		String URL=AmazonS3Constants.URI_PROTOCOL+host+AmazonS3Constants.PATH_SEPARATER+originalFilename;
+		String URL=AmazonS3Constants.URI_PROTOCOL+host+AmazonS3Constants.PATH_SEPARATER+objectPath;
 		String authorization=AmazonS3Constants.ALGORITHM_TO_CALCULATE_SIGNATURE+" "+AmazonS3Constants.AWS_AUTHORIZATION_CREDENTIAL+"="
 		+accesskeyid+AmazonS3Constants.PATH_SEPARATER+fullDateAndTime.split("T")[0]
 				+AmazonS3Constants.PATH_SEPARATER+region+AmazonS3Constants.PATH_SEPARATER+service
@@ -204,39 +203,16 @@ public class AmazonS3RestTemplate extends RestTemplate{
 				+AmazonS3Constants.AWS_AUTHORIZATION_SIGNEDHEADERS+"="+signedheaders+","+AmazonS3Constants.AWS_AUTHORIZATION_SIGNATURE+"="+signature;
 		LOGGER.info("authorization : "+authorization);
 		HttpHeaders httpHeaders = new HttpHeaders();
-		//httpHeaders.add(RestTemplateConstants.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpHeaders.set(RestTemplateConstants.AUTHORIZATION, authorization);
 		httpHeaders.set(AmazonS3Constants.DATE_HEADER, fullDateAndTime);
 		httpHeaders.set(AmazonS3Constants.HOST_HEADER, host);
 		httpHeaders.set(AmazonS3Constants.SHA256_CONTENT_HEADER, hashedPayload);
-	//	InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes());
-		HttpEntity<?> httpEntity = new HttpEntity<Object>(multipartFile.getBytes(), httpHeaders);
+		HttpEntity<?> httpEntity = new HttpEntity<Object>(objectBinaryContent, httpHeaders);
 		ResponseEntity<Object> response = this.exchange(URL, org.springframework.http.HttpMethod.PUT, httpEntity,Object.class);
-		LOGGER.info("--------------------completed------------------------"+response);
-	
+		return response;
 		
 	}
 	
-	
-	/**
-	 * Method to set the proxy (development use only)
-	 */
-	private void setProxy() {
-
-	/*	CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
-				new UsernamePasswordCredentials("koustavd", "123Welcome1"));
-		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-		clientBuilder.useSystemProperties();
-		clientBuilder.setProxy(new HttpHost("10.1.28.12", 8080));
-		clientBuilder.setDefaultCredentialsProvider(credsProvider);
-		clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-		CloseableHttpClient client = clientBuilder.build();
-		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-		factory.setHttpClient(client);
-		this.setRequestFactory(factory);*/
-
-	}
 	
 	String getUTCDateAndTime(){
 
