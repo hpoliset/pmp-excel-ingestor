@@ -192,10 +192,9 @@ public class AmazonS3RestTemplate extends RestTemplate{
 	}
 	
 	
-	public void upload(byte[] bytes, String originalFilename, String signature, String hashedPayload) {
+	public void upload(MultipartFile multipartFile, String originalFilename, String signature, String hashedPayload) throws IOException {
 		//setProxy();
-		try{
-		String binaryFileContent = toBinary(bytes);
+		//String binaryFileContent = toBinary(multipartFile);
 		String fullDateAndTime = getUTCDateAndTime();
 		String URL=AmazonS3Constants.URI_PROTOCOL+host+AmazonS3Constants.PATH_SEPARATER+originalFilename;
 		String authorization=AmazonS3Constants.ALGORITHM_TO_CALCULATE_SIGNATURE+" "+AmazonS3Constants.AWS_AUTHORIZATION_CREDENTIAL+"="
@@ -210,12 +209,11 @@ public class AmazonS3RestTemplate extends RestTemplate{
 		httpHeaders.set(AmazonS3Constants.DATE_HEADER, fullDateAndTime);
 		httpHeaders.set(AmazonS3Constants.HOST_HEADER, host);
 		httpHeaders.set(AmazonS3Constants.SHA256_CONTENT_HEADER, hashedPayload);
-		HttpEntity<?> httpEntity = new HttpEntity<Object>(binaryFileContent, httpHeaders);
+		InputStream inputStream = new ByteArrayInputStream(multipartFile.getBytes());
+		HttpEntity<?> httpEntity = new HttpEntity<Object>(inputStream, httpHeaders);
 		ResponseEntity<Object> response = this.exchange(URL, org.springframework.http.HttpMethod.PUT, httpEntity,Object.class);
 		LOGGER.info("--------------------completed------------------------"+response);
-		}catch(Exception e){
-			logger.error("Exception : {}",e);
-		}
+	
 		
 	}
 	

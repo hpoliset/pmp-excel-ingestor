@@ -318,7 +318,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 			LOGGER.info("------------------------------------------------------------------");
 
 			// call rest template
-			amazonS3Interface.upload(multipartFile.getBytes(), multipartFile.getOriginalFilename(), signature,
+			amazonS3Interface.upload(multipartFile, multipartFile.getOriginalFilename(), signature,
 					hashedPayload);
 			
 			return new ResponseEntity<String>("File Uploaded successfully",HttpStatus.OK);
