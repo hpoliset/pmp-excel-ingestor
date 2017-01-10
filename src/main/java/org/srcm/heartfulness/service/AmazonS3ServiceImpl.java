@@ -74,7 +74,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 			LOGGER.info("Hex Encode of Requestpayload : " + hashedPayload);
 
 			// calculate the signature
-			String signature = calculateAWSAuthorizationSignature(multipartFile, hashedPayload);
+			String signature = calculateAWSAuthorizationSignature(multipartFile, hashedPayload,permissionLetterPath);
 
 			// upload file to aws
 			System.out.println(amazonS3Interface.upload(multipartFile.getBytes(), signature, hashedPayload,
@@ -133,12 +133,12 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 		}
 	}
 
-	private String calculateAWSAuthorizationSignature(MultipartFile multipartFile, String hashedPayload)
+	private String calculateAWSAuthorizationSignature(MultipartFile multipartFile, String hashedPayload, String permissionLetterPath)
 			throws Exception {
 
 		// Create canonical request
 		String hashedCanonicalRequest = amazonS3Helper.computeHashedCanonicalRequest(hashedPayload,
-				multipartFile.getOriginalFilename());
+				permissionLetterPath);
 
 		// Create string to sign
 		String stringToSign = amazonS3Helper.getStringToSign(hashedPayload, multipartFile.getOriginalFilename(),
@@ -244,7 +244,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 				LOGGER.info("Hex Encode of Requestpayload : " + hashedPayload);
 
 				// calculate the signature
-				String signature = calculateAWSAuthorizationSignature(multipartFile, hashedPayload);
+				String signature = calculateAWSAuthorizationSignature(multipartFile, hashedPayload,sessionFilesPath);
 
 				// upload file to aws
 				System.out.println(amazonS3Interface.upload(multipartFile.getBytes(), signature, hashedPayload,
