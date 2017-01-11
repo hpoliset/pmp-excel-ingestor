@@ -3,7 +3,6 @@ package org.srcm.heartfulness.proxy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import com.amazonaws.ClientConfiguration;
 
@@ -15,7 +14,7 @@ import com.amazonaws.ClientConfiguration;
  */
 @Component
 @PropertySource("classpath:application.properties")
-public class ProxyHelper extends RestTemplate{
+public class ProxyHelper {
 
 	@Value("${proxy}")
 	private boolean proxy;
