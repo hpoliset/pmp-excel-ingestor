@@ -50,5 +50,9 @@ public class AmazonS3Constants {
 	public static String AWS_AUTHORIZATION_SIGNATURE = "Signature=";
 
 	public static String URI_PROTOCOL = "https://";
+	
+	public static String SPECIAL_CHARACTERS_NOT_ALLOWED_IN_FILENAME="[<>;?:!#$^()+=@%& ]";
+	
+	public static String UNDER_SCORE ="_";
 
 }
