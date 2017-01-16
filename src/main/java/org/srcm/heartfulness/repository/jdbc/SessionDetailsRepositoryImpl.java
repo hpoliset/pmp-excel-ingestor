@@ -283,7 +283,7 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 			this.saveSessionImages.executeAndReturnKey(parameterSource);
 		} else {
 			this.namedParameterJdbcTemplate.update("UPDATE session_images SET " + "image_name=:imageName, "
-					+ "image_path=:imagePath, " + "uploaded_by=:uploadedBy" + "WHERE image_id=:imageId",
+					+ "image_path=:imagePath, " + "uploaded_by=:uploadedBy " + "WHERE image_id=:imageId",
 					parameterSource);
 
 		}
