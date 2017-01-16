@@ -158,7 +158,7 @@ public class AmazonS3Controller {
 				StackTraceUtils.convertPojoToJson("eventId : " + eventId + " , fileCount : " + multipartFiles.length));
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		try {
-			Response eResponse = amazonS3RequestValidator.validateUploadSessionFilesRequest(eventId, sessionId, multipartFiles,
+			Response eResponse = amazonS3RequestValidator.validateUploadSessionImagesRequest(eventId, sessionId, multipartFiles,
 					accessLog, token);
 			if (null != eResponse) {
 				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);

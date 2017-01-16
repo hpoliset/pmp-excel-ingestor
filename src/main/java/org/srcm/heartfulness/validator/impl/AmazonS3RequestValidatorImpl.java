@@ -244,7 +244,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 	 * org.srcm.heartfulness.model.PMPAPIAccessLog, java.lang.String)
 	 */
 	@Override
-	public Response validateUploadSessionFilesRequest(String eventId, String sessionId, MultipartFile[] multipartFiles,
+	public Response validateUploadSessionImagesRequest(String eventId, String sessionId, MultipartFile[] multipartFiles,
 			PMPAPIAccessLog accessLog, String token) {
 		Response eResponse = new Response(ErrorConstants.STATUS_FAILED, "");
 		UserProfile userProfile = null;
