@@ -432,9 +432,9 @@ public class Event {
 		if (organizationName != null) {
 			elementsOfMessage.append(organizationName);
 		}
-		if (organizationDepartment != null) {
+	/*	if (organizationDepartment != null) {
 			elementsOfMessage.append(organizationDepartment);
-		}
+		}*/
 		if (programStartDate != null) {
 			elementsOfMessage.append(programStartDate);
 		}
