@@ -53,6 +53,7 @@ public class WelcomeMailController {
 	}
 
 	/* @Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") */
+	@RequestMapping(value = "/ftpupload", method = RequestMethod.POST)
 	public void uploadDailyWelcomeMailidsToFTP() {
 		try {
 			LOGGER.info("Upload File to FTP called.");
@@ -69,6 +70,7 @@ public class WelcomeMailController {
 	 * running at a scheduled time.
 	 */
 	/* @Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}") */
+	@RequestMapping(value = "/informewithwelcomemaildetails", method = RequestMethod.POST)
 	public void sendEmailToCoordinator() {
 		LOGGER.info("START		:Cron job started to fetch participants to whom welcome mail already sent");
 		WelcomeMailService.getCoordinatorListAndSendMail();
@@ -84,6 +86,7 @@ public class WelcomeMailController {
 	}
 
 	/* @Scheduled(cron = "${welcome.mail.to.hfnlist.cron.time}") */
+	@RequestMapping(value = "/welcomemail", method = RequestMethod.POST)
 	public void sendWelcomeMail() {
 		try {
 			LOGGER.info("Sending mail to hfn list called.");

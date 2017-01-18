@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.srcm.heartfulness.constants.AmazonS3Constants;
+import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.RestTemplateConstants;
 import org.srcm.heartfulness.helper.AmazonS3Helper;
 import org.srcm.heartfulness.proxy.ProxyHelper;
@@ -153,13 +154,13 @@ public class AmazonS3RestTemplate extends RestTemplate {
 			String objectPath) throws HttpClientErrorException {
 		setProxy();
 		String fullDateAndTime = amazonS3Helper.getUTCDateAndTime();
-		String URL = AmazonS3Constants.URI_PROTOCOL + host + AmazonS3Constants.PATH_SEPARATER + objectPath;
-		String authorization = AmazonS3Constants.ALGORITHM_TO_CALCULATE_SIGNATURE + AmazonS3Constants.SPACE_SEPARATER
-				+ AmazonS3Constants.AWS_AUTHORIZATION_CREDENTIAL + accesskeyid + AmazonS3Constants.PATH_SEPARATER
-				+ fullDateAndTime.split("T")[0] + AmazonS3Constants.PATH_SEPARATER + region
-				+ AmazonS3Constants.PATH_SEPARATER + service + AmazonS3Constants.PATH_SEPARATER
-				+ AmazonS3Constants.AWS4_REQUEST + AmazonS3Constants.COMMA_SEPARATER
-				+ AmazonS3Constants.AWS_AUTHORIZATION_SIGNEDHEADERS + signedheaders + AmazonS3Constants.COMMA_SEPARATER
+		String URL = AmazonS3Constants.URI_PROTOCOL + host + ExpressionConstants.PATH_SEPARATER + objectPath;
+		String authorization = AmazonS3Constants.ALGORITHM_TO_CALCULATE_SIGNATURE + ExpressionConstants.SPACE_SEPARATER
+				+ AmazonS3Constants.AWS_AUTHORIZATION_CREDENTIAL + accesskeyid + ExpressionConstants.PATH_SEPARATER
+				+ fullDateAndTime.split("T")[0] + ExpressionConstants.PATH_SEPARATER + region
+				+ ExpressionConstants.PATH_SEPARATER + service + ExpressionConstants.PATH_SEPARATER
+				+ AmazonS3Constants.AWS4_REQUEST + ExpressionConstants.COMMA_SEPARATER
+				+ AmazonS3Constants.AWS_AUTHORIZATION_SIGNEDHEADERS + signedheaders + ExpressionConstants.COMMA_SEPARATER
 				+ AmazonS3Constants.AWS_AUTHORIZATION_SIGNATURE + signature;
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.set(RestTemplateConstants.AUTHORIZATION, authorization);

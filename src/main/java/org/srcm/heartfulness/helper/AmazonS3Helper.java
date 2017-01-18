@@ -17,6 +17,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.srcm.heartfulness.constants.AmazonS3Constants;
+import org.srcm.heartfulness.constants.ExpressionConstants;
 
 /**
  * Helper Class - AWS S3 Integration.
@@ -137,15 +138,15 @@ public class AmazonS3Helper {
 	 */
 	public String computeCanonicalRequest(String hashedPayload, String fileName) {
 		String canonicalQueryString = "";
-		String canonicalURI = AmazonS3Constants.PATH_SEPARATER.trim() + fileName;
-		String CanonicalHeaders = AmazonS3Constants.HOST_HEADER + AmazonS3Constants.COLON_HEADER_SEPARATER + host
-				+ AmazonS3Constants.NEXT_LINE + AmazonS3Constants.SHA256_CONTENT_HEADER
-				+ AmazonS3Constants.COLON_HEADER_SEPARATER + hashedPayload + AmazonS3Constants.NEXT_LINE
-				+ AmazonS3Constants.DATE_HEADER + AmazonS3Constants.COLON_HEADER_SEPARATER + getUTCDateAndTime()
-				+ AmazonS3Constants.NEXT_LINE;
-		String canonicalRequest = httpmethod.trim() + AmazonS3Constants.NEXT_LINE + canonicalURI.trim()
-				+ AmazonS3Constants.NEXT_LINE + canonicalQueryString + AmazonS3Constants.NEXT_LINE + CanonicalHeaders
-				+ AmazonS3Constants.NEXT_LINE + signedheaders.trim() + AmazonS3Constants.NEXT_LINE + hashedPayload;
+		String canonicalURI = ExpressionConstants.PATH_SEPARATER.trim() + fileName;
+		String CanonicalHeaders = AmazonS3Constants.HOST_HEADER + ExpressionConstants.COLON_HEADER_SEPARATER + host
+				+ ExpressionConstants.NEXT_LINE + AmazonS3Constants.SHA256_CONTENT_HEADER
+				+ ExpressionConstants.COLON_HEADER_SEPARATER + hashedPayload + ExpressionConstants.NEXT_LINE
+				+ AmazonS3Constants.DATE_HEADER + ExpressionConstants.COLON_HEADER_SEPARATER + getUTCDateAndTime()
+				+ ExpressionConstants.NEXT_LINE;
+		String canonicalRequest = httpmethod.trim() + ExpressionConstants.NEXT_LINE + canonicalURI.trim()
+				+ ExpressionConstants.NEXT_LINE + canonicalQueryString + ExpressionConstants.NEXT_LINE + CanonicalHeaders
+				+ ExpressionConstants.NEXT_LINE + signedheaders.trim() + ExpressionConstants.NEXT_LINE + hashedPayload;
 		return canonicalRequest;
 	}
 
@@ -179,12 +180,12 @@ public class AmazonS3Helper {
 	 */
 	public String getStringToSign(String hashedCanonicalRequest) {
 		String dateAndTime = getUTCDateAndTime();
-		String credentialScope = dateAndTime.split("T")[0].trim() + AmazonS3Constants.PATH_SEPARATER + region
-				+ AmazonS3Constants.PATH_SEPARATER + service + AmazonS3Constants.PATH_SEPARATER
+		String credentialScope = dateAndTime.split("T")[0].trim() + ExpressionConstants.PATH_SEPARATER + region
+				+ ExpressionConstants.PATH_SEPARATER + service + ExpressionConstants.PATH_SEPARATER
 				+ AmazonS3Constants.AWS4_REQUEST;
 		String requestDate = dateAndTime;
-		String stringToSign = algorithm + AmazonS3Constants.NEXT_LINE + requestDate + AmazonS3Constants.NEXT_LINE
-				+ credentialScope + AmazonS3Constants.NEXT_LINE + hashedCanonicalRequest;
+		String stringToSign = algorithm + ExpressionConstants.NEXT_LINE + requestDate + ExpressionConstants.NEXT_LINE
+				+ credentialScope + ExpressionConstants.NEXT_LINE + hashedCanonicalRequest;
 		return stringToSign;
 	}
 

@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.srcm.heartfulness.constants.EmailLogConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.helper.EWelcomeIDGenerationHelper;
+import org.srcm.heartfulness.mail.SendMail;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
@@ -47,6 +49,9 @@ public class EWelcomeIDGenerationScheduler {
 
 	@Autowired
 	APIAccessLogService apiAccessLogService;
+	
+	@Autowired
+	SendMail sendMail;
 
 	/**
 	 * Cron to generate EWelcomeIDs for the participants.
@@ -56,6 +61,7 @@ public class EWelcomeIDGenerationScheduler {
 	public void generateEWelcomeIDsForParticipants() {
 		LOGGER.info("START : CRON : EWELCOMEID GENERATION : Scheduler to generate EwelcomeID's for the participants started at - "
 				+ new Date());
+		sendMail.sendNotificationToInformProcessExecution(EmailLogConstants.EWELCOME_ID_GENERATION);
 		List<Integer> programIds = participantRepository.getProgramIDsToGenerateEwelcomeIds();
 		LOGGER.info("CRON : EWELCOMEID GENERATION : Total no. of Events to generate eWelcomeID : {} ",
 				programIds.size());

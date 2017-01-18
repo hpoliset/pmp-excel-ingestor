@@ -17,18 +17,6 @@ public class AmazonS3Constants {
 
 	public static String AWS4_REQUEST = "aws4_request";
 
-	public static String COLON_HEADER_SEPARATER = ":";
-
-	public static String PATH_SEPARATER = "/";
-
-	public static String SPACE_SEPARATER = " ";
-
-	public static String DOT_SEPARATER = ".";
-
-	public static String COMMA_SEPARATER = ",";
-
-	public static String NEXT_LINE = "\n";
-
 	public static String ALGORITHM_SHA256 = "SHA-256";
 
 	public static String ALGORITHM_HMACSHA256 = "HmacSHA256";
