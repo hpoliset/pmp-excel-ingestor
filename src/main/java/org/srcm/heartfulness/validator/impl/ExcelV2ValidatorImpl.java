@@ -5,7 +5,14 @@ package org.srcm.heartfulness.validator.impl;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -197,12 +204,24 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 
 		LOGGER.info("Started validating Participation Details sheet mandatory fields for v2.1 template.");
 		int rowCount = participantSheet.getPhysicalNumberOfRows();
+		List<String> participantNames = new LinkedList<>();
+		
 		for (int i = 1; i < rowCount; i++) {
 			Row currentRow = participantSheet.getRow(i);
 			if (!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()) {
 				errorList.addAll(parseParticipantData(currentRow, i + 1));
+				participantNames.add(currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim());
 			}
 		}
+		Set<String> participantSet = new HashSet<String>(participantNames);
+		for(String pctptName:participantSet){
+			int count = Collections.frequency(participantNames, pctptName);
+			if(count > 1){
+				errorList.add("Uploaded excel sheet contains "+count+" participants with same name '"+ pctptName+"'. Please make the changes and reupload");
+			}
+		}
+		
+		
 		LOGGER.info("Participation Details sheet mandatory fields validation completed for v2.1 template.");
 	}
 

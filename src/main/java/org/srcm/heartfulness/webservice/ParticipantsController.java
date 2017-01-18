@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.multipart.MultipartFile;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.json.request.Event;
@@ -813,6 +815,120 @@ public class ParticipantsController {
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/upload/exceldata", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> createParticipant(@RequestParam("file") MultipartFile multipartFile,
+			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest,
+			@RequestParam("eventId")String eventId) {
+
+		String fileDetails =   "Filename 		:" + multipartFile.getOriginalFilename()
+							 + "File Size 	:" + multipartFile.getSize()
+							 + "Content-Type	:" + multipartFile.getContentType();
+
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,fileDetails);
+
+		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		UserProfile userProfile = null;
+		try {
+			userProfile = eventDashboardValidator.validateToken(token, id);
+			if (null == userProfile) {
+				LOGGER.info("UserProfile doesnot exists in MySrcm database");
+				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid client credentials");
+				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+				accessLog.setErrorMessage("UserProfile doesnot exists in MySrcm database");
+				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
+				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.UNAUTHORIZED);
+			}
+
+			accessLog.setUsername(userProfile.getEmail());	
+			List<String> details = null;
+			try{
+				details = programService.fetchProgramAndParticipantDetails(eventId);
+				System.err.println("List=="+details.toString());
+				if(Integer.parseInt(details.get(0))<= 0){
+					ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"EventId doesnot exists");
+					accessLog.setErrorMessage("EventId doesnot exists");
+					accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+					accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
+					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+					return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
+				}
+			}catch(Exception ex){
+				ex.printStackTrace();
+				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"Error while fetching event Id");
+				accessLog.setErrorMessage("Error while fetching event Id");
+				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+				accessLog.setResponseBody(StackTraceUtils.convertStackTracetoString(ex));
+				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
+			}
+
+			ResponseEntity<?> response = participantService.validateExcelAndPersistParticipantData(multipartFile.getOriginalFilename(), multipartFile.getBytes(),accessLog,details);
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			return response;
+
+		}catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid authorization token");
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
+			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.UNAUTHORIZED);
+		} catch (HttpClientErrorException e) {
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid client credentials");
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
+			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.REQUEST_TIMEOUT);
+		} catch (JsonParseException e) {
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
+					"Error while fetching profile from mysrcm");
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		} catch (JsonMappingException e) {
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
+					"Error while fetching profile from mysrcm");
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		} catch (IOException e) {
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
+					"Error while fetching profile from mysrcm");
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid request");
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
+			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		}
 	}
 

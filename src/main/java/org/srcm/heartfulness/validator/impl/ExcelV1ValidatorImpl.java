@@ -6,7 +6,11 @@ package org.srcm.heartfulness.validator.impl;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -131,12 +135,24 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 
 		LOGGER.info("INFO : Started validating participant detail fields for altered 1.0 template.");
 		int rowCount = sheet.getPhysicalNumberOfRows();
+		List<String> participantNames = new LinkedList<>();
 		for (int i = 15; i < rowCount; i++) {
 			Row currentRow = sheet.getRow(i);
 			if (!currentRow.getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()) {
 				eventErrorList.addAll(parseParticipantData(currentRow, i + 1));
+				participantNames.add(currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim());
 			}
 		}
+		
+		Set<String> participantSet = new HashSet<String>(participantNames);
+		for(String pctptName:participantSet){
+			int count = Collections.frequency(participantNames, pctptName);
+			if(count > 1){
+				eventErrorList.add("Uploaded excel sheet contains "+count+" participants with same name '"+ pctptName+"'. Please make the changes and reupload");
+			}
+		}
+		
+		
 		LOGGER.info("INFO : Participants detail field validation completed for altered 1.0 template.");
 	}
 

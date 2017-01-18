@@ -7,24 +7,38 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.enumeration.ParticipantSearchField;
+import org.srcm.heartfulness.excelupload.transformer.impl.ExcelDataExtractorV2Impl;
+import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
+import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.UpdateIntroductionResponse;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
+import org.srcm.heartfulness.service.response.ExcelUploadResponse;
+import org.srcm.heartfulness.util.DateUtils;
+import org.srcm.heartfulness.util.ExcelParserUtils;
+import org.srcm.heartfulness.util.InvalidExcelFileException;
+import org.srcm.heartfulness.util.StackTraceUtils;
 import org.srcm.heartfulness.validator.EventDashboardValidator;
+import org.srcm.heartfulness.validator.impl.ExcelV2ValidatorImpl;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -636,6 +650,104 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				participant.setIsEwelcomeIdInformed(0);
 			}
 		}
+	}
+	
+	@Override
+	public ResponseEntity<?> validateExcelAndPersistParticipantData(String originalFilename, byte[] bytes,PMPAPIAccessLog accessLog,List<String> details) {
+
+		Workbook workBook = null;
+		try{
+			workBook = ExcelParserUtils.getWorkbook(originalFilename, bytes);
+		}catch(InvalidExcelFileException iefex){
+			LOGGER.error("File extension should be xlsx/xlsm/xls",iefex);
+		}catch(Exception ex){
+			LOGGER.error("File extension should be xlsx/xlsm/xls",ex);
+		}
+
+		if(null == workBook){
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"File extension should be xlsx/xlsm/xls");
+			accessLog.setErrorMessage("File extension should be xlsx/xlsm/xls");
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_FAILED);
+		}
+
+		Sheet participantSheet = workBook.getSheet(EventDetailsUploadConstants.PARTICIPANT_SHEET_NAME);
+		if (null == participantSheet) {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"Participants Details Sheet is not present/invalid or empty");
+			accessLog.setErrorMessage("Participants Details Sheet is not present/invalid or empty");
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_FAILED);
+		}
+
+		List<String> errorList = new ArrayList<>();
+		ExcelV2ValidatorImpl v2ValidatorImpl = new ExcelV2ValidatorImpl();
+		v2ValidatorImpl.validateParticipantDetails(participantSheet,errorList);
+		ExcelUploadResponse excelUploadResponse = new ExcelUploadResponse();
+		excelUploadResponse.setFileName(originalFilename);
+		if(!errorList.isEmpty()){
+			excelUploadResponse.setStatus(ErrorConstants.STATUS_FAILED);
+			excelUploadResponse.setErrorMsg(errorList);
+
+			accessLog.setErrorMessage("Errors validating Participant Details sheet structure");
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(excelUploadResponse));
+			return new ResponseEntity<ExcelUploadResponse>(excelUploadResponse,HttpStatus.PRECONDITION_FAILED);
+		}
+
+		v2ValidatorImpl.checkParticipantMandatoryFields(participantSheet,errorList);
+		if(!errorList.isEmpty()){
+			excelUploadResponse.setStatus(ErrorConstants.STATUS_FAILED);
+			excelUploadResponse.setErrorMsg(errorList);
+
+			accessLog.setErrorMessage("Errors while validating Participant Details mandatory fields");
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(excelUploadResponse));
+			return new ResponseEntity<ExcelUploadResponse>(excelUploadResponse,HttpStatus.PRECONDITION_FAILED);
+		}
+
+		boolean disableEwelcomeIdGeneration = false;
+		if(null != details.get(1)){
+			if(details.get(1).equals(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE)){
+				disableEwelcomeIdGeneration = true;
+			}
+		}
+		List<Participant> participantList = null; 
+		try{
+			ExcelDataExtractorV2Impl v2ExtractorImpl = new ExcelDataExtractorV2Impl();
+			participantList = v2ExtractorImpl.getParticipantList(participantSheet,disableEwelcomeIdGeneration,Integer.parseInt(details.get(2))+1);
+		}catch (Exception ex){
+			LOGGER.error("Error while extracting participant details",ex);
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"Failed to save participant records");
+			accessLog.setErrorMessage("Failed to extract participant records");
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLog.setResponseBody(StackTraceUtils.convertStackTracetoString(ex));
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.BAD_REQUEST);
+		}
+
+		Program pgrm = new Program();
+		pgrm.setIsEwelcomeIdGenerationDisabled(details.get(1));
+		pgrm.setCoordinatorEmail(details.get(3));
+		for (Participant participant : participantList) {
+			participant.setProgramId(Integer.parseInt(details.get(0)));
+			participant.setCreatedSource(PMPConstants.CREATED_SOURCE_EXCEL_VIA_DASHBOARD);
+			setParticipantEWelcomeIDStatus(pgrm,participant,PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE,null);
+			try{
+				participantRepository.save(participant);
+			}catch(Exception ex){
+				errorList.add("Failed to persist participant "+participant.getPrintName());
+			}
+			
+		}
+
+		excelUploadResponse.setStatus(ErrorConstants.STATUS_SUCCESS);
+		excelUploadResponse.setErrorMsg(errorList);
+
+		accessLog.setErrorMessage("");
+		accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+		accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(excelUploadResponse));
+		return new ResponseEntity<ExcelUploadResponse>(excelUploadResponse,HttpStatus.OK);
 	}
 
 }
