@@ -100,6 +100,5 @@ public class PMPConstants {
 	public static final String CREATED_SOURCE_SMS = "SMS";
 
 	public static final String CREATED_SOURCE_DASHBOARD = "DASHBOARD";
-	
-	public static final String CREATED_SOURCE_EXCEL_VIA_DASHBOARD = "EXCEL_VIA_DASHBOARD";
+
 }

@@ -10,4 +10,3 @@ CREATE TABLE `session_images` (
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ALTER TABLE program ADD is_ewelcome_id_generation_disabled varchar(1) NOT NULL DEFAULT 'E';
-ALTER TABLE participant MODIFY created_source VARCHAR(50);

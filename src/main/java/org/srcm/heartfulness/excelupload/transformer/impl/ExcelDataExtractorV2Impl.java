@@ -262,24 +262,5 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		LOGGER.info("Completed extracting program for V2 template");
 		return program;
 	}
-	
-	public List<Participant> getParticipantList(Sheet participantsSheet,boolean disableEwelcomeIdGeneration,int startingIndex) throws InvalidExcelFileException {
-		LOGGER.info("Started extracting participant for V2 template");
-		List<Participant> participantList = new ArrayList<Participant>();
-		int totalRows = participantsSheet.getPhysicalNumberOfRows();
-		for (int i=1; i < totalRows; i++) {
-			Row currentRow = participantsSheet.getRow(i);
-			if(!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
-				Participant participant = parseParticipantRow(currentRow,disableEwelcomeIdGeneration);
-				if (participant.getExcelSheetSequenceNumber() == 0) {
-					participant.setExcelSheetSequenceNumber(startingIndex);
-				}
-				participantList.add(participant);
-				startingIndex++;
-			}
-		}
-		LOGGER.info("Completed extracting participant for V2 template");
-		return participantList;
-	}
 
 }
