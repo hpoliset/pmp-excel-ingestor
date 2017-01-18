@@ -429,21 +429,7 @@ public class SendMail {
 		String[] toIds = toMailIds.split(",");
 		String[] ccIds = ccMailIds.split(",");
 		try {
-			// Session session = Session.getDefaultInstance(props);
-			Properties props = System.getProperties();
-			props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-			props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
-			props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
-			props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-			props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-			props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-
-			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(username, password);
-				}
-			});
-			SMTPMessage message = new SMTPMessage(session);
+			SMTPMessage message = 	getSMTPMessage();
 			message.setFrom(new InternetAddress(frommail, name));
 			for (String toId : toIds) {
 				message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toId));
@@ -528,20 +514,7 @@ public class SendMail {
 	public void sendMail(List<String> toEmailIDs, List<String> ccEmailIDs, String messageContent)
 			throws MessagingException, UnsupportedEncodingException {
 
-		Properties props = System.getProperties();
-		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
-		props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
-		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
-			}
-		});
-		SMTPMessage message = new SMTPMessage(session);
+		SMTPMessage message = 	getSMTPMessage();
 		message.setFrom(new InternetAddress(frommail, name));
 		for (String toemailID : toEmailIDs) {
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toemailID));
@@ -600,20 +573,6 @@ public class SendMail {
 	public void sendMailNotificationToCoordinator(CoordinatorEmail crdntrEmail) throws AddressException,
 	MessagingException, UnsupportedEncodingException, ParseException {
 
-		Properties props = System.getProperties();
-		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
-		props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
-		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
-			}
-		});
-
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, getName(crdntrEmail.getCoordinatorName()));
 		addParameter(EmailLogConstants.TOTAL_PARTICIPANT_COUNT_PARAMETER, crdntrEmail.getTotalParticipantCount());
 		addParameter(EmailLogConstants.WLCM_MAIL_ALRDY_RCVD_PARTICIPANT_COUNT_PARAMETER, crdntrEmail.getPctptAlreadyRcvdWlcmMailCount());
@@ -629,7 +588,7 @@ public class SendMail {
 		Date pgrmCreateDate = inputsdf.parse(crdntrEmail.getProgramCreateDate());
 		addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
 		addParameter(EmailLogConstants.WELCOME_MAIL_SENT_DATE_PARAMETER, outputsdf.format(cal.getTime()));
-		SMTPMessage message = new SMTPMessage(session);
+		SMTPMessage message = 	getSMTPMessage();
 		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(crdntrEmail.getCoordinatorEmail()));
 		message.setSubject(crdntrmailsubject + outputsdf.format(cal.getTime()));
@@ -644,20 +603,7 @@ public class SendMail {
 			List<Participant> participants, List<Participant> failedParticipants) throws AddressException,
 			MessagingException, UnsupportedEncodingException {
 
-		Properties props = System.getProperties();
-		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
-		props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
-		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
-			}
-		});
-		SMTPMessage message = new SMTPMessage(session);
+		SMTPMessage message = 	getSMTPMessage();
 		message.setFrom(new InternetAddress(frommail, name));
 
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER,
@@ -786,19 +732,7 @@ public class SendMail {
 	public void sendMailToCoordinatorToUpdatePreceptorID(CoordinatorEmail coordinator) throws AddressException,
 	MessagingException, UnsupportedEncodingException, ParseException {
 
-		Properties props = System.getProperties();
-		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
-		props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
-		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
-			}
-		});
+		SMTPMessage message = 	getSMTPMessage();
 
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, getName(coordinator.getCoordinatorName()));
 		addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER,
@@ -808,7 +742,6 @@ public class SendMail {
 		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
 		Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
 		addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
-		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
 		message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
@@ -823,26 +756,13 @@ public class SendMail {
 	public void sendWelcomeMail() throws AddressException, MessagingException, UnsupportedEncodingException,
 	ParseException {
 		try {
-			Properties props = System.getProperties();
-			props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-			props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
-			props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
-			props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-			props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-			props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-
-			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(username, password);
-				}
-			});
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, -1);
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 			Date date = new Date();
 			String date_str = sdf.format(date);
 			addParameter(EmailLogConstants.DATE_PARAMETER, date_str);
-			SMTPMessage message = new SMTPMessage(session);
+			SMTPMessage message = 	getSMTPMessage();
 			message.setFrom(new InternetAddress(frommail, name));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(welcomemailto));
 			message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc));
