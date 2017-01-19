@@ -112,8 +112,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 				} else {
 					// Persist the program
 					try {
-						Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version,
-								eWelcomeIdCheckbox);
+						Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version,eWelcomeIdCheckbox);
 						program.setCreatedSource("Excel");
 						programRepository.save(program);
 						// preceptor ID card number validation
