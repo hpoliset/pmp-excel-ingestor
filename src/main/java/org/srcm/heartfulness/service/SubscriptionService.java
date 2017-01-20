@@ -35,7 +35,7 @@ public interface SubscriptionService {
 	 * @param name
 	 * @return 
 	 */
-	public Response subscribetoMailAlerts(SubscriptionRequest subscriptionRequest);
+	public Response subscribeToMailAlerts(SubscriptionRequest subscriptionRequest);
 
 	/**
 	 * Method to check whether the given mail ID is subscribed or not.
@@ -51,7 +51,7 @@ public interface SubscriptionService {
 	 * @param mailID
 	 * @return 
 	 */
-	public String updateconfirmSubscribedStatus(String mailID);
+	public String updateConfirmSubscribedStatus(String mailID);
 
 	/**
 	 * Method to check whether the given mail ID is confirmed their subscription
@@ -60,7 +60,7 @@ public interface SubscriptionService {
 	 * @param mailID
 	 * @return
 	 */
-	public int checkForconfirmStatusOfSubscription(String mailID);
+	public int checkForConfirmStatusOfSubscription(String mailID);
 	
 	/**
 	 * Method to validate the email Id and update the status in PMP.

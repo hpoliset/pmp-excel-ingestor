@@ -423,26 +423,6 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 									eventDetails.add(String.valueOf(resultSet.getDate(6)));
 									details.put(resultSet.getString(5), eventDetails);
 								}
-								/*
-								 * for(Map.Entry<String, List<String>> map :
-								 * details.entrySet()){ System.out.println(
-								 * "-----------------------START------------------------------"
-								 * );
-								 * System.out.println("Program-id=="+map.getKey
-								 * ());
-								 * System.out.println("participant count=="+
-								 * map.getValue().get(0));
-								 * System.out.println("program name=="
-								 * +map.getValue().get(1));
-								 * System.out.println("coordinator name=="
-								 * +map.getValue().get(2));
-								 * System.out.println("coordinator email=="
-								 * +map.getValue().get(3));
-								 * System.out.println("update date=="
-								 * +map.getValue().get(4)); System.out.println(
-								 * "----------------------- END------------------------------"
-								 * ); }
-								 */
 								return details;
 							}
 						});

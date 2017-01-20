@@ -52,37 +52,25 @@ public class ChannelController {
 	public ResponseEntity<?> getChannelList(ModelMap model, @Context HttpServletRequest httpRequest) {
 		LOGGER.info("START : Get channel list called.");
 		PMPAPIAccessLog accessLog = null;
-		try {
-			accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-					DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null, null, null);
-			apiAccessLogService.createPmpAPIAccessLog(accessLog);
-		} catch (Exception e) {
-			LOGGER.info("Error occured while creating log details. Exception : {}", e.getMessage());
-		}
+		accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null, null, null);
+		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		try {
 			List<String> channelList = channelService.findAllActiveChannelNames();
-			try {
-				accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
-				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(channelList));
-				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			} catch (Exception e) {
-				LOGGER.info("Error occured while updating log details. Exception : {}", e.getMessage());
-			}
+			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(channelList));
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			LOGGER.info("END : Fetching channel list completed.");
 			return new ResponseEntity<List<String>>(channelList, HttpStatus.OK);
 		} catch (Exception ex) {
 			LOGGER.info("END : Error occured while Fetching channel list. Exception : {}", ex.getMessage());
 			Response response = new Response(ErrorConstants.STATUS_FAILED, ex.getMessage());
-			try {
-				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
-				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
-				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
-				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			} catch (Exception e) {
-				LOGGER.info("Error occured while updating log details. Exception : {}", e.getMessage());
-			}
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
+			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

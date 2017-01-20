@@ -28,4 +28,6 @@ public class RestTemplateConstants {
 	
 	public static final String ACCEPT = "Accept";
 	
+	public static final String REQUEST_PARAMS="request params" ;
+	
 }

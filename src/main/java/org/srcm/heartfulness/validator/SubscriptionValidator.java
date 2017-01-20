@@ -5,7 +5,7 @@ import java.util.Map;
 import org.srcm.heartfulness.model.json.request.SubscriptionRequest;
 
 /**
- * Validator to streamline all Event dashboard validation implementation.
+ * Validator to streamline all Subscribe/Unsubscribe requests to HFN.
  * 
  * @author himasreev
  */

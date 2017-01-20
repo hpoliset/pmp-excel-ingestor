@@ -37,6 +37,8 @@ public class PmpApplicationTests {
 
     @Autowired
     private ProgramRepository programRepository;
+    
+    private String eWelcomeIdCheckbox = "off";
 
 	@Test
 	public void parseAndPersistValidV21ExcelFile() throws IOException, InvalidExcelFileException {
@@ -49,7 +51,7 @@ public class PmpApplicationTests {
 
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
         Workbook workbook = ExcelParserUtils.getWorkbook(fileName, fileContent);
-        Program validV21Program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1);
+        Program validV21Program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
         List<Participant> participantList = validV21Program.getParticipantList();
         programRepository.save(validV21Program);
 
@@ -60,7 +62,7 @@ public class PmpApplicationTests {
         Assert.assertEquals("Should be same number of participants", newProgram.getParticipantList().size(), participantList.size());
 
         //Let's insert the excel file one more time.
-        Program validV21ProgramDuplicate = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1);
+        Program validV21ProgramDuplicate = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
         programRepository.save(validV21ProgramDuplicate);
 
         Assert.assertEquals("Should not have create a new row", validV21ProgramDuplicate.getProgramId(),
@@ -81,7 +83,7 @@ public class PmpApplicationTests {
 
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
         Workbook workbook = ExcelParserUtils.getWorkbook(fileName, fileContent);
-        Program validV21Program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1);
+        Program validV21Program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
         List<Participant> participantList = validV21Program.getParticipantList();
         validV21Program.setParticipantList(participantList);
 
@@ -98,7 +100,7 @@ public class PmpApplicationTests {
         Resource v21Day3Resource = resourceLoader.getResource("classpath:" + day3FileName);
         byte[] v21Day3FileContent = StreamUtils.copyToByteArray(v21Day3Resource.getInputStream());
         workbook = ExcelParserUtils.getWorkbook(fileName, v21Day3FileContent);
-        Program validV21ProgramDuplicate = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1);
+        Program validV21ProgramDuplicate = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
         List<Participant> participantListDuplicate = validV21ProgramDuplicate.getParticipantList();
         validV21ProgramDuplicate.setParticipantList(participantListDuplicate);
         programRepository.save(validV21ProgramDuplicate);

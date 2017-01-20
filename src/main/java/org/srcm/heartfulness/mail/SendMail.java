@@ -17,6 +17,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.validation.constraints.NotNull;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -30,6 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.srcm.heartfulness.constants.EmailLogConstants;
+import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.constants.SMSConstants;
 import org.srcm.heartfulness.encryption.decryption.AESEncryptDecrypt;
@@ -79,6 +81,107 @@ public class SendMail {
 	private String welcomemailtemplatename;
 	private String welcomemailbcc;
 	private String welcomemailbcc2;
+
+	public static class ProcessExecution {
+
+		private String mailTemplate;
+		private String toMailids;
+		private String ftpUpload;
+		private String ftpUploadSubject;
+		private String welcomeMailToParticpants;
+		private String welcomeMailToParticpantsSubject;
+		private String ewelcomeidGeneration;
+		private String ewelcomeidGenerationSubject;
+		private String crdntrMailWithWlcmMailDtls;
+		private String crdntrMailWithWlcmMailDtlsSbjct;
+		private String crdntrMailWithewelcomeidGnrtnDetails;
+		private String crdntrMailWithewelcomeidGnrtnDetailsSbjct;
+
+		public String getMailTemplate() {
+			return mailTemplate;
+		}
+		public void setMailTemplate(String mailTemplate) {
+			this.mailTemplate = mailTemplate;
+		}
+		public String getToMailids() {
+			return toMailids;
+		}
+		public void setToMailids(String toMailids) {
+			this.toMailids = toMailids;
+		}
+		public String getFtpUpload() {
+			return ftpUpload;
+		}
+		public void setFtpUpload(String ftpUpload) {
+			this.ftpUpload = ftpUpload;
+		}
+		public String getFtpUploadSubject() {
+			return ftpUploadSubject;
+		}
+		public void setFtpUploadSubject(String ftpUploadSubject) {
+			this.ftpUploadSubject = ftpUploadSubject;
+		}
+		public String getWelcomeMailToParticpants() {
+			return welcomeMailToParticpants;
+		}
+		public void setWelcomeMailToParticpants(String welcomeMailToParticpants) {
+			this.welcomeMailToParticpants = welcomeMailToParticpants;
+		}
+		public String getWelcomeMailToParticpantsSubject() {
+			return welcomeMailToParticpantsSubject;
+		}
+		public void setWelcomeMailToParticpantsSubject(String welcomeMailToParticpantsSubject) {
+			this.welcomeMailToParticpantsSubject = welcomeMailToParticpantsSubject;
+		}
+		public String getEwelcomeidGeneration() {
+			return ewelcomeidGeneration;
+		}
+		public void setEwelcomeidGeneration(String ewelcomeidGeneration) {
+			this.ewelcomeidGeneration = ewelcomeidGeneration;
+		}
+		public String getEwelcomeidGenerationSubject() {
+			return ewelcomeidGenerationSubject;
+		}
+		public void setEwelcomeidGenerationSubject(String ewelcomeidGenerationSubject) {
+			this.ewelcomeidGenerationSubject = ewelcomeidGenerationSubject;
+		}
+		public String getCrdntrMailWithWlcmMailDtls() {
+			return crdntrMailWithWlcmMailDtls;
+		}
+		public void setCrdntrMailWithWlcmMailDtls(String crdntrMailWithWlcmMailDtls) {
+			this.crdntrMailWithWlcmMailDtls = crdntrMailWithWlcmMailDtls;
+		}
+		public String getCrdntrMailWithWlcmMailDtlsSbjct() {
+			return crdntrMailWithWlcmMailDtlsSbjct;
+		}
+		public void setCrdntrMailWithWlcmMailDtlsSbjct(String crdntrMailWithWlcmMailDtlsSbjct) {
+			this.crdntrMailWithWlcmMailDtlsSbjct = crdntrMailWithWlcmMailDtlsSbjct;
+		}
+		public String getCrdntrMailWithewelcomeidGnrtnDetails() {
+			return crdntrMailWithewelcomeidGnrtnDetails;
+		}
+		public void setCrdntrMailWithewelcomeidGnrtnDetails(String crdntrMailWithewelcomeidGnrtnDetails) {
+			this.crdntrMailWithewelcomeidGnrtnDetails = crdntrMailWithewelcomeidGnrtnDetails;
+		}
+		public String getCrdntrMailWithewelcomeidGnrtnDetailsSbjct() {
+			return crdntrMailWithewelcomeidGnrtnDetailsSbjct;
+		}
+		public void setCrdntrMailWithewelcomeidGnrtnDetailsSbjct(String crdntrMailWithewelcomeidGnrtnDetailsSbjct) {
+			this.crdntrMailWithewelcomeidGnrtnDetailsSbjct = crdntrMailWithewelcomeidGnrtnDetailsSbjct;
+		}
+
+	}
+
+	@NotNull
+	private ProcessExecution processExecution;
+
+	public ProcessExecution getProcessExecution() {
+		return processExecution;
+	}
+
+	public void setProcessExecution(ProcessExecution processExecution) {
+		this.processExecution = processExecution;
+	}
 
 	public String getUsername() {
 		return username;
@@ -328,12 +431,12 @@ public class SendMail {
 		try {
 			// Session session = Session.getDefaultInstance(props);
 			Properties props = System.getProperties();
-			props.put("mail.debug", "true");
-			props.put("mail.smtp.host", hostname);
-			props.put("mail.smtp.port", port);
-			props.put("mail.smtp.ssl.enable", "true");
-			props.put("mail.smtp.auth", "true");
-			props.put("mail.smtp.starttls.enable", "true");
+			props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+			props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
+			props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
+			props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+			props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
+			props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
 
 			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
@@ -350,11 +453,11 @@ public class SendMail {
 			}
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 			message.setSubject(subject + " " + sdf.format(new Date()));
-			addParameter("DATE", sdf.format(new Date()));
+			addParameter(EmailLogConstants.DATE_PARAMETER, sdf.format(new Date()));
 			if (count == 0) {
 				message.setContent(getMessageContentbyTemplateName(noparticipantstemplatename), "text/html");
 			} else {
-				addParameter("COUNT", String.valueOf(count));
+				addParameter(EmailLogConstants.COUNT_PARAMETER, String.valueOf(count));
 				message.setContent(getMessageContentbyTemplateName(participantstemplatename), "text/html");
 			}
 			message.setAllow8bitMIME(true);
@@ -364,27 +467,16 @@ public class SendMail {
 			for (String toId : toIds) {
 				LOGGER.info("Mail sent successfully : {} ", toId);
 			}
-			try {
-				LOGGER.info("START        :Inserting mail log details in table");
-				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), toIds[0],
-						EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_SUCCESS, null);
-				mailLogRepository.createMailLog(pmpMailLog);
-				LOGGER.info("END        :Completed inserting mail log details in table");
-			} catch (Exception ex) {
-				LOGGER.error("END        :Exception while inserting mail log details in table");
-			}
+
+			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), toIds[0], EmailLogConstants.FTP_UPLOAD_DETAILS,
+					EmailLogConstants.STATUS_SUCCESS, null);
+			mailLogRepository.createMailLog(pmpMailLog);
+
 		} catch (MessagingException | UnsupportedEncodingException e) {
 			LOGGER.error("Sending Mail Failed : {} " + e.getMessage());
-			try {
-				LOGGER.info("START        :Inserting mail log details in table");
-				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), toIds[0],
-						EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_FAILED,
-						StackTraceUtils.convertStackTracetoString(e));
-				mailLogRepository.createMailLog(pmpMailLog);
-				LOGGER.info("END        :Completed inserting mail log details in table");
-			} catch (Exception ex) {
-				LOGGER.error("END        :Exception while inserting mail log details in table");
-			}
+			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), toIds[0], EmailLogConstants.FTP_UPLOAD_DETAILS,
+					EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e));
+			mailLogRepository.createMailLog(pmpMailLog);
 		}
 	}
 
@@ -437,12 +529,12 @@ public class SendMail {
 			throws MessagingException, UnsupportedEncodingException {
 
 		Properties props = System.getProperties();
-		props.put("mail.debug", "true");
-		props.put("mail.smtp.host", hostname);
-		props.put("mail.smtp.port", port);
-		props.put("mail.smtp.ssl.enable", "true");
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
+		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
+		props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
+		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
 
 		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
@@ -474,12 +566,12 @@ public class SendMail {
 	 */
 	public void sendConfirmSubscriptionMail(String mail, String name) {
 		if (null != name && !name.isEmpty()) {
-			addParameter("NAME", getName(name));
+			addParameter(EmailLogConstants.NAME_PARAMETER, getName(name));
 		} else {
-			addParameter("NAME", defaultname);
+			addParameter(EmailLogConstants.NAME_PARAMETER, defaultname);
 		}
 		addParameter(
-				"CONFIRMATION_LINK",
+				EmailLogConstants.CONFIRMATION_LINK_PARAMETER,
 				confirmationlink + "?id="
 						+ aesEncryptDecrypt.encrypt(mail, env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
 		List<String> toEmailIDs = new ArrayList<String>();
@@ -509,12 +601,12 @@ public class SendMail {
 	MessagingException, UnsupportedEncodingException, ParseException {
 
 		Properties props = System.getProperties();
-		props.put("mail.debug", "true");
-		props.put("mail.smtp.host", hostname);
-		props.put("mail.smtp.port", port);
-		props.put("mail.smtp.ssl.enable", "true");
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
+		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
+		props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
+		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
 
 		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
@@ -522,21 +614,21 @@ public class SendMail {
 			}
 		});
 
-		addParameter("COORDINATOR_NAME", getName(crdntrEmail.getCoordinatorName()));
-		addParameter("TOTAL_PARTICIPANT_COUNT", crdntrEmail.getTotalParticipantCount());
-		addParameter("WLCM_MAIL_ALRDY_RCVD_PARTICIPANT_COUNT", crdntrEmail.getPctptAlreadyRcvdWlcmMailCount());
-		addParameter("WLCM_MAIL_RCVD_YSTRDY_PARTICIPANT_COUNT", crdntrEmail.getPctptRcvdWlcmMailYstrdayCount());
-		addParameter("EVENT_NAME", crdntrEmail.getEventName());
-		addParameter("EVENT_PLACE", crdntrEmail.getEventPlace());
-		addParameter("EVENT_CITY", crdntrEmail.getEventCity());
-		
+		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, getName(crdntrEmail.getCoordinatorName()));
+		addParameter(EmailLogConstants.TOTAL_PARTICIPANT_COUNT_PARAMETER, crdntrEmail.getTotalParticipantCount());
+		addParameter(EmailLogConstants.WLCM_MAIL_ALRDY_RCVD_PARTICIPANT_COUNT_PARAMETER, crdntrEmail.getPctptAlreadyRcvdWlcmMailCount());
+		addParameter(EmailLogConstants.WLCM_MAIL_RCVD_YSTRDY_PARTICIPANT_COUNT_PARAMETER, crdntrEmail.getPctptRcvdWlcmMailYstrdayCount());
+		addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, crdntrEmail.getEventName());
+		addParameter(EmailLogConstants.EVENT_PLACE_PARAMETER, crdntrEmail.getEventPlace());
+		addParameter(EmailLogConstants.EVENT_CITY_PARAMETER, crdntrEmail.getEventCity());
+
 		Calendar cal = Calendar.getInstance();
-		//cal.add(Calendar.DATE, -1);
+		// cal.add(Calendar.DATE, -1);
 		SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
 		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
 		Date pgrmCreateDate = inputsdf.parse(crdntrEmail.getProgramCreateDate());
-		addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
-		addParameter("WELCOME_MAIL_SENT_DATE", outputsdf.format(cal.getTime()));
+		addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
+		addParameter(EmailLogConstants.WELCOME_MAIL_SENT_DATE_PARAMETER, outputsdf.format(cal.getTime()));
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(crdntrEmail.getCoordinatorEmail()));
@@ -553,33 +645,32 @@ public class SendMail {
 			MessagingException, UnsupportedEncodingException {
 
 		Properties props = System.getProperties();
-		props.put("mail.debug", "true");
-		props.put("mail.smtp.host", hostname);
-		props.put("mail.smtp.port", port);
-		props.put("mail.smtp.ssl.enable", "true");
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
+		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
+		props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
+		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
 
 		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(username, password);
 			}
 		});
-		
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail, name));
-		
-		addParameter("COORDINATOR_NAME",
+
+		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER,
 				coordinatorEmail.getCoordinatorName() != null ? getName(coordinatorEmail.getCoordinatorName()) : "");
-		addParameter("EVENT_NAME", coordinatorEmail.getEventName());
-		addParameter("EVENT_PLACE", coordinatorEmail.getEventPlace());
-		addParameter("EVENT_CITY", coordinatorEmail.getEventCity());
-		addParameter("EVENT_START_DATE", coordinatorEmail.getProgramCreateDate());
+		addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinatorEmail.getEventName());
+		addParameter(EmailLogConstants.EVENT_PLACE_PARAMETER, coordinatorEmail.getEventPlace());
+		addParameter(EmailLogConstants.EVENT_CITY_PARAMETER, coordinatorEmail.getEventCity());
+		addParameter(EmailLogConstants.EVENT_START_DATE_PARAMETER, coordinatorEmail.getProgramCreateDate());
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 		StringBuilder sb = new StringBuilder();
 		if (!participants.isEmpty()) {
-			sb.append("<p>The following e-welcome ID's has been generated for the below given participants : " );
-			sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
+			sb.append("<p>The following e-welcome ID's has been generated for the below given participants : ");
+			sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "");
 			sb.append("</p>");
 			sb.append("<table border=\"1\" style=\"width: 75%;border-collapse: collapse;\">");
 			sb.append("<tr>");
@@ -599,7 +690,8 @@ public class SendMail {
 				sb.append("</td><td>");
 				sb.append(participant.getEmail() != null ? participant.getEmail() : "");
 				sb.append("</td><td>");
-				sb.append((participant.getMobilePhone() != null && participant.getMobilePhone() !="0") ? participant.getMobilePhone() : "");
+				sb.append((participant.getMobilePhone() != null && participant.getMobilePhone() != "0") ? participant
+						.getMobilePhone() : "");
 				sb.append("</td><td>");
 				sb.append(participant.getWelcomeCardNumber() != null ? participant.getWelcomeCardNumber() : "");
 				sb.append("</td><td>");
@@ -610,8 +702,8 @@ public class SendMail {
 			if (!failedParticipants.isEmpty()) {
 				sb.append("</table>");
 				sb.append("</p>");
-				sb.append("<p>The following participant's haven't received e-welcome ID : " );
-				sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
+				sb.append("<p>The following participant's haven't received e-welcome ID : ");
+				sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "");
 				sb.append("</p>");
 				sb.append("<table border=\"1\" style=\"width: 75%;border-collapse: collapse;\">");
 				sb.append("<tr>");
@@ -630,7 +722,8 @@ public class SendMail {
 					sb.append("</td><td>");
 					sb.append(failedParticipant.getEmail() != null ? failedParticipant.getEmail() : "");
 					sb.append("</td><td>");
-					sb.append((failedParticipant.getMobilePhone() != null && failedParticipant.getMobilePhone() !="0") ? failedParticipant.getMobilePhone() : "");
+					sb.append((failedParticipant.getMobilePhone() != null && failedParticipant.getMobilePhone() != "0") ? failedParticipant
+							.getMobilePhone() : "");
 					sb.append("</td><td>");
 					sb.append(failedParticipant.getEwelcomeIdRemarks() != null ? failedParticipant
 							.getEwelcomeIdRemarks() : "");
@@ -643,8 +736,8 @@ public class SendMail {
 				sb.append("</p>");
 			}
 		} else if (!failedParticipants.isEmpty()) {
-			sb.append("<p>The following participant's haven't received e-welcome ID : " );
-			sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "" );
+			sb.append("<p>The following participant's haven't received e-welcome ID : ");
+			sb.append(coordinatorEmail.getEventName() != null ? coordinatorEmail.getEventName() : "");
 			sb.append("</p>");
 			sb.append("<table border=\"1\" style=\"width: 75%;border-collapse: collapse;\">");
 			sb.append("<tr>");
@@ -663,7 +756,8 @@ public class SendMail {
 				sb.append("</td><td>");
 				sb.append(failedParticipant.getEmail() != null ? failedParticipant.getEmail() : "");
 				sb.append("</td><td>");
-				sb.append((failedParticipant.getMobilePhone() != null && failedParticipant.getMobilePhone() !="0") ? failedParticipant.getMobilePhone() : "");
+				sb.append((failedParticipant.getMobilePhone() != null && failedParticipant.getMobilePhone() != "0") ? failedParticipant
+						.getMobilePhone() : "");
 				sb.append("</td><td>");
 				sb.append(failedParticipant.getEwelcomeIdRemarks() != null ? failedParticipant.getEwelcomeIdRemarks()
 						: "");
@@ -673,15 +767,13 @@ public class SendMail {
 			sb.append("</p>");
 
 		}
-		addParameter("EVENT_LINK",SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL +"?id="+ coordinatorEmail.getEventID());
-		addParameter("PARTICIPANTS_DETAILS", sb.toString());
+		addParameter(EmailLogConstants.EVENT_LINK_PARAMETER,
+				SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + coordinatorEmail.getEventID());
+		addParameter(EmailLogConstants.PARTICIPANTS_DETAILS_PARAMETER, sb.toString());
 		System.out.println(" co ord details - " + coordinatorEmail.getEventName() + "--"
 				+ coordinatorEmail.getCoordinatorEmail());
-		System.out.println("PARTICIPANTS_DETAILS " + sb.toString());
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
-		// SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
-		// addParameter("DATE", sdf.format(cal.getTime()));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinatorEmail.getCoordinatorEmail()));
 		message.setSubject(crdntrmailforewlcmidsubject + " - " + coordinatorEmail.getEventName());
 		message.setContent(getMessageContentbyTemplateName(crdntrewlcomeidmailtemplatename), "text/html");
@@ -691,17 +783,16 @@ public class SendMail {
 		Transport.send(message);
 	}
 
-
 	public void sendMailToCoordinatorToUpdatePreceptorID(CoordinatorEmail coordinator) throws AddressException,
 	MessagingException, UnsupportedEncodingException, ParseException {
 
 		Properties props = System.getProperties();
-		props.put("mail.debug", "true");
-		props.put("mail.smtp.host", hostname);
-		props.put("mail.smtp.port", port);
-		props.put("mail.smtp.ssl.enable", "true");
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
+		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
+		props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
+		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
 
 		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
@@ -709,14 +800,14 @@ public class SendMail {
 			}
 		});
 
-		addParameter("COORDINATOR_NAME", getName(coordinator.getCoordinatorName()));
-		addParameter("UPDATE_EVENT_LINK",
+		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, getName(coordinator.getCoordinatorName()));
+		addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER,
 				SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + coordinator.getEventID());
-		addParameter("EVENT_NAME", coordinator.getEventName());
+		addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinator.getEventName());
 		SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
 		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
 		Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
-		addParameter("PROGRAM_CREATE_DATE", outputsdf.format(pgrmCreateDate));
+		addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
@@ -733,12 +824,12 @@ public class SendMail {
 	ParseException {
 		try {
 			Properties props = System.getProperties();
-			props.put("mail.debug", "true");
-			props.put("mail.smtp.host", hostname);
-			props.put("mail.smtp.port", port);
-			props.put("mail.smtp.ssl.enable", "true");
-			props.put("mail.smtp.auth", "true");
-			props.put("mail.smtp.starttls.enable", "true");
+			props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+			props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
+			props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
+			props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+			props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
+			props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
 
 			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
@@ -750,7 +841,7 @@ public class SendMail {
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 			Date date = new Date();
 			String date_str = sdf.format(date);
-			addParameter("DATE", date_str);
+			addParameter(EmailLogConstants.DATE_PARAMETER, date_str);
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(frommail, name));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(welcomemailto));
@@ -762,28 +853,87 @@ public class SendMail {
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
 			Transport.send(message);
-			try {
-				LOGGER.info("START        :Inserting mail log details in table");
-				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0),welcomemailto ,
-						EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_SUCCESS, null);
-				mailLogRepository.createMailLog(pmpMailLog);
-				LOGGER.info("END        :Completed inserting mail log details in table");
-			} catch (Exception ex) {
-				LOGGER.error("END        :Exception while inserting mail log details in table");
-			}
+			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), welcomemailto,
+					EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_SUCCESS, null);
+			mailLogRepository.createMailLog(pmpMailLog);
+
 		} catch (MessagingException | UnsupportedEncodingException e) {
 			LOGGER.error("Sending Mail Failed : {} " + e.getMessage());
-			try {
-				LOGGER.info("START        :Inserting mail log details in table");
-				PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), welcomemailto,
-						EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_FAILED,
-						StackTraceUtils.convertStackTracetoString(e));
-				mailLogRepository.createMailLog(pmpMailLog);
-				LOGGER.info("END        :Completed inserting mail log details in table");
-			} catch (Exception ex) {
-				LOGGER.error("END        :Exception while inserting mail log details in table");
-			}
+			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), welcomemailto,
+					EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_FAILED,
+					StackTraceUtils.convertStackTracetoString(e));
+			mailLogRepository.createMailLog(pmpMailLog);
 		}
 	}
-}
 
+	public void sendNotificationToInformProcessExecution(String processName) {
+		String[] toIds = processExecution.toMailids.split(",");
+		try {
+			SMTPMessage message = 	getSMTPMessage();
+			message.setFrom(new InternetAddress(frommail, name));
+			for (String toId : toIds) {
+				message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toId));
+			}
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+			addParameter(EmailLogConstants.DATE_PARAMETER, sdf.format(new Date()));
+
+			if(processName.equalsIgnoreCase(EmailLogConstants.EWELCOME_ID_GENERATION)){
+				message.setSubject(processExecution.ewelcomeidGenerationSubject + ExpressionConstants.SPACE_SEPARATER + sdf.format(new Date()));
+				addParameter(EmailLogConstants.MAIL_CONTENT_PARAMETER, processExecution.ewelcomeidGeneration);
+			}else if(processName.equalsIgnoreCase(EmailLogConstants.FTP_UPLOAD_DETAILS)){
+				message.setSubject(processExecution.ftpUploadSubject + ExpressionConstants.SPACE_SEPARATER + sdf.format(new Date()));
+				addParameter(EmailLogConstants.MAIL_CONTENT_PARAMETER, processExecution.ftpUpload);
+			}else if(processName.equalsIgnoreCase(EmailLogConstants.WLCMID_EMAIL_DETAILS)){
+				message.setSubject(processExecution.crdntrMailWithewelcomeidGnrtnDetailsSbjct  + ExpressionConstants.SPACE_SEPARATER +  sdf.format(new Date()));
+				addParameter(EmailLogConstants.MAIL_CONTENT_PARAMETER, processExecution.crdntrMailWithewelcomeidGnrtnDetails);
+			}else if(processName.equalsIgnoreCase(EmailLogConstants.WELCOME_MAIL_DETAILS)){
+				message.setSubject(processExecution.crdntrMailWithWlcmMailDtlsSbjct  + ExpressionConstants.SPACE_SEPARATER +  sdf.format(new Date()));
+				addParameter(EmailLogConstants.MAIL_CONTENT_PARAMETER, processExecution.crdntrMailWithWlcmMailDtls);
+			}else if(processName.equalsIgnoreCase(EmailLogConstants.WELCOME_MAIL_TO_PARTICIPANTS)){
+				message.setSubject(processExecution.welcomeMailToParticpantsSubject  + ExpressionConstants.SPACE_SEPARATER +  sdf.format(new Date()));
+				addParameter(EmailLogConstants.MAIL_CONTENT_PARAMETER, processExecution.welcomeMailToParticpants);
+			}
+			message.setContent(getMessageContentbyTemplateName(processExecution.mailTemplate), "text/html");
+			message.setAllow8bitMIME(true);
+			message.setSentDate(new Date());
+			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+			Transport.send(message);
+			for (String toId : toIds) {
+				LOGGER.info("Mail sent successfully : {} ", toId);
+			}
+
+			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), toIds.toString(), EmailLogConstants.FTP_UPLOAD_DETAILS,
+					EmailLogConstants.STATUS_SUCCESS, null);
+			mailLogRepository.createMailLog(pmpMailLog);
+		} catch (MessagingException ex) {
+			LOGGER.error("Sending Mail Failed : {} " + StackTraceUtils.convertStackTracetoString(ex));
+			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), toIds.toString(), EmailLogConstants.FTP_UPLOAD_DETAILS,
+					EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex));
+			mailLogRepository.createMailLog(pmpMailLog);
+		} catch (Exception e) {
+			LOGGER.error("Sending Mail Failed : {} " + StackTraceUtils.convertStackTracetoString(e));
+			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), toIds.toString(), EmailLogConstants.FTP_UPLOAD_DETAILS,
+					EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e));
+			mailLogRepository.createMailLog(pmpMailLog);
+		}
+
+	}
+
+	private SMTPMessage getSMTPMessage() {
+		Properties props = System.getProperties();
+		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
+		props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
+		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+
+		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(username, password);
+			}
+		});
+		SMTPMessage message = new SMTPMessage(session);
+		return message;
+	}
+}

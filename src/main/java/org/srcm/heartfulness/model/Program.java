@@ -114,6 +114,8 @@ public class Program {
 	
 	private String organizationDecisionMakerPhoneNo;
 	
+	private String isEwelcomeIdGenerationDisabled;
+	
 	
 	public String getSrcmGroup() {
 		return srcmGroup;
@@ -411,9 +413,9 @@ public class Program {
 		if (organizationName != null) {
 			elementsOfMessage.append(organizationName);
 		}
-		if (organizationDepartment != null) {
+	/*	if (organizationDepartment != null) {
 			elementsOfMessage.append(organizationDepartment);
-		}
+		}*/
 		if (programStartDate != null) {
 			elementsOfMessage.append(programStartDate);
 		}
@@ -575,6 +577,14 @@ public class Program {
 		this.organizationDecisionMakerPhoneNo = organizationDecisionMakerPhoneNo;
 	}
 
+	public String getIsEwelcomeIdGenerationDisabled() {
+		return isEwelcomeIdGenerationDisabled;
+	}
+
+	public void setIsEwelcomeIdGenerationDisabled(String isEwelcomeIdGenerationDisabled) {
+		this.isEwelcomeIdGenerationDisabled = isEwelcomeIdGenerationDisabled;
+	}
+
 	@Override
 	public String toString() {
 		return "Program [programId=" + programId + ", encryptedId=" + encryptedId + ", programHashCode="
@@ -600,7 +610,8 @@ public class Program {
 				+ ", organizationLocation=" + organizationLocation + ", organizationFullAddress="
 				+ organizationFullAddress + ", organizationDecisionMakerName=" + organizationDecisionMakerName
 				+ ", organizationDecisionMakerEmail=" + organizationDecisionMakerEmail
-				+ ", organizationDecisionMakerPhoneNo=" + organizationDecisionMakerPhoneNo + "]";
+				+ ", organizationDecisionMakerPhoneNo=" + organizationDecisionMakerPhoneNo
+				+ ", isEwelcomeIdGenerationDisabled=" + isEwelcomeIdGenerationDisabled + "]";
 	}
 
 }

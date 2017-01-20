@@ -37,11 +37,15 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 	 * @see org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractor#extractExcel(org.apache.poi.ss.usermodel.Workbook)
 	 */
 	@Override
-	public Program extractExcel(Workbook workbook) throws InvalidExcelFileException {
+	public Program extractExcel(Workbook workbook,String eWelcomeIdCheckbox) throws InvalidExcelFileException {
 		Sheet sheet = workbook.getSheet(EventDetailsUploadConstants.V1_SHEET_NAME);
 		Program program = new Program();
-		program = parseProgram(sheet);
-		program.setParticipantList(getParticipantList(sheet));
+		boolean disableEwelcomeIdGeneration = false;
+		if(eWelcomeIdCheckbox.equals("on")){
+			disableEwelcomeIdGeneration = true;
+		}
+		program = parseProgram(sheet,disableEwelcomeIdGeneration);
+		program.setParticipantList(getParticipantList(sheet, disableEwelcomeIdGeneration));
 		return program;
 	}
 
@@ -51,14 +55,14 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 	 *
 	 * @return List of Participant details
 	 */
-	private List<Participant> getParticipantList(Sheet sheet) throws InvalidExcelFileException {
+	private List<Participant> getParticipantList(Sheet sheet, boolean disableEwelcomeIdGeneration) throws InvalidExcelFileException {
 		LOGGER.info("Started to parse participant data for altered 1.0 template.");
 		List<Participant> participantList = new ArrayList<Participant>();
 		int totalRows = sheet.getPhysicalNumberOfRows(),j=15;
 		for (int i = 15; i < totalRows; i++) {
 			Row currentRow = sheet.getRow(i);
-			Participant participant = parseParticipantRow(currentRow);
-			if(!participant.getPrintName().isEmpty()){
+			if(!currentRow.getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
+				Participant participant = parseParticipantRow(currentRow,disableEwelcomeIdGeneration);
 				if (participant.getExcelSheetSequenceNumber() == 0) {
 					participant.setExcelSheetSequenceNumber(j - 14);
 				}
@@ -78,7 +82,7 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 	 * @return Participant Details
 	 * @throws InvalidExcelFileException
 	 */
-	private Participant parseParticipantRow(Row currentRow) throws InvalidExcelFileException {
+	private Participant parseParticipantRow(Row currentRow, boolean disableEwelcomeIdGeneration) throws InvalidExcelFileException {
 		Participant participant = new Participant();
 		if (!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()) {
 			double seqNo = Double.valueOf(currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim());
@@ -117,6 +121,9 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 		participant.setIntroductionDate(introducedDate);
 		participant.setIntroducedBy(currentRow.getCell(9, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		participant.setRemarks(currentRow.getCell(10, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		if(disableEwelcomeIdGeneration){
+			participant.setEwelcomeIdState(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
+		}
 		return participant;
 	}
 
@@ -127,7 +134,7 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 	 * @return Program details.
 	 * @throws InvalidExcelFileException
 	 */
-	private Program parseProgram(Sheet sheet) throws InvalidExcelFileException {
+	private Program parseProgram(Sheet sheet, boolean disableEwelcomeIdGeneration) throws InvalidExcelFileException {
 		LOGGER.info("Started to parse program data for altered 1.0 template.");
 		Program program = new Program();
 		program.setProgramChannel(sheet.getRow(3).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim());
@@ -148,6 +155,11 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 			throw new InvalidExcelFileException("Not able to parse program event date:[" + eventDateStr + "]");
 		}
 		program.setProgramStartDate(eventDate);
+		if(disableEwelcomeIdGeneration){
+			program.setIsEwelcomeIdGenerationDisabled(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
+		}else{
+			program.setIsEwelcomeIdGenerationDisabled(EventDetailsUploadConstants.EWELCOME_ID_ENABLED_STATE);
+		}
 		LOGGER.info("Parsing program data completed for altered 1.0 template.");
 		return program;
 	}

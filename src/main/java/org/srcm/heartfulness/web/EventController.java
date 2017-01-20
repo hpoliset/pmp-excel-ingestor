@@ -31,6 +31,12 @@ import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.service.ProgramService;
 
+/**
+ * Controller - Event
+ * 
+ * @author himasreev
+ *
+ */
 @Controller
 public class EventController {
 
@@ -68,7 +74,7 @@ public class EventController {
 	@RequestMapping(value = "/eventForm", method = RequestMethod.GET)
 	public String showEventForm(Model model, HttpServletRequest request) {
 		try {
-			authHelper.setcurrentUsertoContext(request.getSession());
+			authHelper.setCurrentUsertoContext(request.getSession());
 			return pmpAuthService.showEventsForm();
 		} catch (AccessDeniedException e) {
 			return "accessdenied";
@@ -81,7 +87,7 @@ public class EventController {
 	public String showProgramForm(Model model,
 			@RequestParam(required = false, name = "programId") String encryptedProgramId, HttpServletRequest request) {
 		try {
-			authHelper.setcurrentUsertoContext(request.getSession());
+			authHelper.setCurrentUsertoContext(request.getSession());
 			return pmpAuthService.showProgramForm(encryptedProgramId, model);
 		} catch (AccessDeniedException e) {
 			return "accessdenied";
@@ -127,7 +133,7 @@ public class EventController {
 	@RequestMapping(value = "/getEventList", method = RequestMethod.POST)
 	public ResponseEntity<?> getEventList(HttpSession session, Model model) {
 		try {
-			authHelper.setcurrentUsertoContext(session);
+			authHelper.setCurrentUsertoContext(session);
 			return pmpAuthService.getEventList();
 		} catch (AccessDeniedException e) {
 			return new ResponseEntity<String>("Accessdenied", HttpStatus.UNAUTHORIZED);

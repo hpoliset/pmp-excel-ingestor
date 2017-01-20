@@ -5,7 +5,7 @@ import java.util.List;
 import org.srcm.heartfulness.model.Channel;
 
 /**
- * Service Class  for managing <code>Channel</code> domain objects.
+ * Service Class for managing <code>Channel</code> domain objects.
  * 
  * @author rramesh
  *
@@ -26,6 +26,12 @@ public interface ChannelService {
 	 * @return <code>String<Channel></code> list of channel names.
 	 */
 	List<String> findAllActiveChannelNames();
-	
+
+	/**
+	 * Service to get the active channel details from the Heartfulness backend.
+	 * 
+	 * @param role
+	 * @return<code>List<Channel></code> list of channel.
+	 */
 	public List<Channel> findAllActiveChannelsBasedOnRole(String role);
 }

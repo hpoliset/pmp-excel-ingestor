@@ -22,8 +22,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
- * @author Koustav Dutta Validator to streamline all Event dashboard validation
- *         implementation.
+ * Validator to streamline all Event dashboard validation implementation.
+ * 
+ * @author Koustav Dutta
  * 
  */
 
@@ -97,12 +98,41 @@ public interface EventDashboardValidator {
 	 */
 	public Map<String, String> checkDeleteRequestMandatoryFields(ParticipantIntroductionRequest participantRequest);
 
+	/**
+	 * Method to validate the mandatory fields in the participant request before
+	 * introducing the participants.
+	 * 
+	 * @param participantInput
+	 * @param id
+	 * @return
+	 */
 	public List<String> checkParticipantIntroductionMandatoryFields(Participant participantInput, int id);
 
+	/**
+	 * Method to validate whether participant completed preliminary sittings or
+	 * not.
+	 * 
+	 * @param participantInput
+	 * @return true,if valid.
+	 */
 	public boolean validateParticipantCompletedPreliminarySittings(Participant participantInput);
 
+	/**
+	 * Method to validate the mandatory fields in the <code>Participant</code>
+	 * request before updating the particpant details.
+	 * 
+	 * @param participant
+	 * @return errors <code>Map<String, String</code>.
+	 */
 	public Map<String, String> checkUpdateParticipantMandatoryFields(ParticipantRequest participant);
 
+	/**
+	 * Method to validate the pagination properties before fetching the related
+	 * results.
+	 * 
+	 * @param eventPagination
+	 * @return error message, if invalid.
+	 */
 	public String validatePaginationProperties(EventPagination eventPagination);
 
 }
