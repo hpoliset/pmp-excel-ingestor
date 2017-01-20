@@ -11,9 +11,9 @@ import org.srcm.heartfulness.service.response.ExcelUploadResponse;
  */
 public interface PmpIngestionService {
 
-	ExcelUploadResponse parseAndPersistExcelFile(String fileName, byte[] fileContent);
+	ExcelUploadResponse parseAndPersistExcelFile(String fileName, byte[] fileContent,String eWelcomeIdCheckbox);
 
-	List<ExcelUploadResponse> parseAndPersistExcelFile(MultipartFile[] excels) throws IOException;
+	List<ExcelUploadResponse> parseAndPersistExcelFile(MultipartFile[] excels,String eWelcomeIdCheckbox) throws IOException;
 
 	void normalizeStagingRecords();
 

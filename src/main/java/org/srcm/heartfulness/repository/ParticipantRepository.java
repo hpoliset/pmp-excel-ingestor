@@ -121,6 +121,6 @@ public interface ParticipantRepository {
 	 * 
 	 * @param participant
 	 */
-	void UpdateParticipantEwelcomeIDDetails(Participant participant);
+	void updateParticipantEwelcomeIDDetails(Participant participant);
 
 }

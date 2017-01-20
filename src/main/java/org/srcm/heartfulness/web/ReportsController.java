@@ -58,7 +58,7 @@ public class ReportsController {
 	public String showReportsForm(HttpServletRequest request, ModelMap modelMap, RedirectAttributes redirectAttributes) {
 
 		try {
-			authHelper.setcurrentUsertoContext(request.getSession());
+			authHelper.setCurrentUsertoContext(request.getSession());
 			return pmpAuthService.showReportsForm(modelMap);
 		} catch (AccessDeniedException e) {
 			return "accessdenied";
@@ -113,7 +113,7 @@ public class ReportsController {
 		reportVO.setState(state);
 		reportVO.setCity(city);
 
-		authHelper.setcurrentUsertoContext(request.getSession());
+		authHelper.setCurrentUsertoContext(request.getSession());
 		pmpAuthService.setRoleAndUsernameFromContext(reportVO);
 
 		Collection<ParticipantFullDetails> participants = reportService.getParticipants(reportVO);

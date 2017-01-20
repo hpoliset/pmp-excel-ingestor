@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
-import org.srcm.heartfulness.mail.SendMail;
 import org.srcm.heartfulness.service.WelcomeMailService;
 
 /**
@@ -27,9 +26,6 @@ public class WelcomeMailController {
 	@Autowired
 	private WelcomeMailService WelcomeMailService;
 
-	@Autowired
-	private SendMail sendMail;
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(WelcomeMailController.class);
 
 	/* @Scheduled(cron = "${welcome.mail.subscribe.cron.time}") */
@@ -38,7 +34,6 @@ public class WelcomeMailController {
 			LOGGER.info("Scheduler started at - " + new Date());
 			WelcomeMailService.addNewSubscriber();
 		} catch (HttpClientErrorException | IOException | MessagingException e) {
-			// e.printStackTrace();
 			LOGGER.error("Exception while Subscribe - {} " + e.getMessage());
 		}
 	}
@@ -49,12 +44,11 @@ public class WelcomeMailController {
 			LOGGER.info("Unsubcribe user called.");
 			WelcomeMailService.unsubscribeUsers();
 		} catch (HttpClientErrorException | IOException e) {
-			// e.printStackTrace();
 			LOGGER.error("Exception while Unsubscribe - {} " + e.getMessage());
 		}
 	}
 
-	 @Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") 
+	@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") 
 	public void uploadDailyWelcomeMailidsToFTP() {
 		try {
 			LOGGER.info("Upload File to FTP called.");
@@ -77,8 +71,6 @@ public class WelcomeMailController {
 		LOGGER.info("END		:Cron job completed to fetch participants to whom welcome mail already sent");
 	}
 
-	// @RequestMapping(value = "informcoordinatorswithewelcomeids", method =
-	// RequestMethod.POST)
 	 @Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}") 
 	public void sendGeneratedEwelcomeIdToCoordinators() {
 		LOGGER.info("START		:Cron job started to send mails to coordinator to inform participant ewelcomeid's");
@@ -86,7 +78,6 @@ public class WelcomeMailController {
 		LOGGER.info("END		:Cron job completed to send mails to coordinator to inform participant ewelcomeid's");
 	}
 
-	// @RequestMapping(value = "sendwelcomemail", method = RequestMethod.POST)
 	 @Scheduled(cron = "${welcome.mail.to.hfnlist.cron.time}") 
 	public void sendWelcomeMail() {
 		try {

@@ -14,46 +14,61 @@
 	<form method="POST" action="processBulkUpload"
 		enctype="multipart/form-data">
 
-		<div class="container" align="center" style="width: 100%; height: 100%; margin: 0 auto;">
+		<div class="container" align="center"
+			style="width: 100%; height: 100%; margin: 0 auto; padding-top: 2%;">
 			<h3>Heartfulness Event Data Upload Screen</h3>
 			<div class="six columns">
-				<input id="fileupload" type="file" name="uploadedExcelFiles" multiple>
+				<input id="fileupload" type="file" name="uploadedExcelFiles"
+					multiple style="padding-left: 15%;"> <input type="checkbox"
+					id="generateEWelcomeId" name="generateEWelcomeId"><b>&nbsp;Please
+					select the checkbox to disable generating eWelcome Id for the HFN
+					events</b>
 			</div>
 			<div class="six columns">
-				<input type="submit" id="process" value="Start uploading excels"  />
+				<input type="submit" id="process" value="Start uploading excels" />
 			</div>
 			<br>
-			<div id="table-view" style="display: none;">
-			<br>
 			
+			<div id="table-view" style="display: none;">
+				<br>
+
 				<table class="u-full-width" id="uploaded-files">
 				</table>
 			</div>
-			</div>
+		</div>
 	</form>
 </body>
 <script type="text/javascript">
-	$('#fileupload').bind('change', function() {
-		$('#table-view').show();
-		$('#uploaded-files').empty();
-		$('#uploaded-files').append("<tr><th align='left'>File Name</th><th align='left'>File Size</th></tr>");
-		var files = $('#fileupload')[0].files
-		for (var i = 0, file; file = files[i]; i++) {
-			var tr = "<tr><td>"+file.name;
-			if(file.size > 10000000){
-				tr = tr+"<br><lable style='color: red;'>File is too large";
-				//$('#fileupload').remove(i);
-			}
-			var ext = file.name.split('.').pop().toLowerCase();
-			if($.inArray(ext, ['xlsx','xlsm']) == -1) {
-			    tr = tr+"<br><lable style='color: red;'>File type not allowed";
-			   // $('#fileupload').remove(file);
-			   // $('#fileupload')[0].splice(file);
-			}
-			tr = tr+"</td><td>"+Math.round((file.size / 1024) * 100) / 100 + " Kb</td></tr>";
-			$('#uploaded-files').append(tr);
-		}
-	});
+	$('#fileupload')
+			.bind(
+					'change',
+					function() {
+						$('#table-view').show();
+						$('#uploaded-files').empty();
+						$('#uploaded-files')
+								.append(
+										"<tr><th align='left'>File Name</th><th align='left'>File Size</th></tr>");
+						var files = $('#fileupload')[0].files
+						for (var i = 0, file; file = files[i]; i++) {
+							var tr = "<tr><td>" + file.name;
+							if (file.size > 10000000) {
+								tr = tr
+										+ "<br><lable style='color: red;'>File is too large";
+								//$('#fileupload').remove(i);
+							}
+							var ext = file.name.split('.').pop().toLowerCase();
+							if ($.inArray(ext, [ 'xlsx', 'xlsm' ]) == -1) {
+								tr = tr
+										+ "<br><lable style='color: red;'>File type not allowed";
+								// $('#fileupload').remove(file);
+								// $('#fileupload')[0].splice(file);
+							}
+							tr = tr + "</td><td>"
+									+ Math.round((file.size / 1024) * 100)
+									/ 100 + " Kb</td></tr>";
+							$('#uploaded-files').append(tr);
+						}
+					});
 </script>
 
 

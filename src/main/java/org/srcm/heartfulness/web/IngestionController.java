@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,7 +41,7 @@ public class IngestionController {
 	@RequestMapping(value = "/ingest/inputForm", method = RequestMethod.GET)
 	public String showUploadForm(HttpServletRequest request,RedirectAttributes redirectAttributes) {
 		try{
-			authHelper.setcurrentUsertoContext(request.getSession());
+			authHelper.setCurrentUsertoContext(request.getSession());
 			return pmpAuthService.showInputForm();
 		}catch(AccessDeniedException e){
 			return "accessdenied";
@@ -57,11 +58,12 @@ public class IngestionController {
 	}
 
 	@RequestMapping(value = "/ingest/processUpload", method = RequestMethod.POST)
-	public String processFileUpload(HttpServletRequest request, @RequestParam MultipartFile excelDataFile, ModelMap modelMap)
+	public String processFileUpload(HttpServletRequest request, @RequestParam MultipartFile excelDataFile, ModelMap modelMap
+			,@ModelAttribute("generateEWelcomeId") String eWelcomeIdCheckbox)
 			throws InvalidExcelFileException, IOException {
 
 		MultipartFile[] uploadedFile = new MultipartFile[]{excelDataFile};
-		List<ExcelUploadResponse> responseList = pmpIngestionService.parseAndPersistExcelFile(uploadedFile);
+		List<ExcelUploadResponse> responseList = pmpIngestionService.parseAndPersistExcelFile(uploadedFile,eWelcomeIdCheckbox);
 		modelMap.addAttribute("uploadReponse", responseList);
 		return "success";
 	}
@@ -76,7 +78,7 @@ public class IngestionController {
 	@RequestMapping(value = "/ingest/bulkUploadForm", method = RequestMethod.GET)
 	public String showBulkUploadForm(HttpServletRequest request,RedirectAttributes redirectAttributes) {
 		try{
-			authHelper.setcurrentUsertoContext(request.getSession());
+			authHelper.setCurrentUsertoContext(request.getSession());
 			return pmpAuthService.showBulkUploadForm();
 		}catch(AccessDeniedException e){
 			return "accessdenied";
@@ -96,9 +98,9 @@ public class IngestionController {
 	 */
 	@RequestMapping(value = "/ingest/processBulkUpload", method = RequestMethod.POST)
 	public String processFileUpload(@RequestParam MultipartFile uploadedExcelFiles[], ModelMap modelMap,
-			HttpServletResponse response, HttpServletRequest request) throws IOException {
+			HttpServletResponse response, HttpServletRequest request,@ModelAttribute("generateEWelcomeId") String eWelcomeIdCheckbox) throws IOException {
 
-		List<ExcelUploadResponse> responseList = pmpIngestionService.parseAndPersistExcelFile(uploadedExcelFiles);
+		List<ExcelUploadResponse> responseList = pmpIngestionService.parseAndPersistExcelFile(uploadedExcelFiles,eWelcomeIdCheckbox);
 		modelMap.addAttribute("uploadReponse", responseList);
 		return "bulkUploadResponse";
 

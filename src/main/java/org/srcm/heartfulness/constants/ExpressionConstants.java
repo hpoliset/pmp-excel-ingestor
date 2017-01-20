@@ -24,4 +24,17 @@ public class ExpressionConstants {
 	public static final String ZIPCODE_REGEX="^[1-9][0-9]{5}$";
 	
 	public static final String PARTICIPANT_EWELCOME_ID_REGEX="^[HB][0-9]{8}$";
+	
+	public static String COLON_HEADER_SEPARATER = ":";
+
+	public static String PATH_SEPARATER = "/";
+
+	public static String SPACE_SEPARATER = " ";
+
+	public static String DOT_SEPARATER = ".";
+
+	public static String COMMA_SEPARATER = ",";
+
+	public static String NEXT_LINE = "\n";
+	
 }

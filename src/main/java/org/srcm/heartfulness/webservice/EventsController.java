@@ -48,6 +48,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
+ * Events Rest Controller - Event Dashboard Related services.
+ * 
  * @author Koustav Dutta
  *
  */
@@ -236,8 +238,6 @@ public class EventsController {
 		UserProfile userProfile = null;
 		int offset = 0;
 		try {
-			// dashboard validator
-			LOGGER.info("Trying to get event list for logged in user");
 			userProfile = eventDashboardValidator.validateToken(token, id);
 			if (null == userProfile) {
 				LOGGER.info("UserProfile doesnot exists in MySrcm database");
@@ -275,12 +275,9 @@ public class EventsController {
 			}
 
 			offset = (eventPagination.getPageIndex() - 1) * eventPagination.getPageSize();
-			// eventPagination.setTotalCount(programService.getProgramCount(user.getEmail(),isAdmin));
 			eventPagination.setTotalCount(programService.getProgramCountWithUserRoleAndEmailId(user.getEmail(),
 					user.getRole()));
 			LOGGER.info("Trying to get event list for logged in user");
-			// eventList = programService.getEventListByEmail(user.getEmail(),
-			// isAdmin,offset,eventPagination.getPageSize());
 			eventList = programService.getEventListByEmailAndRole(user.getEmail(), user.getRole(), offset,
 					eventPagination.getPageSize());
 			eventPagination.setEventList(eventList);
@@ -952,7 +949,6 @@ public class EventsController {
 		int offset = 0;
 		UserProfile userProfile = null;
 		try {
-			// List<Event> eventList = new ArrayList<>();
 			userProfile = eventDashboardValidator.validateToken(token, id);
 			if (null == userProfile) {
 				ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
@@ -993,13 +989,10 @@ public class EventsController {
 
 			offset = (eventPgntn.getPageIndex() - 1) * eventPgntn.getPageSize();
 
-			// searchRequest.setTotalCount(programService.searchEvents(searchRequest,user.getEmail(),isAdmin,offset,false).size());
 			searchRequest.setTotalCount(programService.getPgrmCountBySrchParamsWithUserRoleAndEmailId(searchRequest,
 					user.getEmail(), user.getRole()));
 
 			LOGGER.info("Trying to get event list for logged in user");
-			// eventList =
-			// programService.searchEvents(searchRequest,user.getEmail(),isAdmin,offset);
 			searchRequest.setEventList(programService.searchEventsWithUserRoleAndEmailId(searchRequest,
 					user.getEmail(), user.getRole(), offset));
 

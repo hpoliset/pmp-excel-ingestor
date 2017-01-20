@@ -34,4 +34,15 @@ public class EventDetailsUploadConstants {
 	
 	/** Holds the response status when the upload fails. */
 	public static final String FAILURE_STATUS = "Failure";
+	
+	/**
+	 * Holds the disabled eWelcome Id state
+	 */
+	public static final String EWELCOME_ID_DISABLED_STATE = "D";
+	
+	/**
+	 * Holds the enabled eWelcome Id state
+	 * 
+	 */
+	public static final String EWELCOME_ID_ENABLED_STATE  = "E";
 }

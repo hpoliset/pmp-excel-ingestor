@@ -46,7 +46,7 @@ public class PMPAPILogController {
 	@RequestMapping(value = "/loadlogform", method = RequestMethod.GET)
 	public String loadPmpApiLogForm(HttpServletRequest request,RedirectAttributes redirectAttributes){
 		try{
-			authHelper.setcurrentUsertoContext(request.getSession());
+			authHelper.setCurrentUsertoContext(request.getSession());
 			return pmpAuthService.showPmpApiLogForm();
 		} catch(AccessDeniedException ade){
 			return "accessdenied";
@@ -60,7 +60,7 @@ public class PMPAPILogController {
 	@RequestMapping(value = "/loaderrorlogform", method = RequestMethod.GET)
 	public String loadPmpApiErrorLogForm(HttpServletRequest request,RedirectAttributes redirectAttributes){
 		try{
-			authHelper.setcurrentUsertoContext(request.getSession());
+			authHelper.setCurrentUsertoContext(request.getSession());
 			return pmpAuthService.showPmpApiErrorLogForm();
 		} catch(AccessDeniedException ade){
 			return "accessdenied";
@@ -74,7 +74,7 @@ public class PMPAPILogController {
 	@RequestMapping(value = "/loadlogdetailsform", method = RequestMethod.GET)
 	public String loadPmpApiPopupForm(HttpServletRequest request,RedirectAttributes redirectAttributes){
 		try{
-			authHelper.setcurrentUsertoContext(request.getSession());
+			authHelper.setCurrentUsertoContext(request.getSession());
 			return pmpAuthService.showPmpApiPopupForm();
 		} catch(AccessDeniedException ade){
 			return "accessdenied";
@@ -87,7 +87,7 @@ public class PMPAPILogController {
 	@RequestMapping(value = "/loaderrorlogdetailsform", method = RequestMethod.GET)
 	public String loadPmpApiErrorPopupForm(HttpServletRequest request,RedirectAttributes redirectAttributes){
 		try{
-			authHelper.setcurrentUsertoContext(request.getSession());
+			authHelper.setCurrentUsertoContext(request.getSession());
 			return pmpAuthService.showPmpApiErrorPopupForm();
 		} catch(AccessDeniedException ade){
 			return "accessdenied";

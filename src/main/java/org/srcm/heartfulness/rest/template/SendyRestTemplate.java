@@ -21,6 +21,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -40,13 +41,14 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
+import org.srcm.heartfulness.proxy.ProxyHelper;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.sun.mail.smtp.SMTPMessage;
 
 /**
- * This is  a template class, communicates with sendy by calling sendy api
+ * This is a template class, communicates with sendy by calling sendy api
  * 
  * @author rramesh
  *
@@ -55,28 +57,16 @@ import com.sun.mail.smtp.SMTPMessage;
 @PropertySource("classpath:application.properties")
 @ConfigurationProperties(locations = "classpath:prod.sendy.api.properties", ignoreUnknownFields = false, prefix = "sendy")
 public class SendyRestTemplate extends RestTemplate {
-	
+
+	@Autowired
+	ProxyHelper proxyHelper;
+
 	private String subscribeUri;
 	private String sendMailUri;
 	private String apiKey;
 	private String sendCampaign;
 	private String sendFlag;
 
-	@Value("${proxy}")
-	private boolean proxy;
-	
-	@Value("${proxyHost}")
-	private String proxyHost;
-	
-	@Value("${proxyPort}")
-	private int proxyPort;
-	
-	@Value("${proxyUser}")
-	private String proxyUser;
-	
-	@Value("${proxyPassword}")
-	private String proxyPassword;
-	
 	private HttpHeaders httpHeaders;
 	private HttpEntity<?> httpEntity;
 	private MultiValueMap<String, String> body;
@@ -88,50 +78,75 @@ public class SendyRestTemplate extends RestTemplate {
 	private String errorAlertMailSubject;
 	private String errorMailTemplate;
 	private String host;
-	
+
+	@Value("${proxy}")
+	private boolean proxy;
+
+	@Value("${proxyHost}")
+	private String proxyHost;
+
+	@Value("${proxyPort}")
+	private int proxyPort;
+
+	@Value("${proxyUser}")
+	private String proxyUser;
+
+	@Value("${proxyPassword}")
+	private String proxyPassword;
+
 	private VelocityContext context;
-	
-	public static class WelcomeMail{
+
+	public static class WelcomeMail {
 		private String subscriberListID;
 		private String fromName;
 		private String fromMailID;
 		private String replyToMailID;
 		private String subject;
+
 		public String getSubscriberListID() {
 			return subscriberListID;
 		}
+
 		public void setSubscriberListID(String subscriberListID) {
 			this.subscriberListID = subscriberListID;
 		}
+
 		public String getFromName() {
 			return fromName;
 		}
+
 		public void setFromName(String fromName) {
 			this.fromName = fromName;
 		}
+
 		public String getFromMailID() {
 			return fromMailID;
 		}
+
 		public void setFromMailID(String fromMailID) {
 			this.fromMailID = fromMailID;
 		}
+
 		public String getReplyToMailID() {
 			return replyToMailID;
 		}
+
 		public void setReplyToMailID(String replyToMailID) {
 			this.replyToMailID = replyToMailID;
 		}
+
 		public String getSubject() {
 			return subject;
 		}
+
 		public void setSubject(String subject) {
 			this.subject = subject;
 		}
-		
+
 	}
-	
-	public static class MonthlyNewsletter{
-		
+
+	public static class MonthlyNewsletter {
+
 		private String subscriberListID;
 		private String toMailIds;
 		private String ccMailIds;
@@ -139,6 +154,7 @@ public class SendyRestTemplate extends RestTemplate {
 		public String getToMailIds() {
 			return toMailIds;
 		}
+
 		public void setToMailIds(String toMailIds) {
 			this.toMailIds = toMailIds;
 		}
@@ -159,12 +175,12 @@ public class SendyRestTemplate extends RestTemplate {
 			this.subscriberListID = subscriberListID;
 		}
 	}
-	
+
 	@NotNull
 	private WelcomeMail welcomeMail;
 	@NotNull
 	private MonthlyNewsletter monthlyNewsletter;
-	
+
 	public WelcomeMail getWelcomeMail() {
 		return welcomeMail;
 	}
@@ -172,6 +188,7 @@ public class SendyRestTemplate extends RestTemplate {
 	public void setWelcomeMail(WelcomeMail welcomeMail) {
 		this.welcomeMail = welcomeMail;
 	}
+
 	public MonthlyNewsletter getMonthlyNewsletter() {
 		return monthlyNewsletter;
 	}
@@ -181,9 +198,11 @@ public class SendyRestTemplate extends RestTemplate {
 	}
 
 	/**
-	 * To add a new subscriber to sendy welcome mail subscribers list through subscribe URL.  
+	 * To add a new subscriber to sendy welcome mail subscribers list through
+	 * subscribe URL.
 	 * 
-	 * @param sendySubscriberDetails - (SendySubscriber sendySubscriberDetails)
+	 * @param sendySubscriberDetails
+	 *            - (SendySubscriber sendySubscriberDetails)
 	 * 
 	 * @return the response
 	 * @throws HttpClientErrorException
@@ -193,8 +212,7 @@ public class SendyRestTemplate extends RestTemplate {
 	 */
 	public String addNewSubscriber(SendySubscriber sendySubscriberDetails) throws HttpClientErrorException,
 			JsonParseException, JsonMappingException, IOException {
-		if (proxy)
-			setProxy();
+		setProxy();
 		body = new LinkedMultiValueMap<String, String>();
 
 		body.add("name", sendySubscriberDetails.getNameToSendMail());
@@ -205,14 +223,16 @@ public class SendyRestTemplate extends RestTemplate {
 			body.add(entry.getKey(), entry.getValue());
 		}
 		httpHeaders = new HttpHeaders();
-		//httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		// httpHeaders.add("Content-Type",
+		// MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
-		ResponseEntity<String> response = this.exchange(subscribeUri,HttpMethod.POST, httpEntity, String.class);
+		ResponseEntity<String> response = this.exchange(subscribeUri, HttpMethod.POST, httpEntity, String.class);
 		return response.getBody();
 	}
-	
+
 	/**
-	 * To send welcome mail to the welcome mail subscribers list in sendy through send mail URL.
+	 * To send welcome mail to the welcome mail subscribers list in sendy
+	 * through send mail URL.
 	 * 
 	 * @return the response
 	 * @throws HttpClientErrorException
@@ -220,14 +240,14 @@ public class SendyRestTemplate extends RestTemplate {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public String sendWelcomeMail() throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
-		if (proxy)
-			setProxy();
+	public String sendWelcomeMail() throws HttpClientErrorException, JsonParseException, JsonMappingException,
+			IOException {
+		setProxy();
 		StringBuffer content = new StringBuffer("");
 		VelocityEngine ve = new VelocityEngine();
-		ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath"); 
+		ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
 		ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
-		Template template = ve.getTemplate("templates"+"/SendyWelcomeMail.html");
+		Template template = ve.getTemplate("templates" + "/SendyWelcomeMail.html");
 		StringWriter stringWriter = new StringWriter();
 		template.merge(getParameter(), stringWriter);
 		body = new LinkedMultiValueMap<String, String>();
@@ -237,15 +257,16 @@ public class SendyRestTemplate extends RestTemplate {
 		body.add("reply_to", welcomeMail.replyToMailID);
 		body.add("subject", welcomeMail.subject);
 		body.add("plain_text", "");
-		body.add("html_text",stringWriter.toString());
+		body.add("html_text", stringWriter.toString());
 		body.add("list_ids", welcomeMail.subscriberListID);
 		body.add("send_campaign", sendCampaign);
 
 		httpHeaders = new HttpHeaders();
-		//httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+		// httpHeaders.add("Content-Type",
+		// MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
-		//System.out.println("http " + content.toString());
-		ResponseEntity<String> response = this.exchange(sendMailUri,HttpMethod.POST, httpEntity, String.class);
+		// System.out.println("http " + content.toString());
+		ResponseEntity<String> response = this.exchange(sendMailUri, HttpMethod.POST, httpEntity, String.class);
 		return response.getBody();
 	}
 
@@ -258,10 +279,9 @@ public class SendyRestTemplate extends RestTemplate {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public String executeCronJob() throws HttpClientErrorException,
-			JsonParseException, JsonMappingException, IOException {
-		if (proxy)
-			setProxy();
+	public String executeCronJob() throws HttpClientErrorException, JsonParseException, JsonMappingException,
+			IOException {
+		setProxy();
 		body = new LinkedMultiValueMap<String, String>();
 		httpHeaders = new HttpHeaders();
 		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
@@ -269,11 +289,12 @@ public class SendyRestTemplate extends RestTemplate {
 		ResponseEntity<String> response = this.exchange(scheduledCronJobUri, HttpMethod.GET, httpEntity, String.class);
 		return response.getBody();
 	}
-	
+
 	/**
 	 * To unsubscribe the users from the sendy welcome mail subscribers list.
 	 * 
-	 * @param welcomeMailDetails -(WelcomeMailDetails welcomeMailDetails)
+	 * @param welcomeMailDetails
+	 *            -(WelcomeMailDetails welcomeMailDetails)
 	 * @return the response
 	 * @throws HttpClientErrorException
 	 * @throws JsonParseException
@@ -282,8 +303,7 @@ public class SendyRestTemplate extends RestTemplate {
 	 */
 	public String unsubscribeUser(WelcomeMailDetails welcomeMailDetails) throws HttpClientErrorException,
 			JsonParseException, JsonMappingException, IOException {
-		if (proxy)
-			setProxy();
+		setProxy();
 		body = new LinkedMultiValueMap<String, String>();
 		body.add("email", welcomeMailDetails.getEmail());
 		body.add("boolean", sendFlag);
@@ -291,25 +311,26 @@ public class SendyRestTemplate extends RestTemplate {
 		httpHeaders = new HttpHeaders();
 		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
-		//System.out.println("HTTP response " + httpEntity.toString());
+		// System.out.println("HTTP response " + httpEntity.toString());
 		ResponseEntity<String> response = this.exchange(unsubscribeUri, HttpMethod.POST, httpEntity, String.class);
 		return response.getBody();
 	}
-	
+
 	/**
-	 * To unsubscribe the users from the sendy monthly newsletter subscribers list.
+	 * To unsubscribe the users from the sendy monthly newsletter subscribers
+	 * list.
 	 * 
-	 * @param welcomeMailDetails -(WelcomeMailDetails welcomeMailDetails)
+	 * @param welcomeMailDetails
+	 *            -(WelcomeMailDetails welcomeMailDetails)
 	 * @return the response
 	 * @throws HttpClientErrorException
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public String unsubscribeUserFromMonthlyNewsletterList(WelcomeMailDetails welcomeMailDetails) throws HttpClientErrorException,
-			JsonParseException, JsonMappingException, IOException {
-		if (proxy)
-			setProxy();
+	public String unsubscribeUserFromMonthlyNewsletterList(WelcomeMailDetails welcomeMailDetails)
+			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException {
+		setProxy();
 		body = new LinkedMultiValueMap<String, String>();
 		body.add("email", welcomeMailDetails.getEmail());
 		body.add("boolean", sendFlag);
@@ -317,11 +338,11 @@ public class SendyRestTemplate extends RestTemplate {
 		httpHeaders = new HttpHeaders();
 		httpHeaders.add("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE);
 		httpEntity = new HttpEntity<Object>(body, httpHeaders);
-		//System.out.println("HTTP response " + httpEntity.toString());
+		// System.out.println("HTTP response " + httpEntity.toString());
 		ResponseEntity<String> response = this.exchange(unsubscribeUri, HttpMethod.POST, httpEntity, String.class);
 		return response.getBody();
 	}
-	
+
 	/**
 	 * To send error alert email when sendy mail fails.
 	 * 
@@ -330,60 +351,83 @@ public class SendyRestTemplate extends RestTemplate {
 	public void sendErrorAlertMail() throws MessagingException {
 		List<String> toMailIdList = new ArrayList<String>();
 		List<String> ccMailIdList = new ArrayList<String>();
-		
+
 		String[] toMail = monthlyNewsletter.toMailIds.split(",");
 		String[] ccMail = monthlyNewsletter.ccMailIds.split(",");
-		for(String toMailID : toMail){
+		for (String toMailID : toMail) {
 			toMailIdList.add(toMailID);
 		}
-		for(String ccMailID : ccMail){
+		for (String ccMailID : ccMail) {
 			ccMailIdList.add(ccMailID);
 		}
-		
-		if(toMailIdList.size()>0){
+
+		if (toMailIdList.size() > 0) {
 			Properties props = System.getProperties();
 			setProperties(props);
-			Session session =Session.getDefaultInstance(props,new javax.mail.Authenticator(){
+			Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
 				@Override
-				protected PasswordAuthentication getPasswordAuthentication()
-				{				
-					return new PasswordAuthentication(username,password);
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
 				}
 			});
-				SMTPMessage message = new SMTPMessage(session);
-				message.setFrom(new InternetAddress(username));
-				for (String toMailId : toMailIdList) {
-					message.addRecipients(Message.RecipientType.TO,InternetAddress.parse(toMailId));
-				}
-				for (String ccMailId : ccMailIdList) {
-					message.addRecipients(Message.RecipientType.CC,InternetAddress.parse(ccMailId));
-				}
-				message.setSubject(errorAlertMailSubject);
-				message.setContent(getWelcomeMailContent(errorMailTemplate),"text/html");
-				message.setAllow8bitMIME(true);
-				message.setSentDate(new Date());
-				message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-				message.getReturnOption();
-				//int returnOption = message.getReturnOption();
-				Transport.send(message);
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(username));
+			for (String toMailId : toMailIdList) {
+				message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toMailId));
+			}
+			for (String ccMailId : ccMailIdList) {
+				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(ccMailId));
+			}
+			message.setSubject(errorAlertMailSubject);
+			message.setContent(getWelcomeMailContent(errorMailTemplate), "text/html");
+			message.setAllow8bitMIME(true);
+			message.setSentDate(new Date());
+			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+			message.getReturnOption();
+			// int returnOption = message.getReturnOption();
+			Transport.send(message);
 		}
 	}
 
 	/**
 	 * To get the content from the template.
 	 * 
-	 * @param errormail-template name
+	 * @param errormail
+	 *            -template name
 	 * @return the content as java.String
 	 */
-	private String getWelcomeMailContent(String errormail){
+	private String getWelcomeMailContent(String errormail) {
 		VelocityEngine ve = new VelocityEngine();
-		ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath"); 
+		ve.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
 		ve.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
-		Template template = ve.getTemplate("templates"+"/"+errormail+".vm");
+		Template template = ve.getTemplate("templates" + "/" + errormail + ".vm");
 		StringWriter stringWriter = new StringWriter();
 		template.merge(getParameter(), stringWriter);
 		return stringWriter.toString();
 	}
+
+	/**
+	 * Method to set the proxy (development use only)
+	 */
+	public void setProxy() {
+		if (proxy) {
+
+		/*	CredentialsProvider credsProvider = new BasicCredentialsProvider();
+			credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
+					new UsernamePasswordCredentials(proxyUser, proxyPassword));
+			HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+			clientBuilder.useSystemProperties();
+			clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
+			clientBuilder.setDefaultCredentialsProvider(credsProvider);
+			clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
+			CloseableHttpClient client = clientBuilder.build();
+			HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+			factory.setHttpClient(client);
+			this.setRequestFactory(factory);*/
+		}
+
+	}
+
 	public VelocityContext getParameter() {
 		return this.context;
 	}
@@ -406,7 +450,7 @@ public class SendyRestTemplate extends RestTemplate {
 		props.put("mail.smtp.ssl.enable", "true");
 		props.put("mail.smtp.auth", "true");
 	}
-	
+
 	public String getSubscribeUri() {
 		return subscribeUri;
 	}
@@ -446,6 +490,7 @@ public class SendyRestTemplate extends RestTemplate {
 	public void setSendFlag(String sendFlag) {
 		this.sendFlag = sendFlag;
 	}
+
 	public String getUnsubscribeUri() {
 		return unsubscribeUri;
 	}
@@ -453,6 +498,7 @@ public class SendyRestTemplate extends RestTemplate {
 	public void setUnsubscribeUri(String unsubscribeUri) {
 		this.unsubscribeUri = unsubscribeUri;
 	}
+
 	public String getScheduledCronJobUri() {
 		return scheduledCronJobUri;
 	}
@@ -499,21 +545,6 @@ public class SendyRestTemplate extends RestTemplate {
 
 	public void setHost(String host) {
 		this.host = host;
-	}
-
-	public void setProxy() {
-		/*CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
-				new UsernamePasswordCredentials(proxyUser, proxyPassword));
-		HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-		clientBuilder.useSystemProperties();
-		clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
-		clientBuilder.setDefaultCredentialsProvider(credsProvider);
-		clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-		CloseableHttpClient client = clientBuilder.build();
-		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-		factory.setHttpClient(client);
-		this.setRequestFactory(factory);*/
 	}
 
 	@Bean

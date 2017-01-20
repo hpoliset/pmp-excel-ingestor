@@ -53,7 +53,7 @@ public class AuthorizationHelper {
 	 * 
 	 * @param session
 	 */
-	public void setcurrentUsertoContext(HttpSession session) throws NullPointerException {
+	public void setCurrentUsertoContext(HttpSession session) throws NullPointerException {
 		LOGGER.debug("Trying to set Principle");
 		UserDetails currentUser = (UserDetails) session.getAttribute("Authentication");
 		Authentication auth = new UsernamePasswordAuthenticationToken(currentUser, currentUser.getPassword(),

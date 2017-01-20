@@ -13,8 +13,22 @@ import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
  */
 public interface APIAccesslogRepository {
 
+	/**
+	 * Method to persist the API request and response
+	 * information<PMPAPIAccessLog> in the DB.
+	 * 
+	 * @param accessLog
+	 * @return accessLogId
+	 */
 	int createOrUpdatePmpAPIAccessLog(PMPAPIAccessLog accessLog);
 
+	/**
+	 * Method to persist the MySRCM API request and response information
+	 * <PMPAPIAccessLog> in the DB.
+	 * 
+	 * @param accessLog
+	 * @return accessLogId
+	 */
 	int createOrUpdatePmpAPIAccesslogDetails(PMPAPIAccessLogDetails accessLogDetails);
 
 	List<PMPAPIAccessLog> fetchPmpApiAccessLogData();

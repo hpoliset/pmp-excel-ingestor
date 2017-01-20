@@ -35,6 +35,8 @@ public class ExcelDataExtractorV2ImplTest {
 
     @Autowired
     private ResourceLoader resourceLoader;
+    
+    private String eWelcomeIdCheckbox = "off";
 
     @Test
     public void testValidV2ExcelFile() throws IOException, InvalidExcelFileException {
@@ -49,7 +51,7 @@ public class ExcelDataExtractorV2ImplTest {
 
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
         Workbook workbook = ExcelParserUtils.getWorkbook(resourceName, fileContent);
-        Program program =  ExcelDataExtractorFactory.extractProgramDetails(workbook,ExcelType.V2_1);
+        Program program =  ExcelDataExtractorFactory.extractProgramDetails(workbook,ExcelType.V2_1,eWelcomeIdCheckbox);
         Assert.notNull(program, "Not able to parse valid V21 file: [" + resourceName + "]");
         System.out.println("compute hash: " + program.computeHashCode());
         System.out.println("program = " + program);
@@ -64,7 +66,7 @@ public class ExcelDataExtractorV2ImplTest {
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
         Workbook workbook = ExcelParserUtils.getWorkbook(invalidFileName, fileContent);
         ExcelDataExtractor v2Extractor = new ExcelDataExtractorV2Impl();
-        v2Extractor.extractExcel(workbook);
+        v2Extractor.extractExcel(workbook,eWelcomeIdCheckbox);
     }
 
    /* @Test
