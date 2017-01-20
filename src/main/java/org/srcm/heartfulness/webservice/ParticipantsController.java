@@ -849,7 +849,6 @@ public class ParticipantsController {
             List<String> details = null;
             try{
                 details = programService.fetchProgramAndParticipantDetails(eventId);
-                System.err.println("List=="+details.toString());
                 if(Integer.parseInt(details.get(0))<= 0){
                     ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"EventId doesnot exists");
                     accessLog.setErrorMessage("EventId doesnot exists");
