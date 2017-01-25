@@ -322,22 +322,22 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 											EmailLogConstants.PCTPT_EMAIL_DETAILS, EmailLogConstants.STATUS_FAILED,
 											StackTraceUtils.convertStackTracetoString(aex));
 									mailLogRepository.createMailLog(pmpMailLog);
-									LOGGER.error("ADDRESS_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3));
+									LOGGER.error("ADDRESS_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3) +" :Exception : ",  aex.getMessage());
 									LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
 								} catch (MessagingException mex) {
 									PMPMailLog pmpMailLog = new PMPMailLog(map.getKey(), map.getValue().get(3),
 											EmailLogConstants.PCTPT_EMAIL_DETAILS, EmailLogConstants.STATUS_FAILED,
 											StackTraceUtils.convertStackTracetoString(mex));
 									mailLogRepository.createMailLog(pmpMailLog);
-									LOGGER.error("MESSAGING_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3));
+									LOGGER.error("MESSAGING_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3)+" :Exception : ",  mex.getMessage());
 									LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
 								} catch (Exception ex) {
 									PMPMailLog pmpMailLog = new PMPMailLog(map.getKey(), map.getValue().get(3),
 											EmailLogConstants.PCTPT_EMAIL_DETAILS, EmailLogConstants.STATUS_FAILED,
 											StackTraceUtils.convertStackTracetoString(ex));
 									mailLogRepository.createMailLog(pmpMailLog);
-									LOGGER.error("EXCEPTION  :Failed to sent mail to" + map.getValue().get(3));
-									LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
+									LOGGER.error("EXCEPTION  :Failed to sent mail to" + map.getValue().get(3)+" :Exception : ",  ex.getMessage());
+									LOGGER.error("EXCEPTION  :Looking for next coordinator if available");
 								}
 							} else {
 								LOGGER.info("MESSAGE: Coordinator email is empty,so email not triggered for the given programID : "
@@ -431,24 +431,13 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 										EmailLogConstants.STATUS_SUCCESS, null);
 								mailLogRepository.createMailLog(pmpMailLog);
 								LOGGER.info("E-mail sent to - " + map.getKey().getCoordinatorEmail());
-								try {
-									if (listOfParticipantId != null && listOfParticipantId.size() > 0) {
-										for (Integer id : listOfParticipantId) {
-											welcomeMailRepository.updateEwelcomeIDInformedStatus(id.toString());
-										}
-										LOGGER.info("Details updated to participant table for {} participants.",
-												listOfParticipantId.size());
-									}
-								} catch (Exception e) {
-									LOGGER.error("Error while updating the database for participant- " + e.getMessage());
-								}
 							} catch (AddressException aex) {
 								PMPMailLog pmpMailLog = new PMPMailLog(map.getKey().getProgramId(), map.getKey()
 										.getCoordinatorEmail(), EmailLogConstants.WLCMID_EMAIL_DETAILS,
 										EmailLogConstants.STATUS_FAILED, aex.toString());
 								mailLogRepository.createMailLog(pmpMailLog);
 								LOGGER.error("ADDRESS_EXCEPTION  :Failed to sent mail to {} :Exception : ", map
-										.getKey().getCoordinatorEmail(), aex);
+										.getKey().getCoordinatorEmail(), aex.getMessage());
 								LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
 							} catch (MessagingException mex) {
 								PMPMailLog pmpMailLog = new PMPMailLog(map.getKey().getProgramId(), map.getKey()
@@ -456,7 +445,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 										EmailLogConstants.STATUS_FAILED, mex.toString());
 								mailLogRepository.createMailLog(pmpMailLog);
 								LOGGER.error("MESSAGE_EXCEPTION  :Failed to sent mail to {} :Exception : ", map
-										.getKey().getCoordinatorEmail(), mex);
+										.getKey().getCoordinatorEmail(),  mex.getMessage());
 								LOGGER.error("MESSAGE_EXCEPTION  :Looking for next coordinator if available");
 							} catch (Exception ex) {
 								PMPMailLog pmpMailLog = new PMPMailLog(map.getKey().getProgramId(), map.getKey()
@@ -471,6 +460,17 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 							LOGGER.info("Coordinator email is empty. Hence email not triggered for the programID : ",
 									map.getKey().getProgramId());
 						}
+					}
+					try {
+						if (listOfParticipantId != null && listOfParticipantId.size() > 0) {
+							for (Integer id : listOfParticipantId) {
+								welcomeMailRepository.updateEwelcomeIDInformedStatus(id.toString());
+							}
+							LOGGER.info("Details updated to participant table for {} participants.",
+									listOfParticipantId.size());
+						}
+					} catch (Exception e) {
+						LOGGER.error("Error while updating the database for participant- " + e.getMessage());
 					}
 				}
 				LOGGER.info("Completed sending eWelcome ID email notifications to the coordinator list.");
