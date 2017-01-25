@@ -180,7 +180,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 			Integer welcomeMailDetailsID = this.jdbcTemplate.query(
 					"SELECT id from welcome_email_log where email=? AND print_name=?", new Object[] {
 							welcomeMailDetails.getEmail(), welcomeMailDetails.getPrintName() },
-					new ResultSetExtractor<Integer>() {
+							new ResultSetExtractor<Integer>() {
 						@Override
 						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
 							if (resultSet.next()) {
@@ -199,8 +199,8 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 			welcomeMailDetails.setId(newId.intValue());
 		} else {
 			this.namedParameterJdbcTemplate
-					.update("UPDATE welcome_email_log set unsubscribed=:unsubscribed , subscribed=:subscribed , confirmed=:confirmed, email_status=:emailStatus  WHERE email=:email",
-							parameterSource);
+			.update("UPDATE welcome_email_log set unsubscribed=:unsubscribed , subscribed=:subscribed , confirmed=:confirmed, email_status=:emailStatus  WHERE email=:email",
+					parameterSource);
 		}
 
 	}
@@ -259,14 +259,14 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		if (welcomeMailDetails.getId() == 0) {
 			Integer welcomeMailDetailsID = this.jdbcTemplate.query("SELECT id from welcome_email_log where email=? ",
 					new Object[] { welcomeMailDetails.getEmail() }, new ResultSetExtractor<Integer>() {
-						@Override
-						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-							if (resultSet.next()) {
-								return resultSet.getInt(1);
-							}
-							return 0;
-						}
-					});
+				@Override
+				public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+					if (resultSet.next()) {
+						return resultSet.getInt(1);
+					}
+					return 0;
+				}
+			});
 			welcomeMailDetails.setId(welcomeMailDetailsID);
 			welcomeMailDetails.setUnsubscribed(0);
 			welcomeMailDetails.setEmailStatus(null);
@@ -277,8 +277,8 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 			welcomeMailDetails.setId(newId.intValue());
 		} else {
 			this.namedParameterJdbcTemplate
-					.update("UPDATE welcome_email_log set subscribed=:subscribed , unsubscribed=:unsubscribed WHERE email=:email",
-							parameterSource);
+			.update("UPDATE welcome_email_log set subscribed=:subscribed , unsubscribed=:unsubscribed WHERE email=:email",
+					parameterSource);
 		}
 
 	}
@@ -303,14 +303,14 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		try {
 			int unSubscribed = this.jdbcTemplate.query("SELECT unsubscribed from welcome_email_log where email=?",
 					new Object[] { email }, new ResultSetExtractor<Integer>() {
-						@Override
-						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-							if (resultSet.next()) {
-								return resultSet.getInt(1);
-							}
-							return 0;
-						}
-					});
+				@Override
+				public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+					if (resultSet.next()) {
+						return resultSet.getInt(1);
+					}
+					return 0;
+				}
+			});
 
 			return unSubscribed;
 		} catch (EmptyResultDataAccessException e) {
@@ -355,14 +355,14 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		try {
 			int subscribed = this.jdbcTemplate.query("SELECT subscribed from welcome_email_log where email=? ",
 					new Object[] { mail }, new ResultSetExtractor<Integer>() {
-						@Override
-						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-							if (resultSet.next()) {
-								return resultSet.getInt(1);
-							}
-							return 0;
-						}
-					});
+				@Override
+				public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+					if (resultSet.next()) {
+						return resultSet.getInt(1);
+					}
+					return 0;
+				}
+			});
 
 			return subscribed;
 		} catch (EmptyResultDataAccessException e) {
@@ -381,14 +381,14 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		try {
 			int confirmed = this.jdbcTemplate.query("SELECT confirmed from welcome_email_log where email=? ",
 					new Object[] { mailID }, new ResultSetExtractor<Integer>() {
-						@Override
-						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-							if (resultSet.next()) {
-								return resultSet.getInt(1);
-							}
-							return 0;
-						}
-					});
+				@Override
+				public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+					if (resultSet.next()) {
+						return resultSet.getInt(1);
+					}
+					return 0;
+				}
+			});
 
 			return confirmed;
 		} catch (EmptyResultDataAccessException e) {
@@ -405,14 +405,14 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	public Map<String, List<String>> getCoordinatorWithEmailDetails() {
 
 		return this.jdbcTemplate
-				.query("SELECT pgrm.coordinator_email,COUNT(pctpt.id),pgrm.program_channel,pgrm.coordinator_name,pgrm.program_id,pgrm.update_time FROM program pgrm,participant pctpt"
+				.query("SELECT pgrm.coordinator_email,COUNT(pctpt.id),pgrm.program_channel,pgrm.coordinator_name,pgrm.program_id,pgrm.program_start_date,pgrm.event_place,pgrm.event_city FROM program pgrm,participant pctpt"
 						+ " WHERE pgrm.program_id = pctpt.program_id"
 						+ " AND pctpt.welcome_mail_sent = 1 AND pctpt.is_co_ordinator_informed = 0"
 						+ " GROUP BY pctpt.program_id ", new Object[] {},
 						new ResultSetExtractor<Map<String, List<String>>>() {
 							@Override
 							public Map<String, List<String>> extractData(ResultSet resultSet) throws SQLException,
-									DataAccessException {
+							DataAccessException {
 								Map<String, List<String>> details = new HashMap<String, List<String>>();
 								while (resultSet.next()) {
 									List<String> eventDetails = new ArrayList<String>();
@@ -421,6 +421,8 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 									eventDetails.add(resultSet.getString(4));
 									eventDetails.add(resultSet.getString(1));
 									eventDetails.add(String.valueOf(resultSet.getDate(6)));
+									eventDetails.add(resultSet.getString(7));
+									eventDetails.add(resultSet.getString(8));
 									details.put(resultSet.getString(5), eventDetails);
 								}
 								return details;
@@ -447,8 +449,8 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	public int wlcmMailRcvdPctptCount(String programId) {
 		int pctptCount = this.jdbcTemplate.queryForObject(
 
-		"SELECT count(id) FROM participant " + "WHERE welcome_mail_Sent = 1 " + "AND is_co_ordinator_informed = 1 "
-				+ "AND program_id=?", new Object[] { programId }, Integer.class);
+				"SELECT count(id) FROM participant " + "WHERE welcome_mail_Sent = 1 " + "AND is_co_ordinator_informed = 1 "
+						+ "AND program_id=?", new Object[] { programId }, Integer.class);
 
 		return pctptCount;
 	}
@@ -486,8 +488,8 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		}
 		params.put("email", email);
 		this.namedParameterJdbcTemplate
-				.update("UPDATE participant SET is_email_verified=:isEmailVerified,is_valid_email=:isValidEmail WHERE email=:email",
-						params);
+		.update("UPDATE participant SET is_email_verified=:isEmailVerified,is_valid_email=:isValidEmail WHERE email=:email",
+				params);
 	}
 
 	/*
@@ -504,6 +506,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 						+ "pr.welcome_card_number,pr.id,pr.mobile_phone,pr.introduction_date,pr.ewelcome_id_state,pr.ewelcome_id_remarks,p.event_city,p.event_place,p.program_start_date"
 						+ " FROM program p,participant pr"
 						+ " WHERE p.program_id = pr.program_id"
+						+ " AND pr.create_time <= CURRENT_TIMESTAMP"
 						+ " AND pr.is_ewelcome_id_informed = 0 AND "
 						+ "((pr.ewelcome_id_state='C' AND pr.welcome_card_number IS NOT NULL AND pr.welcome_card_number<>'')"
 						+ " OR (pr.ewelcome_id_state='F' AND (pr.welcome_card_number IS NULL OR pr.welcome_card_number='')))",
@@ -572,7 +575,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 								+ " AND pr.is_ewelcome_id_informed = 0 AND "
 								+ "((pr.ewelcome_id_state='C' AND pr.welcome_card_number IS NOT NULL AND pr.welcome_card_number<>'')"
 								+ " OR (pr.ewelcome_id_state='F' AND (pr.welcome_card_number IS NULL OR pr.welcome_card_number='')))",
-						null, Integer.class);
+								null, Integer.class);
 
 	}
 

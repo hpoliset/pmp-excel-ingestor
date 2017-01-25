@@ -100,72 +100,95 @@ public class SendMail {
 		public String getMailTemplate() {
 			return mailTemplate;
 		}
+
 		public void setMailTemplate(String mailTemplate) {
 			this.mailTemplate = mailTemplate;
 		}
+
 		public String getToMailids() {
 			return toMailids;
 		}
+
 		public void setToMailids(String toMailids) {
 			this.toMailids = toMailids;
 		}
+
 		public String getFtpUpload() {
 			return ftpUpload;
 		}
+
 		public void setFtpUpload(String ftpUpload) {
 			this.ftpUpload = ftpUpload;
 		}
+
 		public String getFtpUploadSubject() {
 			return ftpUploadSubject;
 		}
+
 		public void setFtpUploadSubject(String ftpUploadSubject) {
 			this.ftpUploadSubject = ftpUploadSubject;
 		}
+
 		public String getWelcomeMailToParticpants() {
 			return welcomeMailToParticpants;
 		}
+
 		public void setWelcomeMailToParticpants(String welcomeMailToParticpants) {
 			this.welcomeMailToParticpants = welcomeMailToParticpants;
 		}
+
 		public String getWelcomeMailToParticpantsSubject() {
 			return welcomeMailToParticpantsSubject;
 		}
+
 		public void setWelcomeMailToParticpantsSubject(String welcomeMailToParticpantsSubject) {
 			this.welcomeMailToParticpantsSubject = welcomeMailToParticpantsSubject;
 		}
+
 		public String getEwelcomeidGeneration() {
 			return ewelcomeidGeneration;
 		}
+
 		public void setEwelcomeidGeneration(String ewelcomeidGeneration) {
 			this.ewelcomeidGeneration = ewelcomeidGeneration;
 		}
+
 		public String getEwelcomeidGenerationSubject() {
 			return ewelcomeidGenerationSubject;
 		}
+
 		public void setEwelcomeidGenerationSubject(String ewelcomeidGenerationSubject) {
 			this.ewelcomeidGenerationSubject = ewelcomeidGenerationSubject;
 		}
+
 		public String getCrdntrMailWithWlcmMailDtls() {
 			return crdntrMailWithWlcmMailDtls;
 		}
+
 		public void setCrdntrMailWithWlcmMailDtls(String crdntrMailWithWlcmMailDtls) {
 			this.crdntrMailWithWlcmMailDtls = crdntrMailWithWlcmMailDtls;
 		}
+
 		public String getCrdntrMailWithWlcmMailDtlsSbjct() {
 			return crdntrMailWithWlcmMailDtlsSbjct;
 		}
+
 		public void setCrdntrMailWithWlcmMailDtlsSbjct(String crdntrMailWithWlcmMailDtlsSbjct) {
 			this.crdntrMailWithWlcmMailDtlsSbjct = crdntrMailWithWlcmMailDtlsSbjct;
 		}
+
 		public String getCrdntrMailWithewelcomeidGnrtnDetails() {
 			return crdntrMailWithewelcomeidGnrtnDetails;
 		}
+
 		public void setCrdntrMailWithewelcomeidGnrtnDetails(String crdntrMailWithewelcomeidGnrtnDetails) {
 			this.crdntrMailWithewelcomeidGnrtnDetails = crdntrMailWithewelcomeidGnrtnDetails;
 		}
+
 		public String getCrdntrMailWithewelcomeidGnrtnDetailsSbjct() {
 			return crdntrMailWithewelcomeidGnrtnDetailsSbjct;
 		}
+
 		public void setCrdntrMailWithewelcomeidGnrtnDetailsSbjct(String crdntrMailWithewelcomeidGnrtnDetailsSbjct) {
 			this.crdntrMailWithewelcomeidGnrtnDetailsSbjct = crdntrMailWithewelcomeidGnrtnDetailsSbjct;
 		}
@@ -429,22 +452,7 @@ public class SendMail {
 		String[] toIds = toMailIds.split(",");
 		String[] ccIds = ccMailIds.split(",");
 		try {
-			// Session session = Session.getDefaultInstance(props);
-			Properties props = System.getProperties();
-			props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-			props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
-			props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
-			props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-			props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-			props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-
-			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(username, password);
-				}
-			});
-			SMTPMessage message = new SMTPMessage(session);
-			message.setFrom(new InternetAddress(frommail, name));
+			SMTPMessage message = getSMTPMessage();
 			for (String toId : toIds) {
 				message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toId));
 			}
@@ -527,22 +535,7 @@ public class SendMail {
 	 */
 	public void sendMail(List<String> toEmailIDs, List<String> ccEmailIDs, String messageContent)
 			throws MessagingException, UnsupportedEncodingException {
-
-		Properties props = System.getProperties();
-		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
-		props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
-		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
-			}
-		});
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
+		SMTPMessage message = getSMTPMessage();
 		for (String toemailID : toEmailIDs) {
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toemailID));
 		}
@@ -600,24 +593,12 @@ public class SendMail {
 	public void sendMailNotificationToCoordinator(CoordinatorEmail crdntrEmail) throws AddressException,
 	MessagingException, UnsupportedEncodingException, ParseException {
 
-		Properties props = System.getProperties();
-		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
-		props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
-		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
-			}
-		});
-
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, getName(crdntrEmail.getCoordinatorName()));
 		addParameter(EmailLogConstants.TOTAL_PARTICIPANT_COUNT_PARAMETER, crdntrEmail.getTotalParticipantCount());
-		addParameter(EmailLogConstants.WLCM_MAIL_ALRDY_RCVD_PARTICIPANT_COUNT_PARAMETER, crdntrEmail.getPctptAlreadyRcvdWlcmMailCount());
-		addParameter(EmailLogConstants.WLCM_MAIL_RCVD_YSTRDY_PARTICIPANT_COUNT_PARAMETER, crdntrEmail.getPctptRcvdWlcmMailYstrdayCount());
+		addParameter(EmailLogConstants.WLCM_MAIL_ALRDY_RCVD_PARTICIPANT_COUNT_PARAMETER,
+				crdntrEmail.getPctptAlreadyRcvdWlcmMailCount());
+		addParameter(EmailLogConstants.WLCM_MAIL_RCVD_YSTRDY_PARTICIPANT_COUNT_PARAMETER,
+				crdntrEmail.getPctptRcvdWlcmMailYstrdayCount());
 		addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, crdntrEmail.getEventName());
 		addParameter(EmailLogConstants.EVENT_PLACE_PARAMETER, crdntrEmail.getEventPlace());
 		addParameter(EmailLogConstants.EVENT_CITY_PARAMETER, crdntrEmail.getEventCity());
@@ -629,8 +610,7 @@ public class SendMail {
 		Date pgrmCreateDate = inputsdf.parse(crdntrEmail.getProgramCreateDate());
 		addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
 		addParameter(EmailLogConstants.WELCOME_MAIL_SENT_DATE_PARAMETER, outputsdf.format(cal.getTime()));
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
+		SMTPMessage message = getSMTPMessage();
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(crdntrEmail.getCoordinatorEmail()));
 		message.setSubject(crdntrmailsubject + outputsdf.format(cal.getTime()));
 		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename), "text/html");
@@ -644,21 +624,7 @@ public class SendMail {
 			List<Participant> participants, List<Participant> failedParticipants) throws AddressException,
 			MessagingException, UnsupportedEncodingException {
 
-		Properties props = System.getProperties();
-		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
-		props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
-		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
-			}
-		});
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
+		SMTPMessage message = getSMTPMessage();
 
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER,
 				coordinatorEmail.getCoordinatorName() != null ? getName(coordinatorEmail.getCoordinatorName()) : "");
@@ -767,8 +733,8 @@ public class SendMail {
 			sb.append("</p>");
 
 		}
-		addParameter(EmailLogConstants.EVENT_LINK_PARAMETER,
-				SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + coordinatorEmail.getEventID());
+		addParameter(EmailLogConstants.EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id="
+				+ coordinatorEmail.getEventID());
 		addParameter(EmailLogConstants.PARTICIPANTS_DETAILS_PARAMETER, sb.toString());
 		System.out.println(" co ord details - " + coordinatorEmail.getEventName() + "--"
 				+ coordinatorEmail.getCoordinatorEmail());
@@ -786,30 +752,15 @@ public class SendMail {
 	public void sendMailToCoordinatorToUpdatePreceptorID(CoordinatorEmail coordinator) throws AddressException,
 	MessagingException, UnsupportedEncodingException, ParseException {
 
-		Properties props = System.getProperties();
-		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
-		props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
-		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
-			}
-		});
-
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, getName(coordinator.getCoordinatorName()));
-		addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER,
-				SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + coordinator.getEventID());
+		addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
+				+ "?id=" + coordinator.getEventID());
 		addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinator.getEventName());
 		SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
 		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
 		Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
 		addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
+		SMTPMessage message = getSMTPMessage();
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
 		message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
 		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent), "text/html");
@@ -823,27 +774,13 @@ public class SendMail {
 	public void sendWelcomeMail() throws AddressException, MessagingException, UnsupportedEncodingException,
 	ParseException {
 		try {
-			Properties props = System.getProperties();
-			props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-			props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
-			props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
-			props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-			props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-			props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
-
-			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(username, password);
-				}
-			});
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, -1);
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 			Date date = new Date();
 			String date_str = sdf.format(date);
 			addParameter(EmailLogConstants.DATE_PARAMETER, date_str);
-			SMTPMessage message = new SMTPMessage(session);
-			message.setFrom(new InternetAddress(frommail, name));
+			SMTPMessage message = getSMTPMessage();
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(welcomemailto));
 			message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc));
 			message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc2));
@@ -869,28 +806,33 @@ public class SendMail {
 	public void sendNotificationToInformProcessExecution(String processName) {
 		String[] toIds = processExecution.toMailids.split(",");
 		try {
-			SMTPMessage message = 	getSMTPMessage();
-			message.setFrom(new InternetAddress(frommail, name));
+			SMTPMessage message = getSMTPMessage();
 			for (String toId : toIds) {
 				message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toId));
 			}
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 			addParameter(EmailLogConstants.DATE_PARAMETER, sdf.format(new Date()));
 
-			if(processName.equalsIgnoreCase(EmailLogConstants.EWELCOME_ID_GENERATION)){
-				message.setSubject(processExecution.ewelcomeidGenerationSubject + ExpressionConstants.SPACE_SEPARATER + sdf.format(new Date()));
+			if (processName.equalsIgnoreCase(EmailLogConstants.EWELCOME_ID_GENERATION)) {
+				message.setSubject(processExecution.ewelcomeidGenerationSubject + ExpressionConstants.SPACE_SEPARATER
+						+ sdf.format(new Date()));
 				addParameter(EmailLogConstants.MAIL_CONTENT_PARAMETER, processExecution.ewelcomeidGeneration);
-			}else if(processName.equalsIgnoreCase(EmailLogConstants.FTP_UPLOAD_DETAILS)){
-				message.setSubject(processExecution.ftpUploadSubject + ExpressionConstants.SPACE_SEPARATER + sdf.format(new Date()));
+			} else if (processName.equalsIgnoreCase(EmailLogConstants.FTP_UPLOAD_DETAILS)) {
+				message.setSubject(processExecution.ftpUploadSubject + ExpressionConstants.SPACE_SEPARATER
+						+ sdf.format(new Date()));
 				addParameter(EmailLogConstants.MAIL_CONTENT_PARAMETER, processExecution.ftpUpload);
-			}else if(processName.equalsIgnoreCase(EmailLogConstants.WLCMID_EMAIL_DETAILS)){
-				message.setSubject(processExecution.crdntrMailWithewelcomeidGnrtnDetailsSbjct  + ExpressionConstants.SPACE_SEPARATER +  sdf.format(new Date()));
-				addParameter(EmailLogConstants.MAIL_CONTENT_PARAMETER, processExecution.crdntrMailWithewelcomeidGnrtnDetails);
-			}else if(processName.equalsIgnoreCase(EmailLogConstants.WELCOME_MAIL_DETAILS)){
-				message.setSubject(processExecution.crdntrMailWithWlcmMailDtlsSbjct  + ExpressionConstants.SPACE_SEPARATER +  sdf.format(new Date()));
+			} else if (processName.equalsIgnoreCase(EmailLogConstants.WLCMID_EMAIL_DETAILS)) {
+				message.setSubject(processExecution.crdntrMailWithewelcomeidGnrtnDetailsSbjct
+						+ ExpressionConstants.SPACE_SEPARATER + sdf.format(new Date()));
+				addParameter(EmailLogConstants.MAIL_CONTENT_PARAMETER,
+						processExecution.crdntrMailWithewelcomeidGnrtnDetails);
+			} else if (processName.equalsIgnoreCase(EmailLogConstants.WELCOME_MAIL_DETAILS)) {
+				message.setSubject(processExecution.crdntrMailWithWlcmMailDtlsSbjct
+						+ ExpressionConstants.SPACE_SEPARATER + sdf.format(new Date()));
 				addParameter(EmailLogConstants.MAIL_CONTENT_PARAMETER, processExecution.crdntrMailWithWlcmMailDtls);
-			}else if(processName.equalsIgnoreCase(EmailLogConstants.WELCOME_MAIL_TO_PARTICIPANTS)){
-				message.setSubject(processExecution.welcomeMailToParticpantsSubject  + ExpressionConstants.SPACE_SEPARATER +  sdf.format(new Date()));
+			} else if (processName.equalsIgnoreCase(EmailLogConstants.WELCOME_MAIL_TO_PARTICIPANTS)) {
+				message.setSubject(processExecution.welcomeMailToParticpantsSubject
+						+ ExpressionConstants.SPACE_SEPARATER + sdf.format(new Date()));
 				addParameter(EmailLogConstants.MAIL_CONTENT_PARAMETER, processExecution.welcomeMailToParticpants);
 			}
 			message.setContent(getMessageContentbyTemplateName(processExecution.mailTemplate), "text/html");
@@ -902,31 +844,34 @@ public class SendMail {
 				LOGGER.info("Mail sent successfully : {} ", toId);
 			}
 
-			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), toIds.toString(), EmailLogConstants.FTP_UPLOAD_DETAILS,
-					EmailLogConstants.STATUS_SUCCESS, null);
+			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), toIds.toString(),
+					EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_SUCCESS, null);
 			mailLogRepository.createMailLog(pmpMailLog);
 		} catch (MessagingException ex) {
 			LOGGER.error("Sending Mail Failed : {} " + StackTraceUtils.convertStackTracetoString(ex));
-			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), toIds.toString(), EmailLogConstants.FTP_UPLOAD_DETAILS,
-					EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex));
+			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), toIds.toString(),
+					EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_FAILED,
+					StackTraceUtils.convertStackTracetoString(ex));
 			mailLogRepository.createMailLog(pmpMailLog);
 		} catch (Exception e) {
 			LOGGER.error("Sending Mail Failed : {} " + StackTraceUtils.convertStackTracetoString(e));
-			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), toIds.toString(), EmailLogConstants.FTP_UPLOAD_DETAILS,
-					EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e));
+			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), toIds.toString(),
+					EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_FAILED,
+					StackTraceUtils.convertStackTracetoString(e));
 			mailLogRepository.createMailLog(pmpMailLog);
 		}
 
 	}
 
-	private SMTPMessage getSMTPMessage() {
+	private SMTPMessage getSMTPMessage() throws AddressException, MessagingException, UnsupportedEncodingException {
+
 		Properties props = System.getProperties();
-		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
 		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
 		props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
-		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
 		props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY,EmailLogConstants.MAIL_PROPERTY_TRUE);
+		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
 
 		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
@@ -934,6 +879,8 @@ public class SendMail {
 			}
 		});
 		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(frommail, name));
+
 		return message;
 	}
 }
