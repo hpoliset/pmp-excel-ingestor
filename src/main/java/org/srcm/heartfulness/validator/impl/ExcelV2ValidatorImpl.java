@@ -201,23 +201,23 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 
 		LOGGER.info("Started validating Participation Details sheet mandatory fields for v2.1 template.");
 		int rowCount = participantSheet.getPhysicalNumberOfRows();
-        List<String> participantNames = new LinkedList<>();
+       // List<String> participantNames = new LinkedList<>();
 		for (int i = 1; i < rowCount; i++) {
 			Row currentRow = participantSheet.getRow(i);
 			if (!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()) {
 				errorList.addAll(parseParticipantData(currentRow, i + 1));
-                participantNames.add(currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim());
+                //participantNames.add(currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim());
 
 			}
 		}
 
-		Set<String> participantSet = new HashSet<String>(participantNames);
+		/*Set<String> participantSet = new HashSet<String>(participantNames);
         for(String pctptName:participantSet){
             int count = Collections.frequency(participantNames, pctptName);
             if(count > 1){
                 errorList.add("Uploaded excel sheet contains "+count+" participants with same name '"+ pctptName+"'. Please make the changes and reupload");
             }
-        }
+        }*/
 
 		LOGGER.info("Participation Details sheet mandatory fields validation completed for v2.1 template.");
 	}
