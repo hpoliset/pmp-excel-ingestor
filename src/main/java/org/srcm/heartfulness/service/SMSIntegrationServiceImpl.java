@@ -163,11 +163,11 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 													+ " ) is not valid. Please enter a valid abhyasiID.";
 										}
 									} catch (HttpClientErrorException | IOException e) {
-										e.printStackTrace();
+										LOGGER.info("Client Exception While fecthing abhyasi profile : {} ",e);
 										response = "Specified abhyasiID( " + abhyasiId
 												+ " ) is not valid. Please enter a valid abhyasiID.";
 									}catch (Exception e) {
-										e.printStackTrace();
+										LOGGER.info("Exception While fecthing abhyasi profile : {} ",e);
 										response = "Failed to process your request.";
 									}
 
@@ -365,7 +365,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
 		} catch (HttpClientErrorException | IOException e) {
-			LOGGER.error("Exception while sending SMS {} ", e.getMessage());
+			LOGGER.error("Exception while sending SMS {} ", e);
 		}
 		return response;
 	}
@@ -499,7 +499,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), response);
 		} catch (HttpClientErrorException | IOException e) {
-			e.printStackTrace();
+			LOGGER.info("Exception : {} ",e);
 		}
 		return response;
 	}
@@ -648,9 +648,9 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 								}
 							} catch (HttpClientErrorException e) {
 								response = "Welcome ID generation Failed due to - " + e.getResponseBodyAsString();
-								e.printStackTrace();
+								LOGGER.info("HttpClientErrorException while updating participant data : {} ",e);
 							} catch ( IOException  e) {
-								e.printStackTrace();
+								LOGGER.info("Exception while updating participant data : {} ",e);
 							}
 						}
 						participantRepository.save(participant);
@@ -709,6 +709,8 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 		try {
 			smsGatewayRestTemplate.sendSMS(sms.getSenderMobile(), helpMessage.toString());
 		} catch (HttpClientErrorException | IOException e) {
+			LOGGER.error("Exception while sending SMS {} ", e.getMessage());
+		} catch (Exception e) {
 			LOGGER.error("Exception while sending SMS {} ", e.getMessage());
 		}
 		return helpMessage.toString();
