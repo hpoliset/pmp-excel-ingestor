@@ -634,7 +634,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
 		} else if (!eventDashboardValidator.validateParticipantCompletedPreliminarySittings(participant)) {
 			participant.setEwelcomeIdRemarks((null != remarks && !remarks.isEmpty()) ? remarks
-					: "Participant not completed preliminary sittings.");
+					: ErrorConstants.PRELIMINARY_SITTINGS_NOT_COMPLETED);
 			participant.setIsEwelcomeIdInformed(0);
 			participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
 		} else {

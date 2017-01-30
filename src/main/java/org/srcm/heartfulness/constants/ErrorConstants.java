@@ -55,4 +55,6 @@ public class ErrorConstants {
 	public static final String SESSION_DELETION_FAILED     			= 	"Failed to remove session details";
 	public static final String SESSION_SUCCESSFULLY_DELETED     	= 	"Successfully removed session details";
 	public static final String SESSION_DETAILS_RETRIEVAL_FAILED 	= 	"Failed to retrieve session details for ";
+	
+	public static final String PRELIMINARY_SITTINGS_NOT_COMPLETED="Participant not completed preliminary sittings.";
 }
