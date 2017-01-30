@@ -114,8 +114,8 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 		// See if this participant already exists or not
 		if (participant.getId() == 0) {
 			Integer participantId = this.jdbcTemplate.query(
-					"SELECT id from participant where print_name=? AND program_id=?",
-					new Object[] { participant.getPrintName(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
+					"SELECT id from participant where excel_sheet_sequence_number=? AND print_name=? AND program_id=?",
+					new Object[] { participant.getExcelSheetSequenceNumber(), participant.getPrintName(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
 						@Override
 						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
 							if (resultSet.next()) {

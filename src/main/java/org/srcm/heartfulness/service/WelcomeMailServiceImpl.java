@@ -322,21 +322,21 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 											EmailLogConstants.PCTPT_EMAIL_DETAILS, EmailLogConstants.STATUS_FAILED,
 											StackTraceUtils.convertStackTracetoString(aex));
 									mailLogRepository.createMailLog(pmpMailLog);
-									LOGGER.error("ADDRESS_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3) +" :Exception : ",  aex.getMessage());
+									LOGGER.error("ADDRESS_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3) +" :Exception : {}",  aex.getMessage());
 									LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
 								} catch (MessagingException mex) {
 									PMPMailLog pmpMailLog = new PMPMailLog(map.getKey(), map.getValue().get(3),
 											EmailLogConstants.PCTPT_EMAIL_DETAILS, EmailLogConstants.STATUS_FAILED,
 											StackTraceUtils.convertStackTracetoString(mex));
 									mailLogRepository.createMailLog(pmpMailLog);
-									LOGGER.error("MESSAGING_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3)+" :Exception : ",  mex.getMessage());
+									LOGGER.error("MESSAGING_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3)+" :Exception : {}",  mex.getMessage());
 									LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
 								} catch (Exception ex) {
 									PMPMailLog pmpMailLog = new PMPMailLog(map.getKey(), map.getValue().get(3),
 											EmailLogConstants.PCTPT_EMAIL_DETAILS, EmailLogConstants.STATUS_FAILED,
 											StackTraceUtils.convertStackTracetoString(ex));
 									mailLogRepository.createMailLog(pmpMailLog);
-									LOGGER.error("EXCEPTION  :Failed to sent mail to" + map.getValue().get(3)+" :Exception : ",  ex.getMessage());
+									LOGGER.error("EXCEPTION  :Failed to sent mail to" + map.getValue().get(3)+" :Exception : {}",  ex.getMessage());
 									LOGGER.error("EXCEPTION  :Looking for next coordinator if available");
 								}
 							} else {
