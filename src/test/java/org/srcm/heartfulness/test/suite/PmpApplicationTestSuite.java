@@ -6,7 +6,7 @@ package org.srcm.heartfulness.test.suite;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.srcm.heartfulness.test.cases.ParticipantDedupliactionTest;
+import org.srcm.heartfulness.test.cases.ParticipantDeduplicationTest;
 
 /**
  * @author Koustav Dutta
@@ -15,7 +15,7 @@ import org.srcm.heartfulness.test.cases.ParticipantDedupliactionTest;
 @WebAppConfiguration
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	ParticipantDedupliactionTest.class
+	ParticipantDeduplicationTest.class
 })
 public class PmpApplicationTestSuite {
 }
