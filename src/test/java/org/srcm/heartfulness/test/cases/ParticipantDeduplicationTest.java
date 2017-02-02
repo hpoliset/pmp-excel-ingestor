@@ -7,14 +7,17 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Workbook;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 import org.srcm.heartfulness.PmpApplication;
 import org.srcm.heartfulness.assertion.PmpAssertTest;
 import org.srcm.heartfulness.enumeration.ExcelType;
@@ -34,6 +37,7 @@ import org.srcm.heartfulness.util.InvalidExcelFileException;
 @SpringApplicationConfiguration(classes = PmpApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ParticipantDeduplicationTest {
 
 	@Autowired
@@ -57,6 +61,7 @@ public class ParticipantDeduplicationTest {
 	 * @throws IOException
 	 */
 	@Test
+	@Transactional
 	public void parseAndPersistValidV2ExcelData() throws InvalidExcelFileException, IOException{
 
 		// start with clean slate.
@@ -90,7 +95,11 @@ public class ParticipantDeduplicationTest {
 
 		//Count of participants with similar name,email and mobile number should be same 
 		pmpAssertTest.validateParticipantCount(sameProgram.getParticipantList().size(), pctptCount);
-
+		
+		updatePctptWithSameNameAndRowNumber();
+		updatePctptWithSameNameAndEmail();
+		updatePctptWithSameNameAndMobile();
+		createNewRecords();
 	}
 
 
@@ -101,7 +110,7 @@ public class ParticipantDeduplicationTest {
 	 * @throws IOException 
 	 * @throws InvalidExcelFileException
 	 */
-	@Test
+	//@Test
 	public void updatePctptWithSameNameAndRowNumber() throws IOException, InvalidExcelFileException{
 
 		String fileName = "ParticipantWithSameNameAndRownumber.xlsx";
@@ -134,7 +143,7 @@ public class ParticipantDeduplicationTest {
 	 * @throws IOException
 	 * @throws InvalidExcelFileException
 	 */
-	@Test
+	//@Test
 	public void updatePctptWithSameNameAndEmail() throws IOException, InvalidExcelFileException{
 
 		String fileName = "ParticipantWithSameNameAndEmail.xlsx";
@@ -167,7 +176,7 @@ public class ParticipantDeduplicationTest {
 	 * @throws IOException
 	 * @throws InvalidExcelFileException
 	 */
-	@Test
+	//@Test
 	public void updatePctptWithSameNameAndMobile() throws IOException, InvalidExcelFileException{
 
 		String fileName = "ParticipantWithSameNameAndMobile.xlsx";
@@ -197,7 +206,7 @@ public class ParticipantDeduplicationTest {
 	 * @throws IOException
 	 * @throws InvalidExcelFileException
 	 */
-	@Test
+	//@Test
 	public void createNewRecords() throws IOException, InvalidExcelFileException{
 		
 		String fileName = "v2excelsheet_newrecord.xlsx";
