@@ -1288,7 +1288,6 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
         eventPctptDetails = this.jdbcTemplate.query(
                 "SELECT pgrm.program_id,pgrm.is_ewelcome_id_generation_disabled,"
-                        + " max(pctpt.excel_sheet_sequence_number), "
                         + " pgrm.coordinator_email "
                         + " FROM program pgrm LEFT JOIN participant pctpt on pgrm.program_id = pctpt.program_id "
                         + " WHERE pgrm.auto_generated_event_id=?",
@@ -1299,8 +1298,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
                                 if (resultSet.next()) {
                                     details.add(String.valueOf(resultSet.getInt(1)));
                                     details.add(resultSet.getString(2));
-                                    details.add(String.valueOf(resultSet.getInt(3)));
-                                    details.add(resultSet.getString(4));
+                                    details.add(resultSet.getString(3));
                                 }
                                 return details;
                             }

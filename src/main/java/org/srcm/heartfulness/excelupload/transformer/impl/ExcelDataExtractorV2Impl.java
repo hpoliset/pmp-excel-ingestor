@@ -61,7 +61,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 	}*/
 
 
-	private List<Participant> getParticipantList(Sheet participantsSheet,boolean disableEwelcomeIdGeneration) throws InvalidExcelFileException {
+	public List<Participant> getParticipantList(Sheet participantsSheet,boolean disableEwelcomeIdGeneration) throws InvalidExcelFileException {
 		LOGGER.info("Started extracting participant for V2 template");
 		List<Participant> participantList = new ArrayList<Participant>();
 		int totalRows = participantsSheet.getPhysicalNumberOfRows();
@@ -263,7 +263,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		return program;
 	}
 	
-    public List<Participant> getParticipantList(Sheet participantsSheet,boolean disableEwelcomeIdGeneration,int startingIndex) throws InvalidExcelFileException {
+   /* public List<Participant> getParticipantList(Sheet participantsSheet,boolean disableEwelcomeIdGeneration) throws InvalidExcelFileException {
         LOGGER.info("Started extracting participant for V2 template");
         List<Participant> participantList = new ArrayList<Participant>();
         int totalRows = participantsSheet.getPhysicalNumberOfRows();
@@ -281,6 +281,6 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
         LOGGER.info("Completed extracting participant for V2 template");
         return participantList;
     }
-
+*/
 
 }

@@ -607,7 +607,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	 * @param remarks
 	 */
 	@Override
-	public void updatePartcipantEWelcomeIDStatuswithProgramID(int programId, String eWelcomeIDStatus, String remarks) {
+	public void updateParticipantEWelcomeIDStatuswithProgramID(int programId, String eWelcomeIDStatus, String remarks) {
 		List<Participant> participants = participantRepository.findByProgramId(programId);
 		Program program = programrepository.findById(programId);
 		for (Participant participant : participants) {
@@ -715,7 +715,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
         List<Participant> participantList = null; 
         try{
             ExcelDataExtractorV2Impl v2ExtractorImpl = new ExcelDataExtractorV2Impl();
-            participantList = v2ExtractorImpl.getParticipantList(participantSheet,disableEwelcomeIdGeneration,Integer.parseInt(details.get(2))+1);
+            participantList = v2ExtractorImpl.getParticipantList(participantSheet,disableEwelcomeIdGeneration);
         }catch (Exception ex){
             LOGGER.error("Error while extracting participant details",ex);
             ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"Failed to save participant records");
@@ -727,7 +727,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 
         Program pgrm = new Program();
         pgrm.setIsEwelcomeIdGenerationDisabled(details.get(1));
-        pgrm.setCoordinatorEmail(details.get(3));
+        pgrm.setCoordinatorEmail(details.get(2));
         for (Participant participant : participantList) {
             participant.setProgramId(Integer.parseInt(details.get(0)));
             participant.setCreatedSource(PMPConstants.CREATED_SOURCE_EXCEL_VIA_DASHBOARD);
