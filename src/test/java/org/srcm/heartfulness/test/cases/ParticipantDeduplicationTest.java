@@ -95,11 +95,12 @@ public class ParticipantDeduplicationTest {
 
 		//Count of participants with similar name,email and mobile number should be same 
 		pmpAssertTest.validateParticipantCount(sameProgram.getParticipantList().size(), pctptCount);
-		
+
 		updatePctptWithSameNameAndRowNumber();
 		updatePctptWithSameNameAndEmail();
 		updatePctptWithSameNameAndMobile();
 		createNewRecords();
+		checkRecordByRecord();
 	}
 
 
@@ -126,10 +127,10 @@ public class ParticipantDeduplicationTest {
 		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
 		List<Participant> participantList = program.getParticipantList();
 		programRepository.save(program);
-		
+
 		//We have modified email and mobile number of two participants but since row number is same so participant count should be same
 		Program updatedProgram = programRepository.findById(program.getProgramId());
-		
+
 		//Expected participant count should match
 		pmpAssertTest.validateParticipantCount(updatedProgram.getParticipantList().size(), 5);
 
@@ -208,7 +209,7 @@ public class ParticipantDeduplicationTest {
 	 */
 	//@Test
 	public void createNewRecords() throws IOException, InvalidExcelFileException{
-		
+
 		String fileName = "v2excelsheet_newrecord.xlsx";
 
 		byte[] fileContent = helper.getExcelContent(fileName);
@@ -227,6 +228,45 @@ public class ParticipantDeduplicationTest {
 
 		//Expected participant count should match
 		pmpAssertTest.validateParticipantCount(updatedProgram.getParticipantList().size(), 6);
+	}
+
+
+	/**
+	 * Here we will validate all the de-dupe cases like name with email,
+	 * name with mobile,name with email and mobile,name with row number,
+	 * with same as well as different name.
+	 * @throws IOException
+	 * @throws InvalidExcelFileException
+	 */
+	//@Test
+	public void checkRecordByRecord() throws IOException, InvalidExcelFileException{
+
+		String fileName = "v2excelsheet_record_by_record.xlsx";
+
+		byte[] fileContent = helper.getExcelContent(fileName);
+		Workbook workbook = ExcelParserUtils.getWorkbook(fileName, fileContent);
+		List<String> listOfErrors = helper.validateExcelStructure(workbook,ExcelType.V2_1);
+
+		//All the mandatory fields should be filled and excel sheet structure should be ok.
+		pmpAssertTest.assertValidExcelFile(listOfErrors);
+
+		//Extract event and participant details and persist
+		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
+		programRepository.save(program);
+
+		//Get the uploaded event
+		Program uploadedProgram = programRepository.findById(program.getProgramId());
+		List<Participant> participantList = uploadedProgram.getParticipantList();
+		
+		//We have added two new records with same and different name so count of participants will increase to 7.
+		pmpAssertTest.validateParticipantCount(7, participantList.size());
+		
+		//For participant with name Mike should have an empty mobile.
+		pmpAssertTest.dedupeParticipantWithNameAndEmail(String.valueOf(0),participantList.get(2).getMobilePhone());
+		
+		//For participant with name John should have an meail address 'john@test.com'.
+		pmpAssertTest.dedupeParticipantWithNameAndMobile("john@test.com",participantList.get(0).getEmail());
+		
 	}
 
 

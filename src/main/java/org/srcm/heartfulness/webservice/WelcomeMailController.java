@@ -71,7 +71,7 @@ public class WelcomeMailController {
 		LOGGER.info("END		:Cron job completed to fetch participants to whom welcome mail already sent");
 	}
 
-	 @Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}") 
+	@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}") 
 	public void sendGeneratedEwelcomeIdToCoordinators() {
 		LOGGER.info("START		:Cron job started to send mails to coordinator to inform participant ewelcomeid's");
 		WelcomeMailService.getGeneratedEwelcomeIdAndSendToCoordinators();

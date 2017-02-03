@@ -191,7 +191,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 					}
 				};
 				new Thread(task, "ServiceThread").start();
-				participantService.updatePartcipantEWelcomeIDStatuswithProgramID(program.getProgramId(),
+				participantService.updateParticipantEWelcomeIDStatuswithProgramID(program.getProgramId(),
 						PMPConstants.EWELCOMEID_FAILED_STATE, isValid);
 				try {
 					if (null != accessLog) {
@@ -217,7 +217,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 					LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 							StackTraceUtils.convertPojoToJson(e));
 				}
-				participantService.updatePartcipantEWelcomeIDStatuswithProgramID(program.getProgramId(),
+				participantService.updateParticipantEWelcomeIDStatuswithProgramID(program.getProgramId(),
 						PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, null);
 			}
 		} catch (Exception ex) {

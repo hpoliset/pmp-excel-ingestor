@@ -26,5 +26,13 @@ public class PmpAssertTest {
 	public void validateParticipantCount(int initialParticipantCount,int finalParticipantCount){
 		Assert.assertEquals("Initail and Final paticipant count should be same.", initialParticipantCount,finalParticipantCount);
 	}
+	
+	public void dedupeParticipantWithNameAndEmail(String expectedMobileNo,String actualMobileNo){
+		Assert.assertEquals("Two Participant with same name and email but different mobile number", expectedMobileNo,actualMobileNo);
+	}
+	
+	public void dedupeParticipantWithNameAndMobile(String expectedEmail,String actualEmail){
+		Assert.assertEquals("Two Participant with same name and email but different mobile number", expectedEmail,actualEmail);
+	}
 
 }
