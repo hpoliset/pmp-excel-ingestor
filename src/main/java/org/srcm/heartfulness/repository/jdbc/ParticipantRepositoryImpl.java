@@ -113,9 +113,12 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 		// See if this participant already exists or not
 		if (participant.getId() == 0) {
-			Integer participantId = this.jdbcTemplate.query(
-					"SELECT id from participant where excel_sheet_sequence_number=? AND print_name=? AND program_id=?",
-					new Object[] { participant.getExcelSheetSequenceNumber(), participant.getPrintName(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
+
+			Integer participantId = 0;
+
+			participantId = this.jdbcTemplate.query(
+					"SELECT id from participant where print_name=? AND email=? AND mobile_phone=? AND program_id=?",
+					new Object[] { participant.getPrintName(), participant.getEmail(), participant.getMobilePhone(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
 						@Override
 						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
 							if (resultSet.next()) {
@@ -124,6 +127,49 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 							return 0;
 						}
 					});
+
+			if (participantId <= 0) {
+				participantId = this.jdbcTemplate.query(
+						"SELECT id from participant where  print_name=? AND excel_sheet_sequence_number=? AND program_id=?",
+						new Object[] { participant.getPrintName(), participant.getExcelSheetSequenceNumber(),  participant.getProgramId() }, new ResultSetExtractor<Integer>() {
+							@Override
+							public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+								if (resultSet.next()) {
+									return resultSet.getInt(1);
+								}
+								return 0;
+							}
+						});
+			}
+
+			if (participantId <= 0) {
+				participantId = this.jdbcTemplate.query(
+						"SELECT id from participant where print_name=? AND email=? AND program_id=?",
+						new Object[] { participant.getPrintName(), participant.getEmail(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
+							@Override
+							public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+								if (resultSet.next()) {
+									return resultSet.getInt(1);
+								}
+								return 0;
+							}
+						});
+			}
+
+			if (participantId <= 0) {
+				participantId = this.jdbcTemplate.query(
+						"SELECT id from participant where print_name=? AND mobile_phone=? AND program_id=?",
+						new Object[] { participant.getPrintName(), participant.getMobilePhone(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
+							@Override
+							public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+								if (resultSet.next()) {
+									return resultSet.getInt(1);
+								}
+								return 0;
+							}
+						});
+
+			}
 
 			if (participantId > 0) {
 				participant.setId(participantId);

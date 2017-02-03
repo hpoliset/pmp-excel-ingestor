@@ -436,7 +436,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 										.getCoordinatorEmail(), EmailLogConstants.WLCMID_EMAIL_DETAILS,
 										EmailLogConstants.STATUS_FAILED, aex.toString());
 								mailLogRepository.createMailLog(pmpMailLog);
-								LOGGER.error("ADDRESS_EXCEPTION  :Failed to sent mail to {} :Exception : ", map
+								LOGGER.error("ADDRESS_EXCEPTION  :Failed to sent mail to {} :Exception : {}", map
 										.getKey().getCoordinatorEmail(), aex.getMessage());
 								LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
 							} catch (MessagingException mex) {
@@ -444,7 +444,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 										.getCoordinatorEmail(), EmailLogConstants.WLCMID_EMAIL_DETAILS,
 										EmailLogConstants.STATUS_FAILED, mex.toString());
 								mailLogRepository.createMailLog(pmpMailLog);
-								LOGGER.error("MESSAGE_EXCEPTION  :Failed to sent mail to {} :Exception : ", map
+								LOGGER.error("MESSAGE_EXCEPTION  :Failed to sent mail to {} :Exception : {}", map
 										.getKey().getCoordinatorEmail(),  mex.getMessage());
 								LOGGER.error("MESSAGE_EXCEPTION  :Looking for next coordinator if available");
 							} catch (Exception ex) {
@@ -452,7 +452,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 										.getCoordinatorEmail(), EmailLogConstants.WLCMID_EMAIL_DETAILS,
 										EmailLogConstants.STATUS_FAILED, ex.toString());
 								mailLogRepository.createMailLog(pmpMailLog);
-								LOGGER.error("EXCEPTION  :Failed to sent mail to {} :Exception : ", map
+								LOGGER.error("EXCEPTION  :Failed to sent mail to {} :Exception : {} ", map
 										.getKey().getCoordinatorEmail(), ex);
 								LOGGER.error("EXCEPTION - Looking for next coordinator if available");
 							}
