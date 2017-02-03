@@ -37,7 +37,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
  */
 @Component
 @PropertySource("classpath:application.properties")
-@ConfigurationProperties(locations = "classpath:prod.aws.s3.properties", ignoreUnknownFields = true, prefix = "aws.s3")
+@ConfigurationProperties(locations = "classpath:dev.aws.s3.properties", ignoreUnknownFields = true, prefix = "aws.s3")
 public class AmazonS3RestTemplate extends RestTemplate {
 
 	@Autowired
@@ -206,8 +206,7 @@ public class AmazonS3RestTemplate extends RestTemplate {
 	 */
 	public void setProxy() {
 		if (proxy) {
-
-			/*CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		/*	CredentialsProvider credsProvider = new BasicCredentialsProvider();
 			credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 					new UsernamePasswordCredentials(proxyUser, proxyPassword));
 			HttpClientBuilder clientBuilder = HttpClientBuilder.create();

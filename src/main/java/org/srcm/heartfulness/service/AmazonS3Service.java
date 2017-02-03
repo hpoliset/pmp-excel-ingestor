@@ -1,6 +1,7 @@
 package org.srcm.heartfulness.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +25,7 @@ public interface AmazonS3Service {
 	 * @param accessLog
 	 * @return <code>ResponseEntity<Response></code>
 	 */
-	ResponseEntity<Response> uploadObjectInAWSAndUpdateEvent(String eventId, MultipartFile multipartFile,
+	ResponseEntity<List<Response>> uploadObjectInAWSAndUpdateEvent(String eventId, MultipartFile[] multipartFile,
 			PMPAPIAccessLog accessLog);
 
 	/**
@@ -36,7 +37,7 @@ public interface AmazonS3Service {
 	 * @param accessLog
 	 * @return <code>ResponseEntity<Response></code>
 	 */
-	ResponseEntity<Response> createPresignedURL(String eventId, String fileName, PMPAPIAccessLog accessLog);
+	ResponseEntity<Map<String, String>> createPresignedURL(String eventId, PMPAPIAccessLog accessLog);
 
 	/**
 	 * To upload multiple images to the session and update the image path in

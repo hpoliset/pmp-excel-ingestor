@@ -64,7 +64,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 	 * org.srcm.heartfulness.model.PMPAPIAccessLog, java.lang.String)
 	 */
 	@Override
-	public Response validateUploadPermissionLetterRequest(String eventId, MultipartFile multipartFile,
+	public Response validateUploadPermissionLetterRequest(String eventId, MultipartFile[] multipartFiles,
 			PMPAPIAccessLog accessLog, String token) {
 		Response eResponse = new Response(ErrorConstants.STATUS_FAILED, "");
 		UserProfile userProfile = null;
@@ -123,8 +123,8 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			return eResponse;
 		}
 		Map<String, String> errors = new HashMap<String, String>();
-		if (null == multipartFile.getOriginalFilename() || multipartFile.getOriginalFilename().isEmpty()) {
-			errors.put("fileName", "File Name is required.");
+		if (0 == multipartFiles.length) {
+			errors.put("file", "Files are required.");
 		}
 		if (null == eventId || eventId.isEmpty()) {
 			errors.put("eventId", "Event Id is required");
@@ -154,7 +154,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 	 * org.srcm.heartfulness.model.PMPAPIAccessLog, java.lang.String)
 	 */
 	@Override
-	public Response validateDownloadPermissionLetterRequest(String fileName, String eventId, PMPAPIAccessLog accessLog,
+	public Response validateDownloadPermissionLetterRequest(String eventId, PMPAPIAccessLog accessLog,
 			String token) {
 		Response eResponse = new Response(ErrorConstants.STATUS_FAILED, "");
 		UserProfile userProfile = null;
@@ -213,8 +213,6 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			return eResponse;
 		}
 		Map<String, String> errors = new HashMap<String, String>();
-		if (null == fileName || fileName.isEmpty())
-			errors.put("fileName", "File Name is required.");
 		if (null == eventId || eventId.isEmpty()) {
 			errors.put("eventId", "Event Id is required");
 		} else {
