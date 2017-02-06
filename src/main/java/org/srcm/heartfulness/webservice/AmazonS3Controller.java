@@ -64,11 +64,11 @@ public class AmazonS3Controller {
 			@RequestParam String eventId, @RequestParam("file") MultipartFile multipartFiles[], 
 			@Context HttpServletRequest httpRequest) throws ParseException, IOException {
 
-		//LOGGER.info("Stated uploading to S3.Event Id : {} , FileName : {}", eventId,	multipartFile.getOriginalFilename());
+		LOGGER.info("Stated uploading to S3.Event Id : {} , File Count : {}", eventId,	multipartFiles.length);
 
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-				StackTraceUtils.convertPojoToJson("eventId : " + eventId + " , fileName : "
+				StackTraceUtils.convertPojoToJson("eventId : " + eventId + " , file Count : "
 						+ multipartFiles.length));
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 

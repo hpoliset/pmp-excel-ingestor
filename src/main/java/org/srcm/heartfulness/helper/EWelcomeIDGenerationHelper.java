@@ -78,8 +78,10 @@ public class EWelcomeIDGenerationHelper {
 		SimpleDateFormat sdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
 		aspirant.setDateOfBirth((null != participant.getDateOfBirth()) ? sdf.format(participant.getDateOfBirth())
 				: null);
-		aspirant.setDateOfJoining((null != participant.getProgram().getProgramStartDate()) ? sdf.format(participant
-				.getProgram().getProgramStartDate()) : null);
+		aspirant.setDateOfJoining(null != participant.getFirstSittingDate() ? 
+				sdf.format(participant.getFirstSittingDate()) : 
+					((null != participant.getProgram().getProgramStartDate()) ? sdf.format(participant
+				.getProgram().getProgramStartDate()) : null));
 		aspirant.setEmail((null != participant.getEmail() && !participant.getEmail().isEmpty()) ? participant
 				.getEmail() : null);
 		aspirant.setFirstSittingBy(String.valueOf(participant.getProgram().getFirstSittingBy()));
