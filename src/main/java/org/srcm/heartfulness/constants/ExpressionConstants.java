@@ -25,16 +25,18 @@ public class ExpressionConstants {
 	
 	public static final String PARTICIPANT_EWELCOME_ID_REGEX="^[HB][0-9]{8}$";
 	
-	public static String COLON_HEADER_SEPARATER = ":";
+	public static final String EVENT_ID_REGEX = "^E[0-9]{6}$";
+	
+	public static final String COLON_HEADER_SEPARATER = ":";
 
-	public static String PATH_SEPARATER = "/";
+	public static final String PATH_SEPARATER = "/";
 
-	public static String SPACE_SEPARATER = " ";
+	public static final  String SPACE_SEPARATER = " ";
 
-	public static String DOT_SEPARATER = ".";
+	public static final String DOT_SEPARATER = ".";
 
-	public static String COMMA_SEPARATER = ",";
+	public static final String COMMA_SEPARATER = ",";
 
-	public static String NEXT_LINE = "\n";
+	public static final String NEXT_LINE = "\n";
 	
 }

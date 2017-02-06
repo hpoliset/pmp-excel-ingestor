@@ -40,6 +40,10 @@ public class ChannelServiceImpl implements ChannelService {
 		return channelRepository.findAllActiveChannelNames();
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.service.ChannelService#findAllActiveChannelsBasedOnRole(java.lang.String)
+	 */
 	@Override
 	public List<Channel> findAllActiveChannelsBasedOnRole(String role) {
 		return channelRepository.findAllActiveChannelsBasedOnRole(role);		

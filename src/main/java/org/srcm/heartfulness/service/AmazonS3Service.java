@@ -17,8 +17,8 @@ import org.srcm.heartfulness.model.json.response.Response;
 public interface AmazonS3Service {
 
 	/**
-	 * To upload images to AWS S3 and update the image path in
-	 * <code>program</code> table.
+	 * To upload images to AWS S3 and update the coordinator permission details in
+	 * <code>program_permission_letters</code> table with program id reference.
 	 * 
 	 * @param eventId
 	 * @param multipartFile
@@ -53,7 +53,7 @@ public interface AmazonS3Service {
 			MultipartFile[] multipartFiles, PMPAPIAccessLog accessLog);
 
 	/**
-	 * To generate presegined URL's for all the available images of a session
+	 * To generate presigned URL's for all the available images of a session
 	 * and return a map of image name and URL's.
 	 * 
 	 * @param eventId
