@@ -478,12 +478,12 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 				LOGGER.info("No new e-welcome ID generated for participants.");
 			}
 		} catch (EmptyResultDataAccessException ex) {
-			LOGGER.error("EmptyResultDataAccessException - No new e-welcome ID generated for participants." + ex);
+			LOGGER.error("EmptyResultDataAccessException - No new e-welcome ID generated for participants." +  StackTraceUtils.convertStackTracetoString(ex));
 			PMPMailLog pmpMailLog = new PMPMailLog("", "", EmailLogConstants.WLCMID_EMAIL_DETAILS,
 					EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex));
 			mailLogRepository.createMailLog(pmpMailLog);
 		} catch (Exception ex) {
-			LOGGER.error("Exception while processing - " + ex);
+			LOGGER.error("Exception while processing - " +  StackTraceUtils.convertStackTracetoString(ex));
 			PMPMailLog pmpMailLog = new PMPMailLog("", "", EmailLogConstants.WLCMID_EMAIL_DETAILS,
 					EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex));
 			mailLogRepository.createMailLog(pmpMailLog);
