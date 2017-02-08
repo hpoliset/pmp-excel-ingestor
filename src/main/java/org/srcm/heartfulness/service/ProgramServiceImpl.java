@@ -1110,6 +1110,8 @@ public class ProgramServiceImpl implements ProgramService {
 			event.setCoordinatorName(program.getCoordinatorName());
 			event.setCoordinatorMobile(program.getCoordinatorMobile());
 			event.setCoordinatorEmail(program.getCoordinatorEmail());
+			event.setOrganizationName(program.getOrganizationName());
+			event.setOrganizationDepartment(program.getOrganizationDepartment());
 			event.setEventPlace(program.getEventPlace());
 			event.setEventCity(program.getEventCity());
 			event.setEventState(program.getEventState());
