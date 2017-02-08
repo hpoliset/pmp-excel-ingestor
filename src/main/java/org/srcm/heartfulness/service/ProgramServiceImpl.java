@@ -1127,13 +1127,6 @@ public class ProgramServiceImpl implements ProgramService {
 
 	@Override
 	public int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role) {
-		return programRepository.getPgrmCountBySrchParamsWithUserRoleAndEmailId(searchRequest, email, role);
-	}
-
-	@Override
-	public List<Event> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role,
-			int offset) {
-		List<Event> eventList = new ArrayList<Event>();
 		for (EventSearchField searchField : EventSearchField.values()) {
 			if (searchField.name().equals(searchRequest.getSearchField())) {
 				searchRequest.setSearchField(searchField.getValue());
@@ -1142,6 +1135,21 @@ public class ProgramServiceImpl implements ProgramService {
 				searchRequest.setSortBy(searchField.getValue());
 			}
 		}
+		return programRepository.getPgrmCountBySrchParamsWithUserRoleAndEmailId(searchRequest, email, role);
+	}
+
+	@Override
+	public List<Event> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role,
+			int offset) {
+		List<Event> eventList = new ArrayList<Event>();
+		/*for (EventSearchField searchField : EventSearchField.values()) {
+			if (searchField.name().equals(searchRequest.getSearchField())) {
+				searchRequest.setSearchField(searchField.getValue());
+			}
+			if (searchField.name().equals(searchRequest.getSortBy())) {
+				searchRequest.setSortBy(searchField.getValue());
+			}
+		}*/
 
 		List<Program> programList = programRepository.searchEventsWithUserRoleAndEmailId(searchRequest, email, role,
 				offset);
@@ -1179,6 +1187,12 @@ public class ProgramServiceImpl implements ProgramService {
 			event.setPreceptorName(program.getPreceptorName());
 			event.setPreceptorIdCardNumber(program.getPreceptorIdCardNumber());
 			eventList.add(event);
+		}
+		
+		for (EventSearchField searchField : EventSearchField.values()) {
+			if (searchRequest.getSearchField().equals(searchField.getValue())) {
+				searchRequest.setSearchField(searchField.name());
+			}
 		}
 
 		return eventList;
