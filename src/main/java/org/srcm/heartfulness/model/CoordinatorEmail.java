@@ -3,6 +3,8 @@
  */
 package org.srcm.heartfulness.model;
 
+import java.util.Date;
+
 /**
  * @author Koustav Dutta
  *
@@ -23,13 +25,15 @@ public class CoordinatorEmail {
 	
 	private String programId;
 	
-	private String programCreateDate;
+	private Date programCreateDate;
 	
 	private String eventID;
 	
 	private String eventCity;
 	
 	private String eventPlace;
+	
+	private Date programCreationDate;
 	
 
 	public String getCoordinatorEmail() {
@@ -88,11 +92,11 @@ public class CoordinatorEmail {
 		this.programId = programId;
 	}
 
-	public String getProgramCreateDate() {
+	public Date getProgramCreateDate() {
 		return programCreateDate;
 	}
 
-	public void setProgramCreateDate(String programCreateDate) {
+	public void setProgramCreateDate(Date programCreateDate) {
 		this.programCreateDate = programCreateDate;
 	}
 
@@ -119,6 +123,14 @@ public class CoordinatorEmail {
 	public void setEventPlace(String eventPlace) {
 		this.eventPlace = eventPlace;
 	}
+	
+	public Date getProgramCreationDate() {
+		return programCreationDate;
+	}
+
+	public void setProgramCreationDate(Date programCreationDate) {
+		this.programCreationDate = programCreationDate;
+	}
 
 	@Override
 	public String toString() {
@@ -127,7 +139,7 @@ public class CoordinatorEmail {
 				+ ", pctptRcvdWlcmMailYstrdayCount=" + pctptRcvdWlcmMailYstrdayCount + ", eventName=" + eventName
 				+ ", coordinatorName=" + coordinatorName + ", programId=" + programId + ", programCreateDate="
 				+ programCreateDate + ", eventID=" + eventID + ", eventCity=" + eventCity + ", eventPlace="
-				+ eventPlace + "]";
+				+ eventPlace + ", programCreationDate=" + programCreationDate + "]";
 	}
 
 	@Override
