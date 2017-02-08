@@ -116,7 +116,7 @@ public class WelcomeMailController {
 	}
 
 	@RequestMapping(value = "/testException", method = RequestMethod.POST)
-	public Response mailException(@RequestParam(value = "mailID", required = false) String mailID,
+	public String mailException(@RequestParam(value = "mailID", required = false) String mailID,
 			@RequestParam(value = "ccMailID", required = false) String ccMailID, HttpServletRequest request) {
 		try {
 			LOGGER.info("Sending mail to test Exception ...!.");
@@ -126,19 +126,19 @@ public class WelcomeMailController {
 			ccMailIds.add(ccMailID);
 			sendEmailNotification.sendMail(mailIds, ccMailIds, "This is a Test Mail from PMP");
 		} catch (AddressException e) {
-			return new Response("Failed", "Address Exception...!  " + e);
+			return "Failed-Address Exception...!  " + e;
 		} catch (ParseException e) {
-			return new Response("Failed", "Encode Exception...!  " + e);
+			return  "Failed-Encode Exception...!  " + e;
 		} catch (AuthenticationFailedException e) {
-			return new Response("Failed", "Auth Failed Exception...!  " + e);
+			return "Failed-Auth Failed Exception...!  " + e;
 		} catch (MessagingException e) {
-			return new Response("Failed", "Messaging Exception...!" + e);
+			return  "Failed-Messaging Exception...!" + e;
 		} catch (UnsupportedEncodingException e) {
-			return new Response("Failed", "Encode Exception...!  " + e);
+			return  "Failed-Encode Exception...!  " + e;
 		} catch (Exception e) {
-			return new Response("Failed", "Encode Exception...!  " + e);
+			return  "Failed-Encode Exception...!  " + e;
 		}
-		return new Response("Success", "Mail sent successfully...!");
+		return  "Success-Mail sent successfully...!";
 	}
 
 }
