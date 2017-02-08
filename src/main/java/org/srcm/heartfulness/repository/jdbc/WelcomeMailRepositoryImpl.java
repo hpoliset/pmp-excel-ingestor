@@ -22,6 +22,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.model.CoordinatorEmail;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.SendySubscriber;
@@ -405,7 +406,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	public Map<String, List<String>> getCoordinatorWithEmailDetails() {
 
 		return this.jdbcTemplate
-				.query("SELECT pgrm.coordinator_email,COUNT(pctpt.id),pgrm.program_channel,pgrm.coordinator_name,pgrm.program_id,pgrm.program_start_date,pgrm.event_place,pgrm.event_city FROM program pgrm,participant pctpt"
+				.query("SELECT pgrm.coordinator_email,COUNT(pctpt.id),pgrm.program_channel,pgrm.coordinator_name,pgrm.program_id,pgrm.program_start_date,pgrm.event_place,pgrm.event_city,pgrm.create_time FROM program pgrm,participant pctpt"
 						+ " WHERE pgrm.program_id = pctpt.program_id"
 						+ " AND pctpt.welcome_mail_sent = 1 AND pctpt.is_co_ordinator_informed = 0"
 						+ " GROUP BY pctpt.program_id ", new Object[] {},
@@ -420,9 +421,10 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 									eventDetails.add(resultSet.getString(3));
 									eventDetails.add(resultSet.getString(4));
 									eventDetails.add(resultSet.getString(1));
-									eventDetails.add(String.valueOf(resultSet.getDate(6)));
+									eventDetails.add(null != resultSet.getString(6) ?  resultSet.getString(6) : null);
 									eventDetails.add(resultSet.getString(7));
 									eventDetails.add(resultSet.getString(8));
+									eventDetails.add(( null != resultSet.getString(9))?resultSet.getString(9):null); 
 									details.put(resultSet.getString(5), eventDetails);
 								}
 								return details;
@@ -503,7 +505,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 
 		return this.jdbcTemplate
 				.query("SELECT p.program_channel,p.coordinator_name,p.coordinator_email,p.program_id,p.auto_generated_event_id,pr.print_name,pr.email,"
-						+ "pr.welcome_card_number,pr.id,pr.mobile_phone,pr.introduction_date,pr.ewelcome_id_state,pr.ewelcome_id_remarks,p.event_city,p.event_place,p.program_start_date"
+						+ "pr.welcome_card_number,pr.id,pr.mobile_phone,pr.introduction_date,pr.ewelcome_id_state,pr.ewelcome_id_remarks,p.event_city,p.event_place,p.program_start_date,p.create_time"
 						+ " FROM program p,participant pr"
 						+ " WHERE p.program_id = pr.program_id"
 						+ " AND pr.create_time <= CURRENT_TIMESTAMP"
@@ -533,8 +535,8 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 									participant.setEwelcomeIdRemarks(resultSet.getString(13));
 									coordinatorEmail.setEventCity(resultSet.getString(14));
 									coordinatorEmail.setEventPlace(resultSet.getString(15));
-									SimpleDateFormat inputsdf = new SimpleDateFormat("dd-MM-YYYY");
-									coordinatorEmail.setProgramCreateDate(inputsdf.format(resultSet.getDate(16)));
+									coordinatorEmail.setProgramCreateDate(resultSet.getDate(16));
+									coordinatorEmail.setProgramCreationDate(resultSet.getDate(17));
 									if (eWelcomeIdDetails.containsKey(coordinatorEmail)) {
 										eWelcomeIdDetails.get(coordinatorEmail).add(participant);
 									} else {

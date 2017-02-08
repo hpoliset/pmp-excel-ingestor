@@ -22,7 +22,7 @@ public interface AmazonS3RequestValidator {
 	 * @param token
 	 * @return
 	 */
-	Response validateUploadPermissionLetterRequest(String eventId, MultipartFile multipartFile,
+	Response validateUploadPermissionLetterRequest(String eventId, MultipartFile[] multipartFile,
 			PMPAPIAccessLog accessLog, String token);
 
 	/**
@@ -35,7 +35,7 @@ public interface AmazonS3RequestValidator {
 	 * @param token
 	 * @return
 	 */
-	Response validateDownloadPermissionLetterRequest(String fileName, String eventId, PMPAPIAccessLog accessLog,
+	Response validateDownloadPermissionLetterRequest( String eventId, PMPAPIAccessLog accessLog,
 			String token);
 
 	/**

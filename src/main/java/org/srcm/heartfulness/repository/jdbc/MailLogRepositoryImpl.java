@@ -48,7 +48,7 @@ public class MailLogRepositoryImpl implements MailLogRepository {
 			}
 			LOGGER.info("END        :Completed inserting mail log details in table");
 		} catch (Exception e) {
-			LOGGER.error("END        :Exception while inserting mail log details in table");
+			LOGGER.error("END        :Exception while inserting mail log details in table. Exception : {} ",e);
 		}
 
 	}

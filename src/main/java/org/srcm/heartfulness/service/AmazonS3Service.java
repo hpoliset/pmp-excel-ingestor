@@ -1,6 +1,7 @@
 package org.srcm.heartfulness.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,15 +17,15 @@ import org.srcm.heartfulness.model.json.response.Response;
 public interface AmazonS3Service {
 
 	/**
-	 * To upload images to AWS S3 and update the image path in
-	 * <code>program</code> table.
+	 * To upload images to AWS S3 and update the coordinator permission details in
+	 * <code>program_permission_letters</code> table with program id reference.
 	 * 
 	 * @param eventId
 	 * @param multipartFile
 	 * @param accessLog
 	 * @return <code>ResponseEntity<Response></code>
 	 */
-	ResponseEntity<Response> uploadObjectInAWSAndUpdateEvent(String eventId, MultipartFile multipartFile,
+	ResponseEntity<List<Response>> uploadObjectInAWSAndUpdateEvent(String eventId, MultipartFile[] multipartFile,
 			PMPAPIAccessLog accessLog);
 
 	/**
@@ -36,7 +37,7 @@ public interface AmazonS3Service {
 	 * @param accessLog
 	 * @return <code>ResponseEntity<Response></code>
 	 */
-	ResponseEntity<Response> createPresignedURL(String eventId, String fileName, PMPAPIAccessLog accessLog);
+	ResponseEntity<Map<String, String>> createPresignedURL(String eventId, PMPAPIAccessLog accessLog);
 
 	/**
 	 * To upload multiple images to the session and update the image path in
@@ -52,7 +53,7 @@ public interface AmazonS3Service {
 			MultipartFile[] multipartFiles, PMPAPIAccessLog accessLog);
 
 	/**
-	 * To generate presegined URL's for all the available images of a session
+	 * To generate presigned URL's for all the available images of a session
 	 * and return a map of image name and URL's.
 	 * 
 	 * @param eventId

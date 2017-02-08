@@ -64,14 +64,14 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 	 * org.srcm.heartfulness.model.PMPAPIAccessLog, java.lang.String)
 	 */
 	@Override
-	public Response validateUploadPermissionLetterRequest(String eventId, MultipartFile multipartFile,
+	public Response validateUploadPermissionLetterRequest(String eventId, MultipartFile[] multipartFiles,
 			PMPAPIAccessLog accessLog, String token) {
 		Response eResponse = new Response(ErrorConstants.STATUS_FAILED, "");
 		UserProfile userProfile = null;
 		try {
 			userProfile = eventDashboardValidator.validateToken(token, accessLog.getId());
 		} catch (HttpClientErrorException e) {
-			eResponse.setDescription("Invalid authorization token");
+			eResponse.setDescription(ErrorConstants.INVALID_AUTH_TOKEN);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -79,7 +79,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (JsonParseException | JsonMappingException e) {
-			eResponse.setDescription("Error while fetching profile from MySRCM");
+			eResponse.setDescription(ErrorConstants.ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -87,7 +87,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (NumberFormatException | IllegalBlockSizeException | BadPaddingException e) {
-			eResponse.setDescription("Invalid authorization token");
+			eResponse.setDescription(ErrorConstants.INVALID_AUTH_TOKEN);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -95,7 +95,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (IOException | ParseException e) {
-			eResponse.setDescription("Error while fetching profile from MySRCM");
+			eResponse.setDescription(ErrorConstants.ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -103,7 +103,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (Exception e) {
-			eResponse.setDescription("Error while fetching profile from MySRCM");
+			eResponse.setDescription(ErrorConstants.ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -112,19 +112,19 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			return eResponse;
 		}
 		if (null == userProfile) {
-			eResponse.setDescription("Invalid client credentials");
+			eResponse.setDescription(ErrorConstants.INVALID_CREDENTIALS);
 			return eResponse;
 		} else {
 			accessLog.setUsername(userProfile.getEmail());
 		}
 		User user = userProfileService.loadUserByEmail(userProfile.getEmail());
 		if (null == user) {
-			eResponse.setDescription("User doesnot exists");
+			eResponse.setDescription(ErrorConstants.USER_DOESNOT_EXISTS);
 			return eResponse;
 		}
 		Map<String, String> errors = new HashMap<String, String>();
-		if (null == multipartFile.getOriginalFilename() || multipartFile.getOriginalFilename().isEmpty()) {
-			errors.put("fileName", "File Name is required.");
+		if (0 == multipartFiles.length) {
+			errors.put("file", "Files are required.");
 		}
 		if (null == eventId || eventId.isEmpty()) {
 			errors.put("eventId", "Event Id is required");
@@ -154,14 +154,14 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 	 * org.srcm.heartfulness.model.PMPAPIAccessLog, java.lang.String)
 	 */
 	@Override
-	public Response validateDownloadPermissionLetterRequest(String fileName, String eventId, PMPAPIAccessLog accessLog,
+	public Response validateDownloadPermissionLetterRequest(String eventId, PMPAPIAccessLog accessLog,
 			String token) {
 		Response eResponse = new Response(ErrorConstants.STATUS_FAILED, "");
 		UserProfile userProfile = null;
 		try {
 			userProfile = eventDashboardValidator.validateToken(token, accessLog.getId());
 		} catch (HttpClientErrorException e) {
-			eResponse.setDescription("Invalid authorization token");
+			eResponse.setDescription(ErrorConstants.INVALID_AUTH_TOKEN);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -169,7 +169,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (JsonParseException | JsonMappingException e) {
-			eResponse.setDescription("Error while fetching profile from MySRCM");
+			eResponse.setDescription(ErrorConstants.ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -177,7 +177,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (NumberFormatException | IllegalBlockSizeException | BadPaddingException e) {
-			eResponse.setDescription("Invalid authorization token");
+			eResponse.setDescription(ErrorConstants.INVALID_AUTH_TOKEN);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -185,7 +185,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (IOException | ParseException e) {
-			eResponse.setDescription("Error while fetching profile from MySRCM");
+			eResponse.setDescription(ErrorConstants.ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -193,7 +193,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (Exception e) {
-			eResponse.setDescription("Error while fetching profile from MySRCM");
+			eResponse.setDescription(ErrorConstants.ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -202,19 +202,17 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			return eResponse;
 		}
 		if (null == userProfile) {
-			eResponse.setDescription("Invalid client credentials");
+			eResponse.setDescription(ErrorConstants.INVALID_CREDENTIALS);
 			return eResponse;
 		} else {
 			accessLog.setUsername(userProfile.getEmail());
 		}
 		User user = userProfileService.loadUserByEmail(userProfile.getEmail());
 		if (null == user) {
-			eResponse.setDescription("User doesnot exists");
+			eResponse.setDescription(ErrorConstants.USER_DOESNOT_EXISTS);
 			return eResponse;
 		}
 		Map<String, String> errors = new HashMap<String, String>();
-		if (null == fileName || fileName.isEmpty())
-			errors.put("fileName", "File Name is required.");
 		if (null == eventId || eventId.isEmpty()) {
 			errors.put("eventId", "Event Id is required");
 		} else {
@@ -251,7 +249,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 		try {
 			userProfile = eventDashboardValidator.validateToken(token, accessLog.getId());
 		} catch (HttpClientErrorException e) {
-			eResponse.setDescription("Invalid authorization token");
+			eResponse.setDescription(ErrorConstants.INVALID_AUTH_TOKEN);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -259,7 +257,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (JsonParseException | JsonMappingException e) {
-			eResponse.setDescription("Error while fetching profile from MySRCM");
+			eResponse.setDescription(ErrorConstants.ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -267,7 +265,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (NumberFormatException | IllegalBlockSizeException | BadPaddingException e) {
-			eResponse.setDescription("Invalid authorization token");
+			eResponse.setDescription(ErrorConstants.INVALID_AUTH_TOKEN);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -275,7 +273,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (IOException | ParseException e) {
-			eResponse.setDescription("Error while fetching profile from MySRCM");
+			eResponse.setDescription(ErrorConstants.ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -283,7 +281,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (Exception e) {
-			eResponse.setDescription("Error while fetching profile from MySRCM");
+			eResponse.setDescription(ErrorConstants.ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -292,14 +290,14 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			return eResponse;
 		}
 		if (null == userProfile) {
-			eResponse.setDescription("Invalid client credentials");
+			eResponse.setDescription(ErrorConstants.INVALID_CREDENTIALS);
 			return eResponse;
 		} else {
 			accessLog.setUsername(userProfile.getEmail());
 		}
 		User user = userProfileService.loadUserByEmail(userProfile.getEmail());
 		if (null == user) {
-			eResponse.setDescription("User doesnot exists");
+			eResponse.setDescription(ErrorConstants.USER_DOESNOT_EXISTS);
 			return eResponse;
 		}
 		Map<String, String> errors = new HashMap<String, String>();
@@ -350,7 +348,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 		try {
 			userProfile = eventDashboardValidator.validateToken(token, accessLog.getId());
 		} catch (HttpClientErrorException e) {
-			eResponse.setDescription("Invalid authorization token");
+			eResponse.setDescription(ErrorConstants.INVALID_AUTH_TOKEN);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -358,7 +356,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (JsonParseException | JsonMappingException e) {
-			eResponse.setDescription("Error while fetching profile from MySRCM");
+			eResponse.setDescription(ErrorConstants.ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -366,7 +364,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (NumberFormatException | IllegalBlockSizeException | BadPaddingException e) {
-			eResponse.setDescription("Invalid authorization token");
+			eResponse.setDescription(ErrorConstants.INVALID_AUTH_TOKEN);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -374,7 +372,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (IOException | ParseException e) {
-			eResponse.setDescription("Error while fetching profile from MySRCM");
+			eResponse.setDescription(ErrorConstants.ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -382,7 +380,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (Exception e) {
-			eResponse.setDescription("Error while fetching profile from MySRCM");
+			eResponse.setDescription(ErrorConstants.ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -391,14 +389,14 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			return eResponse;
 		}
 		if (null == userProfile) {
-			eResponse.setDescription("Invalid client credentials");
+			eResponse.setDescription(ErrorConstants.INVALID_CREDENTIALS);
 			return eResponse;
 		} else {
 			accessLog.setUsername(userProfile.getEmail());
 		}
 		User user = userProfileService.loadUserByEmail(userProfile.getEmail());
 		if (null == user) {
-			eResponse.setDescription("User doesnot exists");
+			eResponse.setDescription(ErrorConstants.USER_DOESNOT_EXISTS);
 			return eResponse;
 		}
 		Map<String, String> errors = new HashMap<String, String>();

@@ -7,7 +7,7 @@
 Dear ${COORDINATOR_NAME},
 <br/>
 <div style="padding-left: 10px;">
-<p>Please note that the welcome mails sent to the registered participants for the event - ${EVENT_NAME} conducted at ${EVENT_PLACE}, ${EVENT_CITY} on ${PROGRAM_CREATE_DATE}. </p>
+<p>Please note that the welcome mails sent to the registered participants for the event ${EVENT_NAME} ${EVENT_PLACE}${EVENT_CITY} ${PROGRAM_CREATE_DATE}. </p>
 <p>
 <table border="1" style="width: 100%;">
 <tr>

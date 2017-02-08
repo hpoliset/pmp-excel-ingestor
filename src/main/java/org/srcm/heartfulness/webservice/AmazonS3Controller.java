@@ -61,25 +61,24 @@ public class AmazonS3Controller {
 	 */
 	@RequestMapping(value = "/upload/event/permissionletter", method = RequestMethod.POST)
 	public ResponseEntity<?> uploadPermissionLetterForEvent(@RequestHeader(value = "Authorization") String token,
-			@RequestParam String eventId, @RequestParam("file") MultipartFile multipartFile,
+			@RequestParam String eventId, @RequestParam("file") MultipartFile multipartFiles[], 
 			@Context HttpServletRequest httpRequest) throws ParseException, IOException {
 
-		LOGGER.info("Stated uploading to S3.Event Id : {} , FileName : {}", eventId,
-				multipartFile.getOriginalFilename());
+		LOGGER.info("Stated uploading to S3.Event Id : {} , File Count : {}", eventId,	multipartFiles.length);
 
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-				StackTraceUtils.convertPojoToJson("eventId : " + eventId + " , fileName : "
-						+ multipartFile.getOriginalFilename()));
+				StackTraceUtils.convertPojoToJson("eventId : " + eventId + " , file Count : "
+						+ multipartFiles.length));
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 
 		try {
-			Response eResponse = amazonS3RequestValidator.validateUploadPermissionLetterRequest(eventId, multipartFile,
+			Response eResponse = amazonS3RequestValidator.validateUploadPermissionLetterRequest(eventId, multipartFiles,
 					accessLog, token);
 			if (null != eResponse) {
 				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
 			}
-			return amazonS3Service.uploadObjectInAWSAndUpdateEvent(eventId, multipartFile, accessLog);
+			return amazonS3Service.uploadObjectInAWSAndUpdateEvent(eventId, multipartFiles, accessLog);
 
 		} catch (Exception e) {
 			LOGGER.error("Intenal server error : {}", e);
@@ -109,20 +108,20 @@ public class AmazonS3Controller {
 	@RequestMapping(value = "/download/event/permissionletter", method = RequestMethod.POST)
 	public ResponseEntity<?> createPresignedURLForPermissionLetter(
 			@RequestHeader(value = "Authorization") String token, @RequestParam("eventId") String eventId,
-			@RequestParam("fileName") String fileName, @Context HttpServletRequest httpRequest) throws ParseException,
+			@Context HttpServletRequest httpRequest) throws ParseException,
 			IOException {
 
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-				StackTraceUtils.convertPojoToJson("eventId : " + eventId + " , fileName : " + fileName));
+				StackTraceUtils.convertPojoToJson("eventId : " + eventId ));
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		try {
-			Response eResponse = amazonS3RequestValidator.validateDownloadPermissionLetterRequest(fileName, eventId, accessLog,
+			Response eResponse = amazonS3RequestValidator.validateDownloadPermissionLetterRequest(eventId, accessLog,
 					token);
 			if (null != eResponse) {
 				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
 			}
-			return amazonS3Service.createPresignedURL(eventId, fileName, accessLog);
+			return amazonS3Service.createPresignedURL(eventId, accessLog);
 		} catch (Exception e) {
 			LOGGER.error("Intenal server error : {}", e);
 			Response response = new Response(ErrorConstants.STATUS_FAILED, e.getMessage());

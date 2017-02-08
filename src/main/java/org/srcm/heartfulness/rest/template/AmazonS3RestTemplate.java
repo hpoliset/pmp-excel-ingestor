@@ -206,8 +206,7 @@ public class AmazonS3RestTemplate extends RestTemplate {
 	 */
 	public void setProxy() {
 		if (proxy) {
-
-			/*CredentialsProvider credsProvider = new BasicCredentialsProvider();
+		/*	CredentialsProvider credsProvider = new BasicCredentialsProvider();
 			credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 					new UsernamePasswordCredentials(proxyUser, proxyPassword));
 			HttpClientBuilder clientBuilder = HttpClientBuilder.create();

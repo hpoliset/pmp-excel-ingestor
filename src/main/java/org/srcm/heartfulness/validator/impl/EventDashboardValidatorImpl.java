@@ -70,7 +70,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		Map<String, String> errors = new HashMap<>();
 		if (null == participant.getEventId()) {
 			errors.put("eventId", "program ID is required");
-		} else if (null != participant.getEventId() && !participant.getEventId().matches("^E[0-9]{6}$")) {
+		} else if (null != participant.getEventId() && !participant.getEventId().matches(ExpressionConstants.EVENT_ID_REGEX)) {
 			errors.put("eventId", "event Id Format is invalid");
 		} else {
 			if (0 == programService.getProgramIdByEventId(participant.getEventId()))
@@ -78,9 +78,9 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		}
 		if (null != participant.getGender()
 				&& !participant.getGender().isEmpty()
-				&& !(participant.getGender().equalsIgnoreCase("M") || participant.getGender().equalsIgnoreCase("F")
-						|| participant.getGender().equalsIgnoreCase("Male") || participant.getGender()
-						.equalsIgnoreCase("Female"))) {
+				&& !(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) || participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_FEMALE)
+						|| participant.getGender().equalsIgnoreCase(PMPConstants.MALE) || participant.getGender()
+						.equalsIgnoreCase(PMPConstants.FEMALE))) {
 			errors.put("gender", "gender is not valid.");
 		}
 
@@ -129,7 +129,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		Map<String, String> errors = new HashMap<>();
 		if (null == participantRequest.getEventId() || participantRequest.getEventId().isEmpty()) {
 			errors.put("eventId", "event Id is required");
-		} else if (null != participantRequest.getEventId() && !participantRequest.getEventId().matches("^E[0-9]{6}$")) {
+		} else if (null != participantRequest.getEventId() && !participantRequest.getEventId().matches(ExpressionConstants.EVENT_ID_REGEX)) {
 			errors.put("eventId", "event Id invalid");
 		} else {
 			int programID = programService.getProgramIdByEventId(participantRequest.getEventId());
@@ -165,7 +165,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if (null == eventAdminChangeRequest.getEventId() || eventAdminChangeRequest.getEventId().isEmpty()) {
 			errors.put("eventId", "event Id is required");
 		} else if (null != eventAdminChangeRequest.getEventId()
-				&& !eventAdminChangeRequest.getEventId().matches("^E[0-9]{6}$")) {
+				&& !eventAdminChangeRequest.getEventId().matches(ExpressionConstants.EVENT_ID_REGEX)) {
 			errors.put("eventId", "event Id invalid");
 		} else if (0 == programService.getProgramIdByEventId(eventAdminChangeRequest.getEventId())) {
 			errors.put("eventId", "Invalid EventId - No event exists for the given event Id");
@@ -316,7 +316,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		Map<String, String> errors = new HashMap<>();
 		if (null == participantRequest.getEventId() || participantRequest.getEventId().isEmpty()) {
 			errors.put("eventId", "event Id is required");
-		} else if (null != participantRequest.getEventId() && !participantRequest.getEventId().matches("^E[0-9]{6}$")) {
+		} else if (null != participantRequest.getEventId() && !participantRequest.getEventId().matches(ExpressionConstants.EVENT_ID_REGEX)) {
 			errors.put("eventId", "event Id invalid");
 		} else if (0 == programService.getProgramIdByEventId(participantRequest.getEventId())) {
 			errors.put("eventId", "Invalid EventId - No event exists for the given event Id");

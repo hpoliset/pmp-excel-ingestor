@@ -49,7 +49,7 @@ public class WelcomeMailController {
 		}
 	}
 
-	@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}") 
+	@Scheduled(cron = "${welcome.mailids.file.upload.cron.time}")
 	public void uploadDailyWelcomeMailidsToFTP() {
 		try {
 			LOGGER.info("Upload File to FTP called.");
@@ -65,7 +65,7 @@ public class WelcomeMailController {
 	 * about the participants who have received welcome emails.It is a crob job
 	 * running at a scheduled time.
 	 */
-	 @Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}") 
+	@Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}")
 	public void sendEmailToCoordinator() {
 		LOGGER.info("START		:Cron job started to fetch participants to whom welcome mail already sent");
 		WelcomeMailService.getCoordinatorListAndSendMail();
@@ -80,7 +80,7 @@ public class WelcomeMailController {
 		}
 
 
-	@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}") 
+	@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}")
 	public void sendGeneratedEwelcomeIdToCoordinators() {
 		LOGGER.info("START		:Cron job started to send mails to coordinator to inform participant ewelcomeid's");
 		WelcomeMailService.getGeneratedEwelcomeIdAndSendToCoordinators();
@@ -94,7 +94,7 @@ public class WelcomeMailController {
 		LOGGER.info("END		:Cron job completed to send mails to coordinator to inform participant ewelcomeid's");
 	}
 
-	 @Scheduled(cron = "${welcome.mail.to.hfnlist.cron.time}") 
+	@Scheduled(cron = "${welcome.mail.to.hfnlist.cron.time}")
 	public void sendWelcomeMail() {
 		try {
 			LOGGER.info("Sending mail to hfn list called.");

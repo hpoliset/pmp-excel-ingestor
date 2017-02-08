@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EmailLogConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
+import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.helper.FTPConnectionHelper;
 import org.srcm.heartfulness.mail.SendMail;
 import org.srcm.heartfulness.model.CoordinatorEmail;
@@ -307,9 +309,11 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 									coordinatorEmail.setPctptAlreadyRcvdWlcmMailCount(String
 											.valueOf(wlcmEmailRcvdPctptCount));
 									coordinatorEmail.setPctptRcvdWlcmMailYstrdayCount(map.getValue().get(0));
-									coordinatorEmail.setProgramCreateDate(map.getValue().get(4));
+									SimpleDateFormat inputsdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
+									coordinatorEmail.setProgramCreateDate(null != map.getValue().get(4) ?  inputsdf.parse(map.getValue().get(4)) :null);
 									coordinatorEmail.setEventPlace(map.getValue().get(5));
 									coordinatorEmail.setEventCity(map.getValue().get(6));
+									coordinatorEmail.setProgramCreationDate(null != map.getValue().get(7) ? inputsdf.parse(map.getValue().get(7)) :null);
 									sendEmailNotification.sendMailNotificationToCoordinator(coordinatorEmail);
 									LOGGER.debug("START        :Inserting mail log details in table");
 									PMPMailLog pmpMailLog = new PMPMailLog(map.getKey(), map.getValue().get(3),
@@ -408,6 +412,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								coordinatorEmail.setEventCity(map.getKey().getEventCity());
 								coordinatorEmail.setEventPlace(map.getKey().getEventPlace());
 								coordinatorEmail.setProgramCreateDate(map.getKey().getProgramCreateDate());
+								coordinatorEmail.setProgramCreationDate(map.getKey().getProgramCreationDate());
 								List<Participant> failedParticipants = participantRepository
 										.getEWelcomeIdGenerationFailedParticipants(map.getKey().getProgramId());
 								LOGGER.info("Failed participants : " + failedParticipants.size() + ", EventID : "
@@ -478,12 +483,12 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 				LOGGER.info("No new e-welcome ID generated for participants.");
 			}
 		} catch (EmptyResultDataAccessException ex) {
-			LOGGER.error("EmptyResultDataAccessException - No new e-welcome ID generated for participants." + ex);
+			LOGGER.error("EmptyResultDataAccessException - No new e-welcome ID generated for participants." +  StackTraceUtils.convertStackTracetoString(ex));
 			PMPMailLog pmpMailLog = new PMPMailLog("", "", EmailLogConstants.WLCMID_EMAIL_DETAILS,
 					EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex));
 			mailLogRepository.createMailLog(pmpMailLog);
 		} catch (Exception ex) {
-			LOGGER.error("Exception while processing - " + ex);
+			LOGGER.error("Exception while processing - " +  StackTraceUtils.convertStackTracetoString(ex));
 			PMPMailLog pmpMailLog = new PMPMailLog("", "", EmailLogConstants.WLCMID_EMAIL_DETAILS,
 					EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex));
 			mailLogRepository.createMailLog(pmpMailLog);
