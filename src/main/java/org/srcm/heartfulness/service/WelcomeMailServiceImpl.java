@@ -334,7 +334,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 											StackTraceUtils.convertStackTracetoString(mex));
 									mailLogRepository.createMailLog(pmpMailLog);
 									LOGGER.error("MESSAGING_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3)+" :Exception : {}",  mex.getMessage());
-									LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
+									LOGGER.error("MESSAGING_EXCEPTION  :Looking for next coordinator if available");
 								} catch (Exception ex) {
 									PMPMailLog pmpMailLog = new PMPMailLog(map.getKey(), map.getValue().get(3),
 											EmailLogConstants.PCTPT_EMAIL_DETAILS, EmailLogConstants.STATUS_FAILED,
