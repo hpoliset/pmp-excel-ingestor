@@ -59,19 +59,19 @@ public class TestMail {
 			
 			Properties props = System.getProperties();
 			props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-			props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, "smtp.gmail.com");
-			props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, 587);
+			props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, "sahajmarg.info");
+			props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, 25);
 			props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
 			props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
 			props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
 
 			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication("heartfulness.pmp@gmail.com", "123Welcome");
+					return new PasswordAuthentication("heartfulness.newsletter@heartfulness.org", "send2all");
 				}
 			});
 			SMTPMessage message = new SMTPMessage(session);
-			message.setFrom(new InternetAddress("heartfulness.pmp@gmail.com", "heartfulness.pmp"));
+			message.setFrom(new InternetAddress("heartfulness.newsletter@heartfulness.org", "Heartfulness Team"));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(mailID));
 			message.setSubject("Test mail from PMP");
 			message.setContent("This is a test mail from Heartfulness PMP.Please ignore this mail.", "text/html");
