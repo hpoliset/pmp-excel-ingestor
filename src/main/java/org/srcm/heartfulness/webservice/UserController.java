@@ -331,7 +331,7 @@ public class UserController {
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			LOGGER.debug("User profile created - {} ", newUser.getEmail());
+			LOGGER.info("User profile created - {} ", newUser.getEmail());
 			Response response = new Response(ErrorConstants.STATUS_SUCCESS, userResponse.toString());
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
 		} catch (HttpClientErrorException e) {
@@ -357,19 +357,19 @@ public class UserController {
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-				LOGGER.debug("Error while creating user profile - {} ", e.getMessage());
+				LOGGER.info("Error while creating user profile - {} ", e);
 				return new ResponseEntity<Response>(error, e.getStatusCode());
 			} catch (JsonParseException | JsonMappingException e1) {
-				LOGGER.debug("Error while creating user profile - {} ", e1.getMessage());
+				LOGGER.info("Error while creating user profile - {} ", e1);
 				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e1));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-				LOGGER.debug("Error while creating user profile - {} ", e1.getMessage());
+				LOGGER.info("Error while creating user profile - {} ", e1);
 				Response error = new Response(ErrorConstants.STATUS_FAILED, "JsonException occured.");
 				return new ResponseEntity<Response>(error, HttpStatus.REQUEST_TIMEOUT);
 			} catch (IOException e1) {
-				LOGGER.debug("Error while creating user profile - {} ", e1.getMessage());
+				LOGGER.info("Error while creating user profile - {} ", e1);
 				Response error = new Response(ErrorConstants.STATUS_FAILED, "IOException occured.");
 				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e1));
@@ -378,7 +378,7 @@ public class UserController {
 				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 				return new ResponseEntity<Response>(error, HttpStatus.REQUEST_TIMEOUT);
 			} catch (Exception e1) {
-				LOGGER.debug("Error while creating user profile - {} ", e1.getMessage());
+				LOGGER.info("Error while creating user profile - {} ", e1);
 				Response error = new Response(ErrorConstants.STATUS_FAILED, "Internal Server Error.");
 				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e1));
@@ -389,7 +389,7 @@ public class UserController {
 			}
 
 		} catch (IOException e) {
-			LOGGER.debug("Error while creating user profile - {} ", e.getMessage());
+			LOGGER.info("Error while creating user profile - {} ", e);
 			Response error = new Response(ErrorConstants.STATUS_FAILED, "IOException occured.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -399,7 +399,7 @@ public class UserController {
 			return new ResponseEntity<Response>(error, HttpStatus.REQUEST_TIMEOUT);
 		} catch (Exception e) {
 			e.printStackTrace();
-			LOGGER.debug("Error while creating user profile - {} ", e.getMessage());
+			LOGGER.info("Error while creating user profile - {} ", e);
 			Response error = new Response(ErrorConstants.STATUS_FAILED, "Internal Server Error.");
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
