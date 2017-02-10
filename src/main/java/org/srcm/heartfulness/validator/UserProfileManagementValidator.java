@@ -1,7 +1,5 @@
 package org.srcm.heartfulness.validator;
 
-import java.util.Map;
-
 import org.srcm.heartfulness.model.json.request.CreateUserRequest;
 
 /**
@@ -20,6 +18,6 @@ public interface UserProfileManagementValidator {
 	 * @param user
 	 * @return
 	 */
-	public Map<String, String> checkCreateUserManadatoryFields(CreateUserRequest user);
+	public String checkCreateUserManadatoryFields(CreateUserRequest user);
 
 }
