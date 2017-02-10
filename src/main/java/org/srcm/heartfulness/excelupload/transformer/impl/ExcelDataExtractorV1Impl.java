@@ -124,6 +124,7 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 		if(disableEwelcomeIdGeneration){
 			participant.setEwelcomeIdState(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
 		}
+		participant.setReceiveUpdates(1);
 		return participant;
 	}
 
