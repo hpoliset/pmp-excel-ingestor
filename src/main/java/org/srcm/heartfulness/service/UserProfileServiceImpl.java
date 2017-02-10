@@ -15,7 +15,6 @@ import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.CreateUserRequest;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.UserProfile;
-import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.repository.UserRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
 import org.srcm.heartfulness.util.DateUtils;
@@ -41,9 +40,6 @@ public class UserProfileServiceImpl implements UserProfileService {
 	@Autowired
 	APIAccessLogService apiAccessLogService;
 	
-	@Autowired
-	ProgramRepository programRepository;
-
 	@Autowired
 	MySRCMIntegrationHelper mysrcmIntegrationHelper;
 	
@@ -131,8 +127,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 			user.setZipcode(srcmProfile.getPostal_code());
 			user.setAddress(srcmProfile.getStreet());
 			if (null == user.getRole() && user.getId() == 0)
-				user.setRole((programRepository.isEventCoordinatorExistsWithUserEmailId(user.getEmail())) ? PMPConstants.LOGIN_ROLE_COORDINATOR
-						: PMPConstants.LOGIN_ROLE_SEEKER);
+				user.setRole(PMPConstants.LOGIN_ROLE_SEEKER);
 			if (null == user.getIsPmpAllowed() && user.getId() == 0)
 				user.setIsPmpAllowed(PMPConstants.REQUIRED_NO);
 			if (null == user.getIsSahajmargAllowed() && user.getId() == 0)
@@ -178,8 +173,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 			newUser.setLanguagePreference(user.getLanguagePreference());
 		if (null != user.getZipcode() && !user.getZipcode().isEmpty())
 			newUser.setZipcode(user.getZipcode());
-			newUser.setRole((programRepository.isEventCoordinatorExistsWithUserEmailId(user.getEmail())) ? PMPConstants.LOGIN_ROLE_COORDINATOR
-					: PMPConstants.LOGIN_ROLE_SEEKER);
+			newUser.setRole(PMPConstants.LOGIN_ROLE_SEEKER);
 			newUser.setIsPmpAllowed(PMPConstants.REQUIRED_NO);
 			newUser.setIsSahajmargAllowed(PMPConstants.REQUIRED_NO);
 		userRepository.save(newUser);
