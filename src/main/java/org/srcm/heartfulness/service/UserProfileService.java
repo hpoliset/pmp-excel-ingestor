@@ -5,6 +5,7 @@ import java.text.ParseException;
 
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.User;
+import org.srcm.heartfulness.model.json.request.CreateUserRequest;
 import org.srcm.heartfulness.model.json.response.Result;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -41,6 +42,39 @@ public interface UserProfileService {
 	 */
 	Result getUserProfile(String token, int id) throws HttpClientErrorException, JsonParseException, JsonMappingException,
 			IOException, ParseException;
+	
+	/**
+	 * Method to update the user details.
+	 * 
+	 * @param token
+	 * @param accesslogId
+	 * @param user
+	 * @param id
+	 * @return
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	User updateUserDetails(String token, int accesslogId, User user, int id) throws HttpClientErrorException,
+			JsonParseException, JsonMappingException, IOException, ParseException;
+
+	/**
+	 * Method to fetch the user profile from the MYSRCM by passing token and if
+	 * user doesn't exists in DB, store the details in HFN backend.
+	 * 
+	 * @param token
+	 * @param id
+	 * @return
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	User getUserProfileAndCreateUser(String token, int id) throws HttpClientErrorException, JsonParseException,
+			JsonMappingException, IOException, ParseException;
 
 	/**
 	 * Method to retrieve <code>User</code> from the data store by email.
@@ -48,5 +82,12 @@ public interface UserProfileService {
 	 * @param user
 	 */
 	void save(User user);
+	
+	/**
+	 * Method to create the user in MYSRCM & PMP and to persist user details in
+	 * PMP.
+	 */
+	User createUser(CreateUserRequest user, int id, String requestURL) throws HttpClientErrorException,
+			JsonParseException, JsonMappingException, IOException;
 	
 }

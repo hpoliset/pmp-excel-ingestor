@@ -1,0 +1,21 @@
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<div>
+Dear ${PRECEPTOR_NAME},
+<br/>
+<div style="padding-left: 10px;">
+<p>Please note that the excel sheet uploaded for the event <b>${EVENT_NAME}</b> on ${PROGRAM_CREATE_DATE} doesn't have coordinator email Id.</p>
+<p>Request you to kindly access the following <u><a href="${UPDATE_EVENT_LINK}">URL</a></u> to update the valid coordinator email Id.</p>
+<p><u><b>Note:</b></u> Kindly note that a valid coordinator email Id is required to view the event.</p>
+<br/>
+</div>
+<div style="font-style: italic; font-weight: bold;">
+With Regards,
+<br/>
+Heartfulness Team
+</div>
+</body>
+</html>

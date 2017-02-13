@@ -14,6 +14,8 @@ public class PMPConstants {
 	public static final String LOGIN_ROLE_SEEKER = "SEEKER";
 
 	public static final String LOGIN_ROLE_PRECEPTOR = "PRECEPTOR";
+	
+	public static final String LOGIN_ROLE_COORDINATOR = "COORDINATOR";
 
 	public static final String SEEKER = "seeker";
 

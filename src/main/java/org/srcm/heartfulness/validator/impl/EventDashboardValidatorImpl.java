@@ -390,13 +390,19 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		} else if ((null == participantInput.getThirdSittingDate())
 				&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())) {
 			return false;
+		} else if (null != participantInput.getWelcomeCardNumber() && 
+				( participantInput.getWelcomeCardNumber().toUpperCase().matches(ExpressionConstants.ISSUE_EWELCOME_ID_REGEX)
+						|| participantInput.getWelcomeCardNumber().toUpperCase().matches(ExpressionConstants.PLEASE_ISSUE_EWELCOME_ID_REGEX)
+						|| participantInput.getWelcomeCardNumber().toUpperCase().matches(ExpressionConstants.PLEASE_GENERATE_EWELCOME_ID_REGEX)
+						||  participantInput.getWelcomeCardNumber().toUpperCase().matches(ExpressionConstants.GENERATE_EWELCOME_ID_REGEX))){
+			return true;
 		}
 		return true;
 	}
 
 	/**
 	 * Method to validate the mandatory fields in the <code>Participant</code>
-	 * request before updating the particpant details.
+	 * request before updating the participant details.
 	 * 
 	 * @param participant
 	 * @return errors <code>Map<String, String</code>.
