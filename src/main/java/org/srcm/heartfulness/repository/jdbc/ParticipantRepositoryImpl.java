@@ -21,6 +21,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
@@ -191,7 +192,8 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 							"SELECT * FROM participant WHERE id=:participantId", params,
 							BeanPropertyRowMapper.newInstance(Participant.class));
 					if(null != oldParticipantDetails){
-						if(null != oldParticipantDetails.getWelcomeCardNumber() && !oldParticipantDetails.getWelcomeCardNumber().isEmpty()){
+						if(null != oldParticipantDetails.getWelcomeCardNumber() && !oldParticipantDetails.getWelcomeCardNumber().isEmpty() 
+								&& oldParticipantDetails.getWelcomeCardNumber().matches(ExpressionConstants.EWELCOME_ID_REGEX)){
 							participant.setWelcomeCardNumber(oldParticipantDetails.getWelcomeCardNumber());
 							participant.setEwelcomeIdState(oldParticipantDetails.getEwelcomeIdState());
 							participant.setIntroduced(oldParticipantDetails.getIntroduced());

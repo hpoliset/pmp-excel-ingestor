@@ -294,12 +294,12 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 				}
 			}
 
-			String welcomeCardNumber = currentRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString().trim();
+			/*String welcomeCardNumber = currentRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if(!welcomeCardNumber.isEmpty()){
 				if(!welcomeCardNumber.matches(ExpressionConstants.EWELCOME_ID_REGEX)){
 					errorList.add(V2ParticipantCols.WELCOME_CARD_NUMBER.getHeader() + "is invalid at row number "+rowNumber);
 				}
-			}
+			}*/
 
 			String wlcmCardIssueDate = currentRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if(null != wlcmCardIssueDate && !wlcmCardIssueDate.isEmpty()){

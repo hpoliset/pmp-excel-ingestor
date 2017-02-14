@@ -7,7 +7,7 @@
 Dear ${COORDINATOR_NAME},
 <br/>
 <div style="padding-left: 10px;">
-<p>Please note that you have associated as the event coordinator for the event <b>${EVENT_NAME}</b> on ${PROGRAM_CREATE_DATE}.</p>
+<p>Please note that you have associated as the event coordinator for the event <b>${EVENT_NAME}</b> held on ${PROGRAM_CREATE_DATE}.</p>
 <p>It Seems like you are not a registered MYSRCM user.</p>
 <p>Request you to kindly access the following <u><a href="${CREATE_PROFILE_LINK}">URL</a></u> to register with MYSRCM and there after you can login through the following <u><a href="${UPDATE_EVENT_LINK}">URL</a></u> to view the event details.</p>
 <p><u><b>Note:</b></u> Please use your MYSRCM login credentials to login to Heartfulness Event Dashboard.</p>

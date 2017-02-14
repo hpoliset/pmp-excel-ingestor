@@ -54,7 +54,11 @@ public class EmailLogConstants {
 	public static final String REQUEST_MAIL_TO_COORDINATOR		= "REQUEST_MAIL_TO_COORDINATOR";
 	public static final String REQUEST_MAIL_TO_PRECEPTOR 		= "REQUEST_MAIL_TO_PRECEPTOR";
 	public static final String MAIL_TO_SECONDARY_COORDINATOR 	= "MAIL_TO_SECONDARY_COORDINATOR";
-
+	
+	public static final String PRECEPTOR_NAME_PARAMETER="PRECEPTOR_NAME";
+	public static final String CREATE_PROFILE_LINK_PARAMETER = "CREATE_PROFILE_LINK";
+	public static final String COORDINATOR_EMAILID_PARAMETER = "COORDINATOR_EMAILID";
+	
 	
 
 }

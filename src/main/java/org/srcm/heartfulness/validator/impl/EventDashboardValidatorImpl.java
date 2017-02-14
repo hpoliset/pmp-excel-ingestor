@@ -18,6 +18,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
+import org.srcm.heartfulness.enumeration.IssueeWelcomeId;
 import org.srcm.heartfulness.model.EventPagination;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
@@ -383,21 +384,21 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	 */
 	@Override
 	public boolean validateParticipantCompletedPreliminarySittings(Participant participantInput) {
+		boolean isValid=false;
 		if (1 == participantInput.getIntroduced()
 				&& (null == participantInput.getWelcomeCardNumber() || participantInput.getWelcomeCardNumber()
 						.isEmpty())) {
-			return true;
-		} else if ((null == participantInput.getThirdSittingDate())
-				&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())) {
-			return false;
-		} else if (null != participantInput.getWelcomeCardNumber() && 
-				( participantInput.getWelcomeCardNumber().toUpperCase().matches(ExpressionConstants.ISSUE_EWELCOME_ID_REGEX)
-						|| participantInput.getWelcomeCardNumber().toUpperCase().matches(ExpressionConstants.PLEASE_ISSUE_EWELCOME_ID_REGEX)
-						|| participantInput.getWelcomeCardNumber().toUpperCase().matches(ExpressionConstants.PLEASE_GENERATE_EWELCOME_ID_REGEX)
-						||  participantInput.getWelcomeCardNumber().toUpperCase().matches(ExpressionConstants.GENERATE_EWELCOME_ID_REGEX))){
-			return true;
+			isValid=true;
+		} else if (null != participantInput.getWelcomeCardNumber() && !participantInput.getWelcomeCardNumber() .isEmpty() ){
+			for (IssueeWelcomeId field : IssueeWelcomeId.values()) {
+				if (participantInput.getWelcomeCardNumber().equalsIgnoreCase(field.getValue())) {
+					isValid=true;
+				}
+			}
+		} else if (!(null == participantInput.getThirdSittingDate())	&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())) {
+			isValid=true;
 		}
-		return true;
+		return isValid;
 	}
 
 	/**

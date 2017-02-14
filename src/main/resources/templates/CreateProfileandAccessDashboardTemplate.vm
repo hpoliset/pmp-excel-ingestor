@@ -7,7 +7,7 @@
 Dear ${PRECEPTOR_NAME},
 <br/>
 <div style="padding-left: 10px;">
-<p>Please note that the excel sheet uploaded for the event <b>${EVENT_NAME}</b> on ${PROGRAM_CREATE_DATE} seems to have an coordinator emailId <b>${COORDINATOR_EMAILID}</b> which is not registered with MYSRCM.</p>
+<p>Please note that the excel sheet uploaded for the event <b>${EVENT_NAME}</b> held on ${PROGRAM_CREATE_DATE} seems to have an coordinator emailId <b>${COORDINATOR_EMAILID}</b> which is not registered with MYSRCM.</p>
 <p>If you feel the mentioned coordinator emailId is invalid, we request you to kindly access the following <u><a href="${UPDATE_EVENT_LINK}">URL</a></u> to update the valid coordinator emailId.</p>
 <p>If the coordinator emailId is valid and don't have MYSRCM account, then they have to register with MYSRCM through the following <u><a href="${CREATE_PROFILE_LINK}">URL</a></u> and there after the coordinator can login through the following <u><a href="${UPDATE_EVENT_LINK}">URL</a></u> to view the event details.</p>
 

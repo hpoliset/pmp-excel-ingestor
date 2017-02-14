@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
+import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.enumeration.ParticipantSearchField;
 import org.srcm.heartfulness.excelupload.transformer.impl.ExcelDataExtractorV2Impl;
@@ -619,7 +620,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	private void setParticipantEWelcomeIDStatus(Program program, Participant participant, String eWelcomeIDStatus,
 			String remarks) {
 
-		if (null != participant.getWelcomeCardNumber() && !participant.getWelcomeCardNumber().isEmpty()) {
+		if (null != participant.getWelcomeCardNumber() && !participant.getWelcomeCardNumber().isEmpty() && participant.getWelcomeCardNumber().matches(ExpressionConstants.EWELCOME_ID_REGEX)) {
 			participant.setEwelcomeIdRemarks(null);
 			participant.setIntroduced(1);
 			if (null != participant.getWelcomeCardDate()) {

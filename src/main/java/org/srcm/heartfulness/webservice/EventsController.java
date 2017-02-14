@@ -370,7 +370,7 @@ public class EventsController {
 	 * @return
 	 * @throws IOException
 	 */
-	@RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	/*@RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createProgram(@RequestBody Event event,
 			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest) {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
@@ -461,7 +461,7 @@ public class EventsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		}
-	}
+	}*/
 
 	/**
 	 * Web service endpoint to update event.
@@ -483,7 +483,7 @@ public class EventsController {
 	 * @param token
 	 * @return
 	 */
-	@RequestMapping(value = "/update", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	/*@RequestMapping(value = "/update", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> updateProgram(@RequestBody Event event,
 			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest) {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
@@ -588,7 +588,7 @@ public class EventsController {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		}
-	}
+	}*/
 
 	/**
 	 * 
@@ -1194,7 +1194,7 @@ public class EventsController {
 	 * @throws IOException
 	 */
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> createEvent(@RequestBody Event event,
+	public ResponseEntity<?> saveEvent(@RequestBody Event event,
 			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest) {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
