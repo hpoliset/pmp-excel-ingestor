@@ -17,20 +17,25 @@ public class CoordinatorAccessControlConstants {
 	public static final String  INVALID_USER_ID 	= "Request couldnot be completed.User email is not registered with MYSRCM";
 	public static final String  INVALID_REQUEST 	= "Request could not be completed.Please try after sometime";
 
-	public static final String  REQUESTER_REQUEST_WAITING_FOR_APPROVAL 	 	 = "Your request is already waiting for approval";
+	public static final String  REQUESTER_REQUEST_WAITING_FOR_APPROVAL 	 	 = "Your request is already pending for approval";
 	public static final String  REQUESTER_REQUEST_ALREADY_APPROVED 		 	 = "Your request has been already approved ";
 	public static final String  REQUESTER_SUCCESSFULL_REQUEST 			 	 = "Your request has been successfully submitted";
-	public static final String  REQUESTER_FAILED_REQUEST 					 = "Failed to register your request.Please try after sometime";
+	public static final String  REQUESTER_FAILED_REQUEST 					 = "Failed to complete your request.Please try after sometime";
 	public static final String  REQUESTER_EMAIL_INVALID 					 = "Coordinator email cannot be empty";
 	public static final String  REQUESTER_INVALID_SELF_REQUEST 				 = "You cannot raise a request for ýour own event";
 	public static final String  REQUESTER_INVALID_PRECEPTOR_DETAILS			 = "Please update the preceptor details first";
+	public static final String  REQUESTER_INVALID_EMAIL_ADDRESS			 	 = "Coordinator you are trying to approve is not registerd with MYSRCM";
 
-	public static final String  APPROVER_REQUEST_DOESNOT_EXIST 			= "Coordinator you are trying to add needs to raise a request first";
-	public static final String  APPROVER_REQUEST_ALREADY_APPROVED 			= "Coordinator you are trying to add hasbeen already provided access for this event";
-	public static final String  APPROVER_VALIDATION_SUCCESSFULL 			= "Preceptor validation successfull";
+	public static final String  APPROVER_REQUEST_DOESNOT_EXIST 				= "Coordinator you are trying to approve needs to raise a request first";
+	public static final String  APPROVER_REQUEST_ALREADY_APPROVED 			= "Coordinator you are trying to approve is already having access to this event";
+	public static final String  APPROVER_VALIDATION_SUCCESSFULL 			= "Approver validation successfull";
 	public static final String  APPROVER_SUCCESS_RESPONSE					= "You have successfully added ";
 	public static final String  APPROVER_SAME_APPROVER_REQUESTER			= "You cannot approve a request for yourself ";
 	public static final String  APPROVER_NO_AUTHORITY						= "You are not authorized for approving this request";
+	
+	public static final String  REQUESTERLIST_NO_AUTHORITY						= "You are not authorized to access list of secondary coordinator details for some other event";
+	public static final String  REQUESTERLIST_VALIDATION_SUCCESSFULL			= "Get requester list validation successfull";
+	
 	
 	public static final String HEARTFULNESS_CREATE_PROFILE_URL = "https://profile.sahajmarg.org/accounts/signup/"; 
 	

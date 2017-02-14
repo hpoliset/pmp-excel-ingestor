@@ -16,6 +16,7 @@ CREATE TABLE `program_coordinators` (
 
 CREATE TABLE IF NOT EXISTS `event_access_request` (
   `request_id` int(11) NOT NULL AUTO_INCREMENT,
+  `auto_generated_request_id` VARCHAR(10) NOT NULL,
   `program_id` int(4) unsigned NOT NULL,
   `user_id` int(4) unsigned NOT NULL,
   `status` varchar(255) DEFAULT 'WAITING_FOR_APPROVAL' NOT NULL,

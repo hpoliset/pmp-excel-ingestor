@@ -18,15 +18,15 @@ public class ProgramCoordinators {
 
 	private int userId;
 	
-	@JsonProperty("coordinator_name")
+	//@JsonProperty("coordinator_name")
 	private String name;
 
-	@JsonProperty("coordinator_email")
+	//@JsonProperty("coordinator_email")
 	private String email;
 
 	private int isPrimaryCoordinator;
 	
-	@JsonProperty("event_id")
+	//@JsonProperty("event_id")
 	private String eventId;
 	
 	private int isPreceptor;
