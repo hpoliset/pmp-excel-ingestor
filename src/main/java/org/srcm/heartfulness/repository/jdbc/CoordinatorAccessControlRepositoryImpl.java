@@ -47,7 +47,7 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 	}
 
 	@Override
-	public void savecoordinatorDetails(ProgramCoordinators programCoordinators) {
+	public void saveCoordinatorDetails(ProgramCoordinators programCoordinators) {
 		if(0 == programCoordinators.getUserId()){
 			programCoordinators.setUserId(fecthUserIdwithemailId(programCoordinators.getEmail()));
 		}

@@ -123,7 +123,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 						program.setCreatedSource(PMPConstants.CREATED_SOURCE_EXCEL);
 						programRepository.save(program);
 						// preceptor ID card number validation
-						validatepreceptorIdandCoordinatorEmailIdandPersistProgram(program, response, errorResponse);
+						validatePreceptorIdandCoordinatorEmailIdAndPersistProgram(program, response, errorResponse);
 					} catch (InvalidExcelFileException ex) {
 						errorResponse.add("File you are trying to upload is invalid.Please contact Administrator");
 						response.setErrorMsg(errorResponse);
@@ -164,7 +164,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	 * @param response
 	 * @param errorResponse
 	 */
-	private void validatepreceptorIdandCoordinatorEmailIdandPersistProgram(Program program,
+	private void validatePreceptorIdandCoordinatorEmailIdAndPersistProgram(Program program,
 			ExcelUploadResponse response, List<String> errorResponse) {
 
 		PMPAPIAccessLog accessLog = null;
@@ -190,7 +190,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			// persist coordinator details
 			ProgramCoordinators programCoordinators = new ProgramCoordinators(program.getProgramId(), 0,
 					program.getCoordinatorName(), program.getCoordinatorEmail(), 1);
-			coordinatorAccessControlService.savecoordinatorDetails(programCoordinators);
+			coordinatorAccessControlService.saveCoordinatorDetails(programCoordinators);
 			// preceptor ID card number validation
 			validatePreceptorIDAsyncronously(program, id);
 			response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);

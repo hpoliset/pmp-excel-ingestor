@@ -19,7 +19,7 @@ public interface CoordinatorAccessControlService {
 	
 	public String validateCoordinatorEmailID(Program program, int id);
 
-	public void savecoordinatorDetails(ProgramCoordinators programCoordinators);
+	public void saveCoordinatorDetails(ProgramCoordinators programCoordinators);
 	
 	public String validatePreceptorIDCardNumberandCreateUser(Program program, int id, String source);
 

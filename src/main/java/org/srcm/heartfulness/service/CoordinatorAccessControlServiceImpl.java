@@ -603,7 +603,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 								programCoordinators.setIsPreceptor(1);
 								programCoordinators.setIsPrimaryCoordinator((user.getEmail().equalsIgnoreCase(
 										program.getCoordinatorEmail()) ? 1 : 0));
-								coordntrAccssCntrlRepo.savecoordinatorDetails(programCoordinators);
+								coordntrAccssCntrlRepo.saveCoordinatorDetails(programCoordinators);
 
 								if (PMPConstants.CREATED_SOURCE_EXCEL.equalsIgnoreCase(source)) {
 									CoordinatorAccessControlEmail coordinator = new CoordinatorAccessControlEmail();
@@ -638,7 +638,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 										ProgramCoordinators programpreceptor = new ProgramCoordinators(
 												program.getProgramId(), 0, program.getCoordinatorName(),
 												program.getCoordinatorEmail(), 1);
-										savecoordinatorDetails(programpreceptor);
+										saveCoordinatorDetails(programpreceptor);
 										Runnable task = new Runnable() {
 											@Override
 											public void run() {
@@ -922,7 +922,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 	}
 
 	@Override
-	public void savecoordinatorDetails(ProgramCoordinators programCoordinators) {
-		coordntrAccssCntrlRepo.savecoordinatorDetails(programCoordinators);
+	public void saveCoordinatorDetails(ProgramCoordinators programCoordinators) {
+		coordntrAccssCntrlRepo.saveCoordinatorDetails(programCoordinators);
 	}
 }

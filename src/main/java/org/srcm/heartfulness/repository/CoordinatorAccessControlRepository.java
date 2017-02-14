@@ -18,7 +18,7 @@ public interface CoordinatorAccessControlRepository {
 
 	void saveSecondaryCoordinatorRequest(SecondaryCoordinatorRequest scReq);
 
-	void savecoordinatorDetails(ProgramCoordinators programCoordinators);
+	void saveCoordinatorDetails(ProgramCoordinators programCoordinators);
 	
 	int checkRequestAlreadyRaised(int programId, String userEmail);
 	
