@@ -201,7 +201,7 @@ public class CoordinatorAccessController {
 		UserProfile userProfile = null;
 		try {
 			
-			userProfile = eventDashboardValidator.validateToken(token, /*id*/ accessLog.getId());
+			userProfile = eventDashboardValidator.validateToken(token, accessLog.getId());
 			if (null == userProfile) {
 				
 				LOGGER.info("UserProfile doesnot exists in MySrcm database");

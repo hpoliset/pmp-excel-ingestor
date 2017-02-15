@@ -75,16 +75,17 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.INVALID_EVENT_ID);
 		}
 		
+		
 		//Validate whether person is authorized to approve request
-		ProgramCoordinators preceptorDetails = null; // = new ProgramCoordinators();
+		ProgramCoordinators preceptorDetails = new ProgramCoordinators();
 		try{
 			preceptorDetails = coordntrAccssCntrlRepo.getProgramCoordinatorByProgramId(program.getProgramId());
 		}catch(Exception ex){
 			LOGGER.error("Preceptor not available for event "+pgrmCoordinators.getEventId());
 		}
 		
-		if(!approvedBy.equalsIgnoreCase(program.getCoordinatorEmail()) && (null != preceptorDetails && !approvedBy.equalsIgnoreCase(preceptorDetails.getEmail()))){
-			
+		if(!approvedBy.equalsIgnoreCase(program.getCoordinatorEmail()) && !approvedBy.equalsIgnoreCase(preceptorDetails.getEmail())){
+			System.out.println("if loop---");
 			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.APPROVER_NO_AUTHORITY);
 		}
 		
