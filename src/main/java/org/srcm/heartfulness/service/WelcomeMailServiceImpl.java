@@ -369,6 +369,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								LOGGER.error("EXCEPTION  :Failed to sent mail to" + map.getValue().get(3)+" :Exception : {}",  ex.getMessage());
 								LOGGER.error("EXCEPTION  :Looking for next coordinator if available");
 							}
+							Thread.sleep(30000);
 						}
 					}
 				}
@@ -499,6 +500,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 							LOGGER.error("EXCEPTION - Looking for next coordinator if available");
 						}
 					}
+					Thread.sleep(30000);
 				}
 				LOGGER.info("Completed sending eWelcome ID email notifications to the coordinator list.");
 			} else {
