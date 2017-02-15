@@ -452,7 +452,9 @@ public class SendMail {
 		String[] toIds = toMailIds.split(",");
 		String[] ccIds = ccMailIds.split(",");
 		try {
-			SMTPMessage message = getSMTPMessage();
+			Session session = getSession();
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
 			for (String toId : toIds) {
 				message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toId));
 			}
@@ -535,7 +537,9 @@ public class SendMail {
 	 */
 	public void sendMail(List<String> toEmailIDs, List<String> ccEmailIDs, String messageContent)
 			throws MessagingException, UnsupportedEncodingException {
-		SMTPMessage message = getSMTPMessage();
+		Session session = getSession();
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(frommail, name));
 		for (String toemailID : toEmailIDs) {
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toemailID));
 		}
@@ -584,14 +588,15 @@ public class SendMail {
 	 * details about the participant count who have received welcome email.
 	 * 
 	 * @param crdntrEmail
+	 * @param session 
 	 * @throws AddressException
 	 *             if coordinator email address in not valid.
 	 * @throws MessagingException
 	 *             if not able to send email.
 	 * @throws UnsupportedEncodingException
 	 */
-	public void sendMailNotificationToCoordinator(CoordinatorEmail crdntrEmail) throws AddressException,
-			MessagingException, UnsupportedEncodingException, ParseException {
+	public void sendMailNotificationToCoordinator(CoordinatorEmail crdntrEmail, Session session) throws AddressException,
+	MessagingException, UnsupportedEncodingException, ParseException {
 
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER,
 				null != crdntrEmail.getCoordinatorName() ? getName(crdntrEmail.getCoordinatorName()) : "Friend");
@@ -618,7 +623,8 @@ public class SendMail {
 				null != crdntrEmail.getProgramCreateDate() ? "held on "
 						+ outputsdf.format(crdntrEmail.getProgramCreateDate()) : "");
 		addParameter(EmailLogConstants.WELCOME_MAIL_SENT_DATE_PARAMETER, outputsdf.format(cal.getTime()));
-		SMTPMessage message = getSMTPMessage();
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(crdntrEmail.getCoordinatorEmail()));
 		message.setSubject(crdntrmailsubject + outputsdf.format(cal.getTime()));
 		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename), "text/html");
@@ -629,11 +635,11 @@ public class SendMail {
 	}
 
 	public void sendGeneratedEwelcomeIdDetailslToCoordinator(CoordinatorEmail coordinatorEmail,
-			List<Participant> participants, List<Participant> failedParticipants) throws AddressException,
+			List<Participant> participants, List<Participant> failedParticipants, Session session) throws AddressException,
 			MessagingException, UnsupportedEncodingException {
 
-		SMTPMessage message = getSMTPMessage();
-
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(frommail, name));
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER,
 				coordinatorEmail.getCoordinatorName() != null ? getName(coordinatorEmail.getCoordinatorName())
 						: "Friend");
@@ -648,8 +654,8 @@ public class SendMail {
 				EmailLogConstants.EVENT_START_DATE_PARAMETER,
 				coordinatorEmail.getProgramCreateDate() != null ? "held on "
 						+ outputsdf.format(coordinatorEmail.getProgramCreateDate()) : (coordinatorEmail
-						.getProgramCreationDate() != null ? "held on "
-						+ outputsdf.format(coordinatorEmail.getProgramCreationDate()) : ""));
+								.getProgramCreationDate() != null ? "held on "
+										+ outputsdf.format(coordinatorEmail.getProgramCreationDate()) : ""));
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 		StringBuilder sb = new StringBuilder();
 		if (!participants.isEmpty()) {
@@ -769,7 +775,7 @@ public class SendMail {
 	}
 
 	public void sendMailToCoordinatorToUpdatePreceptorID(CoordinatorEmail coordinator) throws AddressException,
-			MessagingException, UnsupportedEncodingException, ParseException {
+	MessagingException, UnsupportedEncodingException, ParseException {
 
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, getName(coordinator.getCoordinatorName()));
 		addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
@@ -778,7 +784,9 @@ public class SendMail {
 		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
 		addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER,
 				outputsdf.format(coordinator.getProgramCreateDate()));
-		SMTPMessage message = getSMTPMessage();
+		Session session = getSession();
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
 		message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
 		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent), "text/html");
@@ -790,7 +798,7 @@ public class SendMail {
 	}
 
 	public void sendWelcomeMail() throws AddressException, MessagingException, UnsupportedEncodingException,
-			ParseException {
+	ParseException {
 		try {
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, -1);
@@ -798,7 +806,9 @@ public class SendMail {
 			Date date = new Date();
 			String date_str = sdf.format(date);
 			addParameter(EmailLogConstants.DATE_PARAMETER, date_str);
-			SMTPMessage message = getSMTPMessage();
+			Session session = getSession();
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(welcomemailto));
 			message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc));
 			message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc2));
@@ -824,7 +834,9 @@ public class SendMail {
 	public void sendNotificationToInformProcessExecution(String processName) {
 		String[] toIds = processExecution.toMailids.split(",");
 		try {
-			SMTPMessage message = getSMTPMessage();
+			Session session = getSession();
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
 			for (String toId : toIds) {
 				message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toId));
 			}
@@ -881,8 +893,7 @@ public class SendMail {
 
 	}
 
-	private SMTPMessage getSMTPMessage() throws AddressException, MessagingException, UnsupportedEncodingException {
-
+	public Session getSession() throws AddressException, MessagingException, UnsupportedEncodingException {
 		Properties props = System.getProperties();
 		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
 		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
@@ -896,9 +907,6 @@ public class SendMail {
 				return new PasswordAuthentication(username, password);
 			}
 		});
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
-
-		return message;
+		return session;
 	}
 }

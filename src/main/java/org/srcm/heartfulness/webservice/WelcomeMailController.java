@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.service.WelcomeMailService;
@@ -72,14 +71,6 @@ public class WelcomeMailController {
 		LOGGER.info("END		:Cron job completed to fetch participants to whom welcome mail already sent");
 	}
 	 
-	 @RequestMapping(value = "/coordinator/welcomemail", method = RequestMethod.GET)
-		public void sendEmailToCoordinatorWithWelcomeMailDetails() {
-			LOGGER.info("START		:Cron job started to fetch participants to whom welcome mail already sent");
-			WelcomeMailService.getCoordinatorListAndSendMail();
-			LOGGER.info("END		:Cron job completed to fetch participants to whom welcome mail already sent");
-		}
-
-
 	@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}")
 	public void sendGeneratedEwelcomeIdToCoordinators() {
 		LOGGER.info("START		:Cron job started to send mails to coordinator to inform participant ewelcomeid's");
@@ -87,13 +78,6 @@ public class WelcomeMailController {
 		LOGGER.info("END		:Cron job completed to send mails to coordinator to inform participant ewelcomeid's");
 	}
 	
-	@RequestMapping(value = "/coordinator/ewelcomeidmail", method = RequestMethod.GET)
-	public void sendGeneratedEwelcomeIdToCoordinatorswithEwelcomeId() {
-		LOGGER.info("START		:Cron job started to send mails to coordinator to inform participant ewelcomeid's");
-		WelcomeMailService.getGeneratedEwelcomeIdAndSendToCoordinators();
-		LOGGER.info("END		:Cron job completed to send mails to coordinator to inform participant ewelcomeid's");
-	}
-
 	@Scheduled(cron = "${welcome.mail.to.hfnlist.cron.time}")
 	public void sendWelcomeMail() {
 		try {

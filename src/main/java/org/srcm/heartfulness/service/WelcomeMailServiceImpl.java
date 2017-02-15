@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.mail.MessagingException;
+import javax.mail.Session;
 import javax.mail.internet.AddressException;
 
 import org.slf4j.Logger;
@@ -288,6 +289,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			LOGGER.info("            Total number of coordinators to send email is : " + details.size());
 			if (!details.isEmpty()) {
 				LOGGER.info("START        :Sending email notifications to the coordinator list");
+				Session session = sendEmailNotification.getSession();
 				for (Map.Entry<String, List<String>> map : details.entrySet()) {
 					if (null != map.getKey()) {
 						if (!map.getKey().isEmpty()) {
@@ -314,7 +316,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 									coordinatorEmail.setEventPlace(map.getValue().get(5));
 									coordinatorEmail.setEventCity(map.getValue().get(6));
 									coordinatorEmail.setProgramCreationDate(null != map.getValue().get(7) ? inputsdf.parse(map.getValue().get(7)) :null);
-									sendEmailNotification.sendMailNotificationToCoordinator(coordinatorEmail);
+									sendEmailNotification.sendMailNotificationToCoordinator(coordinatorEmail,session);
 									LOGGER.debug("START        :Inserting mail log details in table");
 									PMPMailLog pmpMailLog = new PMPMailLog(map.getKey(), map.getValue().get(3),
 											EmailLogConstants.PCTPT_EMAIL_DETAILS, EmailLogConstants.STATUS_SUCCESS,
@@ -396,6 +398,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 					.getGeneratedEwelcomeIdDetails();
 			LOGGER.info("Count of coordinators to send email - " + eWelcomeIdDetails.size());
 			if (!eWelcomeIdDetails.isEmpty()) {
+				Session session = sendEmailNotification.getSession();
 				for (Entry<CoordinatorEmail, List<Participant>> map : eWelcomeIdDetails.entrySet()) {
 					LOGGER.info("Event: {} ,Coordinatoremail : {} ", map.getKey().getEventID(), map.getKey()
 							.getCoordinatorEmail());
@@ -430,7 +433,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 									// System.out.println("participant id "+participant.getId()+" inserted");
 								}
 								sendEmailNotification.sendGeneratedEwelcomeIdDetailslToCoordinator(coordinatorEmail,
-										eWelcomeIDParticipants, failedParticipants);
+										eWelcomeIDParticipants, failedParticipants,session);
 								PMPMailLog pmpMailLog = new PMPMailLog(map.getKey().getProgramId(), map.getKey()
 										.getCoordinatorEmail(), EmailLogConstants.WLCMID_EMAIL_DETAILS,
 										EmailLogConstants.STATUS_SUCCESS, null);
