@@ -893,7 +893,7 @@ public class SendMail {
 
 	}
 
-	public Session getSession() throws AddressException, MessagingException, UnsupportedEncodingException {
+	public Session getSession() {
 		Properties props = System.getProperties();
 		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
 		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
