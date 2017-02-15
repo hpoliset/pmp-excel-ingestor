@@ -31,9 +31,9 @@ public class CoordinatorAccessControlConstants {
 	public static final String  APPROVER_VALIDATION_SUCCESSFULL 			= "Approver validation successfull";
 	public static final String  APPROVER_SUCCESS_RESPONSE					= "You have successfully added ";
 	public static final String  APPROVER_SAME_APPROVER_REQUESTER			= "You cannot approve a request for yourself ";
-	public static final String  APPROVER_NO_AUTHORITY						= "You are not authorized for approving this request";
+	public static final String  APPROVER_NO_AUTHORITY						= "You are unauthorized for approving this request";
 	
-	public static final String  REQUESTERLIST_NO_AUTHORITY						= "You are not authorized to access list of secondary coordinator details for some other event";
+	public static final String  REQUESTERLIST_NO_AUTHORITY						= "You are unauthorized for accessing the secondary coordinator details";
 	public static final String  REQUESTERLIST_VALIDATION_SUCCESSFULL			= "Get requester list validation successfull";
 	
 	
