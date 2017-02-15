@@ -465,10 +465,10 @@ public class SendMail {
 			message.setSubject(subject + " " + sdf.format(new Date()));
 			addParameter(EmailLogConstants.DATE_PARAMETER, sdf.format(new Date()));
 			if (count == 0) {
-				message.setContent(getMessageContentbyTemplateName(noparticipantstemplatename), "text/html");
+				message.setContent(getMessageContentbyTemplateName(noparticipantstemplatename), EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 			} else {
 				addParameter(EmailLogConstants.COUNT_PARAMETER, String.valueOf(count));
-				message.setContent(getMessageContentbyTemplateName(participantstemplatename), "text/html");
+				message.setContent(getMessageContentbyTemplateName(participantstemplatename), EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 			}
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
@@ -496,7 +496,7 @@ public class SendMail {
 	 * @param printName
 	 * @return
 	 */
-	private String getName(String printName) {
+	public String getName(String printName) {
 		printName = printName.replace(".", " ");
 		String[] name = printName.split(" ");
 		if (name.length > 0) {
@@ -547,7 +547,7 @@ public class SendMail {
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(ccemailID));
 		}
 		message.setSubject(subject);
-		message.setContent(messageContent, "text/html");
+		message.setContent(messageContent, EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -627,7 +627,7 @@ public class SendMail {
 		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(crdntrEmail.getCoordinatorEmail()));
 		message.setSubject(crdntrmailsubject + outputsdf.format(cal.getTime()));
-		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename), "text/html");
+		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename), EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -767,7 +767,7 @@ public class SendMail {
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinatorEmail.getCoordinatorEmail()));
 		message.setSubject(crdntrmailforewlcmidsubject
 				+ (null != coordinatorEmail.getEventName() ? " - " + coordinatorEmail.getEventName() : ""));
-		message.setContent(getMessageContentbyTemplateName(crdntrewlcomeidmailtemplatename), "text/html");
+		message.setContent(getMessageContentbyTemplateName(crdntrewlcomeidmailtemplatename), EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -789,7 +789,7 @@ public class SendMail {
 		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
 		message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
-		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent), "text/html");
+		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent), EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -813,7 +813,7 @@ public class SendMail {
 			message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc));
 			message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc2));
 			message.setSubject(welcomemailsubject);
-			message.setContent(getMessageContentbyTemplateName(welcomemailtemplatename), "text/html");
+			message.setContent(getMessageContentbyTemplateName(welcomemailtemplatename), EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -865,7 +865,7 @@ public class SendMail {
 						+ ExpressionConstants.SPACE_SEPARATER + sdf.format(new Date()));
 				addParameter(EmailLogConstants.MAIL_CONTENT_PARAMETER, processExecution.welcomeMailToParticpants);
 			}
-			message.setContent(getMessageContentbyTemplateName(processExecution.mailTemplate), "text/html");
+			message.setContent(getMessageContentbyTemplateName(processExecution.mailTemplate), EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -873,7 +873,6 @@ public class SendMail {
 			for (String toId : toIds) {
 				LOGGER.info("Mail sent successfully : {} ", toId);
 			}
-
 			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), toIds.toString(),
 					processName, EmailLogConstants.STATUS_SUCCESS, null);
 			mailLogRepository.createMailLog(pmpMailLog);

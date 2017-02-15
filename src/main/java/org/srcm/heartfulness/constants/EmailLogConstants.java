@@ -59,6 +59,8 @@ public class EmailLogConstants {
 	public static final String CREATE_PROFILE_LINK_PARAMETER = "CREATE_PROFILE_LINK";
 	public static final String COORDINATOR_EMAILID_PARAMETER = "COORDINATOR_EMAILID";
 	
+	public static final String MAIL_CONTENT_TYPE_TEXT_HTML="text/html";
+	
 	
 
 }

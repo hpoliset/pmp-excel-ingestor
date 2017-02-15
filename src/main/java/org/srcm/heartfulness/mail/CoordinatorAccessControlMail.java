@@ -5,11 +5,9 @@ import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Properties;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
@@ -27,6 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 import org.srcm.heartfulness.constants.CoordinatorAccessControlConstants;
 import org.srcm.heartfulness.constants.EmailLogConstants;
+import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.constants.SMSConstants;
 import org.srcm.heartfulness.model.CoordinatorAccessControlEmail;
 import org.srcm.heartfulness.model.CoordinatorEmail;
@@ -71,8 +70,11 @@ public class CoordinatorAccessControlMail {
 	private MailLogRepository mailLogRepository;
 
 	private VelocityEngine velocityEngine = new VelocityEngine();
-
+	
 	private VelocityContext context;
+
+	@Autowired
+	SendMail sendMail;
 
 	public CoordinatorAccessControlMail() {
 		context = new VelocityContext();
@@ -253,14 +255,14 @@ public class CoordinatorAccessControlMail {
 	public void setApprovalMailTemplate(String approvalMailTemplate) {
 		this.approvalMailTemplate = approvalMailTemplate;
 	}
-
+	
 	/**
 	 * To get the email content as string from the vm template.
 	 * 
-	 * @param templateName
+	 * @param welcomemail
 	 * @return
 	 */
-	private String getMessageContentbyTemplateName(String templateName) {
+	public String getMessageContentbyTemplateName(String templateName) {
 		Template template = null;
 		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
 		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
@@ -269,45 +271,27 @@ public class CoordinatorAccessControlMail {
 		template.merge(getParameter(), stringWriter);
 		return stringWriter.toString();
 	}
-
-	/**
-	 * Method to get the personalized name of the given participant.
-	 * 
-	 * @param printName
-	 * @return
-	 */
-	private String getName(String printName) {
-		printName = printName.replace(".", " ");
-		String[] name = printName.split(" ");
-		if (name.length > 0) {
-			for (int i = 0; i < name.length; i++) {
-				if (name[i].length() > 2 && !name[i].equalsIgnoreCase("mrs") && !name[i].equalsIgnoreCase("smt")) {
-					return name[i].substring(0, 1).toUpperCase() + name[i].substring(1).toLowerCase();
-				}
-			}
-		}
-		return printName;
-	}
-
+	
 	public void sendMailToPreceptorToUpdateCoordinatorEmailID(
 			CoordinatorAccessControlEmail coordinatorAccessControlEmail) throws AddressException, MessagingException,
 			UnsupportedEncodingException, ParseException {
 		try {
-
-			SMTPMessage message = getSMTPMessage();
+			Session session = sendMail.getSession();
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
 			addParameter(EmailLogConstants.PRECEPTOR_NAME_PARAMETER,
-					getName(coordinatorAccessControlEmail.getPreceptorName()));
+					sendMail.getName(coordinatorAccessControlEmail.getPreceptorName()));
 			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
 					+ "?id=" + coordinatorAccessControlEmail.getEventID());
 			addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinatorAccessControlEmail.getEventName());
-			SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
-			SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
+			SimpleDateFormat inputsdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
+			SimpleDateFormat outputsdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
 			Date pgrmCreateDate = inputsdf.parse(coordinatorAccessControlEmail.getProgramCreateDate());
 			addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
 			message.addRecipients(Message.RecipientType.TO,
 					InternetAddress.parse(coordinatorAccessControlEmail.getPreceptorEmailId()));
 			message.setSubject(emptycoordinatoremailidsubject + " - " + coordinatorAccessControlEmail.getEventName());
-			message.setContent(getMessageContentbyTemplateName(emptycoordinatoremailidtemplate), "text/html");
+			message.setContent(getMessageContentbyTemplateName(emptycoordinatoremailidtemplate), EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -386,9 +370,11 @@ public class CoordinatorAccessControlMail {
 			CoordinatorAccessControlEmail coordinatorAccessControlEmail) throws AddressException, MessagingException,
 			UnsupportedEncodingException, ParseException {
 		try {
-			SMTPMessage message = getSMTPMessage();
+			Session session = sendMail.getSession();
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
 			addParameter(EmailLogConstants.PRECEPTOR_NAME_PARAMETER,
-					getName(coordinatorAccessControlEmail.getPreceptorName()));
+					sendMail.getName(coordinatorAccessControlEmail.getPreceptorName()));
 			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
 					+ "?id=" + coordinatorAccessControlEmail.getEventID());
 			addParameter(EmailLogConstants.CREATE_PROFILE_LINK_PARAMETER,
@@ -396,8 +382,8 @@ public class CoordinatorAccessControlMail {
 			addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinatorAccessControlEmail.getEventName());
 			addParameter(EmailLogConstants.COORDINATOR_EMAILID_PARAMETER,
 					coordinatorAccessControlEmail.getCoordinatorEmail());
-			SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
-			SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
+			SimpleDateFormat inputsdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
+			SimpleDateFormat outputsdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
 			Date pgrmCreateDate = inputsdf.parse(coordinatorAccessControlEmail.getProgramCreateDate());
 			addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
 			message.addRecipients(Message.RecipientType.TO,
@@ -407,7 +393,7 @@ public class CoordinatorAccessControlMail {
 			message.setSubject(mailsubjecttocreateprofileandaccessdashboard + " - "
 					+ coordinatorAccessControlEmail.getEventName());
 			message.setContent(getMessageContentbyTemplateName(mailtemplatetocreateprofileandaccessdashboard),
-					"text/html");
+					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -488,17 +474,19 @@ public class CoordinatorAccessControlMail {
 	public void sendMailToCoordinatorToUpdatePreceptorID(CoordinatorEmail coordinator) throws AddressException,
 			MessagingException, UnsupportedEncodingException, ParseException {
 
-		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, getName(coordinator.getCoordinatorName()));
+		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, sendMail.getName(coordinator.getCoordinatorName()));
 		addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
 				+ "?id=" + coordinator.getEventID());
 		addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinator.getEventName());
-		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
+		SimpleDateFormat outputsdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
 		addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER,
 				outputsdf.format(coordinator.getProgramCreateDate()));
-		SMTPMessage message = getSMTPMessage();
+		Session session = sendMail.getSession();
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
 		message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
-		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent), "text/html");
+		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent), EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -508,18 +496,20 @@ public class CoordinatorAccessControlMail {
 
 	public void sendMailToCoordinatorWithLinktoAccessDashboard(CoordinatorAccessControlEmail coordinator) {
 		try {
-			SMTPMessage message = getSMTPMessage();
-			addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, getName(coordinator.getCoordinatorName()));
+			Session session = sendMail.getSession();
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
+			addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, sendMail.getName(coordinator.getCoordinatorName()));
 			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
 					+ "?id=" + coordinator.getEventID());
 			addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinator.getEventName());
-			SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
-			SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
+			SimpleDateFormat inputsdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
+			SimpleDateFormat outputsdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
 			Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
 			addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
 			message.setSubject(coordinatormailsubjecttoaccessdashbrd + " - " + coordinator.getEventName());
-			message.setContent(getMessageContentbyTemplateName(coordinatormailtemplatetoaccessdashbrd), "text/html");
+			message.setContent(getMessageContentbyTemplateName(coordinatormailtemplatetoaccessdashbrd), EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -589,20 +579,22 @@ public class CoordinatorAccessControlMail {
 
 	public void sendMailToCoordinatorWithLinktoCreateProfile(CoordinatorAccessControlEmail coordinator) {
 		try {
-			SMTPMessage message = getSMTPMessage();
-			addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, getName(coordinator.getCoordinatorName()));
+			Session session = sendMail.getSession();
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
+			addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER,sendMail.getName(coordinator.getCoordinatorName()));
 			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
 					+ "?id=" + coordinator.getEventID());
 			addParameter(EmailLogConstants.CREATE_PROFILE_LINK_PARAMETER,
 					CoordinatorAccessControlConstants.HEARTFULNESS_CREATE_PROFILE_URL);
 			addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinator.getEventName());
-			SimpleDateFormat inputsdf = new SimpleDateFormat("yyyy-MM-dd");
-			SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
+			SimpleDateFormat inputsdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
+			SimpleDateFormat outputsdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
 			Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
 			addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
 			message.setSubject(coordinatormailsubjecttocreateaccount + " - " + coordinator.getEventName());
-			message.setContent(getMessageContentbyTemplateName(coordinatormailtemplatetocreateaccount), "text/html");
+			message.setContent(getMessageContentbyTemplateName(coordinatormailtemplatetocreateaccount), EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -672,11 +664,13 @@ public class CoordinatorAccessControlMail {
 
 	public void sendRequestMailToCoordinatorAndPreceptor(String recipientName, String recipientEmail, String eventId)
 			throws MessagingException, UnsupportedEncodingException {
-		addParameter("NAME", recipientName);
-		SMTPMessage message = getSMTPMessage();
+		addParameter(EmailLogConstants.NAME_PARAMETER, recipientName);
+		Session session = sendMail.getSession();
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
 		message.setSubject(requestMailSubject + eventId);
-		message.setContent(getMessageContentbyTemplateName(requestMailTemplate), "text/html");
+		message.setContent(getMessageContentbyTemplateName(requestMailTemplate), EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -685,36 +679,17 @@ public class CoordinatorAccessControlMail {
 
 	public void sendMailToNewSecondaryCoordinator(String recipientName, String recipientEmail, String eventId)
 			throws UnsupportedEncodingException, MessagingException {
-		addParameter("NAME", recipientName);
-		SMTPMessage message = getSMTPMessage();
+		addParameter(EmailLogConstants.NAME_PARAMETER, recipientName);
+		Session session = sendMail.getSession();
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
 		message.setSubject(approvalMailSubject + eventId);
-		message.setContent(getMessageContentbyTemplateName(approvalMailTemplate), "text/html");
+		message.setContent(getMessageContentbyTemplateName(approvalMailTemplate), EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
 		Transport.send(message);
-	}
-
-	private SMTPMessage getSMTPMessage() throws AddressException, MessagingException, UnsupportedEncodingException {
-
-		Properties props = System.getProperties();
-		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_HOST_PROPERTY, hostname);
-		props.put(EmailLogConstants.MAIL_SMTP_PORT_PROPERTY, port);
-		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
-			}
-		});
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
-
-		return message;
 	}
 
 }
