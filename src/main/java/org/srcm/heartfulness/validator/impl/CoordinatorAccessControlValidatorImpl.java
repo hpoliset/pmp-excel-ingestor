@@ -85,7 +85,6 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 		}
 		
 		if(!approvedBy.equalsIgnoreCase(program.getCoordinatorEmail()) && !approvedBy.equalsIgnoreCase(preceptorDetails.getEmail())){
-			System.out.println("if loop---");
 			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.APPROVER_NO_AUTHORITY);
 		}
 		
