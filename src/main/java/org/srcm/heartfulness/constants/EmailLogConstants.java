@@ -24,6 +24,8 @@ public class EmailLogConstants {
 	public static final String MAIL_SMTP_SSL_PROPERTY ="mail.smtp.ssl.enable";
 	public static final String MAIL_SMTP_AUTH_PROPERTY ="mail.smtp.auth";
 	public static final String MAIL_SMTP_STARTTLS_PROPERTY ="mail.smtp.starttls.enable";
+	public static final String MAIL_SMTP_PROTOCOL_PROPERTY ="mail.transport.protocol";
+	public static final String MAIL_SMTP_PROPERTY ="smtp";
 	public static final String MAIL_PROPERTY_TRUE = "true";
 	
 	public static final String DATE_PARAMETER="DATE";
