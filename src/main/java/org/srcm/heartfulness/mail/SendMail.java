@@ -631,7 +631,9 @@ public class SendMail {
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-		Transport.send(message);
+		Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
+		transport.send(message);
+		transport.close();
 	}
 
 	public void sendGeneratedEwelcomeIdDetailslToCoordinator(CoordinatorEmail coordinatorEmail,
@@ -771,7 +773,9 @@ public class SendMail {
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-		Transport.send(message);
+		Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
+		transport.send(message);
+		transport.close();
 	}
 
 	public void sendMailToCoordinatorToUpdatePreceptorID(CoordinatorEmail coordinator) throws AddressException,
@@ -901,7 +905,7 @@ public class SendMail {
 		props.put(EmailLogConstants.MAIL_SMTP_SSL_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
 		props.put(EmailLogConstants.MAIL_SMTP_AUTH_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
 		props.put(EmailLogConstants.MAIL_SMTP_STARTTLS_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
-
+		props.put(EmailLogConstants.MAIL_SMTP_PROTOCOL_PROPERTY, EmailLogConstants.MAIL_SMTP_PROPERTY);
 		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(username, password);
