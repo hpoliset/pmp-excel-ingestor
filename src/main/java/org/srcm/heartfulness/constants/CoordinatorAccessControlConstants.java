@@ -36,6 +36,8 @@ public class CoordinatorAccessControlConstants {
 	public static final String  REQUESTERLIST_NO_AUTHORITY						= "You are unauthorized for accessing the secondary coordinator details";
 	public static final String  REQUESTERLIST_VALIDATION_SUCCESSFULL			= "Get requester list validation successfull";
 	
+	public static final String  ACCESS_ENABLED							= "Y";
+	public static final String  ACCESS_DISABLED							= "N";
 	
 	public static final String HEARTFULNESS_CREATE_PROFILE_URL = "https://profile.sahajmarg.org/accounts/signup/"; 
 	

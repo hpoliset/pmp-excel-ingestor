@@ -116,6 +116,8 @@ public class Program {
 	
 	private String isEwelcomeIdGenerationDisabled;
 	
+	private String isReadOnly;
+	
 	
 	public String getSrcmGroup() {
 		return srcmGroup;
@@ -583,6 +585,14 @@ public class Program {
 
 	public void setIsEwelcomeIdGenerationDisabled(String isEwelcomeIdGenerationDisabled) {
 		this.isEwelcomeIdGenerationDisabled = isEwelcomeIdGenerationDisabled;
+	}
+	
+	public String getIsReadOnly() {
+		return isReadOnly;
+	}
+
+	public void setIsReadOnly(String isReadOnly) {
+		this.isReadOnly = isReadOnly;
 	}
 
 	@Override

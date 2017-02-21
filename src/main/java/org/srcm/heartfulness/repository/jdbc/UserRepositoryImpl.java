@@ -2,7 +2,9 @@ package org.srcm.heartfulness.repository.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -89,14 +91,14 @@ public class UserRepositoryImpl implements UserRepository {
 		if (user.getId() == 0) {
 			Integer userId = this.jdbcTemplate.query("SELECT id from user where email=?",
 					new Object[] { user.getEmail() }, new ResultSetExtractor<Integer>() {
-						@Override
-						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-							if (resultSet.next()) {
-								return resultSet.getInt(1);
-							}
-							return 0;
-						}
-					});
+				@Override
+				public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+					if (resultSet.next()) {
+						return resultSet.getInt(1);
+					}
+					return 0;
+				}
+			});
 
 			if (userId > 0) {
 				user.setId(userId);
@@ -118,5 +120,36 @@ public class UserRepositoryImpl implements UserRepository {
 					+ "user_type=:user_type, " + "email=:email, " + "mobile=:mobile, " + "city=:city, "
 					+ "state=:state, " + "country=:country " + "WHERE id=:id", parameterSource);
 		}
+	}
+
+	/**
+	 * This method is used to get email Ids for a given
+	 * MYSRCM Abhyasi Id.
+	 * @param abyasiId, to get the list of email Ids.
+	 * @return List<String> email Id's which are associated
+	 * for a given MYSRCM Abhyasi Id.
+	 */
+	@Override
+	public List<String> getEmailsWithAbhyasiId(String abyasiId) {
+
+		List<String> emailList = new ArrayList<String>();
+		try{
+			emailList = this.jdbcTemplate.query("SELECT email from USER "
+					+ "WHERE abyasi_id=?", 
+					new Object[] {abyasiId}, 
+					new ResultSetExtractor<List<String>>() {
+						@Override
+						public List<String> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+							List<String> coordinatorEmails = new ArrayList<String>();
+							while (resultSet.next()) {
+								coordinatorEmails.add(resultSet.getString(1));
+							}
+							return coordinatorEmails;
+						}
+					});
+		} catch(Exception ex){
+			logger.error("EXCEPTION : While fetching emails with Abhyasi Id "+abyasiId);
+		}
+		return emailList;
 	}
 }

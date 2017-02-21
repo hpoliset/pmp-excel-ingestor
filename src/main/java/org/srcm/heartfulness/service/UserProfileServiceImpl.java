@@ -2,6 +2,7 @@ package org.srcm.heartfulness.service;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -182,6 +183,18 @@ public class UserProfileServiceImpl implements UserProfileService {
 		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 		return newUser;
+	}
+
+	/**
+	 * This method is used to get the email Ids associated with 
+	 * an Abhyasi Id.
+	 * @param abyasiId, is used to get all the emails associated 
+	 * eith a specific Abhyasi Id. 
+	 * @return List<String> email Ids for a given Abhyasi Id.
+	 */
+	@Override
+	public List<String> getEmailsWithAbhyasiId(String abyasiId) {
+		return userRepository.getEmailsWithAbhyasiId(abyasiId);
 	}
 
 	

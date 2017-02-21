@@ -2,6 +2,7 @@ package org.srcm.heartfulness.service;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.List;
 
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.User;
@@ -89,5 +90,14 @@ public interface UserProfileService {
 	 */
 	User createUser(CreateUserRequest user, int id, String requestURL) throws HttpClientErrorException,
 			JsonParseException, JsonMappingException, IOException;
+
+	/**
+	 * This method is used to get the email Ids associated with 
+	 * an Abhyasi Id.
+	 * @param abyasiId, is used to get all the emails associated 
+	 * eith a specific Abhyasi Id. 
+	 * @return List<String> email Ids for a given Abhyasi Id.
+	 */
+	List<String> getEmailsWithAbhyasiId(String abyasiId);
 	
 }
