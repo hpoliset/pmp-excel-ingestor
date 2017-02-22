@@ -331,7 +331,7 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 	@Override
 	public void saveCoordinatorDetails(ProgramCoordinators programCoordinators) {
 		if (0 == programCoordinators.getUserId()) {
-			programCoordinators.setUserId(fecthUserIdwithemailId(programCoordinators.getEmail()));
+			programCoordinators.setUserId(fetchUserIdwithemailId(programCoordinators.getEmail()));
 		}
 		if (programCoordinators.getIsPrimaryCoordinator() == 1) {
 			Integer id = this.jdbcTemplate.query(
@@ -398,7 +398,7 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 
 	}
 
-	private int fecthUserIdwithemailId(String coordinatorEmail) {
+	private int fetchUserIdwithemailId(String coordinatorEmail) {
 		Integer id = this.jdbcTemplate.query("SELECT id FROM user WHERE email=?", new Object[] { coordinatorEmail },
 				new ResultSetExtractor<Integer>() {
 					@Override

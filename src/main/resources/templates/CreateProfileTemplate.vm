@@ -7,7 +7,7 @@
 Dear ${COORDINATOR_NAME},
 <br/>
 <div style="padding-left: 10px;">
-<p>Please note that you have associated as coordinator for the event <b>${EVENT_NAME}</b> held on ${PROGRAM_CREATE_DATE}. In order to manage this event, your email address needs to be associated with a MYSRCM profile. If you already have a MYCRM profile 
+<p>Please note that you have been associated as coordinator for the event <b>${EVENT_NAME}</b> held on ${PROGRAM_CREATE_DATE}. In order to manage this event, your email address needs to be associated with a MYSRCM profile. If you already have a MYCRM profile 
 associated with a different email address you can associate additional an email address to the same by visiting https://profile.sahajmarg.org and 
 clicking on the link next to "Default Email".</p>
 

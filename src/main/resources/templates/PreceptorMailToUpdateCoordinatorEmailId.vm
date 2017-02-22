@@ -7,7 +7,7 @@
 Dear ${PRECEPTOR_NAME},
 <br/>
 <div style="padding-left: 10px;">
-<p>Please note that the coordinator email has not been provided for the event <b>${EVENT_NAME}</b> held on ${PROGRAM_CREATE_DATE}, 
+<p>Please note that there is no coordinator associated with the event <b>${EVENT_NAME}</b> held on ${PROGRAM_CREATE_DATE}, 
 if you would like a coordinator to manage this event, please login to the event dashboard with <u><a href="${UPDATE_EVENT_LINK}">this link</a></u> 
 and update this event details with the coordinator's email address.</p>
 
