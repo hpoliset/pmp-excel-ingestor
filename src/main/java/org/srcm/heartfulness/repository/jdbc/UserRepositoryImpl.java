@@ -134,7 +134,7 @@ public class UserRepositoryImpl implements UserRepository {
 
 		List<String> emailList = new ArrayList<String>();
 		try{
-			emailList = this.jdbcTemplate.query("SELECT email from USER "
+			emailList = this.jdbcTemplate.query("SELECT email from user "
 					+ "WHERE abyasi_id=?", 
 					new Object[] {abyasiId}, 
 					new ResultSetExtractor<List<String>>() {
