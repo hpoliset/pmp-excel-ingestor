@@ -312,6 +312,9 @@ public class EventsController {
 			offset = (eventPagination.getPageIndex() - 1) * eventPagination.getPageSize();
 			if(null != user.getAbyasiId()){
 				emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
+				if(emailList.size() == 0){
+					emailList.add(user.getEmail());
+				}
 			}else{
 				emailList.add(user.getEmail());
 			}

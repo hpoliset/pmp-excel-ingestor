@@ -1087,7 +1087,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 		int programCount = this.jdbcTemplate.queryForObject(
 				"SELECT count(DISTINCT p.program_id ) "
-						+ " FROM program p LEFT JOIN program_coordinators pc"
+						+ " FROM program p LEFT JOIN program_coordinators pc "
 						+ " ON p.program_id = pc.program_id "
 						/*+ " WHERE (p.coordinator_email IN( "
 						+ emailString
@@ -1095,7 +1095,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 						+ emailString
 						+ " ))"*/
 
-						+ (whereCondition.length() > 0 ? "WHERE" +  whereCondition : ""), null, Integer.class);
+						+ (whereCondition.length() > 0 ? " WHERE " +  whereCondition : ""), null, Integer.class);
 
 		return programCount;
 	}
