@@ -149,7 +149,6 @@ public class UserRepositoryImpl implements UserRepository {
 					});
 		} catch(Exception ex){
 			logger.error("EXCEPTION : While fetching emails with Abhyasi Id "+abyasiId);
-			logger.error("EXCEPTION : While fetching emails with Abhyasi Id {}",ex);
 		}
 		return emailList;
 	}
