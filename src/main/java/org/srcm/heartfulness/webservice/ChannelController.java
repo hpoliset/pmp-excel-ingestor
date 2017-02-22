@@ -66,7 +66,6 @@ public class ChannelController {
 		} catch (Exception ex) {
 			LOGGER.info("END : Error occured while Fetching channel list. Exception : {}", ex.getMessage());
 			Response response = new Response(ErrorConstants.STATUS_FAILED, ex.getMessage());
-			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());

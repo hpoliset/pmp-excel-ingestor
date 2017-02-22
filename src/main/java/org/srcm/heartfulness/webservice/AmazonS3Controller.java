@@ -83,7 +83,6 @@ public class AmazonS3Controller {
 		} catch (Exception e) {
 			LOGGER.error("Intenal server error : {}", e);
 			Response response = new Response(ErrorConstants.STATUS_FAILED, e.getMessage());
-			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
@@ -125,7 +124,6 @@ public class AmazonS3Controller {
 		} catch (Exception e) {
 			LOGGER.error("Intenal server error : {}", e);
 			Response response = new Response(ErrorConstants.STATUS_FAILED, e.getMessage());
-			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
@@ -166,7 +164,6 @@ public class AmazonS3Controller {
 		} catch (Exception e) {
 			LOGGER.error("Intenal server error : {}", e);
 			Response response = new Response(ErrorConstants.STATUS_FAILED, e.getMessage());
-			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
@@ -206,7 +203,6 @@ public class AmazonS3Controller {
 		} catch (Exception e) {
 			LOGGER.error("Intenal server error : {}", e);
 			Response response = new Response(ErrorConstants.STATUS_FAILED, e.getMessage());
-			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));

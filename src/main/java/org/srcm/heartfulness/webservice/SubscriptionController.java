@@ -72,7 +72,6 @@ public class SubscriptionController {
 		LOGGER.info(" logger ID: {} :Unsubcribe user called - {} ", id, subscriptionRequest.getName());
 		Map<String, String> map = subscriptionValidator.checkMandatoryFieldsinSubscriptionRequest(subscriptionRequest);
 		if (!map.isEmpty()) {
-			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(map.toString());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(map));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -109,7 +108,6 @@ public class SubscriptionController {
 		LOGGER.debug(" logger ID: {} : subcribe user called - {} ", id, subscriptionRequest.getName());
 		Map<String, String> map = subscriptionValidator.checkMandatoryFieldsinSubscriptionRequest(subscriptionRequest);
 		if (!map.isEmpty()) {
-			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(map.toString());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(map));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
