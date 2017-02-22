@@ -138,7 +138,8 @@ public class EventsController {
 			List<String> emailList = new ArrayList<String>();
 			if(null != user.getAbyasiId()){
 				emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
-			}else{
+			}
+			if(emailList.size() == 0){
 				emailList.add(user.getEmail());
 			}
 			
@@ -310,12 +311,11 @@ public class EventsController {
 			}
 			
 			offset = (eventPagination.getPageIndex() - 1) * eventPagination.getPageSize();
+			
 			if(null != user.getAbyasiId()){
 				emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
-				if(emailList.size() == 0){
-					emailList.add(user.getEmail());
-				}
-			}else{
+			}
+			if(emailList.size() == 0){
 				emailList.add(user.getEmail());
 			}
 			
@@ -1088,7 +1088,8 @@ public class EventsController {
 
 			if(null != user.getAbyasiId()){
 				emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
-			}else{
+			}
+			if(emailList.size() == 0){
 				emailList.add(user.getEmail());
 			}
 			
@@ -1217,7 +1218,8 @@ public class EventsController {
 			
 			if(null != user.getAbyasiId()){
 				emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
-			}else{
+			}
+			if(emailList.size() == 0){
 				emailList.add(user.getEmail());
 			}
 			
