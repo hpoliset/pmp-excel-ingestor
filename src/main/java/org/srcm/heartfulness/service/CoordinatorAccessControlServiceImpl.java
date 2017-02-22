@@ -487,7 +487,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 											@Override
 											public void run() {
 												try {
-													coordinatorAccessControlMail.sendMailToPreceptorandCoordinatorToCreateProfileAndAccessDashboard(coordinator);
+													coordinatorAccessControlMail.sendMailToCoordinatorWithLinktoCreateProfile(coordinator);
 												} catch (Exception ex) {
 													LOGGER.error("Error while sending email to the coordinator - {} ",program.getCoordinatorEmail());
 												}

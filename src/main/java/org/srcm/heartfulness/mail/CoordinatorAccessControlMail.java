@@ -70,7 +70,7 @@ public class CoordinatorAccessControlMail {
 	private MailLogRepository mailLogRepository;
 
 	private VelocityEngine velocityEngine = new VelocityEngine();
-	
+
 	private VelocityContext context;
 
 	@Autowired
@@ -255,7 +255,7 @@ public class CoordinatorAccessControlMail {
 	public void setApprovalMailTemplate(String approvalMailTemplate) {
 		this.approvalMailTemplate = approvalMailTemplate;
 	}
-	
+
 	/**
 	 * To get the email content as string from the vm template.
 	 * 
@@ -271,7 +271,7 @@ public class CoordinatorAccessControlMail {
 		template.merge(getParameter(), stringWriter);
 		return stringWriter.toString();
 	}
-	
+
 	public void sendMailToPreceptorToUpdateCoordinatorEmailID(
 			CoordinatorAccessControlEmail coordinatorAccessControlEmail) throws AddressException, MessagingException,
 			UnsupportedEncodingException, ParseException {
@@ -366,7 +366,7 @@ public class CoordinatorAccessControlMail {
 
 	}
 
-	public void sendMailToPreceptorandCoordinatorToCreateProfileAndAccessDashboard(
+	/*public void sendMailToPreceptorandCoordinatorToCreateProfileAndAccessDashboard(
 			CoordinatorAccessControlEmail coordinatorAccessControlEmail) throws AddressException, MessagingException,
 			UnsupportedEncodingException, ParseException {
 		try {
@@ -375,6 +375,8 @@ public class CoordinatorAccessControlMail {
 			message.setFrom(new InternetAddress(frommail, name));
 			addParameter(EmailLogConstants.PRECEPTOR_NAME_PARAMETER,
 					sendMail.getName(coordinatorAccessControlEmail.getPreceptorName()));
+			addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER,
+					sendMail.getName(coordinatorAccessControlEmail.getCoordinatorName()));
 			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
 					+ "?id=" + coordinatorAccessControlEmail.getEventID());
 			addParameter(EmailLogConstants.CREATE_PROFILE_LINK_PARAMETER,
@@ -469,10 +471,10 @@ public class CoordinatorAccessControlMail {
 				LOGGER.error("END        :Exception while inserting mail log details in table");
 			}
 		}
-	}
+	}*/
 
 	public void sendMailToCoordinatorToUpdatePreceptorID(CoordinatorEmail coordinator) throws AddressException,
-			MessagingException, UnsupportedEncodingException, ParseException {
+	MessagingException, UnsupportedEncodingException, ParseException {
 
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, sendMail.getName(coordinator.getCoordinatorName()));
 		addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
@@ -494,7 +496,7 @@ public class CoordinatorAccessControlMail {
 		LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinator.getCoordinatorEmail());
 	}
 
-	public void sendMailToCoordinatorWithLinktoAccessDashboard(CoordinatorAccessControlEmail coordinator) {
+	/*public void sendMailToCoordinatorWithLinktoAccessDashboard(CoordinatorAccessControlEmail coordinator) {
 		try {
 			Session session = sendMail.getSession();
 			SMTPMessage message = new SMTPMessage(session);
@@ -575,7 +577,7 @@ public class CoordinatorAccessControlMail {
 			}
 		}
 
-	}
+	}*/
 
 	public void sendMailToCoordinatorWithLinktoCreateProfile(CoordinatorAccessControlEmail coordinator) {
 		try {

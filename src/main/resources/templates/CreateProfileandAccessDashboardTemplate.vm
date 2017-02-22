@@ -4,14 +4,18 @@
 </head>
 <body>
 <div>
-Dear ${PRECEPTOR_NAME},
+Dear ${COORDINATOR_NAME},
 <br/>
 <div style="padding-left: 10px;">
-<p>Please note that the excel sheet uploaded for the event <b>${EVENT_NAME}</b> held on ${PROGRAM_CREATE_DATE} seems to have an coordinator emailId <b>${COORDINATOR_EMAILID}</b> which is not registered with MYSRCM.</p>
-<p>If you feel the mentioned coordinator emailId is invalid, we request you to kindly access the following <u><a href="${UPDATE_EVENT_LINK}">URL</a></u> to update the valid coordinator emailId.</p>
-<p>If the coordinator emailId is valid and don't have MYSRCM account, then they have to register with MYSRCM through the following <u><a href="${CREATE_PROFILE_LINK}">URL</a></u> and there after the coordinator can login through the following <u><a href="${UPDATE_EVENT_LINK}">URL</a></u> to view the event details.</p>
+<p>Please note that you have associated as coordinator for the event <b>${EVENT_NAME}</b> held on ${PROGRAM_CREATE_DATE}. In order to manage this event, your email address needs to be associated with a MYSRCM profile. If you already have a MYCRM profile 
+associated with a different email address you can associate additional an email address to the same by visiting https://profile.sahajmarg.org and 
+clicking on the link next to "Default Email".</p>
 
-<p><u><b>Note:</b></u> Kindly note that we have also copied this mail to the <b>${COORDINATOR_EMAILID}</b>.</p>
+<p><i><u><b>Note:</b></u> You can now manage the event details by clicking on <u><a href="${EVENT_LINK}">this link</a></u>. Through this interface, you can view/edit participant details and also generate eWelcomeIds for newer participants as well.  
+You will need a valid MYSRCM ID associated with the email address on record to manage this event. 
+MYSRCM accounts can be managed by visiting the link <u><a href="https://profile.sahajmarg.org">https://profile.sahajmarg.org</a></u>. 
+For specific questions about the dashboard, please write to introductions@heartfulness.org .<i></p>
+<br/>
 <br/>
 </div>
 <div style="font-style: italic; font-weight: bold;">
