@@ -32,7 +32,6 @@ import org.srcm.heartfulness.model.json.response.CoordinatorAccessControlErrorRe
 import org.srcm.heartfulness.model.json.response.CoordinatorAccessControlResponse;
 import org.srcm.heartfulness.model.json.response.CoordinatorAccessControlSuccessResponse;
 import org.srcm.heartfulness.repository.CoordinatorAccessControlRepository;
-import org.srcm.heartfulness.repository.MailLogRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.repository.UserRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
@@ -69,9 +68,6 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 
 	@Autowired
 	private CoordinatorAccessControlMail coordinatorAccessControlMail;
-
-	@Autowired
-	private MailLogRepository mailLogRepository;
 
 	/**
 	 * This method is used to insert Secondary coordinator details in database.

@@ -1174,7 +1174,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 				+ "p.remarks,p.auto_generated_event_id,p.auto_generated_intro_id "
 				+ "FROM program p LEFT JOIN program_coordinators pc "
 				+ " ON p.program_id = pc.program_id "
-				+ (whereCondition.length() > 0 ? "WHERE" +  whereCondition : "")
+				+ (whereCondition.length() > 0 ? " WHERE " +  whereCondition : "")
 				+ (limitCondition.length() > 0 ? limitCondition : "")
 				, BeanPropertyRowMapper.newInstance(Program.class));
 
@@ -1641,8 +1641,9 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			program = this.namedParameterJdbcTemplate.queryForObject("SELECT p.* "
 					+ " FROM program p LEFT JOIN program_coordinators pc"
 					+ " ON p.program_id = pc.program_id "
-					+ (whereCondition.length() > 0 ? "WHERE" +  whereCondition : "")
-					+" AND p.auto_generated_event_id=:auto_generated_event_id ", params,
+					+ " WHERE "
+					+ (whereCondition.length() > 0 ? whereCondition +" AND ": "")
+					+ " p.auto_generated_event_id=:auto_generated_event_id ", params,
 					BeanPropertyRowMapper.newInstance(Program.class));
 			
 			program.setIsReadOnly(CoordinatorAccessControlConstants.ACCESS_ENABLED);
@@ -1652,7 +1653,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 					+ " FROM program p LEFT JOIN program_coordinators pc"
 					+ " ON p.program_id = pc.program_id "
 					+ " WHERE "
-					+ "p.auto_generated_event_id=:auto_generated_event_id ", params,
+					+ " p.auto_generated_event_id=:auto_generated_event_id ", params,
 					BeanPropertyRowMapper.newInstance(Program.class));
 			program.setIsReadOnly(CoordinatorAccessControlConstants.ACCESS_DISABLED);
 		}
