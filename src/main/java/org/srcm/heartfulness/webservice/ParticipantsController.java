@@ -148,7 +148,7 @@ public class ParticipantsController {
 		} catch (JsonParseException e) {
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MYSRCM");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -157,7 +157,7 @@ public class ParticipantsController {
 		} catch (JsonMappingException e) {
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MYSRCM");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -166,7 +166,7 @@ public class ParticipantsController {
 		} catch (IOException e) {
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MYSRCM");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -840,7 +840,7 @@ public class ParticipantsController {
 		} catch (JsonParseException e) {
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MYSRCM");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -849,7 +849,7 @@ public class ParticipantsController {
 		} catch (JsonMappingException e) {
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MYSRCM");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -858,7 +858,7 @@ public class ParticipantsController {
 		} catch (IOException e) {
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from mysrcm");
+					"Error while fetching profile from MYSRCM");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());

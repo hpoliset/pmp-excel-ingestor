@@ -461,7 +461,7 @@ public class SendMail {
 			for (String ccId : ccIds) {
 				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(ccId));
 			}
-			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+			SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
 			message.setSubject(subject + " " + sdf.format(new Date()));
 			addParameter(EmailLogConstants.DATE_PARAMETER, sdf.format(new Date()));
 			if (count == 0) {
@@ -618,8 +618,7 @@ public class SendMail {
 				null != crdntrEmail.getEventCity() ? ", " + crdntrEmail.getEventCity() : "");
 
 		Calendar cal = Calendar.getInstance();
-		// cal.add(Calendar.DATE, -1);
-		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
+		SimpleDateFormat outputsdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
 		addParameter(
 				EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER,
 				null != crdntrEmail.getProgramCreateDate() ? "held on "
@@ -652,14 +651,13 @@ public class SendMail {
 				null != coordinatorEmail.getEventPlace() ? "conducted at " + coordinatorEmail.getEventPlace() : "");
 		addParameter(EmailLogConstants.EVENT_CITY_PARAMETER, null != coordinatorEmail.getEventCity() ? ", "
 				+ coordinatorEmail.getEventCity() : "");
-		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
+		SimpleDateFormat outputsdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
 		addParameter(
 				EmailLogConstants.EVENT_START_DATE_PARAMETER,
 				coordinatorEmail.getProgramCreateDate() != null ? "held on "
 						+ outputsdf.format(coordinatorEmail.getProgramCreateDate()) : (coordinatorEmail
 						.getProgramCreationDate() != null ? "held on "
 						+ outputsdf.format(coordinatorEmail.getProgramCreationDate()) : ""));
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
 		StringBuilder sb = new StringBuilder();
 		if (!participants.isEmpty()) {
 			sb.append("<p>The following e-welcome ID's has been generated for the below given participants : ");
@@ -688,7 +686,7 @@ public class SendMail {
 				sb.append("</td><td>");
 				sb.append(participant.getWelcomeCardNumber() != null ? participant.getWelcomeCardNumber() : "");
 				sb.append("</td><td>");
-				sb.append(participant.getIntroductionDate() != null ? sdf.format(participant.getIntroductionDate())
+				sb.append(participant.getIntroductionDate() != null ? outputsdf.format(participant.getIntroductionDate())
 						: "");
 				sb.append("</td></tr>");
 			}
@@ -778,36 +776,12 @@ public class SendMail {
 		Transport.send(message);
 	}
 
-	public void sendMailToCoordinatorToUpdatePreceptorID(CoordinatorEmail coordinator) throws AddressException,
-			MessagingException, UnsupportedEncodingException, ParseException {
-
-		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, getName(coordinator.getCoordinatorName()));
-		addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
-				+ "?id=" + coordinator.getEventID());
-		addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinator.getEventName());
-		SimpleDateFormat outputsdf = new SimpleDateFormat("dd-MMM-yyyy");
-		addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER,
-				outputsdf.format(coordinator.getProgramCreateDate()));
-		Session session = getSession();
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
-		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
-		message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
-		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent),
-				EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
-		message.setAllow8bitMIME(true);
-		message.setSentDate(new Date());
-		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-		Transport.send(message);
-		LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinator.getCoordinatorEmail());
-	}
-
 	public void sendWelcomeMail() throws AddressException, MessagingException, UnsupportedEncodingException,
 			ParseException {
 		try {
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, -1);
-			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+			SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
 			Date date = new Date();
 			String date_str = sdf.format(date);
 			addParameter(EmailLogConstants.DATE_PARAMETER, date_str);
@@ -846,7 +820,7 @@ public class SendMail {
 			for (String toId : toIds) {
 				message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toId));
 			}
-			SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
+			SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
 			addParameter(EmailLogConstants.DATE_PARAMETER, sdf.format(new Date()));
 
 			if (processName.equalsIgnoreCase(EmailLogConstants.EWELCOME_ID_GENERATION)) {

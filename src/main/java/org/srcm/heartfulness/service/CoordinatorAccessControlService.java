@@ -1,7 +1,6 @@
 package org.srcm.heartfulness.service;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;

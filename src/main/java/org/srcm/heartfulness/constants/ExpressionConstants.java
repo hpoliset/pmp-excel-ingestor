@@ -39,12 +39,10 @@ public class ExpressionConstants {
 
 	public static final String NEXT_LINE = "\n";
 	
-	public static final String GENERATE_EWELCOME_ID_REGEX  = "^[GENERATEEWELCOMEID_ ]*$";
+	public static final String DATE_FORMAT = "dd-MM-yyyy";
+
+	public static final String SQL_DATE_FORMAT = "yyyy-MM-dd";
 	
-	public static final String PLEASE_GENERATE_EWELCOME_ID_REGEX  = "^[PLEASEGENERATEEWELCOMEID_ ]*$";
-	
-	public static final String ISSUE_EWELCOME_ID_REGEX  = "^[ISSUEEWELCOMEID_ ]*$";
-	
-	public static final String PLEASE_ISSUE_EWELCOME_ID_REGEX  = "^[PLEASEISSUEEWELCOMEID_ ]*$";
+	public static final String MAIL_DATE_FORMAT = "dd-MMM-yyyy";
 	
 }

@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EmailLogConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
-import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.helper.FTPConnectionHelper;
 import org.srcm.heartfulness.mail.SendMail;
 import org.srcm.heartfulness.model.CoordinatorEmail;
@@ -311,7 +310,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 									coordinatorEmail.setPctptAlreadyRcvdWlcmMailCount(String
 											.valueOf(wlcmEmailRcvdPctptCount));
 									coordinatorEmail.setPctptRcvdWlcmMailYstrdayCount(map.getValue().get(0));
-									SimpleDateFormat inputsdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
+									SimpleDateFormat inputsdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 									coordinatorEmail.setProgramCreateDate(null != map.getValue().get(4) ?  inputsdf.parse(map.getValue().get(4)) :null);
 									coordinatorEmail.setEventPlace(map.getValue().get(5));
 									coordinatorEmail.setEventCity(map.getValue().get(6));
