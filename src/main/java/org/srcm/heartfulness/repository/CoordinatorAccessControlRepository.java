@@ -99,7 +99,7 @@ public interface CoordinatorAccessControlRepository {
 	 *            object is used to create a secondary coordinator record.
 	 */
 	void createProgramCoordinator(ProgramCoordinators pgrmCoordinators);
-
+	
 	/**
 	 * This method is used to return the list of requests raised by secondary
 	 * coordinators for a particular event.
@@ -109,7 +109,7 @@ public interface CoordinatorAccessControlRepository {
 	 * @return List<SecondaryCoordinatorRequest> if available else an empty
 	 *         list.
 	 */
-	List<SecondaryCoordinatorRequest> getListOfRequests(int programId);
+	List<SecondaryCoordinatorRequest> getListOfRequests(StringBuilder programIdBuilder);
 
 	/**
 	 * This method is used to persist the coordinator details to the event with

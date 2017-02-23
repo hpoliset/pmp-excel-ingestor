@@ -2,8 +2,8 @@ package org.srcm.heartfulness.repository;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
-
 import org.springframework.dao.DataAccessException;
 import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.model.Participant;
@@ -403,5 +403,16 @@ public interface ProgramRepository {
 	 * auto generated event Id.
 	 */
 	Program getProgramByEmailAndRole(List<String> emailList,String userRole,String agEventId);
+
+	/**
+	 * This method is used to get all the program Id and auto generated
+	 * event Id's for the logged in user have conducted.
+	 * @param emailList List of emails associated witha abhyasi id for the 
+	 * logged in user.
+	 * @param userRole, role of the logged in user.
+	 * @return LinkedHashMap<Integer,String> containing program Id and auto generated
+	 * event Id's for the logged in user have conducted.
+	 */
+	LinkedHashMap<Integer,String> getListOfProgramIdsByEmail(List<String> emailList,String userRole);
 
 }

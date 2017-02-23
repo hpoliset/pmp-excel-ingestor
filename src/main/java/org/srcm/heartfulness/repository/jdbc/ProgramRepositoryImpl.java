@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -1658,5 +1659,60 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		return program;
 	}
 
+	/**
+	 * This method is used to get all the program Id and auto generated
+	 * event Id's for the logged in user have conducted.
+	 * @param emailList List of emails associated witha abhyasi id for the 
+	 * logged in user.
+	 * @param userRole, role of the logged in user.
+	 * @return Map<Integer,String> containing program Id and auto generated
+	 * event Id's for the logged in user have conducted.
+	 */
+	@Override
+	public LinkedHashMap<Integer,String> getListOfProgramIdsByEmail(List<String> emailList,String userRole) {
+		
+		LinkedHashMap<Integer,String> programIds = new LinkedHashMap<Integer,String>();
+		StringBuilder whereCondition = new StringBuilder("");
+		StringBuilder emailString = new StringBuilder("");
+
+		if(emailList.size() == 1){
+			emailString.append("'"+emailList.get(0)+"'");
+		}else{
+			for(int i = 0; i < emailList.size(); i++){
+				emailString.append( i != (emailList.size() -1 ) ? "'"+emailList.get(i)+"'" + ",": "'"+emailList.get(i)+"'");
+			}
+		}
+
+		if (!userRole.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
+
+			if(userRole.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)){
+				whereCondition
+				.append(" (p.program_channel NOT REGEXP ('G-Connect|G Connect|GConnect|G-Conect|G - Connect|G.CONNECT|G -CONNECT|G- connect|G-Connet|G  Connect')"
+						+	" OR (p.coordinator_email IN( " + emailString +") OR pc.email IN("+ emailString + "))) " );
+			}else{
+				whereCondition.append(" (p.coordinator_email IN( " + emailString +") OR pc.email IN("+ emailString + ")) ");
+			}
+		}
+		try{
+			programIds = this.jdbcTemplate.query("SELECT p.program_id,p.auto_generated_event_id  "
+					+ " FROM program p LEFT JOIN program_coordinators pc "
+					+ " ON p.program_id = pc.program_id "
+					+ (whereCondition.length() > 0 ? " WHERE " +  whereCondition : ""),
+					new Object[] {}, new ResultSetExtractor<LinkedHashMap<Integer,String>>() {
+						@Override
+						public LinkedHashMap<Integer,String> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+							LinkedHashMap<Integer,String> ids = new LinkedHashMap<Integer,String>(); 
+							while (resultSet.next()) {
+								ids.put(resultSet.getInt(1), resultSet.getString(2));
+							}
+							return ids;
+						}
+					});
+			
+		}catch(Exception ex){
+			LOGGER.error("EXCEPTION : while fetching events for the logged in user with email id "+emailList.toString());
+		}
+		return programIds;
+	}
 
 }

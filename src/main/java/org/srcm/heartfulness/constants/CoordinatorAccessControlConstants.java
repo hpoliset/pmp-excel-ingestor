@@ -34,7 +34,7 @@ public class CoordinatorAccessControlConstants {
 	public static final String  APPROVER_NO_AUTHORITY						= "You are unauthorized for approving this request";
 	
 	public static final String  REQUESTERLIST_NO_AUTHORITY						= "You are unauthorized for accessing the secondary coordinator details";
-	public static final String  REQUESTERLIST_VALIDATION_SUCCESSFULL			= "Get requester list validation successfull";
+	public static final String  REQUESTERLIST_EMPTY								= "You are not having any request for your events";
 	
 	public static final String  ACCESS_ENABLED							= "Y";
 	public static final String  ACCESS_DISABLED							= "N";

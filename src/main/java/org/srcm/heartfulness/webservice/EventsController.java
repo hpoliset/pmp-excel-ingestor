@@ -140,7 +140,7 @@ public class EventsController {
 				emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
 			}
 			if(emailList.size() == 0){
-				emailList.add(user.getEmail());
+				emailList.add(userProfile.getEmail());
 			}
 			
 			Map<String, String> errors = new HashMap<String, String>();
@@ -316,7 +316,7 @@ public class EventsController {
 				emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
 			}
 			if(emailList.size() == 0){
-				emailList.add(user.getEmail());
+				emailList.add(userProfile.getEmail());
 			}
 			
 			eventPagination.setTotalCount(programService.getProgramCountWithUserRoleAndEmailId(/*user.getEmail()*/emailList,user.getRole()));
@@ -1090,7 +1090,7 @@ public class EventsController {
 				emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
 			}
 			if(emailList.size() == 0){
-				emailList.add(user.getEmail());
+				emailList.add(userProfile.getEmail());
 			}
 			
 			searchRequest.setTotalCount(programService.getPgrmCountBySrchParamsWithUserRoleAndEmailId(searchRequest,/*user.getEmail()*/emailList, user.getRole()));
@@ -1220,7 +1220,7 @@ public class EventsController {
 				emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
 			}
 			if(emailList.size() == 0){
-				emailList.add(user.getEmail());
+				emailList.add(userProfile.getEmail());
 			}
 			
 			Map<String, String> errors = new HashMap<String, String>();
