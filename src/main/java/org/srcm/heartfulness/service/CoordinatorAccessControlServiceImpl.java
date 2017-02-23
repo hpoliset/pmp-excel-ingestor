@@ -318,13 +318,16 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 				return cacSResponse;
 
-			} catch (DataAccessException daex) {
-				LOGGER.error("Failed to create program  coordinator DAEX ", daex);
-				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(daex));
 			} catch (Exception ex) {
 				LOGGER.error("Failed to create program  coordinator EX ", ex);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
-			}
+				if(coordntrAccssCntrlRepo.rollbackApprovedSecondaryCoordinatorRequest(pgrmCoordinators.getProgramId(),approvedBy,pgrmCoordinators.getEmail()) > 0){
+					LOGGER.info("Rolled back request successfully for requester :"+pgrmCoordinators.getEmail() 
+						+ " and approver :"+approvedBy);
+				}else{
+					LOGGER.info("Failed to roll back request for requester :"+pgrmCoordinators.getEmail() +" and approver :"+approvedBy);
+				}
+			} 
 
 			CoordinatorAccessControlErrorResponse cacEResponse = new CoordinatorAccessControlErrorResponse(
 					ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.INVALID_REQUEST);

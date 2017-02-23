@@ -119,4 +119,17 @@ public interface CoordinatorAccessControlRepository {
 	 */
 	void saveCoordinatorDetails(ProgramCoordinators programCoordinators);
 
+	/**
+	 * This method is used to roll back request table if fails to
+	 * update coordinator in program_coordinators table.
+	 * @param programId, changes will be rolled back based on the 
+	 * program Id.
+	 * @param approvedBy,email of the approver who will approve 
+	 * accesss for the given program Id.
+	 * @param requestedBy, email of the requester who requested 
+	 * accesss for the given program Id.
+	 * @return if successfully updated returns 1 else 0.
+	 */
+	int rollbackApprovedSecondaryCoordinatorRequest(int programId, String approvedBy, String requestedBy);
+
 }
