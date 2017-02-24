@@ -85,8 +85,6 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 						accessLog.getUsername());
 				programRepository.saveProgramPermissionLetterDetails(programPermissionLetterdetails);
 
-				// program.setCoordinatorPermissionLetterPath(permissionLetterPath);
-				// programRepository.saveProgram(program);
 				response = new Response(ErrorConstants.STATUS_SUCCESS, "Successfully uploaded "
 						+ multipartFile.getOriginalFilename());
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());

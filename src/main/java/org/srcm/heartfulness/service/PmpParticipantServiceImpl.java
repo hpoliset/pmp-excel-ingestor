@@ -539,7 +539,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 						}
 						result.add(response);
 						LOGGER.info("END - {} : Response of eWelcomeID Generation for the participant : {} ",
-								participantInput.getSeqId(), result.toString());
+								participantInput.getSeqId(), response.toString());
 					}
 				} else {
 					LOGGER.info("START - {} : Updating participant Status : {} ", participantInput.getSeqId(),
