@@ -30,7 +30,7 @@ public class CoordinatorAccessControlConstants {
 	public static final String  APPROVER_REQUEST_ALREADY_APPROVED 			= "Coordinator you are trying to approve is already having access for this event";
 	public static final String  APPROVER_VALIDATION_SUCCESSFULL 			= "Approver validation successfull";
 	public static final String  APPROVER_SUCCESS_RESPONSE					= "You have successfully added ";
-	public static final String  APPROVER_SAME_APPROVER_REQUESTER			= "You cannot approve a request for yourself ";
+	public static final String  APPROVER_SAME_APPROVER_REQUESTER			= "You cannot approve a request which was requested by you";
 	public static final String  APPROVER_NO_AUTHORITY						= "It seems you are not the primary coordinator or preceptor for this event";
 	
 	public static final String  REQUESTERLIST_EMPTY								= "You are not having any request for your events";
