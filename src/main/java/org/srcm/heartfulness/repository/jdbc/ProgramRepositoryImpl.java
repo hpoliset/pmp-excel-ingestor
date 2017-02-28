@@ -1646,7 +1646,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 					+ " p.auto_generated_event_id=:auto_generated_event_id ", params,
 					BeanPropertyRowMapper.newInstance(Program.class));
 			
-			program.setIsReadOnly(CoordinatorAccessControlConstants.ACCESS_ENABLED);
+			program.setIsReadOnly(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE);
 		} catch(Exception ex){
 			
 			program = this.namedParameterJdbcTemplate.queryForObject("SELECT p.* "
@@ -1655,7 +1655,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 					+ " WHERE "
 					+ " p.auto_generated_event_id=:auto_generated_event_id ", params,
 					BeanPropertyRowMapper.newInstance(Program.class));
-			program.setIsReadOnly(CoordinatorAccessControlConstants.ACCESS_DISABLED);
+			program.setIsReadOnly(CoordinatorAccessControlConstants.IS_READ_ONLY_TRUE);
 		}
 		return program;
 	}

@@ -35,8 +35,8 @@ public class CoordinatorAccessControlConstants {
 	
 	public static final String  REQUESTERLIST_EMPTY								= "You are not having any request for your events";
 	
-	public static final String  ACCESS_ENABLED							= "Y";
-	public static final String  ACCESS_DISABLED							= "N";
+	public static final String  IS_READ_ONLY_TRUE							= "Y";
+	public static final String  IS_READ_ONLY_FALSE							= "N";
 	
 	public static final String HEARTFULNESS_CREATE_PROFILE_URL = "https://profile.sahajmarg.org/accounts/signup/"; 
 	
