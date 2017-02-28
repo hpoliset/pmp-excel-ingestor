@@ -1648,14 +1648,17 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			
 			program.setIsReadOnly(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE);
 		} catch(Exception ex){
-			
-			program = this.namedParameterJdbcTemplate.queryForObject("SELECT p.* "
-					+ " FROM program p LEFT JOIN program_coordinators pc"
-					+ " ON p.program_id = pc.program_id "
-					+ " WHERE "
-					+ " p.auto_generated_event_id=:auto_generated_event_id ", params,
-					BeanPropertyRowMapper.newInstance(Program.class));
-			program.setIsReadOnly(CoordinatorAccessControlConstants.IS_READ_ONLY_TRUE);
+			try{
+				program = this.namedParameterJdbcTemplate.queryForObject("SELECT p.* "
+						+ " FROM program p LEFT JOIN program_coordinators pc"
+						+ " ON p.program_id = pc.program_id "
+						+ " WHERE "
+						+ " p.auto_generated_event_id=:auto_generated_event_id ", params,
+						BeanPropertyRowMapper.newInstance(Program.class));
+				program.setIsReadOnly(CoordinatorAccessControlConstants.IS_READ_ONLY_TRUE);
+			}catch(Exception exx){
+				LOGGER.error("ERROR : {}",exx);
+			}
 		}
 		return program;
 	}
