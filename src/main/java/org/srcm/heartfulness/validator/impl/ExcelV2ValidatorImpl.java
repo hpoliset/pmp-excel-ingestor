@@ -5,6 +5,7 @@ package org.srcm.heartfulness.validator.impl;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Row;
@@ -112,7 +113,10 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 			errorList.add(V2ProgramCols2.EVENT_DATE.getHeader() + " is a mandatory field and cannot be empty at rownumber 4");
 		}else{
 			try {
-				DateUtils.parseDate(programStartDate);
+				if(DateUtils.parseDate(programStartDate).after(new Date())){
+					LOGGER.error("Program start date cannot be a future date :[" + programStartDate + "] at row number 4");
+					errorList.add("Program start date cannot be a future date:[" + programStartDate + "] at row number 4");
+				}
 			} catch (ParseException e) {
 				errorList.add(V2ProgramCols2.EVENT_DATE.getHeader() + " is invalid at row number 4");
 			}
@@ -230,7 +234,10 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 				if (!firstSittingStr.equalsIgnoreCase("Y")) {
 					if(!firstSittingStr.equalsIgnoreCase("N")){
 						try {
-							DateUtils.parseDate(firstSittingStr);
+							if(DateUtils.parseDate(firstSittingStr).after(new Date())){
+								LOGGER.error("First sitting date cannot be a future date :[" + firstSittingStr + "] at row number " + rowNumber);
+								errorList.add("First sitting date cannot be a future date:[" + firstSittingStr + "] at row number " + rowNumber);
+							}
 						} catch (ParseException e) {
 							errorList.add(V2ParticipantCols.FIRST_SITTING.getHeader()
 									+ " is invalid at row number " + rowNumber );
@@ -246,7 +253,10 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 				if (!secondSittingStr.equalsIgnoreCase("Y")) {
 					if(!secondSittingStr.equalsIgnoreCase("N")){
 						try {
-							DateUtils.parseDate(secondSittingStr);
+							if(DateUtils.parseDate(secondSittingStr).after(new Date())){
+								LOGGER.error("Second sitting date cannot be a future date :[" + secondSittingStr + "] at row number " + rowNumber);
+								errorList.add("Second sitting date cannot be a future date:[" + secondSittingStr + "] at row number " + rowNumber);
+							}
 						} catch (ParseException e) {
 							errorList.add(V2ParticipantCols.SECONND_SITTING.getHeader()
 									+ " is invalid at row number " + rowNumber );
@@ -262,7 +272,10 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 				if (!thirdSittingStr.equalsIgnoreCase("Y")) {
 					if(!thirdSittingStr.equalsIgnoreCase("N")){
 						try {
-							DateUtils.parseDate(thirdSittingStr);
+							if(DateUtils.parseDate(thirdSittingStr).after(new Date())){
+								LOGGER.error("Third sitting date cannot be a future date :[" + thirdSittingStr + "] at row number " + rowNumber);
+								errorList.add("Third sitting date cannot be a future date:[" + thirdSittingStr + "] at row number " + rowNumber);
+							}
 						} catch (ParseException e) {
 							errorList.add(V2ParticipantCols.THIRD_SITTING.getHeader()
 									+ " is invalid at row number " + rowNumber);
@@ -304,7 +317,10 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 			String wlcmCardIssueDate = currentRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if(null != wlcmCardIssueDate && !wlcmCardIssueDate.isEmpty()){
 				try {
-					DateUtils.parseDate(wlcmCardIssueDate);
+					if(DateUtils.parseDate(wlcmCardIssueDate).after(new Date())){
+						LOGGER.error("Welcome card issue date cannot be a future date :[" + wlcmCardIssueDate + "] at row number " + rowNumber);
+						errorList.add("Welcome card issue date cannot be a future date:[" + wlcmCardIssueDate + "] at row number " + rowNumber);
+					}
 				} catch (ParseException e) {
 					errorList.add(V2ParticipantCols.WELCOME_CARD_ISSUE_DATE.getHeader()
 							+ " is invalid at row number " + rowNumber);

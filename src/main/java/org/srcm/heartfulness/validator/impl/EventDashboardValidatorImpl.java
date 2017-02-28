@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -203,16 +204,20 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if (null == event.getProgramStartDate()) {
 			errors.put("programStartDate", "Program Start Date is required");
 		} else {
+			
+			if (!event.getProgramStartDate().matches(ExpressionConstants.DATE_REGEX)) {
+				errors.put("programStartDate", "Invalid date format,correct format is dd-MM-yyyy");
+			}
+			
 			try {
 				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-				sdf.parse(event.getProgramStartDate());
+				if(sdf.parse(event.getProgramStartDate()).after(new Date())){
+					errors.put("programStartDate", "Program start date cannot be a future date");
+				}
 			} catch (ParseException e) {
 				errors.put("programStartDate", "Invalid date format,correct format is dd-MM-yyyy");
 			}
 
-			if (!event.getProgramStartDate().matches(ExpressionConstants.DATE_REGEX)) {
-				errors.put("programStartDate", "Invalid date format,correct format is dd-MM-yyyy");
-			}
 		}
 		if (null != event.getProgramEndDate()) {
 			try {
