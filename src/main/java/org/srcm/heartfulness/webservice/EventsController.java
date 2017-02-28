@@ -32,7 +32,6 @@ import org.srcm.heartfulness.model.EventPagination;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.Event;
-import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.UserProfile;
@@ -127,7 +126,7 @@ public class EventsController {
 				LOGGER.info("UserProfile doesnot exists in PMP database");
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 						"User doesnot exists in PMP database");
-				//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+				
 				accessLog.setErrorMessage("User doesnot exists in PMP database");
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -159,7 +158,7 @@ public class EventsController {
 					errors.put("eventId", "Event Id doesnot exist");
 					eventdetails.setErrors(errors);
 					eventdetails.setStatus(ErrorConstants.STATUS_FAILED);
-					//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+					
 					accessLog.setErrorMessage("Event Id doesnot exist");
 				}
 			}
@@ -173,7 +172,7 @@ public class EventsController {
 			
 			LOGGER.error("IllegalBlockSizeException | NumberFormatException | BadPaddingException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid authorization token");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -184,43 +183,28 @@ public class EventsController {
 		
 			LOGGER.error("HttpClientErrorException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid client credentials");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.REQUEST_TIMEOUT);
 		
-		} catch (JsonParseException e) {
+		} catch (JsonParseException |JsonMappingException e) {
 		
 			LOGGER.error("JsonParseException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+					"Parsing Error");
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		
-		} catch (JsonMappingException e) {
-			
-			LOGGER.error("JsonMappingException    :" + StackTraceUtils.convertStackTracetoString(e));
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		
-		} catch (IOException e) {
+		}catch (IOException e) {
 			
 			LOGGER.error("IOException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -231,7 +215,6 @@ public class EventsController {
 			
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid request");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -277,7 +260,7 @@ public class EventsController {
 			if (null == userProfile) {
 				LOGGER.info("UserProfile doesnot exists in MySrcm database");
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid client credentials");
-				//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+				
 				accessLog.setErrorMessage("UserProfile doesnot exists in MySrcm database");
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -291,7 +274,6 @@ public class EventsController {
 				LOGGER.info("UserProfile doesnot exists in PMP database");
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 						"User doesnot exists in PMP database");
-				//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage("User doesnot exists in PMP database");
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -302,7 +284,6 @@ public class EventsController {
 			String error = eventDashboardValidator.validatePaginationProperties(eventPagination);
 			if (!error.isEmpty()) {
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, error);
-				//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(error);
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -324,7 +305,6 @@ public class EventsController {
 			LOGGER.info("Trying to get event list for logged in user");
 			eventList = programService.getEventListByEmailAndRole(/*user.getEmail()*/emailList, user.getRole(), offset,eventPagination.getPageSize());
 			eventPagination.setEventList(eventList);
-			
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody("TotalCount : " + eventPagination.getTotalCount() + " PageIndex : "
@@ -338,7 +318,6 @@ public class EventsController {
 			
 			LOGGER.error("IllegalBlockSizeException | NumberFormatException | BadPaddingException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid authorization token");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -349,31 +328,17 @@ public class EventsController {
 		
 			LOGGER.error("HttpClientErrorException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid client credentials");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.REQUEST_TIMEOUT);
 		
-		} catch (JsonParseException e) {
+		} catch (JsonParseException | JsonMappingException e) {
 		
 			LOGGER.error("JsonParseException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		
-		} catch (JsonMappingException e) {
-			
-			LOGGER.error("JsonMappingException    :" + StackTraceUtils.convertStackTracetoString(e));
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+					"JSOn Parsing Error");
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -385,7 +350,6 @@ public class EventsController {
 			LOGGER.error("IOException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -396,7 +360,6 @@ public class EventsController {
 			
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid request");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -646,25 +609,9 @@ public class EventsController {
 		}
 	}*/
 
-	/**
-	 * 
-	 * Web service endpoint to update list of events .
-	 * 
-	 * If event is updated successfully status is set to Success else to Failed
-	 * and the service returns a list of events with HTTP status 200.
-	 * 
-	 * 
-	 * If some exception is raised while processing the request, error response
-	 * is returned with respective HttpStatus code.
-	 * 
-	 * @param events
-	 *            List of events to be updated.
-	 * @param token
-	 *            Need to be authenticated against MySRCM.
-	 * @return list of events with success ot failed status.
-	 */
+	
 
-	@RequestMapping(value = "/updateevents", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	/*@RequestMapping(value = "/updateevents", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> updatePrograms(@RequestBody List<Event> events,
 			@RequestHeader(value = "Authorization") String token, @Context HttpServletRequest httpRequest) {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
@@ -717,7 +664,7 @@ public class EventsController {
 			
 			LOGGER.error("IllegalBlockSizeException | NumberFormatException | BadPaddingException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid authorization token");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -728,7 +675,7 @@ public class EventsController {
 		
 			LOGGER.error("HttpClientErrorException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid client credentials");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -740,7 +687,7 @@ public class EventsController {
 			LOGGER.error("JsonParseException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -752,7 +699,7 @@ public class EventsController {
 			LOGGER.error("JsonMappingException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -764,7 +711,7 @@ public class EventsController {
 			LOGGER.error("IOException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -775,7 +722,7 @@ public class EventsController {
 			
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid request");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -783,9 +730,9 @@ public class EventsController {
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		
 		}
-	}
+	}*/
 
-	@RequestMapping(value = "/updateeventadmin", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	/*@RequestMapping(value = "/updateeventadmin", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> updateEventAdmin(@RequestHeader(value = "Authorization") String token,
 			@RequestBody EventAdminChangeRequest eventAdminChangeRequest, @Context HttpServletRequest httpRequest) {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
@@ -830,7 +777,7 @@ public class EventsController {
 			
 			LOGGER.error("IllegalBlockSizeException | NumberFormatException | BadPaddingException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid authorization token");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -841,7 +788,7 @@ public class EventsController {
 		
 			LOGGER.error("HttpClientErrorException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid client credentials");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -853,7 +800,7 @@ public class EventsController {
 			LOGGER.error("JsonParseException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -865,7 +812,7 @@ public class EventsController {
 			LOGGER.error("JsonMappingException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -877,7 +824,7 @@ public class EventsController {
 			LOGGER.error("IOException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -888,7 +835,7 @@ public class EventsController {
 			
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid request");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -897,7 +844,7 @@ public class EventsController {
 		
 		}
 
-	}
+	}*/
 
 	/**
 	 * Web service endpoint to the get the events count by category based on
@@ -957,7 +904,6 @@ public class EventsController {
 			
 			LOGGER.error("IllegalBlockSizeException | NumberFormatException | BadPaddingException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid authorization token");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -968,31 +914,17 @@ public class EventsController {
 		
 			LOGGER.error("HttpClientErrorException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid client credentials");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.REQUEST_TIMEOUT);
 		
-		} catch (JsonParseException e) {
+		} catch (JsonParseException |JsonMappingException e) {
 		
 			LOGGER.error("JsonParseException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		
-		} catch (JsonMappingException e) {
-			
-			LOGGER.error("JsonMappingException    :" + StackTraceUtils.convertStackTracetoString(e));
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+					"JSON Error");
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1004,7 +936,6 @@ public class EventsController {
 			LOGGER.error("IOException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1015,7 +946,6 @@ public class EventsController {
 			
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid request");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1048,7 +978,6 @@ public class EventsController {
 			userProfile = eventDashboardValidator.validateToken(token, accessLog.getId());
 			if (null == userProfile) {
 				ErrorResponse error = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.INVALID_AUTH_TOKEN);
-				//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage("UserProfile doesnot exists in MySrcm database");
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
@@ -1062,7 +991,6 @@ public class EventsController {
 				LOGGER.info("UserProfile doesnot exists in PMP database");
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 						"User doesnot exists in PMP database");
-				//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage("User doesnot exists in PMP database");
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1076,7 +1004,6 @@ public class EventsController {
 			String error = eventDashboardValidator.validatePaginationProperties(eventPgntn);
 			if (!error.isEmpty()) {
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, error);
-				//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(error);
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1085,19 +1012,15 @@ public class EventsController {
 			}
 
 			offset = (eventPgntn.getPageIndex() - 1) * eventPgntn.getPageSize();
-
 			if(null != user.getAbyasiId()){
 				emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
 			}
 			if(emailList.size() == 0){
 				emailList.add(userProfile.getEmail());
 			}
-			
 			searchRequest.setTotalCount(programService.getPgrmCountBySrchParamsWithUserRoleAndEmailId(searchRequest,/*user.getEmail()*/emailList, user.getRole()));
-
 			LOGGER.info("Trying to get event list for logged in user");
 			searchRequest.setEventList(programService.searchEventsWithUserRoleAndEmailId(searchRequest,emailList/*user.getEmail()*/, user.getRole(), offset));
-			
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson("Total Count : "
@@ -1110,7 +1033,6 @@ public class EventsController {
 			
 			LOGGER.error("IllegalBlockSizeException | NumberFormatException | BadPaddingException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid authorization token");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1121,31 +1043,17 @@ public class EventsController {
 		
 			LOGGER.error("HttpClientErrorException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid client credentials");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.REQUEST_TIMEOUT);
 		
-		} catch (JsonParseException e) {
+		} catch (JsonParseException |JsonMappingException e) {
 		
 			LOGGER.error("JsonParseException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		
-		} catch (JsonMappingException e) {
-			
-			LOGGER.error("JsonMappingException    :" + StackTraceUtils.convertStackTracetoString(e));
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+					"JSON Error");
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1157,7 +1065,6 @@ public class EventsController {
 			LOGGER.error("IOException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1168,7 +1075,6 @@ public class EventsController {
 			
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid request");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1194,7 +1100,6 @@ public class EventsController {
 			if (null == userProfile) {
 				LOGGER.info("UserProfile doesnot exists in MySrcm database");
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid auth token.");
-				//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage("UserProfile doesnot exists in MySrcm database");
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1202,13 +1107,11 @@ public class EventsController {
 				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.UNAUTHORIZED);
 			}
 			accessLog.setUsername(userProfile.getEmail());
-			
 			User user = userProfileService.loadUserByEmail(userProfile.getEmail());
 			if (null == user) {
 				LOGGER.info("UserProfile doesnot exists in PMP database");
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 						"User doesnot exists in PMP database");
-				//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage("User doesnot exists in PMP database");
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1234,7 +1137,6 @@ public class EventsController {
 						event.getAutoGeneratedEventId(), env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
 				
 				if (programId > 0) {
-					//Need to change
 					accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 					eventdetails = programService.getEventDetails(emailList,user.getRole(),aesEncryptDecrypt.decrypt(
 							event.getAutoGeneratedEventId(), env.getProperty(PMPConstants.SECURITY_TOKEN_KEY)));
@@ -1254,7 +1156,6 @@ public class EventsController {
 			
 			LOGGER.error("IllegalBlockSizeException | NumberFormatException | BadPaddingException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid authorization token");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1265,31 +1166,17 @@ public class EventsController {
 		
 			LOGGER.error("HttpClientErrorException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid client credentials");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.REQUEST_TIMEOUT);
 		
-		} catch (JsonParseException e) {
+		} catch (JsonParseException |JsonMappingException e) {
 		
 			LOGGER.error("JsonParseException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		
-		} catch (JsonMappingException e) {
-			
-			LOGGER.error("JsonMappingException    :" + StackTraceUtils.convertStackTracetoString(e));
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1301,7 +1188,6 @@ public class EventsController {
 			LOGGER.error("IOException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1312,13 +1198,11 @@ public class EventsController {
 			
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid request");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		
 		}
 	}
 
@@ -1375,7 +1259,6 @@ public class EventsController {
 			
 			LOGGER.error("IllegalBlockSizeException | NumberFormatException | BadPaddingException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid authorization token");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1386,31 +1269,17 @@ public class EventsController {
 		
 			LOGGER.error("HttpClientErrorException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid client credentials");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.REQUEST_TIMEOUT);
 		
-		} catch (JsonParseException e) {
+		} catch (JsonParseException |JsonMappingException e) {
 		
 			LOGGER.error("JsonParseException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		
-		} catch (JsonMappingException e) {
-			
-			LOGGER.error("JsonMappingException    :" + StackTraceUtils.convertStackTracetoString(e));
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1422,7 +1291,6 @@ public class EventsController {
 			LOGGER.error("IOException    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					"Error while fetching profile from MySRCM");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -1433,7 +1301,6 @@ public class EventsController {
 			
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid request");
-			//accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));

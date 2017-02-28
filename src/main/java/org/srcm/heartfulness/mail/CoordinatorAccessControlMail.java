@@ -53,12 +53,8 @@ public class CoordinatorAccessControlMail {
 	private String frommail;
 	private String emptycoordinatoremailidtemplate;
 	private String emptycoordinatoremailidsubject;
-	private String mailtemplatetocreateprofileandaccessdashboard;
-	private String mailsubjecttocreateprofileandaccessdashboard;
 	private String coordinatormailtemplatetocreateaccount;
 	private String coordinatormailsubjecttocreateaccount;
-	private String coordinatormailtemplatetoaccessdashbrd;
-	private String coordinatormailsubjecttoaccessdashbrd;
 	private String coordinatormailforupdatingevent;
 	private String coordinatormailforupdatingeventsubject;
 	private String requestMailSubject;
@@ -152,22 +148,6 @@ public class CoordinatorAccessControlMail {
 		this.emptycoordinatoremailidsubject = emptycoordinatoremailidsubject;
 	}
 
-	public String getMailtemplatetocreateprofileandaccessdashboard() {
-		return mailtemplatetocreateprofileandaccessdashboard;
-	}
-
-	public void setMailtemplatetocreateprofileandaccessdashboard(String mailtemplatetocreateprofileandaccessdashboard) {
-		this.mailtemplatetocreateprofileandaccessdashboard = mailtemplatetocreateprofileandaccessdashboard;
-	}
-
-	public String getMailsubjecttocreateprofileandaccessdashboard() {
-		return mailsubjecttocreateprofileandaccessdashboard;
-	}
-
-	public void setMailsubjecttocreateprofileandaccessdashboard(String mailsubjecttocreateprofileandaccessdashboard) {
-		this.mailsubjecttocreateprofileandaccessdashboard = mailsubjecttocreateprofileandaccessdashboard;
-	}
-
 	public String getCoordinatormailtemplatetocreateaccount() {
 		return coordinatormailtemplatetocreateaccount;
 	}
@@ -182,22 +162,6 @@ public class CoordinatorAccessControlMail {
 
 	public void setCoordinatormailsubjecttocreateaccount(String coordinatormailsubjecttocreateaccount) {
 		this.coordinatormailsubjecttocreateaccount = coordinatormailsubjecttocreateaccount;
-	}
-
-	public String getCoordinatormailtemplatetoaccessdashbrd() {
-		return coordinatormailtemplatetoaccessdashbrd;
-	}
-
-	public void setCoordinatormailtemplatetoaccessdashbrd(String coordinatormailtemplatetoaccessdashbrd) {
-		this.coordinatormailtemplatetoaccessdashbrd = coordinatormailtemplatetoaccessdashbrd;
-	}
-
-	public String getCoordinatormailsubjecttoaccessdashbrd() {
-		return coordinatormailsubjecttoaccessdashbrd;
-	}
-
-	public void setCoordinatormailsubjecttoaccessdashbrd(String coordinatormailsubjecttoaccessdashbrd) {
-		this.coordinatormailsubjecttoaccessdashbrd = coordinatormailsubjecttoaccessdashbrd;
 	}
 
 	public String getCoordinatormailforupdatingevent() {

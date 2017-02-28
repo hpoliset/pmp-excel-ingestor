@@ -111,8 +111,8 @@ public interface ProgramService {
 	 * @throws InvalidDateException
 	 *             if the program_start_date is in invalid format.
 	 */
-	public List<Event> createOrUpdateEvent(List<Event> events, int id) throws HttpClientErrorException,
-			JsonParseException, JsonMappingException, IOException, ParseException;
+	//public List<Event> createOrUpdateEvent(List<Event> events, int id) throws HttpClientErrorException,
+			//JsonParseException, JsonMappingException, IOException, ParseException;
 
 	/**
 	 * Service to get the total number of available events count based on the

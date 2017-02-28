@@ -145,19 +145,10 @@ public class ParticipantsController {
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.REQUEST_TIMEOUT);
-		} catch (JsonParseException e) {
+		} catch (JsonParseException  |JsonMappingException e) {
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from MYSRCM");
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		} catch (JsonMappingException e) {
-			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from MYSRCM");
+					"JSON Error");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -255,11 +246,10 @@ public class ParticipantsController {
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
-		} catch (JsonParseException | JsonMappingException e) {
-			e.printStackTrace();
+		} catch (JsonParseException  |JsonMappingException e) {
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"parse-error : error while parsing json data");
+					"JSON Error");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -340,10 +330,10 @@ public class ParticipantsController {
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
-		} catch (JsonParseException | JsonMappingException e) {
+		} catch (JsonParseException  |JsonMappingException e) {
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"parse-error : error while parsing json data");
+					"JSON Error");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -425,10 +415,10 @@ public class ParticipantsController {
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
-		} catch (JsonParseException | JsonMappingException e) {
+		} catch (JsonParseException  |JsonMappingException e) {
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"parse-error : error while parsing json data");
+					"JSON Error");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -527,20 +517,10 @@ public class ParticipantsController {
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
-		} catch (JsonParseException e) {
+		} catch (JsonParseException  |JsonMappingException e) {
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"parse-error : error while parsing json data");
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		} catch (JsonMappingException e) {
-			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"json mapping-error : json data is not mapped properly");
-
+					"JSON Error");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -642,19 +622,10 @@ public class ParticipantsController {
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
-		} catch (JsonParseException e) {
-			LOGGER.error("JsonParseException    :" + StackTraceUtils.convertStackTracetoString(e));
+		} catch (JsonParseException  |JsonMappingException e) {
+			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"parse-error : error while parsing json data");
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		} catch (JsonMappingException e) {
-			LOGGER.error("JsonMappingException    :" + StackTraceUtils.convertStackTracetoString(e));
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"json mapping-error : json data is not mapped properly");
+					"JSON Error");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -732,19 +703,10 @@ public class ParticipantsController {
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.UNAUTHORIZED);
-		} catch (JsonParseException e) {
+		} catch (JsonParseException  |JsonMappingException e) {
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"parse-error : error while parsing json data");
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		} catch (JsonMappingException e) {
-			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"json mapping-error : json data is not mapped properly");
+					"JSON Error");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -837,19 +799,10 @@ public class ParticipantsController {
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.REQUEST_TIMEOUT);
-		} catch (JsonParseException e) {
+		} catch (JsonParseException  |JsonMappingException e) {
 			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from MYSRCM");
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
-		} catch (JsonMappingException e) {
-			LOGGER.error("Exception    :" + StackTraceUtils.convertStackTracetoString(e));
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while fetching profile from MYSRCM");
+					"JSON Error");
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());

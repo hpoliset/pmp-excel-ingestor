@@ -338,10 +338,10 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 		if (0 == programCoordinators.getUserId()) {
 			programCoordinators.setUserId(fetchUserIdwithemailId(programCoordinators.getEmail()));
 		}
-		if (programCoordinators.getIsPrimaryCoordinator() == 1) {
+		if (programCoordinators.getIsPrimaryCoordinator() == 1 && programCoordinators.getIsPreceptor() == 0) {
 			Integer id = this.jdbcTemplate.query(
-					"SELECT id from program_coordinators where 	is_primary_coordinator	=? and program_id=?",
-					new Object[] { programCoordinators.getIsPrimaryCoordinator(), programCoordinators.getProgramId() },
+					"SELECT id from program_coordinators where 	is_primary_coordinator	=? and program_id=? ",
+					new Object[] { programCoordinators.getIsPrimaryCoordinator(), programCoordinators.getProgramId()},
 					new ResultSetExtractor<Integer>() {
 						@Override
 						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
@@ -356,10 +356,10 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 				programCoordinators.setId(id);
 			}
 		}
-		if (programCoordinators.getIsPreceptor() == 1) {
+		if (programCoordinators.getIsPreceptor() == 1 && programCoordinators.getIsPrimaryCoordinator() == 0) {
 			Integer id = this.jdbcTemplate.query(
-					"SELECT id from program_coordinators where 	is_preceptor	=? and program_id=?", new Object[] {
-							programCoordinators.getIsPreceptor(), programCoordinators.getProgramId() },
+					"SELECT id from program_coordinators where 	is_preceptor=? and program_id=? ", new Object[] {
+							programCoordinators.getIsPreceptor(), programCoordinators.getProgramId()},
 					new ResultSetExtractor<Integer>() {
 						@Override
 						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
@@ -375,8 +375,8 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 			}
 		}
 		if (programCoordinators.getId() == 0) {
-			Integer id = this.jdbcTemplate.query("SELECT id from program_coordinators where email=? and program_id=?",
-					new Object[] { programCoordinators.getEmail(), programCoordinators.getProgramId() },
+			Integer id = this.jdbcTemplate.query("SELECT id from program_coordinators where email=? and program_id=? and is_primary_coordinator	=? and is_preceptor=? ",
+					new Object[] { programCoordinators.getEmail(), programCoordinators.getProgramId(),programCoordinators.getIsPrimaryCoordinator(),programCoordinators.getIsPreceptor() },
 					new ResultSetExtractor<Integer>() {
 						@Override
 						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {

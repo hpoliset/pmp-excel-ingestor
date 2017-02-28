@@ -7,14 +7,14 @@
 Dear ${COORDINATOR_NAME},
 <br/>
 <div style="padding-left: 10px;">
-<p>Please note that you have been associated as coordinator for the event <b>${EVENT_NAME}</b> held on ${PROGRAM_CREATE_DATE}. In order to manage this event, your email address needs to be associated with a MYSRCM profile. If you already have a MYCRM profile 
-associated with a different email address you can associate additional an email address to the same by visiting https://profile.sahajmarg.org and 
-clicking on the link next to "Default Email".</p>
+<p>We have received details of the following Heartfulness event <b>${EVENT_NAME}</b> held at <b>${EVENT_PLACE}</b> on ${PROGRAM_CREATE_DATE}.</p> 
+<p>You can now access and manage the event details over a web based dashboard by clicking on <u><a href="${UPDATE_EVENT_LINK}">this link</a></u>. 
+Through this interface, you can view/edit event and participant details, generate eWelcomeIds for participants and add details of follow up sessions you may conduct in the future.</p>
 
-<p><i><u><b>Note:</b></u> You can now manage the event details by clicking on <u><a href="${EVENT_LINK}">this link</a></u>. Through this interface, you can view/edit participant details and also generate eWelcomeIds for newer participants as well.  
-You will need a valid MYSRCM ID associated with the email address on record to manage this event. 
-MYSRCM accounts can be managed by visiting the link <u><a href="https://profile.sahajmarg.org">https://profile.sahajmarg.org</a></u>. 
-For specific questions about the dashboard, please write to introductions@heartfulness.org .<i></p>
+<p><i><u><b>Note:</b></u> In order to access the event dashboard, your email address needs to be associated with a MYSRCM profile. 
+If you already have a MYCRM profile associated  with a different email address you can associate additional email address to your profile by visiting <u><a href="https://profile.sahajmarg.org">https://profile.sahajmarg.org</a></u>. 
+Once you login the Profile site, you can edit the associated email addresses by clicking on the link next to "Default Email".<i></p>
+
 <br/>
 <br/>
 </div>

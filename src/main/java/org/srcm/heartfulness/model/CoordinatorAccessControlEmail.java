@@ -17,6 +17,8 @@ public class CoordinatorAccessControlEmail {
 	private String preceptorEmailId;
 
 	private String preceptorName;
+	
+	private String eventPlace;
 
 	public String getCoordinatorEmail() {
 		return coordinatorEmail;
@@ -81,13 +83,21 @@ public class CoordinatorAccessControlEmail {
 	public void setPreceptorName(String preceptorName) {
 		this.preceptorName = preceptorName;
 	}
+	
+	public String getEventPlace() {
+		return eventPlace;
+	}
+
+	public void setEventPlace(String eventPlace) {
+		this.eventPlace = eventPlace;
+	}
 
 	@Override
 	public String toString() {
 		return "CoordinatorAccessControlEmail [coordinatorEmail=" + coordinatorEmail + ", eventName=" + eventName
 				+ ", coordinatorName=" + coordinatorName + ", programId=" + programId + ", programCreateDate="
 				+ programCreateDate + ", eventID=" + eventID + ", preceptorEmailId=" + preceptorEmailId
-				+ ", preceptorName=" + preceptorName + "]";
+				+ ", preceptorName=" + preceptorName + ", eventPlace=" + eventPlace + "]";
 	}
 
 }

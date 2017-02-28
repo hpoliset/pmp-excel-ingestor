@@ -7,14 +7,14 @@
 Dear ${PRECEPTOR_NAME},
 <br/>
 <div style="padding-left: 10px;">
-<p>Please note that there is no coordinator associated with the event <b>${EVENT_NAME}</b> held on ${PROGRAM_CREATE_DATE}, 
-if you would like a coordinator to manage this event, please login to the event dashboard with <u><a href="${UPDATE_EVENT_LINK}">this link</a></u> 
-and update this event details with the coordinator's email address.</p>
+<p>We have received details of the following Heartfulness event <b>${EVENT_NAME}</b> held at <b>${EVENT_PLACE}</b> on ${PROGRAM_CREATE_DATE}.</p>
+<p>You can now access and manage the event details on a web dashboard by clicking on <u><a href="${UPDATE_EVENT_LINK}">this link</a></u>.
+ Through this interface, you can view/edit event and participant details, generate eWelcomeIds for participants and add details of follow up sessions you may conduct in the future.</p>
 
-<p><i><u><b>Note:</b></u> You can now manage the event details by clicking on <u><a href="${EVENT_LINK}">this link</a></u>. Through this interface, you can view/edit participant details and also generate eWelcomeIds for newer participants as well.  
-You will need a valid MYSRCM ID associated with the email address on record to manage this event. 
-MYSRCM accounts can be managed by visiting the link <u><a href="https://profile.sahajmarg.org">https://profile.sahajmarg.org</a></u>. 
-For specific questions about the dashboard, please write to introductions@heartfulness.org .<i></p>
+
+<p><b>Note:</b> Details of a coordinator are missing for this event. If you would like a coordinator to manage this event,
+ please login to the event dashboard with the above link and update event details with the coordinator's email address.</p>
+
 <br/>
 </div>
 <div style="font-style: italic; font-weight: bold;">

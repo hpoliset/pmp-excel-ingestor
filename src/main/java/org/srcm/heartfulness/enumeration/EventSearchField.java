@@ -17,6 +17,8 @@ public enum EventSearchField {
 	eventCity("event_city"),
 	eventState("event_state"),
 	eventCountry("event_country"),
+	programStartDate("program_start_date"),
+	programEndDate("program_end_date"),
 	organizationDepartment("organization_department"),
 	organizationName("organization_name"),
 	organizationWebSite("organization_web_site"),
