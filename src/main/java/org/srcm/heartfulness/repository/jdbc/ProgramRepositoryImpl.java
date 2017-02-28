@@ -1638,7 +1638,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 		try{
 			
-			program = this.namedParameterJdbcTemplate.queryForObject("SELECT p.* "
+			program = this.namedParameterJdbcTemplate.queryForObject("SELECT DISTINCT p.* "
 					+ " FROM program p LEFT JOIN program_coordinators pc"
 					+ " ON p.program_id = pc.program_id "
 					+ " WHERE "
@@ -1648,17 +1648,14 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			
 			program.setIsReadOnly(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE);
 		} catch(Exception ex){
-			try{
-				program = this.namedParameterJdbcTemplate.queryForObject("SELECT p.* "
-						+ " FROM program p LEFT JOIN program_coordinators pc"
-						+ " ON p.program_id = pc.program_id "
-						+ " WHERE "
-						+ " p.auto_generated_event_id=:auto_generated_event_id ", params,
-						BeanPropertyRowMapper.newInstance(Program.class));
-				program.setIsReadOnly(CoordinatorAccessControlConstants.IS_READ_ONLY_TRUE);
-			}catch(Exception exx){
-				LOGGER.error("ERROR : {}",exx);
-			}
+			
+			program = this.namedParameterJdbcTemplate.queryForObject("SELECT DISTINCT p.* "
+					+ " FROM program p LEFT JOIN program_coordinators pc"
+					+ " ON p.program_id = pc.program_id "
+					+ " WHERE "
+					+ " p.auto_generated_event_id=:auto_generated_event_id ", params,
+					BeanPropertyRowMapper.newInstance(Program.class));
+			program.setIsReadOnly(CoordinatorAccessControlConstants.IS_READ_ONLY_TRUE);
 		}
 		return program;
 	}
