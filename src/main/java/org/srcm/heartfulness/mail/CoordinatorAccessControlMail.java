@@ -257,6 +257,7 @@ public class CoordinatorAccessControlMail {
 					sendMail.getName(coordinatorAccessControlEmail.getPreceptorName()));
 			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
 					+ "?id=" + coordinatorAccessControlEmail.getEventID());
+			addParameter(EmailLogConstants.EVENT_PLACE_PARAMETER, coordinatorAccessControlEmail.getEventPlace());
 			addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinatorAccessControlEmail.getEventName());
 			SimpleDateFormat inputsdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 			SimpleDateFormat outputsdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
@@ -292,13 +293,6 @@ public class CoordinatorAccessControlMail {
 					EmailLogConstants.PRECEPTOR_EMAIL_TO_UPDATE_COORDINATOR_EMAIL_ID, EmailLogConstants.STATUS_FAILED,
 					StackTraceUtils.convertStackTracetoString(e));
 			mailLogRepository.createMailLog(pmpMailLog);
-		} catch (UnsupportedEncodingException e) {
-			LOGGER.error("UnsupportedEncodingException : Sending Mail Failed : {} " + e.getMessage());
-			PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
-					coordinatorAccessControlEmail.getCoordinatorEmail(),
-					EmailLogConstants.PRECEPTOR_EMAIL_TO_UPDATE_COORDINATOR_EMAIL_ID, EmailLogConstants.STATUS_FAILED,
-					StackTraceUtils.convertStackTracetoString(e));
-			mailLogRepository.createMailLog(pmpMailLog);
 		} catch (Exception e) {
 			LOGGER.error("Exception : Sending Mail Failed : {} " + e.getMessage());
 			PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
@@ -309,79 +303,6 @@ public class CoordinatorAccessControlMail {
 		}
 
 	}
-
-	/*public void sendMailToPreceptorandCoordinatorToCreateProfileAndAccessDashboard(
-			CoordinatorAccessControlEmail coordinatorAccessControlEmail) throws AddressException, MessagingException,
-			UnsupportedEncodingException, ParseException {
-		try {
-			Session session = sendMail.getSession();
-			SMTPMessage message = new SMTPMessage(session);
-			message.setFrom(new InternetAddress(frommail, name));
-			addParameter(EmailLogConstants.PRECEPTOR_NAME_PARAMETER,
-					sendMail.getName(coordinatorAccessControlEmail.getPreceptorName()));
-			addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER,
-					sendMail.getName(coordinatorAccessControlEmail.getCoordinatorName()));
-			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
-					+ "?id=" + coordinatorAccessControlEmail.getEventID());
-			addParameter(EmailLogConstants.CREATE_PROFILE_LINK_PARAMETER,
-					CoordinatorAccessControlConstants.HEARTFULNESS_CREATE_PROFILE_URL);
-			addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinatorAccessControlEmail.getEventName());
-			addParameter(EmailLogConstants.COORDINATOR_EMAILID_PARAMETER,
-					coordinatorAccessControlEmail.getCoordinatorEmail());
-			SimpleDateFormat inputsdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
-			SimpleDateFormat outputsdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
-			Date pgrmCreateDate = inputsdf.parse(coordinatorAccessControlEmail.getProgramCreateDate());
-			addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
-			message.addRecipients(Message.RecipientType.TO,
-					InternetAddress.parse(coordinatorAccessControlEmail.getCoordinatorEmail()));
-			message.addRecipients(Message.RecipientType.TO,
-					InternetAddress.parse(coordinatorAccessControlEmail.getPreceptorEmailId()));
-			message.setSubject(mailsubjecttocreateprofileandaccessdashboard + " - "
-					+ coordinatorAccessControlEmail.getEventName());
-			message.setContent(getMessageContentbyTemplateName(mailtemplatetocreateprofileandaccessdashboard),
-					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
-			message.setAllow8bitMIME(true);
-			message.setSentDate(new Date());
-			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-			Transport.send(message);
-			LOGGER.info("Mail sent successfully to Coordinator : {} ",
-					coordinatorAccessControlEmail.getCoordinatorEmail());
-			LOGGER.info("Mail sent successfully to Coordinator : {} ",
-					coordinatorAccessControlEmail.getPreceptorEmailId());
-			PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
-					coordinatorAccessControlEmail.getCoordinatorEmail(),
-					EmailLogConstants.EMAIL_CREATE_PROFILE_AND_DASHBOARD_LINK, EmailLogConstants.STATUS_SUCCESS, null);
-			mailLogRepository.createMailLog(pmpMailLog);
-		} catch (MessagingException e) {
-			LOGGER.error("MessagingException : Sending Mail Failed : {} " + e.getMessage());
-			PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
-					coordinatorAccessControlEmail.getCoordinatorEmail(),
-					EmailLogConstants.EMAIL_CREATE_PROFILE_AND_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
-					StackTraceUtils.convertStackTracetoString(e));
-			mailLogRepository.createMailLog(pmpMailLog);
-		} catch (ParseException e) {
-			LOGGER.error("ParseException : Sending Mail Failed : {} " + e.getMessage());
-			PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
-					coordinatorAccessControlEmail.getCoordinatorEmail(),
-					EmailLogConstants.EMAIL_CREATE_PROFILE_AND_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
-					StackTraceUtils.convertStackTracetoString(e));
-			mailLogRepository.createMailLog(pmpMailLog);
-		} catch (UnsupportedEncodingException e) {
-			LOGGER.error("UnsupportedEncodingException : Sending Mail Failed : {} " + e.getMessage());
-			PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
-					coordinatorAccessControlEmail.getCoordinatorEmail(),
-					EmailLogConstants.EMAIL_CREATE_PROFILE_AND_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
-					StackTraceUtils.convertStackTracetoString(e));
-			mailLogRepository.createMailLog(pmpMailLog);
-		} catch (Exception e) {
-			LOGGER.error("Exception : Sending Mail Failed : {} " + e.getMessage());
-			PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
-					coordinatorAccessControlEmail.getCoordinatorEmail(),
-					EmailLogConstants.EMAIL_CREATE_PROFILE_AND_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
-					StackTraceUtils.convertStackTracetoString(e));
-			mailLogRepository.createMailLog(pmpMailLog);
-		}
-	}*/
 
 	/**
 	 * Method to send mail to the coordinator of the event inorder to update the
@@ -417,65 +338,9 @@ public class CoordinatorAccessControlMail {
 		LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinator.getCoordinatorEmail());
 	}
 
-	// comment this method
-
-	/*public void sendMailToCoordinatorWithLinktoAccessDashboard(CoordinatorAccessControlEmail coordinator) {
-		try {
-			Session session = sendMail.getSession();
-			SMTPMessage message = new SMTPMessage(session);
-			message.setFrom(new InternetAddress(frommail, name));
-			addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER,
-					sendMail.getName(coordinator.getCoordinatorName()));
-			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
-					+ "?id=" + coordinator.getEventID());
-			addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinator.getEventName());
-			SimpleDateFormat inputsdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
-			SimpleDateFormat outputsdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
-			Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
-			addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
-			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
-			message.setSubject(coordinatormailsubjecttoaccessdashbrd + " - " + coordinator.getEventName());
-			message.setContent(getMessageContentbyTemplateName(coordinatormailtemplatetoaccessdashbrd),
-					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
-			message.setAllow8bitMIME(true);
-			message.setSentDate(new Date());
-			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-			Transport.send(message);
-			LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinator.getCoordinatorEmail());
-
-			PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
-					EmailLogConstants.COORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_SUCCESS, null);
-			mailLogRepository.createMailLog(pmpMailLog);
-		} catch (MessagingException e) {
-			LOGGER.error("MessagingException : Sending Mail Failed : {} " + e.getMessage());
-			PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
-					EmailLogConstants.COORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
-					StackTraceUtils.convertStackTracetoString(e));
-			mailLogRepository.createMailLog(pmpMailLog);
-		} catch (ParseException e) {
-			LOGGER.error("ParseException : Sending Mail Failed : {} " + e.getMessage());
-			PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
-					EmailLogConstants.COORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
-					StackTraceUtils.convertStackTracetoString(e));
-			mailLogRepository.createMailLog(pmpMailLog);
-		} catch (UnsupportedEncodingException e) {
-			LOGGER.error("UnsupportedEncodingException : Sending Mail Failed : {} " + e.getMessage());
-			PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
-					EmailLogConstants.COORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
-					StackTraceUtils.convertStackTracetoString(e));
-			mailLogRepository.createMailLog(pmpMailLog);
-		} catch (Exception e) {
-			LOGGER.error("Exception : Sending Mail Failed : {} " + e.getMessage());
-			PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
-					EmailLogConstants.COORDINATOR_EMAIL_DASHBOARD_LINK, EmailLogConstants.STATUS_FAILED,
-					StackTraceUtils.convertStackTracetoString(e));
-			mailLogRepository.createMailLog(pmpMailLog);
-		}
-	}*/
-
 	/**
 	 * Method to send mail to the coordinator of the event to associate his
-	 * email address with MYSRCM inorder to manage the events in HFN.
+	 * email address with MYSRCM in order to manage the events in HFN.
 	 * 
 	 * @param <code>CoordinatorAccessControlEmail</code> coordinator
 	 */
@@ -491,6 +356,7 @@ public class CoordinatorAccessControlMail {
 			addParameter(EmailLogConstants.CREATE_PROFILE_LINK_PARAMETER,
 					CoordinatorAccessControlConstants.HEARTFULNESS_CREATE_PROFILE_URL);
 			addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinator.getEventName());
+			addParameter(EmailLogConstants.EVENT_PLACE_PARAMETER, coordinator.getEventPlace());
 			SimpleDateFormat inputsdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 			SimpleDateFormat outputsdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
 			Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
@@ -515,12 +381,6 @@ public class CoordinatorAccessControlMail {
 			mailLogRepository.createMailLog(pmpMailLog);
 		} catch (ParseException e) {
 			LOGGER.error("ParseException : Sending Mail Failed : {} " + e.getMessage());
-			PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
-					EmailLogConstants.COORDINATOR_EMAIL_CREATE_PROFILE, EmailLogConstants.STATUS_FAILED,
-					StackTraceUtils.convertStackTracetoString(e));
-			mailLogRepository.createMailLog(pmpMailLog);
-		} catch (UnsupportedEncodingException e) {
-			LOGGER.error("UnsupportedEncodingException : Sending Mail Failed : {} " + e.getMessage());
 			PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
 					EmailLogConstants.COORDINATOR_EMAIL_CREATE_PROFILE, EmailLogConstants.STATUS_FAILED,
 					StackTraceUtils.convertStackTracetoString(e));

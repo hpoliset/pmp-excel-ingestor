@@ -686,8 +686,8 @@ public class SendMail {
 				sb.append("</td><td>");
 				sb.append(participant.getWelcomeCardNumber() != null ? participant.getWelcomeCardNumber() : "");
 				sb.append("</td><td>");
-				sb.append(participant.getIntroductionDate() != null ? outputsdf.format(participant.getIntroductionDate())
-						: "");
+				sb.append(participant.getIntroductionDate() != null ? outputsdf.format(participant
+						.getIntroductionDate()) : "");
 				sb.append("</td></tr>");
 			}
 			if (!failedParticipants.isEmpty()) {
@@ -871,6 +871,11 @@ public class SendMail {
 
 	}
 
+	/**
+	 * Method used for authentication to the SMTP mail Server.
+	 * 
+	 * @return <code>Session</code>
+	 */
 	public Session getSession() {
 		Properties props = System.getProperties();
 		props.put(EmailLogConstants.MAIL_DEBUG_PROPERTY, EmailLogConstants.MAIL_PROPERTY_TRUE);
@@ -885,7 +890,6 @@ public class SendMail {
 				return new PasswordAuthentication(username, password);
 			}
 		});
-
 		return session;
 	}
 }
