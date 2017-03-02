@@ -2,8 +2,6 @@ package org.srcm.heartfulness.repository.jdbc;
 
 import javax.sql.DataSource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -13,8 +11,6 @@ import org.srcm.heartfulness.repository.SMSIntegrationRepository;
 public class SMSIntegrationRepositoryImpl implements SMSIntegrationRepository{
 	
 	private final JdbcTemplate jdbcTemplate;
-
-	private static Logger LOGGER = LoggerFactory.getLogger(ParticipantFullDetailsRepositoryImpl.class);
 
 	@Autowired
 	public SMSIntegrationRepositoryImpl(DataSource dataSource) {

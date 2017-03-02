@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
+import org.srcm.heartfulness.enumeration.IssueeWelcomeId;
 import org.srcm.heartfulness.model.EventPagination;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
@@ -202,16 +204,20 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if (null == event.getProgramStartDate()) {
 			errors.put("programStartDate", "Program Start Date is required");
 		} else {
+			
+			if (!event.getProgramStartDate().matches(ExpressionConstants.DATE_REGEX)) {
+				errors.put("programStartDate", "Invalid date format,correct format is dd-MM-yyyy");
+			}
+			
 			try {
 				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-				sdf.parse(event.getProgramStartDate());
+				if(sdf.parse(event.getProgramStartDate()).after(new Date())){
+					errors.put("programStartDate", "Program start date cannot be a future date");
+				}
 			} catch (ParseException e) {
 				errors.put("programStartDate", "Invalid date format,correct format is dd-MM-yyyy");
 			}
 
-			if (!event.getProgramStartDate().matches(ExpressionConstants.DATE_REGEX)) {
-				errors.put("programStartDate", "Invalid date format,correct format is dd-MM-yyyy");
-			}
 		}
 		if (null != event.getProgramEndDate()) {
 			try {
@@ -272,12 +278,12 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 
 		if (null != event.getOrganizationDecisionMakerEmail()
 				&& !event.getOrganizationDecisionMakerEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
-			errors.put("organizationDecisionMakerEmail", "Organization decision maker email is invalid");
+			errors.put("organizationDecisionMakerEmail", "Head of the department email is invalid");
 		}
 
 		if (null != event.getOrganizationDecisionMakerPhoneNo()
 				&& !event.getOrganizationDecisionMakerPhoneNo().matches(ExpressionConstants.MOBILE_REGEX)) {
-			errors.put("organizationDecisionMakerPhoneNo", "Organization decision maker mobile number is invalid");
+			errors.put("organizationDecisionMakerPhoneNo", "Head of the department mobile number is invalid");
 		}
 
 		return errors;
@@ -383,20 +389,26 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	 */
 	@Override
 	public boolean validateParticipantCompletedPreliminarySittings(Participant participantInput) {
+		boolean isValid=false;
 		if (1 == participantInput.getIntroduced()
 				&& (null == participantInput.getWelcomeCardNumber() || participantInput.getWelcomeCardNumber()
 						.isEmpty())) {
-			return true;
-		} else if ((null == participantInput.getThirdSittingDate())
-				&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())) {
-			return false;
+			isValid=true;
+		} else if (null != participantInput.getWelcomeCardNumber() && !participantInput.getWelcomeCardNumber() .isEmpty() ){
+			for (IssueeWelcomeId field : IssueeWelcomeId.values()) {
+				if (participantInput.getWelcomeCardNumber().equalsIgnoreCase(field.getValue())) {
+					isValid=true;
+				}
+			}
+		} else if (!(null == participantInput.getThirdSittingDate())	&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())) {
+			isValid=true;
 		}
-		return true;
+		return isValid;
 	}
 
 	/**
 	 * Method to validate the mandatory fields in the <code>Participant</code>
-	 * request before updating the particpant details.
+	 * request before updating the participant details.
 	 * 
 	 * @param participant
 	 * @return errors <code>Map<String, String</code>.

@@ -85,8 +85,6 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 						accessLog.getUsername());
 				programRepository.saveProgramPermissionLetterDetails(programPermissionLetterdetails);
 
-				// program.setCoordinatorPermissionLetterPath(permissionLetterPath);
-				// programRepository.saveProgram(program);
 				response = new Response(ErrorConstants.STATUS_SUCCESS, "Successfully uploaded "
 						+ multipartFile.getOriginalFilename());
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -98,7 +96,6 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 				LOGGER.error("HttpClientErrorException occured while uploading file. Exception : {}", cee);
 				response = new Response(ErrorConstants.STATUS_FAILED, "Failed to upload "
 						+ multipartFile.getOriginalFilename());
-				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(cee));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
@@ -110,7 +107,6 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 						ex);
 				response = new Response(ErrorConstants.STATUS_FAILED, "Failed to upload "
 						+ multipartFile.getOriginalFilename());
-				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
@@ -120,7 +116,6 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 				LOGGER.error("IO Exception occured while uploading file. Exception : {}", ioe);
 				response = new Response(ErrorConstants.STATUS_FAILED, "Failed to upload "
 						+ multipartFile.getOriginalFilename());
-				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ioe));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
@@ -130,7 +125,6 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 				LOGGER.error("Exception occured while uploading file. Exception : {}", ex);
 				response = new Response(ErrorConstants.STATUS_FAILED, "Internal Server Error : Failed to upload "
 						+ multipartFile.getOriginalFilename());
-				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
@@ -226,7 +220,6 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 				LOGGER.error("Caught an AmazonServiceException, which " + "means your request made it "
 						+ "to Amazon S3, but was rejected with an error response" + " for some reason. Exception : {}",
 						ase);
-				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ase));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
@@ -237,7 +230,6 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 				LOGGER.error("Caught an AmazonClientException, which " + "means the client encountered "
 						+ "an internal error while trying to " + "communicate with S3, "
 						+ "such as not being able to access the network.Exception : {}", ace);
-				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ace));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
@@ -294,7 +286,6 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 				LOGGER.error("HttpClientErrorException occured while uploading file. Exception : {}", cee);
 				response = new Response(ErrorConstants.STATUS_FAILED, "Failed to upload "
 						+ multipartFile.getOriginalFilename());
-				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(cee));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
@@ -306,7 +297,6 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 						ex);
 				response = new Response(ErrorConstants.STATUS_FAILED, "Failed to upload "
 						+ multipartFile.getOriginalFilename());
-				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
@@ -316,7 +306,6 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 				LOGGER.error("IO Exception occured while uploading file. Exception : {}", ioe);
 				response = new Response(ErrorConstants.STATUS_FAILED, "Failed to upload "
 						+ multipartFile.getOriginalFilename());
-				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ioe));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
@@ -326,7 +315,6 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 				LOGGER.error("Exception occured while uploading file. Exception : {}", e);
 				response = new Response(ErrorConstants.STATUS_FAILED, "Failed to upload "
 						+ multipartFile.getOriginalFilename());
-				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
@@ -366,7 +354,6 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 						+ "to Amazon S3, but was rejected with an error response" + " for some reason. Exception : {}",
 						ase);
 				response.put(sessionImage.getImageName(), "Failed to fetch image path ");
-				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ase));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
@@ -376,7 +363,6 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 						+ "an internal error while trying to " + "communicate with S3, "
 						+ "such as not being able to access the network.Exception : {}", ace);
 				response.put(sessionImage.getImageName(), "Failed to fetch image path ");
-				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ace));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));

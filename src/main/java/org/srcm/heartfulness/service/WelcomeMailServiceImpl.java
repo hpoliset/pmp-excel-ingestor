@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EmailLogConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
-import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.helper.FTPConnectionHelper;
 import org.srcm.heartfulness.mail.SendMail;
 import org.srcm.heartfulness.model.CoordinatorEmail;
@@ -95,7 +94,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	 */
 	@Override
 	public void addNewSubscriber() throws HttpClientErrorException, JsonParseException, JsonMappingException,
-	IOException, MessagingException {
+			IOException, MessagingException {
 
 		SendySubscriber sendySubscriber = null;
 		List<Participant> participants = new ArrayList<Participant>();
@@ -196,7 +195,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	 */
 	@Override
 	public void unsubscribeUsers() throws HttpClientErrorException, JsonParseException, JsonMappingException,
-	IOException {
+			IOException {
 		List<WelcomeMailDetails> subscribers = new ArrayList<WelcomeMailDetails>();
 		subscribers = welcomeMailRepository.getSubscribersToUnsubscribe();
 		if (subscribers.size() >= 1) {
@@ -311,7 +310,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 									coordinatorEmail.setPctptAlreadyRcvdWlcmMailCount(String
 											.valueOf(wlcmEmailRcvdPctptCount));
 									coordinatorEmail.setPctptRcvdWlcmMailYstrdayCount(map.getValue().get(0));
-									SimpleDateFormat inputsdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
+									SimpleDateFormat inputsdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 									coordinatorEmail.setProgramCreateDate(null != map.getValue().get(4) ?  inputsdf.parse(map.getValue().get(4)) :null);
 									coordinatorEmail.setEventPlace(map.getValue().get(5));
 									coordinatorEmail.setEventCity(map.getValue().get(6));
@@ -369,7 +368,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								LOGGER.error("EXCEPTION  :Failed to sent mail to" + map.getValue().get(3)+" :Exception : {}",  ex.getMessage());
 								LOGGER.error("EXCEPTION  :Looking for next coordinator if available");
 							}
-							Thread.sleep(60000);
+							 Thread.sleep(5000);
 						}
 					}
 				}
@@ -390,6 +389,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			mailLogRepository.createMailLog(pmpMailLog);
 		}
 	}
+
 
 	/*
 	 * (non-Javadoc)
@@ -499,8 +499,8 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 									.getKey().getCoordinatorEmail(), ex);
 							LOGGER.error("EXCEPTION - Looking for next coordinator if available");
 						}
+						 Thread.sleep(5000);
 					}
-					Thread.sleep(60000);
 				}
 				LOGGER.info("Completed sending eWelcome ID email notifications to the coordinator list.");
 			} else {

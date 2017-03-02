@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EndpointConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
-import org.srcm.heartfulness.constants.PMPConstants;
+import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.SMSConstants;
 import org.srcm.heartfulness.model.Aspirant;
 import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
@@ -75,7 +75,7 @@ public class EWelcomeIDGenerationHelper {
 		aspirant.setCity(citiesAPIResponse.getName());
 		aspirant.setState(String.valueOf(geoSearchResponse.getStateId()));
 		aspirant.setCountry(String.valueOf(geoSearchResponse.getCountryId()));
-		SimpleDateFormat sdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
+		SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 		aspirant.setDateOfBirth((null != participant.getDateOfBirth()) ? sdf.format(participant.getDateOfBirth())
 				: null);
 		aspirant.setDateOfJoining(null != participant.getFirstSittingDate() ? 
@@ -168,7 +168,7 @@ public class EWelcomeIDGenerationHelper {
 		aspirant.setCity(citiesAPIResponse.getName());
 		aspirant.setState(String.valueOf(geoSearchResponse.getStateId()));
 		aspirant.setCountry(String.valueOf(geoSearchResponse.getCountryId()));
-		SimpleDateFormat sdf = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
+		SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 		aspirant.setDateOfBirth((null != participant.getDateOfBirth()) ? sdf.format(participant.getDateOfBirth())
 				: null);
 		aspirant.setDateOfJoining((null != participant.getProgram().getProgramStartDate()) ? sdf.format(participant

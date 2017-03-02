@@ -28,7 +28,7 @@ public class ExpressionConstants {
 	public static final String EVENT_ID_REGEX = "^E[0-9]{6}$";
 	
 	public static final String COLON_HEADER_SEPARATER = ":";
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 	public static final String PATH_SEPARATER = "/";
 
 	public static final  String SPACE_SEPARATER = " ";
@@ -38,5 +38,11 @@ public class ExpressionConstants {
 	public static final String COMMA_SEPARATER = ",";
 
 	public static final String NEXT_LINE = "\n";
+	
+	public static final String DATE_FORMAT = "dd-MM-yyyy";
+
+	public static final String SQL_DATE_FORMAT = "yyyy-MM-dd";
+	
+	public static final String MAIL_DATE_FORMAT = "dd-MMM-yyyy";
 	
 }

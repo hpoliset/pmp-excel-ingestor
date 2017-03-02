@@ -2,6 +2,7 @@ package org.srcm.heartfulness.service;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.List;
 
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.User;
@@ -41,6 +42,39 @@ public interface UserProfileService {
 	 */
 	Result getUserProfile(String token, int id) throws HttpClientErrorException, JsonParseException, JsonMappingException,
 			IOException, ParseException;
+	
+	/**
+	 * Method to update the user details.
+	 * 
+	 * @param token
+	 * @param accesslogId
+	 * @param user
+	 * @param id
+	 * @return
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	User updateUserDetails(String token, int accesslogId, User user, int id) throws HttpClientErrorException,
+			JsonParseException, JsonMappingException, IOException, ParseException;
+
+	/**
+	 * Method to fetch the user profile from the MYSRCM by passing token and if
+	 * user doesn't exists in DB, store the details in HFN backend.
+	 * 
+	 * @param token
+	 * @param id
+	 * @return
+	 * @throws HttpClientErrorException
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	User getUserProfileAndCreateUser(String token, int id) throws HttpClientErrorException, JsonParseException,
+			JsonMappingException, IOException, ParseException;
 
 	/**
 	 * Method to retrieve <code>User</code> from the data store by email.
@@ -48,5 +82,14 @@ public interface UserProfileService {
 	 * @param user
 	 */
 	void save(User user);
+	
+	/**
+	 * This method is used to get the email Ids associated with 
+	 * an Abhyasi Id.
+	 * @param abyasiId, is used to get all the emails associated 
+	 * eith a specific Abhyasi Id. 
+	 * @return List<String> email Ids for a given Abhyasi Id.
+	 */
+	List<String> getEmailsWithAbhyasiId(String abyasiId);
 	
 }

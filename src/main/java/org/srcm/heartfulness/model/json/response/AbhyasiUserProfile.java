@@ -45,6 +45,8 @@ public class AbhyasiUserProfile {
 	private Integer prefect_id;
 
 	private String abhyasi_status;
+	
+	private String gender;
 
 	public Integer getId() {
 		return id;
@@ -182,13 +184,22 @@ public class AbhyasiUserProfile {
 		this.abhyasi_status = abhyasi_status;
 	}
 
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
 	@Override
 	public String toString() {
 		return "AbhyasiUserProfile [id=" + id + ", name=" + name + ", first_name=" + first_name + ", middle_name="
 				+ middle_name + ", last_name=" + last_name + ", email=" + email + ", ref=" + ref + ", srcm_group="
 				+ srcm_group + ", is_prefect=" + is_prefect + ", date_of_joining=" + date_of_joining
 				+ ", date_of_birth=" + date_of_birth + ", city=" + city + ", city_id=" + city_id + ", state=" + state
-				+ ", country=" + country + ", prefect_id=" + prefect_id + ", abhyasi_status=" + abhyasi_status + "]";
+				+ ", country=" + country + ", prefect_id=" + prefect_id + ", abhyasi_status=" + abhyasi_status
+				+ ", gender=" + gender + "]";
 	}
 
 }

@@ -381,7 +381,7 @@ public class SrcmRestTemplate extends RestTemplate {
 		byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
 		return new String(base64CredsBytes);
 	}
-
+	
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
 	}

@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.srcm.heartfulness.constants.ErrorConstants;
-import org.srcm.heartfulness.constants.PMPConstants;
+import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.model.SessionDetails;
 import org.srcm.heartfulness.model.SessionImageDetails;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
@@ -76,7 +76,7 @@ public class SessionDetailsServiceImpl implements SessionDetailsService {
 	@Override
 	public List<SessionDetails> getSessionDetails(int programId,String eventId) {
 		List<SessionDetails> sessionDetailsList = null;
-		SimpleDateFormat sdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
+		SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
 		try{
 			sessionDetailsList = sessionDtlsRepo.getSessionDetails(programId);	
 			for(SessionDetails session : sessionDetailsList){

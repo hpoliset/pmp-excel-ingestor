@@ -2,8 +2,8 @@ package org.srcm.heartfulness.repository;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
-
 import org.springframework.dao.DataAccessException;
 import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.model.Participant;
@@ -313,7 +313,7 @@ public interface ProgramRepository {
 	 * @param role
 	 * @return
 	 */
-	int getProgramCountWithUserRoleAndEmailId(String email, String role);
+	int getProgramCountWithUserRoleAndEmailId(/*String email*/List<String> emailList, String role);
 
 	/**
 	 * Get the list of programs depending on the coordinator email and role.
@@ -324,7 +324,7 @@ public interface ProgramRepository {
 	 * @param pageSize
 	 * @return
 	 */
-	List<Program> getEventsByEmailAndRole(String email, String role, int offset, int pageSize);
+	List<Program> getEventsByEmailAndRole(/*String email*/List<String> emailList, String role, int offset, int pageSize);
 
 	/**
 	 * Method to get the program count w.r.t the search params provided and with
@@ -335,7 +335,7 @@ public interface ProgramRepository {
 	 * @param role
 	 * @return
 	 */
-	int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role);
+	int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList/*String email*/, String role);
 
 	/**
 	 * Method to search the events from the HFN Backend using few params.
@@ -346,7 +346,7 @@ public interface ProgramRepository {
 	 * @param offset
 	 * @return
 	 */
-	List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, String email, String role, int offset);
+	List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList/*String email*/, String role, int offset);
 
 	/**
 	 * Method to check whether the auto generated event id already exists or
@@ -391,5 +391,28 @@ public interface ProgramRepository {
 	 * @return <code>List<ProgramPermissionLetterdetails></code>
 	 */
 	List<ProgramPermissionLetterdetails> getListOfPermissionLetters(int programId);
+	
+	/**
+	 * This method is used to get the program details 
+	 * using email,role of logged in user and auto generated event Id.
+	 * @param emailList emails associated with Abhyasi Id for the
+	 * logged in person.
+	 * @param userRole, role of the logged in user.
+	 * @param agEventId, auto generated event Id for a particular event.
+	 * @return program details based on emails,role of log in user and 
+	 * auto generated event Id.
+	 */
+	Program getProgramByEmailAndRole(List<String> emailList,String userRole,String agEventId);
+
+	/**
+	 * This method is used to get all the program Id and auto generated
+	 * event Id's for the logged in user have conducted.
+	 * @param emailList List of emails associated witha abhyasi id for the 
+	 * logged in user.
+	 * @param userRole, role of the logged in user.
+	 * @return LinkedHashMap<Integer,String> containing program Id and auto generated
+	 * event Id's for the logged in user have conducted.
+	 */
+	LinkedHashMap<Integer,String> getListOfProgramIdsByEmail(List<String> emailList,String userRole);
 
 }

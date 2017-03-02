@@ -31,5 +31,4 @@ public interface AuthenticationService {
 	SrcmAuthenticationResponse validateLogin(AuthenticationRequest authenticationRequest, HttpSession session, int id)
 			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException, ParseException;
 	
-	
 }

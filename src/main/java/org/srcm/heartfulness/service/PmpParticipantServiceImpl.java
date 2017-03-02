@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
+import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.enumeration.ParticipantSearchField;
 import org.srcm.heartfulness.excelupload.transformer.impl.ExcelDataExtractorV2Impl;
@@ -77,8 +78,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	 */
 	@Override
 	public ParticipantRequest createParticipant(ParticipantRequest participantRequest) throws ParseException {
-		SimpleDateFormat sdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
-		SimpleDateFormat sdf1 = new SimpleDateFormat(PMPConstants.SQL_DATE_FORMAT);
+		SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
+		SimpleDateFormat sdf1 = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 		Participant participant;
 		if ((null == participantRequest.getSeqId() || participantRequest.getSeqId().isEmpty())
 				&& 0 == participantRequest.getId()) {
@@ -304,7 +305,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	 */
 	@Override
 	public ParticipantRequest getParticipantBySeqId(ParticipantRequest participantRequest) {
-		SimpleDateFormat convertedsdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
+		SimpleDateFormat convertedsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
 		Participant participant = findBySeqId(participantRequest);
 		if (null != participant) {
 			participantRequest.setPrintName(participant.getPrintName());
@@ -387,7 +388,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	public List<ParticipantRequest> searchParticipants(SearchRequest searchRequest) {
 		List<Participant> participantList = new ArrayList<Participant>();
 		List<ParticipantRequest> participantReqList = new ArrayList<ParticipantRequest>();
-		SimpleDateFormat convertedsdf = new SimpleDateFormat(PMPConstants.DATE_FORMAT);
+		SimpleDateFormat convertedsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
 		for (ParticipantSearchField searchField : ParticipantSearchField.values()) {
 			if (searchField.name().equals(searchRequest.getSearchField())) {
 				searchRequest.setSearchField(searchField.getValue());
@@ -537,8 +538,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 									participantInput.getPrintName(), ErrorConstants.STATUS_FAILED, description);
 						}
 						result.add(response);
-						LOGGER.info("END - {} : Response of eWelcomeID Generation for the participant : {} ",
-								participantInput.getSeqId(), result.toString());
+						//LOGGER.info("END - {} : Response of eWelcomeID Generation for the participant : {} ",
+							//	participantInput.getSeqId(), response.toString());
 					}
 				} else {
 					LOGGER.info("START - {} : Updating participant Status : {} ", participantInput.getSeqId(),
@@ -619,7 +620,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	private void setParticipantEWelcomeIDStatus(Program program, Participant participant, String eWelcomeIDStatus,
 			String remarks) {
 
-		if (null != participant.getWelcomeCardNumber() && !participant.getWelcomeCardNumber().isEmpty()) {
+		if (null != participant.getWelcomeCardNumber() && !participant.getWelcomeCardNumber().isEmpty() && participant.getWelcomeCardNumber().matches(ExpressionConstants.EWELCOME_ID_REGEX)) {
 			participant.setEwelcomeIdRemarks(null);
 			participant.setIntroduced(1);
 			if (null != participant.getWelcomeCardDate()) {

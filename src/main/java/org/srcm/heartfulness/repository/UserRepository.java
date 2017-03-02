@@ -1,5 +1,7 @@
 package org.srcm.heartfulness.repository;
 
+import java.util.List;
+
 import org.springframework.dao.DataAccessException;
 import org.srcm.heartfulness.model.User;
 
@@ -28,5 +30,14 @@ public interface UserRepository {
 	 * @param user
 	 */
 	void save(User user);
+	
+	/**
+	 * This method is used to get email Ids for a given
+	 * MYSRCM Abhyasi Id.
+	 * @param abyasiId, to get the list of email Ids.
+	 * @return List<String> email Id's which are associated
+	 * for a given MYSRCM Abhyasi Id.
+	 */
+	List<String> getEmailsWithAbhyasiId(String abyasiId);
 
 }

@@ -14,6 +14,8 @@ public class PMPConstants {
 	public static final String LOGIN_ROLE_SEEKER = "SEEKER";
 
 	public static final String LOGIN_ROLE_PRECEPTOR = "PRECEPTOR";
+	
+	public static final String LOGIN_ROLE_COORDINATOR = "COORDINATOR";
 
 	public static final String SEEKER = "seeker";
 
@@ -74,10 +76,6 @@ public class PMPConstants {
 	public static final String UN_CATEGORIZED = "Un-Categorized";
 
 	public static final String MISCELLANEOUS = "Miscellaneous";
-
-	public static final String DATE_FORMAT = "dd-MM-yyyy";
-
-	public static final String SQL_DATE_FORMAT = "yyyy-MM-dd";
 
 	public static final String MALE = "Male";
 

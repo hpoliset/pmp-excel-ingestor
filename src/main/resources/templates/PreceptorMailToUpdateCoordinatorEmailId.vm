@@ -1,0 +1,26 @@
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<div>
+Dear ${PRECEPTOR_NAME},
+<br/>
+<div style="padding-left: 10px;">
+<p>We have received details of the following Heartfulness event <b>${EVENT_NAME}</b> held at <b>${EVENT_PLACE}</b> on ${PROGRAM_CREATE_DATE}.</p>
+<p>You can now access and manage the event details on a web dashboard by clicking on <u><a href="${UPDATE_EVENT_LINK}">this link</a></u>.
+ Through this interface, you can view/edit event and participant details, generate eWelcomeIds for participants and add details of follow up sessions you may conduct in the future.</p>
+
+
+<p><b>Note:</b> Details of a coordinator are missing for this event. If you would like a coordinator to manage this event,
+ please login to the event dashboard with the above link and update event details with the coordinator's email address.</p>
+
+<br/>
+</div>
+<div style="font-style: italic; font-weight: bold;">
+With Regards,
+<br/>
+Heartfulness Team
+</div>
+</body>
+</html>
