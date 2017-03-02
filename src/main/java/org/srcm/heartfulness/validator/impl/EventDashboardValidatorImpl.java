@@ -278,12 +278,12 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 
 		if (null != event.getOrganizationDecisionMakerEmail()
 				&& !event.getOrganizationDecisionMakerEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
-			errors.put("organizationDecisionMakerEmail", "Organization decision maker email is invalid");
+			errors.put("organizationDecisionMakerEmail", "Head of the department email is invalid");
 		}
 
 		if (null != event.getOrganizationDecisionMakerPhoneNo()
 				&& !event.getOrganizationDecisionMakerPhoneNo().matches(ExpressionConstants.MOBILE_REGEX)) {
-			errors.put("organizationDecisionMakerPhoneNo", "Organization decision maker mobile number is invalid");
+			errors.put("organizationDecisionMakerPhoneNo", "Head of the department mobile number is invalid");
 		}
 
 		return errors;
