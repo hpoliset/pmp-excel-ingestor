@@ -271,7 +271,9 @@ public class CoordinatorAccessControlMail {
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-			Transport.send(message);
+			Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
+			transport.send(message);
+			transport.close();
 			LOGGER.info("Mail sent successfully to Coordinator : {} ",
 					coordinatorAccessControlEmail.getPreceptorEmailId());
 			PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
@@ -334,7 +336,9 @@ public class CoordinatorAccessControlMail {
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-		Transport.send(message);
+		Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
+		transport.send(message);
+		transport.close();
 		LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinator.getCoordinatorEmail());
 	}
 
@@ -368,7 +372,9 @@ public class CoordinatorAccessControlMail {
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-			Transport.send(message);
+			Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
+			transport.send(message);
+			transport.close();
 			LOGGER.info("Mail sent successfully to Coordinator : {} ", coordinator.getCoordinatorEmail());
 			PMPMailLog pmpMailLog = new PMPMailLog(coordinator.getProgramId(), coordinator.getCoordinatorEmail(),
 					EmailLogConstants.COORDINATOR_EMAIL_CREATE_PROFILE, EmailLogConstants.STATUS_SUCCESS, null);
@@ -407,7 +413,9 @@ public class CoordinatorAccessControlMail {
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-		Transport.send(message);
+		Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
+		transport.send(message);
+		transport.close();
 	}
 
 	public void sendMailToNewSecondaryCoordinator(String recipientName, String recipientEmail, String eventId)
@@ -423,7 +431,9 @@ public class CoordinatorAccessControlMail {
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-		Transport.send(message);
+		Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
+		transport.send(message);
+		transport.close();
 	}
 
 }
