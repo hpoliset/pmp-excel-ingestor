@@ -94,7 +94,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	 */
 	@Override
 	public void addNewSubscriber() throws HttpClientErrorException, JsonParseException, JsonMappingException,
-			IOException, MessagingException {
+	IOException, MessagingException {
 
 		SendySubscriber sendySubscriber = null;
 		List<Participant> participants = new ArrayList<Participant>();
@@ -195,7 +195,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 	 */
 	@Override
 	public void unsubscribeUsers() throws HttpClientErrorException, JsonParseException, JsonMappingException,
-			IOException {
+	IOException {
 		List<WelcomeMailDetails> subscribers = new ArrayList<WelcomeMailDetails>();
 		subscribers = welcomeMailRepository.getSubscribersToUnsubscribe();
 		if (subscribers.size() >= 1) {
@@ -369,6 +369,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								LOGGER.error("EXCEPTION  :Looking for next coordinator if available");
 							}
 							 Thread.sleep(5000);
+							Thread.sleep(60000);
 						}
 					}
 				}
@@ -501,6 +502,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 						}
 						 Thread.sleep(5000);
 					}
+					Thread.sleep(60000);
 				}
 				LOGGER.info("Completed sending eWelcome ID email notifications to the coordinator list.");
 			} else {
