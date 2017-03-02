@@ -26,7 +26,7 @@ import org.srcm.heartfulness.constants.ExpressionConstants;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:dev.aws.s3.properties", ignoreUnknownFields = true, prefix = "aws.s3")
+@ConfigurationProperties(locations = "classpath:prod.aws.s3.properties", ignoreUnknownFields = true, prefix = "aws.s3")
 public class AmazonS3Helper {
 
 	private String secretkey;

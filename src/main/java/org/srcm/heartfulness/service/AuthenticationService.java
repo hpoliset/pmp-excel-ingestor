@@ -31,25 +31,4 @@ public interface AuthenticationService {
 	SrcmAuthenticationResponse validateLogin(AuthenticationRequest authenticationRequest, HttpSession session, int id)
 			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException, ParseException;
 	
-	/**
-	 * Method to validate the user based on username and password.
-	 * 
-	 * @param authenticationRequest
-	 * @param session
-	 * @param id
-	 * @param requestURI 
-	 * @param userAgent
-	 * @param model
-	 * @return
-	 * @throws HttpClientErrorException
-	 * @throws JsonParseException
-	 * @throws JsonMappingException
-	 * @throws IOException
-	 * @throws ParseException
-	 */
-	SrcmAuthenticationResponse validateUser(AuthenticationRequest authenticationRequest, HttpSession session, int id, String requestURI) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException,
-			ParseException;
-	
-	
-	
 }

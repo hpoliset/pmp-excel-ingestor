@@ -40,7 +40,7 @@ import com.sun.mail.smtp.SMTPMessage;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:dev.cac.mail.properties", ignoreUnknownFields = false, prefix = "mail.cac")
+@ConfigurationProperties(locations = "classpath:prod.cac.mail.properties", ignoreUnknownFields = false, prefix = "mail.cac")
 public class CoordinatorAccessControlMail {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CoordinatorAccessControlMail.class);

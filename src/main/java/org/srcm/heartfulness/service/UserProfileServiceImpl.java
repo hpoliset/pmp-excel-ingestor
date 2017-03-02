@@ -10,10 +10,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EndpointConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
-import org.srcm.heartfulness.helper.MySRCMIntegrationHelper;
 import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 import org.srcm.heartfulness.model.User;
-import org.srcm.heartfulness.model.json.request.CreateUserRequest;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.repository.UserRepository;
@@ -40,9 +38,6 @@ public class UserProfileServiceImpl implements UserProfileService {
 
 	@Autowired
 	APIAccessLogService apiAccessLogService;
-	
-	@Autowired
-	MySRCMIntegrationHelper mysrcmIntegrationHelper;
 	
 	/*
 	 * (non-Javadoc)
@@ -138,53 +133,6 @@ public class UserProfileServiceImpl implements UserProfileService {
 		return user;
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.service.UserProfileService#createUser(org.srcm.heartfulness.model.json.request.CreateUserRequest, int, java.lang.String)
-	 */
-	@Override
-	public User createUser(CreateUserRequest user, int id, String requestURL) throws HttpClientErrorException,
-			JsonParseException, JsonMappingException, IOException {
-		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.CREATE_USER_PROFILE,
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-				StackTraceUtils.convertPojoToJson(user), null);
-		int accessdetailsID = apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
-		accessLogDetails.setId(accessdetailsID);
-		User newUser = mysrcmIntegrationHelper.getClientCredentialsandCreateUser(user, requestURL);
-		if (null != user.getName() && !user.getName().isEmpty()) {
-			newUser.setName(user.getName());
-		} else {
-			newUser.setName(user.getFirstName() + " " + user.getLastName());
-		}
-		if (null != user.getGender() && !user.getGender().isEmpty())
-			newUser.setGender(user.getGender());
-		if (null != user.getAbyasiId() && !user.getAbyasiId().isEmpty())
-			newUser.setAbyasiId(user.getAbyasiId());
-		if (null != user.getCity() && !user.getCity().isEmpty())
-			newUser.setCity(user.getCity());
-		if (null != user.getCountry() && !user.getCountry().isEmpty())
-			newUser.setCountry(user.getCountry());
-		if (null != user.getState() && !user.getState().isEmpty())
-			newUser.setState(user.getState());
-		if (null != user.getMobile() && !user.getMobile().isEmpty())
-			newUser.setMobile(user.getMobile());
-		if (null != user.getAgeGroup() && !user.getAgeGroup().isEmpty())
-			newUser.setAgeGroup(user.getAgeGroup());
-		if (null != user.getLanguagePreference() && !user.getLanguagePreference().isEmpty())
-			newUser.setLanguagePreference(user.getLanguagePreference());
-		if (null != user.getZipcode() && !user.getZipcode().isEmpty())
-			newUser.setZipcode(user.getZipcode());
-			newUser.setRole(PMPConstants.LOGIN_ROLE_SEEKER);
-			newUser.setIsPmpAllowed(PMPConstants.REQUIRED_NO);
-			newUser.setIsSahajmargAllowed(PMPConstants.REQUIRED_NO);
-		userRepository.save(newUser);
-		accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
-		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(newUser));
-		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
-		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-		return newUser;
-	}
-
 	/**
 	 * This method is used to get the email Ids associated with 
 	 * an Abhyasi Id.

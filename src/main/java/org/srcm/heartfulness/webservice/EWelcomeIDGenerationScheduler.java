@@ -6,8 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RestController;
 import org.srcm.heartfulness.constants.EmailLogConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
@@ -56,8 +55,7 @@ public class EWelcomeIDGenerationScheduler {
 	/**
 	 * Cron to generate EWelcomeIDs for the participants.
 	 */
-	/*@Scheduled(cron = "${welcome.mailids.generation.cron.time}")*/ 
-	@RequestMapping(value="test",method= RequestMethod.POST)
+	@Scheduled(cron = "${welcome.mailids.generation.cron.time}") 
 	public void generateEWelcomeIDsForParticipants() {
 		LOGGER.info("START : CRON : EWELCOMEID GENERATION : Scheduler to generate EwelcomeID's for the participants started at - "
 				+ new Date());

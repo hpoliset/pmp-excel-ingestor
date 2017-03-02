@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.User;
-import org.srcm.heartfulness.model.json.request.CreateUserRequest;
 import org.srcm.heartfulness.model.json.response.Result;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -84,13 +83,6 @@ public interface UserProfileService {
 	 */
 	void save(User user);
 	
-	/**
-	 * Method to create the user in MYSRCM & PMP and to persist user details in
-	 * PMP.
-	 */
-	User createUser(CreateUserRequest user, int id, String requestURL) throws HttpClientErrorException,
-			JsonParseException, JsonMappingException, IOException;
-
 	/**
 	 * This method is used to get the email Ids associated with 
 	 * an Abhyasi Id.
