@@ -33,7 +33,7 @@ import org.srcm.heartfulness.util.StackTraceUtils;
  */
 
 @Component
-public class SendWelcomeMailToParticipant {
+public class SendWelcomeMailToParticipant extends Thread{
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendWelcomeMailToParticipant.class);
 
@@ -46,7 +46,7 @@ public class SendWelcomeMailToParticipant {
 	@Autowired
 	private MailLogRepository mailLogRepository;
 
-	@PostConstruct
+	/*@PostConstruct
 	public void startDaemonThread(){
 		Thread daemonThread = null;
 		daemonThread = new Thread(new Runnable(){
@@ -75,7 +75,32 @@ public class SendWelcomeMailToParticipant {
 		}, "Daemon-Thread");
 		daemonThread.setDaemon(true); 
 		daemonThread.start();
+	}*/
+	
+	@Override
+	@PostConstruct
+	public void run(){
+		try{
+			while(true){
+				LOGGER.info("Daemon-Thread started for sending welcome mail to the participants "+new Date());
+				try{
+					sendWelcomeMailToParticipant();
+				} catch(Exception ex){
+					LOGGER.error("Exception while sending welcome mails to participant {}",ex);
+				}
+				try {
+					Thread.sleep(20000);
+				} catch (InterruptedException e) {
+					LOGGER.error("Exception while putting Thread to sleep {}",e);
+				}
+			}
+		}catch(Exception e){
+			LOGGER.error("Exception in main thread, daemon process is going to shutdown {}",e);
+		}finally{
+			LOGGER.info("Daemon-Thread has shut down for unwanted reasons !!"); 
+		}
 	}
+	
 	
 	public void sendWelcomeMailToParticipant(){
 
