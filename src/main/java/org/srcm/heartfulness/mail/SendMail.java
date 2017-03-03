@@ -904,4 +904,32 @@ public class SendMail {
 		});
 		return session;
 	}
+	
+	/**
+	 * This method is used to sent welcome mails to the 
+	 * participants.
+	 * @param session, MailSession 
+	 * @param participantEmail, email of the participant
+	 * @throws MessagingException if failed to connect to host.
+	 * @throws UnsupportedEncodingException if email and name does not match
+	 */
+	public void sendWelcomeMailToParticipant(Session session,String participantEmail) throws MessagingException, UnsupportedEncodingException {
+
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
+		String date_str = sdf.format(date);
+		addParameter(EmailLogConstants.DATE_PARAMETER, date_str);
+		SMTPMessage message = new SMTPMessage(session);
+		message.setFrom(new InternetAddress(frommail, name));
+		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(participantEmail));
+		message.setSubject(welcomemailsubject);
+		message.setContent(getMessageContentbyTemplateName(welcomemailtemplatename),
+				EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
+		message.setAllow8bitMIME(true);
+		message.setSentDate(new Date());
+		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+		Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
+		transport.send(message);
+		transport.close();
+	}
 }

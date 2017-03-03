@@ -534,7 +534,6 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 			LOGGER.info("Welcome mail sent successfully to the list.");
 		} catch (UnsupportedEncodingException | MessagingException | ParseException e) {
 			LOGGER.error("Error while sending mail to list - " + e.getMessage());
-			e.printStackTrace();
 		}
 	}
 
