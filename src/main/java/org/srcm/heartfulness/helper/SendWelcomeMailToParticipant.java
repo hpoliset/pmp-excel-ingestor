@@ -31,6 +31,7 @@ import org.srcm.heartfulness.util.StackTraceUtils;
  * @author Koustav Dutta
  *
  */
+
 @Component
 public class SendWelcomeMailToParticipant {
 
@@ -60,9 +61,9 @@ public class SendWelcomeMailToParticipant {
 							LOGGER.error("Exception while sending welcome mails to participant {}",ex);
 						}
 						try {
-							daemonThread.sleep(120000);
+							daemonThread.sleep(2000);
 						} catch (InterruptedException e) {
-							e.printStackTrace();
+							LOGGER.error("Exception while putting Thread to sleep {}",e);
 						}
 					}
 				}catch(Exception e){
@@ -75,7 +76,7 @@ public class SendWelcomeMailToParticipant {
 		daemonThread.setDaemon(true); 
 		daemonThread.start();
 	}
-
+	
 	public void sendWelcomeMailToParticipant(){
 
 		SendySubscriber sendySubscriber = null;
@@ -95,7 +96,7 @@ public class SendWelcomeMailToParticipant {
 						PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), participant.getEmail(),
 								EmailLogConstants.PARTICIPANT_WELCOME_MAIL, EmailLogConstants.STATUS_SUCCESS, null);
 
-						int emailAlreadyAvailableCount = welcomeMailRepository.checkForMailIdInWelcomeLog(participant.getEmail());
+						final int emailAlreadyAvailableCount = welcomeMailRepository.checkForMailIdInWelcomeLog(participant.getEmail());
 
 						sendySubscriber = new SendySubscriber();
 						if (emailAlreadyAvailableCount == 0) {
