@@ -20,7 +20,7 @@ public class ZipUtils {
 	 * @return content to be written in the report as byte[].
 	 * @throws IOException
 	 */
-	 public byte[] getByteArray( Collection<ParticipantFullDetails> participants,StringBuilder sb) throws IOException{
+	 public static byte[] getByteArray( Collection<ParticipantFullDetails> participants,StringBuilder sb) throws IOException{
 		 ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		 ZipOutputStream zos = new ZipOutputStream(baos);
 			

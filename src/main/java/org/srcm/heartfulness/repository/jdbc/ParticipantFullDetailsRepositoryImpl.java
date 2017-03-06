@@ -46,7 +46,7 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 
 		StringBuilder whereCondition = new StringBuilder("");
 		List<Object> parameters = new ArrayList<>();
-		if (!("ALL".equals(reportVO.getChannel()))) {
+		if (null != reportVO.getChannel() && !("ALL".equals(reportVO.getChannel())) && !reportVO.getChannel().isEmpty()) {
 			whereCondition.append(whereCondition.length() > 0 ? " and pg.program_channel = ? "
 					: " pg.program_channel = ? ");
 			parameters.add(reportVO.getChannel());
@@ -57,25 +57,6 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 			}
 		}
 
-	/*	if ((reportVO.getFromDate() != null && !reportVO.getFromDate().isEmpty())) {
-			try {
-				whereCondition.append(whereCondition.length() > 0 ? " and pg.program_start_date >= ? " : " pg.program_start_date >= ? ");
-				parameters.add(DateUtils.parseToSqlDate(reportVO.getFromDate()));
-			} catch (ParseException e) {
-				LOGGER.error("Error While converting date", e);
-			}
-		}
-		 
-		if (reportVO.getTillDate() != null && !reportVO.getTillDate().isEmpty()) {
-			try {
-				whereCondition.append(whereCondition.length() > 0 ? " and CASE WHEN pg.program_end_date IS NOT NULL THEN program_end_date <=? ELSE TRUE END "
-						:" CASE WHEN pg.program_end_date IS NOT NULL THEN program_end_date <=? ELSE TRUE END ");
-				parameters.add(DateUtils.parseToSqlDate(reportVO.getTillDate()));
-			} catch (ParseException e) {
-				LOGGER.error("Error While converting date", e);
-			}
-		}*/
-		
 		if ((reportVO.getFromDate() != null && !reportVO.getFromDate().isEmpty()) &&
 				reportVO.getTillDate() != null && !reportVO.getTillDate().isEmpty()) {
 			try {
@@ -91,13 +72,13 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 		}
 
 
-		if (!("ALL".equals(reportVO.getCountry()))) {
+		if (null != reportVO.getCountry() && !("ALL".equals(reportVO.getCountry())) && !reportVO.getCountry().isEmpty()) {
 			whereCondition.append(whereCondition.length() > 0 ? " and pg.event_country = ? "
 					: " pg.event_country = ? ");
 			parameters.add(reportVO.getCountry());
 		}
 
-		if (!("ALL".equals(reportVO.getState()))) {
+		if (null != reportVO.getState() && !("ALL".equals(reportVO.getState())) && !reportVO.getState().isEmpty()) {
 			whereCondition.append(whereCondition.length() > 0 ? " and pg.event_state = ? "
 					: " pg.event_state = ? ");
 			parameters.add(reportVO.getState());
@@ -108,7 +89,7 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 					: " pg.event_city = ? ");
 			parameters.add(reportVO.getCity());
 		}
-
+		
 		FullParticipantRowCallbackHandler rowCallbackHandler = new FullParticipantRowCallbackHandler();
 
 		jdbcTemplate.query("select "

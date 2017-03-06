@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.srcm.heartfulness.constants.ExpressionConstants;
 
 /**
  * Created by vsonnathi on 11/25/15.
@@ -99,6 +100,13 @@ public class DateUtils {
 	public static String getCurrentTimeInMilliSec(){
 		Calendar cal = Calendar.getInstance();
 		return new java.sql.Timestamp(cal.getTimeInMillis()).toString();
+	}
+	
+	public static int countNumDaysBetweenTwoDates(String fromDate,String toDate) throws ParseException {
+		Date from = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT).parse(fromDate);
+		Date to = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT).parse(toDate);
+		long difference = to.getTime()-from.getTime();
+		return Math.round(difference/(1000*60*60*24));
 	}
 
 }

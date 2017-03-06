@@ -77,4 +77,6 @@ public class ErrorConstants {
 	public static final String USER_DOESNOT_EXISTS = "User doesnot exists";
 	
 	public static final String ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM = "Error while fetching profile from MySRCM";
+	
+	public static final String ACCESS_DENIED_TO_VIEW_THIS_PAGE = "Access Denied";
 }
