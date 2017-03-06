@@ -7,6 +7,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
@@ -33,7 +36,7 @@ import org.srcm.heartfulness.util.StackTraceUtils;
  */
 
 @Component
-public class SendWelcomeMailToParticipant extends Thread{
+public class SendWelcomeMailToParticipant /*extends Thread*/{
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendWelcomeMailToParticipant.class);
 
@@ -46,68 +49,39 @@ public class SendWelcomeMailToParticipant extends Thread{
 	@Autowired
 	private MailLogRepository mailLogRepository;
 
-	/*@PostConstruct
-	public void startDaemonThread(){
-		Thread daemonThread = null;
-		daemonThread = new Thread(new Runnable(){
-			@Override
-			public void run(){
-				try{
-					while(true){
-						LOGGER.info("Daemon-Thread started for sending welcome mail to the participants "+new Date());
-						try{
-							sendWelcomeMailToParticipant();
-						} catch(Exception ex){
-							LOGGER.error("Exception while sending welcome mails to participant {}",ex);
-						}
-						try {
-							daemonThread.sleep(2000);
-						} catch (InterruptedException e) {
-							LOGGER.error("Exception while putting Thread to sleep {}",e);
-						}
-					}
-				}catch(Exception e){
-					LOGGER.error("Exception in main thread, daemon process is going to shutdown {}",e);
-				}finally{
-					LOGGER.info("Daemon-Thread has shut down for unwanted reasons !!"); 
-				}
-			}
-		}, "Daemon-Thread");
-		daemonThread.setDaemon(true); 
-		daemonThread.start();
-	}*/
-	
-	@Override
 	@PostConstruct
-	public void run(){
-		try{
-			while(true){
-				LOGGER.info("Daemon-Thread started for sending welcome mail to the participants "+new Date());
+	public void startDaemonThread(){
+		LOGGER.info("Daemon-Thread started for sending welcome mail to the participants at"+new Date());
+		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
+		Runnable periodicTask = new Runnable() {
+			public void run() {
 				try{
 					sendWelcomeMailToParticipant();
 				} catch(Exception ex){
 					LOGGER.error("Exception while sending welcome mails to participant {}",ex);
 				}
-				try {
-					Thread.sleep(20000);
-				} catch (InterruptedException e) {
-					LOGGER.error("Exception while putting Thread to sleep {}",e);
-				}
 			}
-		}catch(Exception e){
-			LOGGER.error("Exception in main thread, daemon process is going to shutdown {}",e);
-		}finally{
-			LOGGER.info("Daemon-Thread has shut down for unwanted reasons !!"); 
-		}
+		};
+		executor.scheduleAtFixedRate(periodicTask, 10, 10, TimeUnit.SECONDS);
 	}
-	
-	
-	public void sendWelcomeMailToParticipant(){
 
+	/**
+	 * This method is used to send the welcome mails to the participant.
+	 * The daemon process calls for this method every 2 minutes and if new 
+	 * participant record is found in PMP database, PMP will send an welcome mail 
+	 * to the participant.
+	 */
+	public void sendWelcomeMailToParticipant(){
+		LOGGER.info("Sending welcome mail to the participants at "+new Date());
 		SendySubscriber sendySubscriber = null;
 		List<SendySubscriber> subscriberList = new ArrayList<SendySubscriber>();
 		List<Participant> participants = new ArrayList<Participant>();
-		participants = welcomeMailRepository.getParticipantsToSendWelcomeEmails();
+		try{
+			participants = welcomeMailRepository.getParticipantsToSendWelcomeEmails();
+		} catch(Exception ex){
+			LOGGER.error("Exception while fetching list of participants data {}",ex);
+		}
 		LOGGER.info("Total partcipant size {}", participants.size());
 		int validEmailSubscribersCount = 0;
 
@@ -181,8 +155,5 @@ public class SendWelcomeMailToParticipant extends Thread{
 		}
 
 	}
-
-
-
 
 }
