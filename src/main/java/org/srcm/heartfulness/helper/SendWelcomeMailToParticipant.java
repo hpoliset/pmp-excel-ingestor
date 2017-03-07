@@ -63,7 +63,7 @@ public class SendWelcomeMailToParticipant {
 				}
 			}
 		};
-		executor.scheduleAtFixedRate(periodicTask, 1, 2, TimeUnit.MINUTES);
+		executor.scheduleAtFixedRate(periodicTask, 5, 30, TimeUnit.MINUTES);
 	}
 
 	/**
