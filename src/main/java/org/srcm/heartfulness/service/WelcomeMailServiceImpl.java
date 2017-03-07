@@ -330,21 +330,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 										mailLogRepository.createMailLog(pmpMailLog);
 										LOGGER.error("ADDRESS_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3) +" :Exception : {}",  aex.getMessage());
 										LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
-									} catch (MessagingException mex) {
-										PMPMailLog pmpMailLog = new PMPMailLog(map.getKey(), map.getValue().get(3),
-												EmailLogConstants.PCTPT_EMAIL_DETAILS, EmailLogConstants.STATUS_FAILED,
-												StackTraceUtils.convertStackTracetoString(mex));
-										mailLogRepository.createMailLog(pmpMailLog);
-										LOGGER.error("MESSAGING_EXCEPTION  :Failed to sent mail to" + map.getValue().get(3)+" :Exception : {}",  mex.getMessage());
-										LOGGER.error("MESSAGING_EXCEPTION  :Looking for next coordinator if available");
-									} catch (Exception ex) {
-										PMPMailLog pmpMailLog = new PMPMailLog(map.getKey(), map.getValue().get(3),
-												EmailLogConstants.PCTPT_EMAIL_DETAILS, EmailLogConstants.STATUS_FAILED,
-												StackTraceUtils.convertStackTracetoString(ex));
-										mailLogRepository.createMailLog(pmpMailLog);
-										LOGGER.error("EXCEPTION  :Failed to sent mail to" + map.getValue().get(3)+" :Exception : {}",  ex.getMessage());
-										LOGGER.error("EXCEPTION  :Looking for next coordinator if available");
-									}
+									} 
 								} else {
 									LOGGER.info("MESSAGE: Coordinator email is empty,so email not triggered for the given programID : "
 											+ map.getKey());
@@ -458,22 +444,6 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 									LOGGER.error("ADDRESS_EXCEPTION  :Failed to sent mail to {} :Exception : {}", map
 											.getKey().getCoordinatorEmail(), aex.getMessage());
 									LOGGER.error("ADDRESS_EXCEPTION  :Looking for next coordinator if available");
-								} catch (MessagingException mex) {
-									PMPMailLog pmpMailLog = new PMPMailLog(map.getKey().getProgramId(), map.getKey()
-											.getCoordinatorEmail(), EmailLogConstants.WLCMID_EMAIL_DETAILS,
-											EmailLogConstants.STATUS_FAILED, mex.toString());
-									mailLogRepository.createMailLog(pmpMailLog);
-									LOGGER.error("MESSAGE_EXCEPTION  :Failed to sent mail to {} :Exception : {}", map
-											.getKey().getCoordinatorEmail(),  mex.getMessage());
-									LOGGER.error("MESSAGE_EXCEPTION  :Looking for next coordinator if available");
-								} catch (Exception ex) {
-									PMPMailLog pmpMailLog = new PMPMailLog(map.getKey().getProgramId(), map.getKey()
-											.getCoordinatorEmail(), EmailLogConstants.WLCMID_EMAIL_DETAILS,
-											EmailLogConstants.STATUS_FAILED, ex.toString());
-									mailLogRepository.createMailLog(pmpMailLog);
-									LOGGER.error("EXCEPTION  :Failed to sent mail to {} :Exception : {} ", map
-											.getKey().getCoordinatorEmail(), ex);
-									LOGGER.error("EXCEPTION - Looking for next coordinator if available");
 								}
 							} else {
 								LOGGER.info("Coordinator email is empty. Hence email not triggered for the programID : ",

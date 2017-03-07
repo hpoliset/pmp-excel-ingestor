@@ -305,7 +305,7 @@ public interface ProgramService {
 	 * @param role
 	 * @return total count of events in db.
 	 */
-	public int getProgramCountWithUserRoleAndEmailId(/*String email*/List<String> emailList, String role);
+	public int getProgramCountWithUserRoleAndEmailId(List<String> emailList, String role);
 
 	/**
 	 * Get the list of events depending on the coordinator email and role.
@@ -316,7 +316,7 @@ public interface ProgramService {
 	 * @param pageSize
 	 * @return
 	 */
-	public List<Event> getEventListByEmailAndRole(/*String email*/List<String> emailList, String role, int offset, int pageSize);
+	public List<Event> getEventListByEmailAndRole(List<String> emailList, String role, int offset, int pageSize);
 
 	/**
 	 * Method to get the count of programs for the given user mail ID based on
@@ -327,7 +327,7 @@ public interface ProgramService {
 	 * @param role
 	 * @return
 	 */
-	public int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList/*String email*/, String role);
+	public int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList, String role);
 
 	/**
 	 * Retrieve <code>List<Event></code> from the data store by values given in
@@ -339,7 +339,7 @@ public interface ProgramService {
 	 * @param offset
 	 * @return
 	 */
-	public List<Event> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList/*String email*/, String role,
+	public List<Event> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList, String role,
 			int offset);
 
 	/**
