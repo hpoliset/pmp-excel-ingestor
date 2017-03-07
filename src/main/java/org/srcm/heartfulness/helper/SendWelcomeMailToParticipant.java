@@ -36,7 +36,7 @@ import org.srcm.heartfulness.util.StackTraceUtils;
  */
 
 @Component
-public class SendWelcomeMailToParticipant /*extends Thread*/{
+public class SendWelcomeMailToParticipant {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendWelcomeMailToParticipant.class);
 
@@ -63,7 +63,7 @@ public class SendWelcomeMailToParticipant /*extends Thread*/{
 				}
 			}
 		};
-		executor.scheduleAtFixedRate(periodicTask, 10, 10, TimeUnit.SECONDS);
+		executor.scheduleAtFixedRate(periodicTask, 1, 2, TimeUnit.MINUTES);
 	}
 
 	/**
