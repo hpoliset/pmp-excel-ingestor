@@ -1018,9 +1018,9 @@ public class EventsController {
 			if(emailList.size() == 0){
 				emailList.add(userProfile.getEmail());
 			}
-			searchRequest.setTotalCount(programService.getPgrmCountBySrchParamsWithUserRoleAndEmailId(searchRequest,/*user.getEmail()*/emailList, user.getRole()));
+			searchRequest.setTotalCount(programService.getPgrmCountBySrchParamsWithUserRoleAndEmailId(searchRequest,emailList, user.getRole()));
 			LOGGER.info("Trying to get event list for logged in user");
-			searchRequest.setEventList(programService.searchEventsWithUserRoleAndEmailId(searchRequest,emailList/*user.getEmail()*/, user.getRole(), offset));
+			searchRequest.setEventList(programService.searchEventsWithUserRoleAndEmailId(searchRequest,emailList,user.getRole(), offset));
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson("Total Count : "

@@ -1161,11 +1161,7 @@ public class ProgramServiceImpl implements ProgramService {
 	}
 
 	@Override
-	public int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList/*
-																												 * String
-																												 * email
-																												 */,
-			String role) {
+	public int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList,String role) {
 		for (EventSearchField searchField : EventSearchField.values()) {
 			if (searchField.name().equals(searchRequest.getSearchField())) {
 				searchRequest.setSearchField(searchField.getValue());
@@ -1178,11 +1174,7 @@ public class ProgramServiceImpl implements ProgramService {
 	}
 
 	@Override
-	public List<Event> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList/*
-																											 * String
-																											 * email
-																											 */,
-			String role, int offset) {
+	public List<Event> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList,String role, int offset) {
 		List<Event> eventList = new ArrayList<Event>();
 
 		List<Program> programList = programRepository.searchEventsWithUserRoleAndEmailId(searchRequest, emailList,
