@@ -1300,6 +1300,7 @@ public class ProgramServiceImpl implements ProgramService {
 			program.setWelcomeCardSignedByName(event.getWelcomeCardSignedByName());
 			program.setWelcomeCardSignerIdCardNumber(event.getWelcomeCardSignerIdCardNumber());
 			program.setRemarks(event.getRemarks());
+			program.setCreatedSource(PMPConstants.CREATED_SOURCE_DASHBOARD);
 			if (null == event.getIsEwelcomeIdGenerationDisabled()
 					|| event.getIsEwelcomeIdGenerationDisabled().trim().isEmpty()) {
 				errors.put("is EwelcomeId Generation Disabled", "EwelcomeId Generation Disabled state is required");

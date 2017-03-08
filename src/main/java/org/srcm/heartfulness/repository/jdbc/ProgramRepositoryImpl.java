@@ -221,7 +221,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		// If there are participants update them.
 		List<Participant> participants = program.getParticipantList();
 		for (Participant participant : participants) {
-			participant.setCreatedSource("Excel");
+			participant.setCreatedSource(PMPConstants.CREATED_SOURCE_EXCEL);
 			participant.setProgramId(program.getProgramId());
 			participantRepository.save(participant);
 		}
@@ -285,7 +285,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		// If there are participants update them.
 		List<Participant> participants = program.getParticipantList();
 		for (Participant participant : participants) {
-			participant.setCreatedSource("SMS");
+			participant.setCreatedSource(PMPConstants.CREATED_SOURCE_SMS);
 			participant.setProgramId(program.getProgramId());
 			participantRepository.save(participant);
 		}

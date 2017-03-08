@@ -323,6 +323,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 							program.setProgramName(newEventName);
 							program.setUpdatedBy("admin");
 							program.setUpdateTime(new Date());
+							program.setCreatedSource(PMPConstants.CREATED_SOURCE_SMS);
 							if (programRepository.isProgramExistByProgramName(program)) {
 								response = SMSConstants.SMS_UPDATE_EVENT_RESPONSE_ALREADY_EXISTS_1 + newEventName
 										+ SMSConstants.SMS_UPDATE_EVENT_RESPONSE_ALREADY_EXISTS_2;
@@ -434,6 +435,7 @@ public class SMSIntegrationServiceImpl implements SMSIntegrationService {
 						participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_FAILED_STATE);
 						participant.setEwelcomeIdRemarks(ErrorConstants.PRELIMINARY_SITTINGS_NOT_COMPLETED);
 						participant.setIsEwelcomeIdInformed(0);
+						participant.setReceiveUpdates(1);
 						List<Participant> participantList = program.getParticipantList();
 						participantList.add(participant);
 						try {
