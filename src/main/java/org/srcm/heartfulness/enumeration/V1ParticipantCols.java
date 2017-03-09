@@ -19,7 +19,7 @@ public enum V1ParticipantCols {
 	INTRODUCED_DATE("Introduced Date" + "\n" + "(dd/mm/yyyy)", 14, 8),
 	INTRODUCED_BY("Introduced By", 14, 9),
 	REMARKS("Remarks",14, 10);
-	
+
 	/**Instance to identify the header value for participants in v1.0 template. */
 	private String header;
 	/**Instance to identify the row value for participants in v1.0 template. */
@@ -51,7 +51,7 @@ public enum V1ParticipantCols {
 	public void setHeader(String header) {
 		this.header = header;
 	}
-	
+
 	/**
 	 *  get hold of the participant row value for v1.0 template.
 	 * 
@@ -60,7 +60,7 @@ public enum V1ParticipantCols {
 	public int getRow() {
 		return row;
 	}
-	
+
 	/**
 	 * set the participant row value for v1.0 template.
 	 * 

@@ -7,7 +7,7 @@ package org.srcm.heartfulness.enumeration;
  *
  */
 public enum V2ProgramCols2 {
-	
+
 	EVENT_TYPE("Event Type*", 0, 2), 
 	OTHER("Other", 2, 2), 
 	EVENT_PLACE("Event Place*", 0, 3), 
@@ -28,7 +28,7 @@ public enum V2ProgramCols2 {
 	PRECEPTOR_ID("Preceptor ID*", 0, 14), 
 	WELCOME_CARD_SIGNER_ID("Welcome Card Signer's ID", 2, 14), 
 	REMARKS("Remarks:", 0, 16);
-	
+
 	/**Instance to identify the header value for participants in v2.1 template. */
 	private String header;
 	/**Instance to identify the cell value for participants in v2.1 template. */
@@ -97,6 +97,6 @@ public enum V2ProgramCols2 {
 	public void setCell(int cell) {
 		this.cell = cell;
 	}
-	
-	
+
+
 }

@@ -10,7 +10,7 @@ import org.srcm.heartfulness.util.InvalidExcelFileException;
  * Created by Koustav Dutta.
  */
 public interface ExcelDataExtractor {
-	
+
 	/**
 	 * This method is used to get all the program details from the corresponding excel file.
 	 * 

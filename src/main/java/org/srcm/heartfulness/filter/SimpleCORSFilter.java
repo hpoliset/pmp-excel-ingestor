@@ -18,7 +18,7 @@ public class SimpleCORSFilter implements Filter {
 
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException,
-			ServletException {
+	ServletException {
 		HttpServletResponse response = (HttpServletResponse) res;
 		HttpServletRequest request = (HttpServletRequest) req;
 		response.addHeader("Access-Control-Allow-Origin", "*");
@@ -27,7 +27,7 @@ public class SimpleCORSFilter implements Filter {
 			response.addHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 			response.addHeader("Access-Control-Max-Age", "1");// 30 min
 		}
-			chain.doFilter(request, response);
+		chain.doFilter(request, response);
 	}
 
 	public void init(FilterConfig filterConfig) {

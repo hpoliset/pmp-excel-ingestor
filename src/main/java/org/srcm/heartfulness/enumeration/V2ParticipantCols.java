@@ -7,7 +7,7 @@ package org.srcm.heartfulness.enumeration;
  *
  */
 public enum V2ParticipantCols {
-	
+
 	NAME("Name*", 0, 0), 
 	FIRST_SITTING("1st Sitting\n(Y/N/Date)", 0, 1), 
 	SECONND_SITTING("2nd Sitting\n(Y/N/Date)", 0, 2), 
@@ -27,7 +27,7 @@ public enum V2ParticipantCols {
 	WELCOME_CARD_NUMBER("Welcome Card "+"\n"+"Number (Issued after 3rd sittings)", 0, 16),
 	WELCOME_CARD_ISSUE_DATE("Welcome Card\nIssued Date", 0, 17),
 	REMARKS("Remarks", 0, 18);
-	
+
 	/**Instance to identify the header value for participants in v2.1 template. */
 	private String header;
 	/**Instance to identify the row value for participants in v2.1 template. */
@@ -78,7 +78,7 @@ public enum V2ParticipantCols {
 	public void setCell(int cell) {
 		this.cell = cell;
 	}
-	
+
 	/**
 	 *  get hold of the participant row value for v2.1 template.
 	 * 

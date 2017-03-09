@@ -22,7 +22,7 @@ public enum ExcelType {
 
 	/** Instance of validator to be used for the corresponding template type.  */
 	private EventDetailsExcelValidator validator;
-	
+
 	/** Instance of the excel parser to be used for the corresponding template type. */
 	private ExcelDataExtractor extractor;
 

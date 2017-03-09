@@ -8,7 +8,7 @@ package org.srcm.heartfulness.enumeration;
  *
  */
 public enum ParticipantSearchField {
-	
+
 	printName("print_name"),
 	gender("gender"),
 	addressLine1("address_line1"),
@@ -21,9 +21,9 @@ public enum ParticipantSearchField {
 	introducedStatus("introduced"),
 	introducedBy("introduced_by"),
 	abhyasiId("abhyasi_id");
-	
+
 	String value;
-	
+
 	private ParticipantSearchField() {
 	}
 

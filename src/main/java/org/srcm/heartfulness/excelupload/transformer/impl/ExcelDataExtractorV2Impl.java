@@ -161,7 +161,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			participant.setGender(participantRow.getCell(13, Row.CREATE_NULL_AS_BLANK).toString().trim());
 			participant.setAgeGroup(participantRow.getCell(14, Row.CREATE_NULL_AS_BLANK).toString().trim());
 			participant.setLanguage(participantRow.getCell(15, Row.CREATE_NULL_AS_BLANK).toString().trim());
-			
+
 			String welcomeCardNo = participantRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if(welcomeCardNo.isEmpty()){
 				if(disableEwelcomeIdGeneration){
@@ -179,7 +179,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 				}
 				participant.setWelcomeCardDate(welcomeCardDate);
 			}
-			
+
 			/*participant.setWelcomeCardNumber(participantRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString().trim());
 			String welcomeCardDateStr = participantRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			Date welcomeCardDate = null;
@@ -191,8 +191,8 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			}
 
 			participant.setWelcomeCardDate(welcomeCardDate);*/
-			
-			
+
+
 			participant.setRemarks(participantRow.getCell(18, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		}
 		return participant;
@@ -262,8 +262,8 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		LOGGER.info("Completed extracting program for V2 template");
 		return program;
 	}
-	
-   /* public List<Participant> getParticipantList(Sheet participantsSheet,boolean disableEwelcomeIdGeneration) throws InvalidExcelFileException {
+
+	/* public List<Participant> getParticipantList(Sheet participantsSheet,boolean disableEwelcomeIdGeneration) throws InvalidExcelFileException {
         LOGGER.info("Started extracting participant for V2 template");
         List<Participant> participantList = new ArrayList<Participant>();
         int totalRows = participantsSheet.getPhysicalNumberOfRows();
@@ -281,6 +281,6 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
         LOGGER.info("Completed extracting participant for V2 template");
         return participantList;
     }
-*/
+	 */
 
 }

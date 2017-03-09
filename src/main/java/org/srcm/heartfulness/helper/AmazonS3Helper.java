@@ -30,17 +30,11 @@ import org.srcm.heartfulness.constants.ExpressionConstants;
 public class AmazonS3Helper {
 
 	private String secretkey;
-
 	private String httpmethod;
-
 	private String algorithm;
-
 	private String signedheaders;
-
 	private String region;
-
 	private String service;
-
 	private String host;
 
 	public String getSecretkey() {
@@ -145,8 +139,8 @@ public class AmazonS3Helper {
 				+ AmazonS3Constants.DATE_HEADER + ExpressionConstants.COLON_HEADER_SEPARATER + getUTCDateAndTime()
 				+ ExpressionConstants.NEXT_LINE;
 		String canonicalRequest = httpmethod.trim() + ExpressionConstants.NEXT_LINE + canonicalURI.trim()
-				+ ExpressionConstants.NEXT_LINE + canonicalQueryString + ExpressionConstants.NEXT_LINE + CanonicalHeaders
-				+ ExpressionConstants.NEXT_LINE + signedheaders.trim() + ExpressionConstants.NEXT_LINE + hashedPayload;
+		+ ExpressionConstants.NEXT_LINE + canonicalQueryString + ExpressionConstants.NEXT_LINE + CanonicalHeaders
+		+ ExpressionConstants.NEXT_LINE + signedheaders.trim() + ExpressionConstants.NEXT_LINE + hashedPayload;
 		return canonicalRequest;
 	}
 
@@ -243,7 +237,7 @@ public class AmazonS3Helper {
 	 * @throws InvalidKeyException
 	 */
 	public byte[] getHmacSHA256Content(String data, byte[] key) throws NoSuchAlgorithmException, IllegalStateException,
-			UnsupportedEncodingException, InvalidKeyException {
+	UnsupportedEncodingException, InvalidKeyException {
 		String algorithm = AmazonS3Constants.ALGORITHM_HMACSHA256;
 		Mac mac = Mac.getInstance(algorithm);
 		mac.init(new SecretKeySpec(key, algorithm));
