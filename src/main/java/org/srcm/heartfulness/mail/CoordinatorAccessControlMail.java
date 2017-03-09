@@ -248,7 +248,7 @@ public class CoordinatorAccessControlMail {
 	 */
 	public void sendMailToPreceptorToUpdateCoordinatorEmailID(
 			CoordinatorAccessControlEmail coordinatorAccessControlEmail) throws AddressException, MessagingException,
-			UnsupportedEncodingException, ParseException {
+	UnsupportedEncodingException, ParseException {
 		try {
 			Session session = sendMail.getSession();
 			SMTPMessage message = new SMTPMessage(session);
@@ -317,7 +317,7 @@ public class CoordinatorAccessControlMail {
 	 * @throws ParseException
 	 */
 	public void sendMailToCoordinatorToUpdatePreceptorID(CoordinatorEmail coordinator) throws AddressException,
-			MessagingException, UnsupportedEncodingException, ParseException {
+	MessagingException, UnsupportedEncodingException, ParseException {
 
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, sendMail.getName(coordinator.getCoordinatorName()));
 		addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL

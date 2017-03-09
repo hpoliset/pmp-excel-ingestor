@@ -8,15 +8,11 @@ package org.srcm.heartfulness.model;
 public class SessionImageDetails {
 
 	private int imageId;
-
 	private int sessionId;
-
 	private String imageName;
-
 	private String imagePath;
-
 	private String uploadedBy;
-	
+
 	public SessionImageDetails() {
 		super();
 	}
@@ -29,7 +25,7 @@ public class SessionImageDetails {
 		this.imagePath = imagePath;
 		this.uploadedBy = uploadedBy;
 	}
-	
+
 	public SessionImageDetails(int sessionId, String imageName, String imagePath, String uploadedBy) {
 		super();
 		this.sessionId = sessionId;
@@ -77,6 +73,4 @@ public class SessionImageDetails {
 	public void setUploadedBy(String uploadedBy) {
 		this.uploadedBy = uploadedBy;
 	}
-
-	
 }

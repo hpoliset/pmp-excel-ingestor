@@ -11,16 +11,16 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  */
 @JsonPropertyOrder({ "totalcount", "pageindex", "pagesize", "eventlist" })
 public class EventPagination {
-	
+
 	@JsonProperty("totalcount")
 	private int  totalCount;
-	
+
 	@JsonProperty("pageindex")
 	private int pageIndex;
-	
+
 	@JsonProperty("pagesize")
 	private int pageSize;
-	
+
 	@JsonProperty("eventlist")
 	private List<org.srcm.heartfulness.model.json.request.Event> eventList;
 
@@ -55,8 +55,8 @@ public class EventPagination {
 	public void setEventList(List<org.srcm.heartfulness.model.json.request.Event> eventList) {
 		this.eventList = eventList;
 	}
-	
-	
-	
+
+
+
 
 }

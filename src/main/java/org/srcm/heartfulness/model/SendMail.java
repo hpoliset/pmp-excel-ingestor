@@ -6,35 +6,35 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SendMail {
-	
+
 	@JsonProperty("apiKey")
 	private String apiKey;
-	
+
 	@JsonProperty("fromName")
 	private String fromName;
-	
+
 	@JsonProperty("fromMailID")
 	private String fromMailID;
-	
+
 	@JsonProperty("replyTo")
 	private String replyTo;
-	
+
 	@JsonProperty("subject")
 	private String subject;
-	
+
 	@JsonIgnore
 	private String htmlText;
-	
+
 	@JsonIgnore
 	private String plainText;
-	
+
 	@JsonProperty("subscribersList")
 	private String subscribersList;
-	
+
 	@JsonProperty("sendCampaign")
 	private String sendCampaign;
-	
-	
+
+
 	public SendMail() {
 		super();
 	}
@@ -111,5 +111,5 @@ public class SendMail {
 				+ replyTo + ", subject=" + subject + ", htmlText=" + htmlText + ", plainText=" + plainText
 				+ ", subscribersList=" + subscribersList + ", sendCampaign=" + sendCampaign + "]";
 	}
-	
+
 }

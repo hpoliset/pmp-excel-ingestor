@@ -12,39 +12,35 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Aspirant {
 
 	private String name;
-	
+
 	@JsonProperty("first_name")
 	private String firstName;
-	
+
 	private String email;
-	
+
 	@JsonProperty("srcm_group")
 	private String srcmGroup;
-	
+
 	@JsonProperty("first_sitting_by")
 	private String firstSittingBy;
-	
+
 	@JsonProperty("date_of_birth")
 	private String dateOfBirth;
-	
+
 	@JsonProperty("date_of_joining")
 	private String dateOfJoining;
 	
 	private String mobile;
-	
 	private String street;
-	
 	private String street2;
 	
 	@JsonProperty("postal_code")
 	private String postalCode;
 	
 	private String city;
-	
 	private String state;
-	
 	private String country;
-	
+
 	public String getName() {
 		return name;
 	}
@@ -164,6 +160,6 @@ public class Aspirant {
 				+ dateOfJoining + ", mobile=" + mobile + ", street=" + street + ", street2=" + street2 + ", postalCode="
 				+ postalCode + ", city=" + city + ", state=" + state + ", country=" + country + "]";
 	}
-	
-	
+
+
 }

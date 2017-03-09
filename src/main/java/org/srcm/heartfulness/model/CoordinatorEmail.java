@@ -12,29 +12,18 @@ import java.util.Date;
 public class CoordinatorEmail {
 
 	private String coordinatorEmail;
-	
 	private String totalParticipantCount;
-	
 	private String pctptAlreadyRcvdWlcmMailCount;
-
 	private String pctptRcvdWlcmMailYstrdayCount;
-	
 	private String eventName;
-	
 	private String coordinatorName;
-	
 	private String programId;
-	
 	private Date programCreateDate;
-	
 	private String eventID;
-	
 	private String eventCity;
-	
 	private String eventPlace;
-	
 	private Date programCreationDate;
-	
+
 
 	public String getCoordinatorEmail() {
 		return coordinatorEmail;
@@ -123,7 +112,7 @@ public class CoordinatorEmail {
 	public void setEventPlace(String eventPlace) {
 		this.eventPlace = eventPlace;
 	}
-	
+
 	public Date getProgramCreationDate() {
 		return programCreationDate;
 	}
@@ -229,5 +218,5 @@ public class CoordinatorEmail {
 		return true;
 	}
 
-	
+
 }

@@ -12,41 +12,30 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  * @author himasreev
  *
  */
-@JsonPropertyOrder({ "serialNo", "id", "username", "ipAddress", "apiName", "totalRequestedTime", "totalResponseTime","timeDifference","status","errorMessage","requestBody","responseBody", "viewAccessLogDetailsData" })
+@JsonPropertyOrder({ "serialNo", "id", "username", "ipAddress", 
+	"apiName", "totalRequestedTime", "totalResponseTime","timeDifference",
+	"status","errorMessage","requestBody","responseBody", "viewAccessLogDetailsData" })
 public class PMPAPIAccessLog {
 
 	private int id;
-
 	private String username;
-
 	private String ipAddress;
-
 	private String apiName;
-
 	private String totalRequestedTime;
-
 	private String totalResponseTime;
-
 	private String status;
-
 	private String errorMessage;
-	
 	private String requestBody;
-	
 	private String responseBody;
-	
 	private String timeDifference;
-	
 	private String serialNo;
-	
 	private String viewAccessLogDetailsData;
-	
 	private String viewReqRespBody;
 
 	public PMPAPIAccessLog() {
 		super();
 	}
-	
+
 	public PMPAPIAccessLog(String username, String ipAddress, String apiName, String totalRequestedTime,
 			String totalResponseTime, String status, String errorMessage, String requestBody, String responseBody) {
 		super();
@@ -60,7 +49,7 @@ public class PMPAPIAccessLog {
 		this.requestBody = requestBody;
 		this.responseBody = responseBody;
 	}
-	
+
 	public PMPAPIAccessLog(String username, String ipAddress, String apiName, String totalRequestedTime,
 			String totalResponseTime, String status, String errorMessage, String requestBody) {
 		super();
@@ -73,7 +62,7 @@ public class PMPAPIAccessLog {
 		this.errorMessage = errorMessage;
 		this.requestBody = requestBody;
 	}
-	
+
 	public PMPAPIAccessLog(int id, String username, String ipAddress, String apiName, String totalRequestedTime,
 			String totalResponseTime, String status ) {
 		super();
@@ -149,7 +138,7 @@ public class PMPAPIAccessLog {
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
-	
+
 	public String getRequestBody() {
 		return requestBody;
 	}
@@ -166,7 +155,7 @@ public class PMPAPIAccessLog {
 		this.responseBody = responseBody;
 	}
 
-	
+
 	public String getTimeDifference() {
 		return timeDifference;
 	}
@@ -175,7 +164,7 @@ public class PMPAPIAccessLog {
 		this.timeDifference = timeDifference;
 	}
 
-	
+
 	public String getSerialNo() {
 		return serialNo;
 	}

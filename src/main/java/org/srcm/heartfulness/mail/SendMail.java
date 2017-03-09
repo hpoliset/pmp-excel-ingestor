@@ -643,7 +643,7 @@ public class SendMail {
 
 	public void sendGeneratedEwelcomeIdDetailslToCoordinator(CoordinatorEmail coordinatorEmail,
 			List<Participant> participants, List<Participant> failedParticipants, Session session)
-			throws AddressException, MessagingException, UnsupportedEncodingException {
+					throws AddressException, MessagingException, UnsupportedEncodingException {
 
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail, name));
@@ -661,8 +661,8 @@ public class SendMail {
 				EmailLogConstants.EVENT_START_DATE_PARAMETER,
 				coordinatorEmail.getProgramCreateDate() != null ? "held on "
 						+ outputsdf.format(coordinatorEmail.getProgramCreateDate()) : (coordinatorEmail
-						.getProgramCreationDate() != null ? "held on "
-						+ outputsdf.format(coordinatorEmail.getProgramCreationDate()) : ""));
+								.getProgramCreationDate() != null ? "held on "
+										+ outputsdf.format(coordinatorEmail.getProgramCreationDate()) : ""));
 		StringBuilder sb = new StringBuilder();
 		if (!participants.isEmpty()) {
 			sb.append("<p>The following e-welcome ID's has been generated for the below given participants : ");
@@ -784,7 +784,7 @@ public class SendMail {
 	}
 
 	public void sendWelcomeMail() throws AddressException, MessagingException, UnsupportedEncodingException,
-			ParseException {
+	ParseException {
 		try {
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, -1);
@@ -904,7 +904,7 @@ public class SendMail {
 		});
 		return session;
 	}
-	
+
 	/**
 	 * This method is used to sent welcome mails to the 
 	 * participants.

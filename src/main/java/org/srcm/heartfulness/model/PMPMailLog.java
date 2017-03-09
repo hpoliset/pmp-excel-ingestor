@@ -8,17 +8,12 @@ package org.srcm.heartfulness.model;
  *
  */
 public class PMPMailLog {
-	
+
 	private int id;
-	
 	private String programId;
-	
 	private String coordinatorEmail;
-	
 	private String emailType;
-	
 	private String emailSentStatus;
-	
 	private String errorMessage;
 
 	public PMPMailLog() {
@@ -89,5 +84,5 @@ public class PMPMailLog {
 				+ ", emailType=" + emailType + ", emailSentStatus=" + emailSentStatus + ", errorMessage=" + errorMessage
 				+ "]";
 	}
-	
+
 }

@@ -28,10 +28,10 @@ public class SessionDetails {
 
 	@JsonProperty("session_number")
 	private String sessionNumber;
-	
+
 	@JsonIgnore
 	private Date sessionDate;
-	
+
 	@JsonProperty("session_date")
 	private String sessionStringDate; 
 
@@ -52,13 +52,13 @@ public class SessionDetails {
 
 	@JsonProperty("comments")
 	private String comments;
-	
+
 	@JsonIgnore
 	private int isDeleted;
-	
+
 	@JsonIgnore
 	private Date createTime;
-	
+
 	@JsonIgnore
 	private Date updateTime;
 

@@ -9,18 +9,14 @@ package org.srcm.heartfulness.model;
 public class ProgramPermissionLetterdetails {
 
 	private int permissionLetterId;
-
 	private int programId;
-
 	private String permissionLetterName;
-
 	private String permissionLetterPath;
-
 	private String uploadedBy;
-	
+
 	public ProgramPermissionLetterdetails() {
 	}
-	
+
 	public ProgramPermissionLetterdetails(int programId, String permissionLetterName, String permissionLetterPath,
 			String uploadedBy) {
 		super();

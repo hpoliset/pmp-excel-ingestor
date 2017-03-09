@@ -1,7 +1,6 @@
 package org.srcm.heartfulness.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This class holds the details of the event coordinators.
@@ -13,24 +12,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ProgramCoordinators {
 
 	private int id;
-
 	private int programId;
-
 	private int userId;
-	
-	//@JsonProperty("coordinator_name")
 	private String name;
-
-	//@JsonProperty("coordinator_email")
 	private String email;
-
 	private int isPrimaryCoordinator;
-	
-	//@JsonProperty("event_id")
 	private String eventId;
-	
 	private int isPreceptor;
-	
+
 	public ProgramCoordinators() {
 		super();
 	}

@@ -29,7 +29,7 @@ public class SendySubscriber {
 
 	@JsonIgnore
 	private int participantId;
-	
+
 	@JsonIgnore
 	private int isCoOrdinatorInformed;
 

@@ -77,7 +77,7 @@ public class WelcomeMailDetails {
 	public void setSubscribed(int subscribed) {
 		this.subscribed = subscribed;
 	}
-	
+
 	public int getConfirmed() {
 		return confirmed;
 	}
@@ -85,7 +85,7 @@ public class WelcomeMailDetails {
 	public void setConfirmed(int confirmed) {
 		this.confirmed = confirmed;
 	}
-	
+
 	public String getEmailStatus() {
 		return emailStatus;
 	}

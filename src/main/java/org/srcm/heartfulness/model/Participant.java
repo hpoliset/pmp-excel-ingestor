@@ -47,24 +47,17 @@ public class Participant {
 	private String profession;
 	private String department;
 	private String language;
-
 	private Program program;
 	private int excelSheetSequenceNumber;
 	private String seqId;
-
 	private int welcomeMailSent;
-
 	private String createdSource;
-
 	private int isCoOrdinatorInformed;
-	
 	private Integer isEwelcomeIdInformed;
-	
 	private String ewelcomeIdState;
-	
 	private String ewelcomeIdRemarks;
-	
-	
+
+
 	public String getCreatedSource() {
 		return createdSource;
 	}
@@ -373,7 +366,7 @@ public class Participant {
 		this.printName = printName;
 	}
 
-	
+
 	public void setProfession(String profession) {
 		this.profession = profession;
 	}
@@ -480,5 +473,5 @@ public class Participant {
 				+ ", isEwelcomeIdInformed=" + isEwelcomeIdInformed + ", ewelcomeIdState=" + ewelcomeIdState
 				+ ", ewelcomeIdRemarks=" + ewelcomeIdRemarks + "]";
 	}
-	
+
 }

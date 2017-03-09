@@ -10,7 +10,7 @@ import java.util.List;
  *
  */
 public class PMPLogData {
-	
+
 	List<PMPAPIAccessLog> data;
 
 	public List<PMPAPIAccessLog> getData() {
@@ -21,9 +21,4 @@ public class PMPLogData {
 		this.data = data;
 	}
 
-	
-	
-	
-	
-	
 }
