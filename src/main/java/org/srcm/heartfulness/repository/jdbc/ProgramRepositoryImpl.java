@@ -214,7 +214,8 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 					+ "organization_city=:organizationCity, "+ "organization_location=:organizationLocation, "+ "organization_full_address=:organizationFullAddress, "
 					+ "organization_decision_maker_name=:organizationDecisionMakerName, "+ "organization_decision_maker_email=:organizationDecisionMakerEmail, "
 					+ "organization_decision_maker_phone_no=:organizationDecisionMakerPhoneNo, "
-					+ "is_ewelcome_id_generation_disabled=:isEwelcomeIdGenerationDisabled "
+					+ "is_ewelcome_id_generation_disabled=:isEwelcomeIdGenerationDisabled, "
+					+ "jira_issue_number=:jiraIssueNumber "
 					+ "WHERE program_id=:programId",
 					parameterSource);
 		}

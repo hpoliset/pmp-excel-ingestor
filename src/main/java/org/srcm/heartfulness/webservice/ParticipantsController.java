@@ -661,7 +661,7 @@ public class ParticipantsController {
 	 * @return
 	 */
 	@RequestMapping(value = "/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> searchEvents(@RequestHeader(value = "Authorization") String token,
+	public ResponseEntity<?> searchParticipants(@RequestHeader(value = "Authorization") String token,
 			@RequestBody SearchRequest searchRequest, @Context HttpServletRequest httpRequest) {
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,

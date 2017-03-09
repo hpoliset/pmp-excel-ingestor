@@ -735,6 +735,7 @@ public class ProgramServiceImpl implements ProgramService {
 		eventDetails.setRemarks(program.getRemarks());
 		eventDetails.setIsEwelcomeIdGenerationDisabled(program.getIsEwelcomeIdGenerationDisabled());
 		eventDetails.setIsReadOnly(program.getIsReadOnly());
+		eventDetails.setJiraIssueNumber(program.getJiraIssueNumber());
 		return eventDetails;
 	}
 
@@ -1301,6 +1302,7 @@ public class ProgramServiceImpl implements ProgramService {
 			program.setWelcomeCardSignerIdCardNumber(event.getWelcomeCardSignerIdCardNumber());
 			program.setRemarks(event.getRemarks());
 			program.setCreatedSource(PMPConstants.CREATED_SOURCE_DASHBOARD);
+			program.setJiraIssueNumber(event.getJiraIssueNumber());
 			if (null == event.getIsEwelcomeIdGenerationDisabled()
 					|| event.getIsEwelcomeIdGenerationDisabled().trim().isEmpty()) {
 				errors.put("is EwelcomeId Generation Disabled", "EwelcomeId Generation Disabled state is required");

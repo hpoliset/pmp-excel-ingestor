@@ -227,8 +227,6 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
 			setParticipantEWelcomeIDStatus(participant.getProgram(), participant,
 					PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, null);
-			participant.setReceiveUpdates(1);
-			participant.setCreatedSource(PMPConstants.CREATED_SOURCE_DASHBOARD);
 		}
 		participantRepository.save(participant);
 		participantRequest.setSeqId(participant.getSeqId());
