@@ -14,7 +14,7 @@ import org.srcm.heartfulness.model.CurrentUser;
 import org.srcm.heartfulness.service.UserProfileService;
 
 /**
- * Class to authenticate and authorize the user and popoluate details in
+ * Class to authenticate and authorize the user and populate details in
  * security context holder.
  * 
  * @author himasreev
