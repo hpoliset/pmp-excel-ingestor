@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -28,6 +29,7 @@ import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.repository.MailLogRepository;
 import org.srcm.heartfulness.repository.WelcomeMailRepository;
+import org.srcm.heartfulness.util.DaemonThreadFactory;
 import org.srcm.heartfulness.util.StackTraceUtils;
 
 /**
@@ -52,7 +54,8 @@ public class SendWelcomeMailToParticipant {
 	@PostConstruct
 	public void startDaemonThread(){
 		LOGGER.info("Daemon-Thread started for sending welcome mail to the participants at"+new Date());
-		ScheduledExecutorService executor = Executors.newScheduledThreadPool(0);//newSingleThreadScheduledExecutor();
+		ThreadFactory threadFactory = new DaemonThreadFactory();
+		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(threadFactory);
 
 		Runnable periodicTask = new Runnable() {
 			public void run() {
