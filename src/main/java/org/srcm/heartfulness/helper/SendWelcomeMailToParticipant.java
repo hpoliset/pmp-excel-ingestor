@@ -68,7 +68,7 @@ public class SendWelcomeMailToParticipant {
 		};
 		/*executor.scheduleAtFixedRate(() -> sendWelcomeMailToParticipant(),
         2, 2, TimeUnit.MINUTES);*/
-		executor.scheduleAtFixedRate(periodicTask, 5, 10, TimeUnit.MINUTES);
+		executor.scheduleAtFixedRate(periodicTask, 5, 60, TimeUnit.MINUTES);
 	}
 
 	/**
