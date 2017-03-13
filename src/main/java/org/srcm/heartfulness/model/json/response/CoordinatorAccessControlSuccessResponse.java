@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CoordinatorAccessControlSuccessResponse implements CoordinatorAccessControlResponse {
-	
+
 	@JsonProperty("success")
 	private String success;
 

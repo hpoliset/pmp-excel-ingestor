@@ -9,11 +9,8 @@ package org.srcm.heartfulness.model.json.googleapi.response;
 public class Address {
 
 	private String city;
-
 	private String state;
-
 	private String country;
-
 	private String pincode;
 
 	public String getCity() {

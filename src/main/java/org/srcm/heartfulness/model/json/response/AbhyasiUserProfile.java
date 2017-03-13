@@ -13,39 +13,22 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class AbhyasiUserProfile {
 
 	private Integer id;
-
 	private String name;
-
 	private String first_name;
-
 	private String middle_name;
-
 	private String last_name;
-
 	private String email;
-
 	private String ref;
-
 	private AbhyasiSrcmGroup srcm_group;
-
 	private boolean is_prefect;
-
 	private String date_of_joining;
-
 	private String date_of_birth;
-
 	private String city;
-
 	private AbhaysiCityID city_id;
-
 	private AbhyasiState state;
-
 	private AbhyasiCountry country;
-
 	private Integer prefect_id;
-
 	private String abhyasi_status;
-	
 	private String gender;
 
 	public Integer getId() {

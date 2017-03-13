@@ -13,13 +13,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class CitiesAPIResponse {
 
 	private String id;
-
 	private String name;
-
 	private State state;
-
 	private String longitude;
-
 	private String latitude;
 
 	public CitiesAPIResponse() {

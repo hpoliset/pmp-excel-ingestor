@@ -1153,6 +1153,7 @@ public class ProgramServiceImpl implements ProgramService {
 			event.setPreceptorName(program.getPreceptorName());
 			event.setPreceptorIdCardNumber(program.getPreceptorIdCardNumber());
 			event.setRemarks(program.getRemarks());
+			event.setJiraIssueNumber(program.getJiraIssueNumber());
 			eventList.add(event);
 		}
 
@@ -1214,6 +1215,7 @@ public class ProgramServiceImpl implements ProgramService {
 			event.setEventCountry(program.getEventCountry());
 			event.setPreceptorName(program.getPreceptorName());
 			event.setPreceptorIdCardNumber(program.getPreceptorIdCardNumber());
+			event.setJiraIssueNumber(program.getJiraIssueNumber());
 			eventList.add(event);
 		}
 

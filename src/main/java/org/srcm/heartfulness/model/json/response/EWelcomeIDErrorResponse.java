@@ -14,11 +14,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class EWelcomeIDErrorResponse {
 
 	private List<String> email;
-
 	private List<String> validation;
-
 	private String error;
-
 	private List<String> mobile;
 
 	public List<String> getEmail() {

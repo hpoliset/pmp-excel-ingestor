@@ -28,7 +28,8 @@ public enum EventSearchField {
 	preceptorName("preceptor_name"),
 	preceptorIdCardNumber("preceptor_id_card_number"),
 	welcomeCardSignedByName("welcome_card_signed_by_name"),
-	welcomeCardSignerIdCardNumber("welcome_card_signer_id_card_number");
+	welcomeCardSignerIdCardNumber("welcome_card_signer_id_card_number"),
+	jiraIssueNumber("jira_issue_number");
 
 	String value;
 

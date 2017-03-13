@@ -14,9 +14,8 @@ public class GoogleResponse {
 
 	@JsonProperty(value = "results")
 	private List<Result> results;
-
 	private String status;
-
+	
 	public List<Result> getResults() {
 		return results;
 	}

@@ -10,13 +10,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 public class SuccessResponse implements PMPResponse {
-	
+
 	@JsonProperty("success")
 	private String success;
-	
+
 	@JsonProperty("success_description")
 	private String success_description;
-	
+
 	public SuccessResponse(String success, String success_description) {
 		super();
 		this.success = success;
@@ -38,6 +38,6 @@ public class SuccessResponse implements PMPResponse {
 	public void setSuccess_description(String success_description) {
 		this.success_description = success_description;
 	}
-	
+
 
 }

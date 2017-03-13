@@ -14,9 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class CreateUserErrorResponse {
 
 	private String detail;
-
 	private List<String> non_field_errors;
-
 	private List<String> email;
 
 	public String getDetail() {

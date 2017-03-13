@@ -65,7 +65,7 @@ public class SendWelcomeMailToParticipant {
 		};
 		/*executor.scheduleAtFixedRate(() -> sendWelcomeMailToParticipant(),
         2, 2, TimeUnit.MINUTES);*/
-		executor.scheduleAtFixedRate(periodicTask, 2, 2, TimeUnit.MINUTES);
+		executor.scheduleAtFixedRate(periodicTask, 5, 60, TimeUnit.MINUTES);
 	}
 
 	/**
@@ -84,11 +84,13 @@ public class SendWelcomeMailToParticipant {
 		} catch(Exception ex){
 			LOGGER.error("Exception while fetching list of participants data {}",ex);
 		}
-		LOGGER.info("Total partcipant size {}", participants.size());
 		int validEmailSubscribersCount = 0;
 
 		if (participants.size() > 0) {
+
+			LOGGER.info("Total partcipant size {}", participants.size());
 			Session session = sendMail.getSession();
+
 			for (Participant participant : participants) {
 				try{
 					if (null != participant.getEmail() && !participant.getEmail().isEmpty()
