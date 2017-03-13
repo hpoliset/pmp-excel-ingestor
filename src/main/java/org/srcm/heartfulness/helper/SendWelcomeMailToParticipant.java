@@ -52,7 +52,7 @@ public class SendWelcomeMailToParticipant {
 	@PostConstruct
 	public void startDaemonThread(){
 		LOGGER.info("Daemon-Thread started for sending welcome mail to the participants at"+new Date());
-		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+		ScheduledExecutorService executor = Executors.newScheduledThreadPool(0);//newSingleThreadScheduledExecutor();
 
 		Runnable periodicTask = new Runnable() {
 			public void run() {
@@ -65,7 +65,7 @@ public class SendWelcomeMailToParticipant {
 		};
 		/*executor.scheduleAtFixedRate(() -> sendWelcomeMailToParticipant(),
         2, 2, TimeUnit.MINUTES);*/
-		executor.scheduleAtFixedRate(periodicTask, 5, 60, TimeUnit.MINUTES);
+		executor.scheduleAtFixedRate(periodicTask, 5, 10, TimeUnit.MINUTES);
 	}
 
 	/**
