@@ -2,6 +2,8 @@ package org.srcm.heartfulness.webservice;
 
 import java.io.IOException;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Context;
@@ -30,6 +32,8 @@ import org.srcm.heartfulness.service.UserProfileService;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -71,49 +75,64 @@ public class AuthenticationController {
 	@RequestMapping(value = "authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> login(@RequestBody AuthenticationRequest authenticationRequest, HttpSession session,
 			ModelMap model, @Context HttpServletRequest httpRequest) {
+
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(authenticationRequest.getUsername(),
 				httpRequest.getRemoteAddr(), httpRequest.getRequestURI(), DateUtils.getCurrentTimeInMilliSec(), null,
-				ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(authenticationRequest
-						.getUsername()), null);
-		int id = apiAccessLogService.createPmpAPIAccessLog(accessLog);
+				ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(authenticationRequest.getUsername()), null);
+		apiAccessLogService.createPmpAPIAccessLog(accessLog);
+
 		try {
+
 			LOGGER.info("Trying to Authenticate :  {}", authenticationRequest.getUsername());
-			SrcmAuthenticationResponse authenticationResponse = authenticationService.validateLogin(
-					authenticationRequest, session, id);
-			model.addAttribute("Auth", session.getAttribute("Authentication"));
+			SrcmAuthenticationResponse authenticationResponse = authenticationService.validateLogin(authenticationRequest, session, accessLog.getId());
+			//model.addAttribute("Auth", session.getAttribute("Authentication"));
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(authenticationResponse));
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<SrcmAuthenticationResponse>(authenticationResponse, HttpStatus.OK);
+
 		} catch (HttpClientErrorException e) {
+
 			ErrorResponse error = new ErrorResponse("Invalid Credentials.", "");
-			LOGGER.error("Error occured while authenticating :{}", authenticationRequest.getUsername(), e);
-			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			LOGGER.error("Error occured while authenticating :{}, error_message :{}", authenticationRequest.getUsername(), e.getMessage());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(error, e.getStatusCode());
+
+		} catch (JsonParseException |JsonMappingException e) {
+
+			LOGGER.error("JsonParseException    :" + StackTraceUtils.convertStackTracetoString(e));
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
+					"Error while processing request");
+			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+
 		} catch (IOException e) {
+
 			LOGGER.error("Error occured while authenticating :{}", authenticationRequest.getUsername(), e);
 			ErrorResponse error = new ErrorResponse("Please try after some time.", "");
-			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.NOT_FOUND);
+
 		} catch (Exception e) {
+
 			LOGGER.error("Error occured while authenticating :{}", e);
 			ErrorResponse error = new ErrorResponse("Please try after some time.", "Server Connection time out");
-			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(error));
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+
 		}
 	}
-
 }

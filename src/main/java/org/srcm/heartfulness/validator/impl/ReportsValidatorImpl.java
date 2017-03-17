@@ -89,10 +89,13 @@ public class ReportsValidatorImpl implements ReportsValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} else {
-			accessLog.setUsername(userProfile.getEmail());
-			reportVO.setUsername(userProfile.getEmail());
+			accessLog.setUsername(null == userProfile.getUser_email() ? userProfile.getEmail() 
+					: userProfile.getUser_email().isEmpty() ? userProfile.getEmail() : userProfile.getUser_email());
+			reportVO.setUsername(null == userProfile.getUser_email() ? userProfile.getEmail() 
+					: userProfile.getUser_email().isEmpty() ? userProfile.getEmail() : userProfile.getUser_email());
 		}
-		User user = userProfileService.loadUserByEmail(userProfile.getEmail());
+		User user = userProfileService.loadUserByEmail(null == userProfile.getUser_email() ? userProfile.getEmail() 
+				: userProfile.getUser_email().isEmpty() ? userProfile.getEmail() : userProfile.getUser_email());
 		if (null == user) {
 			eResponse.setDescription(ErrorConstants.USER_DOESNOT_EXISTS);
 			accessLog.setErrorMessage(eResponse.toString());

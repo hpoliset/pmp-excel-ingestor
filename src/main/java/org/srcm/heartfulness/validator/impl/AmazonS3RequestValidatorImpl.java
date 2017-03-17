@@ -115,9 +115,11 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			eResponse.setDescription(ErrorConstants.INVALID_CREDENTIALS);
 			return eResponse;
 		} else {
-			accessLog.setUsername(userProfile.getEmail());
+			accessLog.setUsername(null == userProfile.getUser_email() ? userProfile.getEmail() 
+					: userProfile.getUser_email().isEmpty() ? userProfile.getEmail() : userProfile.getUser_email());
 		}
-		User user = userProfileService.loadUserByEmail(userProfile.getEmail());
+		User user = userProfileService.loadUserByEmail(null == userProfile.getUser_email() ? userProfile.getEmail() 
+				: userProfile.getUser_email().isEmpty() ? userProfile.getEmail() : userProfile.getUser_email());
 		if (null == user) {
 			eResponse.setDescription(ErrorConstants.USER_DOESNOT_EXISTS);
 			return eResponse;
@@ -205,9 +207,11 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			eResponse.setDescription(ErrorConstants.INVALID_CREDENTIALS);
 			return eResponse;
 		} else {
-			accessLog.setUsername(userProfile.getEmail());
+			accessLog.setUsername(null == userProfile.getUser_email() ? userProfile.getEmail() 
+					: userProfile.getUser_email().isEmpty() ? userProfile.getEmail() : userProfile.getUser_email());
 		}
-		User user = userProfileService.loadUserByEmail(userProfile.getEmail());
+		User user = userProfileService.loadUserByEmail(null == userProfile.getUser_email() ? userProfile.getEmail() 
+				: userProfile.getUser_email().isEmpty() ? userProfile.getEmail() : userProfile.getUser_email());
 		if (null == user) {
 			eResponse.setDescription(ErrorConstants.USER_DOESNOT_EXISTS);
 			return eResponse;
@@ -293,9 +297,11 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			eResponse.setDescription(ErrorConstants.INVALID_CREDENTIALS);
 			return eResponse;
 		} else {
-			accessLog.setUsername(userProfile.getEmail());
+			accessLog.setUsername(null == userProfile.getUser_email() ? userProfile.getEmail() 
+					: userProfile.getUser_email().isEmpty() ? userProfile.getEmail() : userProfile.getUser_email());
 		}
-		User user = userProfileService.loadUserByEmail(userProfile.getEmail());
+		User user = userProfileService.loadUserByEmail(null == userProfile.getUser_email() ? userProfile.getEmail() 
+				: userProfile.getUser_email().isEmpty() ? userProfile.getEmail() : userProfile.getUser_email());
 		if (null == user) {
 			eResponse.setDescription(ErrorConstants.USER_DOESNOT_EXISTS);
 			return eResponse;
@@ -392,9 +398,11 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			eResponse.setDescription(ErrorConstants.INVALID_CREDENTIALS);
 			return eResponse;
 		} else {
-			accessLog.setUsername(userProfile.getEmail());
+			accessLog.setUsername(null == userProfile.getUser_email() ? userProfile.getEmail() 
+					: userProfile.getUser_email().isEmpty() ? userProfile.getEmail() : userProfile.getUser_email());
 		}
-		User user = userProfileService.loadUserByEmail(userProfile.getEmail());
+		User user = userProfileService.loadUserByEmail(null == userProfile.getUser_email() ? userProfile.getEmail() 
+				: userProfile.getUser_email().isEmpty() ? userProfile.getEmail() : userProfile.getUser_email());
 		if (null == user) {
 			eResponse.setDescription(ErrorConstants.USER_DOESNOT_EXISTS);
 			return eResponse;

@@ -51,8 +51,8 @@ public class SendWelcomeMailToParticipant {
 	@Autowired
 	private MailLogRepository mailLogRepository;
 
-	@PostConstruct
-	public void startDaemonThread(){
+	//@PostConstruct
+	/*public void startDaemonThread(){
 		LOGGER.info("Daemon-Thread started for sending welcome mail to the participants at"+new Date());
 		ThreadFactory threadFactory = new DaemonThreadFactory();
 		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(threadFactory);
@@ -66,10 +66,10 @@ public class SendWelcomeMailToParticipant {
 				}
 			}
 		};
-		/*executor.scheduleAtFixedRate(() -> sendWelcomeMailToParticipant(),
-        2, 2, TimeUnit.MINUTES);*/
+		executor.scheduleAtFixedRate(() -> sendWelcomeMailToParticipant(),
+        2, 2, TimeUnit.MINUTES);
 		executor.scheduleAtFixedRate(periodicTask, 5, 90, TimeUnit.MINUTES);
-	}
+	}*/
 
 	/**
 	 * This method is used to send the welcome mails to the participant.

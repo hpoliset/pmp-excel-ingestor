@@ -11,6 +11,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Component;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.model.CurrentUser;
+import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.service.UserProfileService;
 
 /**
@@ -54,6 +55,27 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 		Collection<? extends GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(user.getRole()
 				.toString());
 		return new UsernamePasswordAuthenticationToken(currentUser, password, authorities);
+	}
+	
+	
+	//@Override
+	public Authentication authenticate(User user) {
+		
+		if(user.getRole().equals(PMPConstants.LOGIN_ROLE_SEEKER)){
+			user.setRole(PMPConstants.ROLE_PREFIX + PMPConstants.LOGIN_ROLE_SEEKER);
+		}else{
+			if (user.getIsPmpAllowed().equalsIgnoreCase(PMPConstants.REQUIRED_NO)) {
+				user.setRole(PMPConstants.ROLE_PREFIX + PMPConstants.LOGIN_ACCESS_DENIED);
+			} else {
+				user.setRole(PMPConstants.ROLE_PREFIX + user.getRole());
+			}
+		}
+		
+		CurrentUser currentUser = new CurrentUser(user.getEmail(), user.getPassword(), user.getRole(), user.getIsPmpAllowed(),
+				user.getIsSahajmargAllowed());
+		Collection<? extends GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(user.getRole()
+				.toString());
+		return new UsernamePasswordAuthenticationToken(currentUser, user.getPassword(), authorities);
 	}
 
 	@Override

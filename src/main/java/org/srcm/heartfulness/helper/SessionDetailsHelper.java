@@ -111,7 +111,9 @@ public class SessionDetailsHelper {
 			setPMPAccessLogAndPersist(accessLog, eResponse);
 			return eResponse;
 		} else {
-			accessLog.setUsername(userProfile.getEmail());
+			accessLog.setUsername(
+					null == userProfile.getUser_email() ? userProfile.getEmail() 
+							: userProfile.getUser_email().isEmpty() ? userProfile.getEmail() : userProfile.getUser_email());
 			SuccessResponse sResponse = new SuccessResponse(ErrorConstants.STATUS_SUCCESS,
 					"Token validation successfull");
 			return sResponse;

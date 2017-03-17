@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -29,6 +31,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
  */
 @Service
 public class UserProfileServiceImpl implements UserProfileService {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserProfileServiceImpl.class);
 
 	@Autowired
 	SrcmRestTemplate srcmRest;
@@ -38,7 +42,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
 	@Autowired
 	APIAccessLogService apiAccessLogService;
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.srcm.heartfulness.service.UserProfileService#save(org.srcm.heartfulness.model.User)
@@ -75,10 +79,10 @@ public class UserProfileServiceImpl implements UserProfileService {
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 		return result;
 	}
-	
+
 	@Override
 	public User updateUserDetails(String token, int accesslogId, User user, int id) throws HttpClientErrorException,
-			JsonParseException, JsonMappingException, IOException, ParseException {
+	JsonParseException, JsonMappingException, IOException, ParseException {
 		Result result = getUserProfile(token, accesslogId);
 		UserProfile srcmProfile = result.getUserProfile()[0];
 		User pmpUser = userRepository.findByEmail(srcmProfile.getEmail());
@@ -106,16 +110,23 @@ public class UserProfileServiceImpl implements UserProfileService {
 
 	@Override
 	public User getUserProfileAndCreateUser(String token, int id) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException, ParseException {
+	JsonMappingException, IOException, ParseException {
 		Result result = getUserProfile(token, id);
 		UserProfile srcmProfile = result.getUserProfile()[0];
-		User user = userRepository.findByEmail(srcmProfile.getEmail());
+		LOGGER.info("Profile email is {}",srcmProfile.getEmail());
+		LOGGER.info("Profile user_email is {}",srcmProfile.getUser_email());
+		//User user = userRepository.findByEmail(srcmProfile.getEmail());
+		User user = userRepository.findByEmail(null == srcmProfile.getUser_email() ? srcmProfile.getEmail() 
+				: srcmProfile.getUser_email().isEmpty() ? srcmProfile.getEmail() : srcmProfile.getUser_email());
+
 		if (null == user) {
 			user = new User();
 			user.setName(srcmProfile.getName());
 			user.setFirst_name(srcmProfile.getFirst_name());
 			user.setLast_name(srcmProfile.getLast_name());
-			user.setEmail(srcmProfile.getEmail());
+			//user.setEmail(srcmProfile.getEmail());
+			user.setEmail(null == srcmProfile.getUser_email() ? srcmProfile.getEmail() 
+					: srcmProfile.getUser_email().isEmpty() ? srcmProfile.getEmail() : srcmProfile.getUser_email());
 			user.setAbyasiId(srcmProfile.getRef());
 			user.setGender(srcmProfile.getGender());
 			user.setMobile(srcmProfile.getMobile());
@@ -132,7 +143,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 		}
 		return user;
 	}
-	
+
 	/**
 	 * This method is used to get the email Ids associated with 
 	 * an Abhyasi Id.
@@ -145,5 +156,5 @@ public class UserProfileServiceImpl implements UserProfileService {
 		return userRepository.getEmailsWithAbhyasiId(abyasiId);
 	}
 
-	
+
 }
