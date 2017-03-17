@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class State {
 
 	private String id;
-
 	private String name;
 
 	public State() {

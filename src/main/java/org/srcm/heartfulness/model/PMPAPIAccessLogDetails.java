@@ -9,31 +9,20 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
  *
  */
 @JsonPropertyOrder({ "srNo", "id", "pmpAccessLogId", "endpoint", "requestedTime", "responseTime", "timeDifference",
-		"status", "errorMessage", "requestBody", "responseBody", "viewReqRespData" })
+	"status", "errorMessage", "requestBody", "responseBody", "viewReqRespData" })
 public class PMPAPIAccessLogDetails {
 
 	private int id;
-
 	private int pmpAccessLogId;
-
 	private String endpoint;
-
 	private String requestedTime;
-
 	private String responseTime;
-
 	private String status;
-
 	private String errorMessage;
-
 	private String requestBody;
-
 	private String responseBody;
-
 	private String timeDifference;
-
 	private String srNo;
-
 	private String viewReqRespData;
 
 	public PMPAPIAccessLogDetails() {

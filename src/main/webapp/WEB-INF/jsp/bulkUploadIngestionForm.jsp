@@ -57,7 +57,7 @@
 								//$('#fileupload').remove(i);
 							}
 							var ext = file.name.split('.').pop().toLowerCase();
-							if ($.inArray(ext, [ 'xlsx', 'xlsm' ]) == -1) {
+							if ($.inArray(ext, [ 'xlsx', 'xlsm', 'xls' ]) == -1) {
 								tr = tr
 										+ "<br><lable style='color: red;'>File type not allowed";
 								// $('#fileupload').remove(file);

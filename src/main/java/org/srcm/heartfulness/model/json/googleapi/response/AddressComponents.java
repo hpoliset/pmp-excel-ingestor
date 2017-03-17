@@ -14,9 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class AddressComponents {
 
 	private String long_name;
-
 	private String short_name;
-
 	private List<String> types;
 
 	public AddressComponents() {

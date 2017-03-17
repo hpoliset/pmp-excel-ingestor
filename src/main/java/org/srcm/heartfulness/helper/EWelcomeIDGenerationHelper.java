@@ -81,7 +81,7 @@ public class EWelcomeIDGenerationHelper {
 		aspirant.setDateOfJoining(null != participant.getFirstSittingDate() ? 
 				sdf.format(participant.getFirstSittingDate()) : 
 					((null != participant.getProgram().getProgramStartDate()) ? sdf.format(participant
-				.getProgram().getProgramStartDate()) : null));
+							.getProgram().getProgramStartDate()) : null));
 		aspirant.setEmail((null != participant.getEmail() && !participant.getEmail().isEmpty()) ? participant
 				.getEmail() : null);
 		aspirant.setFirstSittingBy(String.valueOf(participant.getProgram().getFirstSittingBy()));
@@ -160,7 +160,7 @@ public class EWelcomeIDGenerationHelper {
 	 * @throws ParseException
 	 */
 	public void generateEWelcomeId(Participant participant) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException {
+	JsonMappingException, IOException {
 		GeoSearchResponse geoSearchResponse = srcmRestTemplate.geoSearch(participant.getCity() + ","
 				+ participant.getState() + "," + participant.getCountry());
 		CitiesAPIResponse citiesAPIResponse = srcmRestTemplate.getCityName(geoSearchResponse.getCityId());
@@ -234,9 +234,9 @@ public class EWelcomeIDGenerationHelper {
 		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.GEOSEARCH_URI,
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
 				StackTraceUtils.convertPojoToJson("Request:" + participant.getCity() + "," + participant.getState()
-						+ "," + participant.getCountry() + ", Participant Id:" + participant.getId()
-						+ ", Participant SeqId:" + participant.getSeqId() + ", Participant emailID:"
-						+ participant.getEmail()), null);
+				+ "," + participant.getCountry() + ", Participant Id:" + participant.getId()
+				+ ", Participant SeqId:" + participant.getSeqId() + ", Participant emailID:"
+				+ participant.getEmail()), null);
 		apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
 		try {
 			geoSearchResponse = srcmRestTemplate.geoSearch(participant.getCity() + "," + participant.getState() + ","

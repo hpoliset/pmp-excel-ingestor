@@ -13,9 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Result {
 
 	private int count;
-
 	private String next;
-
 	private String previous;
 
 	@JsonProperty("results")

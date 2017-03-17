@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class AbhyasiSrcmGroup {
 
 	private String id;
-
 	private String name;
 
 	public String getId() {

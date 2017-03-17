@@ -1,14 +1,13 @@
 package org.srcm.heartfulness.model;
 
 public class SMS {
-	
+
 	private String senderMobile;
 	private String messageConetent;
 	private String mobileOperator;
 	private String carrier;
 	private String dateTime;
-	
-	
+
 	public SMS() {
 		super();
 	}

@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.srcm.heartfulness.authorization.CustomAuthenticationProvider;
+import org.srcm.heartfulness.model.User;
 
 /**
  * This class is the helper class for authorization.
@@ -33,11 +34,30 @@ public class AuthorizationHelper {
 	 * @param username
 	 * @param password
 	 */
-	public void doAutoLogin(String username, String password) {
+	/*public void doAutoLogin(String username, String password) {
 		try {
 			LOGGER.debug("Trying to autoLogin with {}", username);
 			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
 			Authentication authentication = this.authenticationProvider.authenticate(token);
+			LOGGER.debug("Logging in with [{}]", authentication.getPrincipal());
+			SecurityContext ctx = SecurityContextHolder.createEmptyContext();
+			SecurityContextHolder.setContext(ctx);
+			ctx.setAuthentication(authentication);
+		} catch (Exception e) {
+			SecurityContextHolder.getContext().setAuthentication(null);
+			LOGGER.error("Failure in autoLogin", e);
+		}
+	}*/
+	
+	/**
+	 * 
+	 * @param user
+	 */
+	public void doAutoLogin(User user) {
+		try {
+			LOGGER.debug("Trying to autoLogin with {}", user.getEmail());
+			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
+			Authentication authentication = this.authenticationProvider.authenticate(user);
 			LOGGER.debug("Logging in with [{}]", authentication.getPrincipal());
 			SecurityContext ctx = SecurityContextHolder.createEmptyContext();
 			SecurityContextHolder.setContext(ctx);

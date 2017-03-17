@@ -3,21 +3,13 @@ package org.srcm.heartfulness.model;
 public class CoordinatorAccessControlEmail {
 
 	private String coordinatorEmail;
-
 	private String eventName;
-
 	private String coordinatorName;
-
 	private String programId;
-
 	private String programCreateDate;
-
 	private String eventID;
-
 	private String preceptorEmailId;
-
 	private String preceptorName;
-	
 	private String eventPlace;
 
 	public String getCoordinatorEmail() {
@@ -83,7 +75,7 @@ public class CoordinatorAccessControlEmail {
 	public void setPreceptorName(String preceptorName) {
 		this.preceptorName = preceptorName;
 	}
-	
+
 	public String getEventPlace() {
 		return eventPlace;
 	}

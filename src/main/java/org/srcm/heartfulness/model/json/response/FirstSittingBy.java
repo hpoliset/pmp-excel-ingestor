@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class FirstSittingBy {
 
 	private Integer id;
-
 	private String name;
 
 	public Integer getId() {

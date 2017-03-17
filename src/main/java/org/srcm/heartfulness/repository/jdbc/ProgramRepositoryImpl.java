@@ -214,14 +214,15 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 					+ "organization_city=:organizationCity, "+ "organization_location=:organizationLocation, "+ "organization_full_address=:organizationFullAddress, "
 					+ "organization_decision_maker_name=:organizationDecisionMakerName, "+ "organization_decision_maker_email=:organizationDecisionMakerEmail, "
 					+ "organization_decision_maker_phone_no=:organizationDecisionMakerPhoneNo, "
-					+ "is_ewelcome_id_generation_disabled=:isEwelcomeIdGenerationDisabled "
+					+ "is_ewelcome_id_generation_disabled=:isEwelcomeIdGenerationDisabled, "
+					+ "jira_issue_number=:jiraIssueNumber "
 					+ "WHERE program_id=:programId",
 					parameterSource);
 		}
 		// If there are participants update them.
 		List<Participant> participants = program.getParticipantList();
 		for (Participant participant : participants) {
-			participant.setCreatedSource("Excel");
+			participant.setCreatedSource(PMPConstants.CREATED_SOURCE_EXCEL);
 			participant.setProgramId(program.getProgramId());
 			participantRepository.save(participant);
 		}
@@ -285,7 +286,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		// If there are participants update them.
 		List<Participant> participants = program.getParticipantList();
 		for (Participant participant : participants) {
-			participant.setCreatedSource("SMS");
+			participant.setCreatedSource(PMPConstants.CREATED_SOURCE_SMS);
 			participant.setProgramId(program.getProgramId());
 			participantRepository.save(participant);
 		}
@@ -1040,29 +1041,8 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	}
 
 	@Override
-	public int getProgramCountWithUserRoleAndEmailId(/*String email*/List<String> emailList, String role) {
-		/*StringBuilder whereCondition = new StringBuilder("");
-		Map<String, Object> params = new HashMap<>();
-		//params.put("coordinator_email", email);
-		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
-
-		if (!role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
-			whereCondition
-					.append(whereCondition.length() > 0 ? " and (program_channel NOT LIKE '%G-Connect%' OR coordinator_email=:coordinator_email) "
-							: "(program_channel NOT LIKE '%G-Connect%' OR coordinator_email=:coordinator_email)");
-			//params.put("coordinator_email", email);
-			if (!role.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)) {
-				whereCondition.append(" and coordinator_email=:coordinator_email");
-			}
-		}
-
-		List<Integer> programCoordinatorIds = this.namedParameterJdbcTemplate.queryForList(
-				"SELECT DISTINCT program_id FROM program"
-						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""), sqlParameterSource,
-				Integer.class);
-
-		return programCoordinatorIds.size();*/
-
+	public int getProgramCountWithUserRoleAndEmailId(List<String> emailList, String role) {
+		
 		StringBuilder whereCondition = new StringBuilder("");
 		StringBuilder emailString = new StringBuilder("");
 
@@ -1090,12 +1070,6 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 				"SELECT count(DISTINCT p.program_id ) "
 						+ " FROM program p LEFT JOIN program_coordinators pc "
 						+ " ON p.program_id = pc.program_id "
-						/*+ " WHERE (p.coordinator_email IN( "
-						+ emailString
-						+" ) OR pc.email IN( "
-						+ emailString
-						+ " ))"*/
-
 						+ (whereCondition.length() > 0 ? " WHERE " +  whereCondition : ""), null, Integer.class);
 
 		return programCount;
@@ -1103,39 +1077,6 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 	@Override
 	public List<Program> getEventsByEmailAndRole(/*String email*/List<String> emailList, String role, int offset, int pageSize) {
-		/*List<Program> programs = new ArrayList<Program>();
-		StringBuilder whereCondition = new StringBuilder("");
-		StringBuilder limitCondition = new StringBuilder("");
-		Map<String, Object> params = new HashMap<>();
-		params.put("coordinator_email", email);
-		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
-
-		if (!role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
-			whereCondition
-			.append(whereCondition.length() > 0 ? " and (program_channel NOT LIKE '%G-Connect%' OR coordinator_email=:coordinator_email) "
-					: "(program_channel NOT LIKE '%G-Connect%' OR coordinator_email=:coordinator_email)");
-			//params.put("coordinator_email", email);
-			if (!role.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)) {
-				whereCondition.append("and coordinator_email=:coordinator_email");
-			}
-		}
-
-		if ((offset != 0 && pageSize != 0) || (offset == 0 && pageSize != 0)) {
-			limitCondition.append(" LIMIT " + offset + "," + pageSize);
-		}
-		programs = this.namedParameterJdbcTemplate.query(
-				"SELECT program_id,program_channel,program_start_date,program_end_date,"
-						+ "coordinator_name,coordinator_email,coordinator_mobile,event_place,"
-						+ "event_city,event_state,event_country,organization_department,"
-						+ "organization_name,organization_web_site,organization_contact_name,"
-						+ "organization_contact_email,organization_contact_mobile,preceptor_name,"
-						+ "preceptor_id_card_number,welcome_card_signed_by_name,welcome_card_signer_Id_card_number,"
-						+ "remarks,auto_generated_event_id,auto_generated_intro_id" + " FROM program"
-						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : "")
-						+ (limitCondition.length() > 0 ? limitCondition : ""), sqlParameterSource,
-						BeanPropertyRowMapper.newInstance(Program.class));
-
-		return programs;*/
 
 		List<Program> programs = new ArrayList<Program>();
 		StringBuilder whereCondition = new StringBuilder("");
@@ -1171,7 +1112,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 				+ "p.organization_name,p.organization_web_site,p.organization_contact_name,"
 				+ "p.organization_contact_email,p.organization_contact_mobile,p.preceptor_name,"
 				+ "p.preceptor_id_card_number,p.welcome_card_signed_by_name,p.welcome_card_signer_Id_card_number,"
-				+ "p.remarks,p.auto_generated_event_id,p.auto_generated_intro_id "
+				+ "p.remarks,p.auto_generated_event_id,p.auto_generated_intro_id,p.jira_issue_number "
 				+ "FROM program p LEFT JOIN program_coordinators pc "
 				+ " ON p.program_id = pc.program_id "
 				+ (whereCondition.length() > 0 ? " WHERE " +  whereCondition : "")
@@ -1328,7 +1269,7 @@ public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequ
 						+ " p.program_name,p.program_start_date,p.program_end_date, "
 						+ " p.coordinator_name,p.coordinator_email,p.coordinator_mobile,"
 						+ " p.event_place,p.event_city,p.event_state,p.event_country,p.organization_name,"
-						+ " p.organization_department,p.preceptor_name,p.preceptor_id_card_number"
+						+ " p.organization_department,p.preceptor_name,p.preceptor_id_card_number,p.jira_issue_number"
 						+ " FROM program p LEFT JOIN program_coordinators pc"
 						+ " ON p.program_id = pc.program_id "
 						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : "")

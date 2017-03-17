@@ -157,6 +157,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setEwelcomeIdRemarks(participantRequest.getEwelcomeIdRemarks());
 			setParticipantEWelcomeIDStatus(participant.getProgram(), participant,
 					PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, null);
+			participant.setReceiveUpdates(1);
 		} else {
 			participant = findBySeqId(participantRequest);
 			participant.setPrintName(participantRequest.getPrintName());

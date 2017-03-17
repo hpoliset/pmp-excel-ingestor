@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class SubscriptionRequest {
 
 	private String name;
-
 	private String mailID;
 
 	public String getName() {

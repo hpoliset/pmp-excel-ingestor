@@ -80,7 +80,7 @@ public class User {
 
 	@JsonProperty("abyasi_id")
 	private String abyasiId;
-	
+
 	private String ageGroup;
 
 	private String zipcode;

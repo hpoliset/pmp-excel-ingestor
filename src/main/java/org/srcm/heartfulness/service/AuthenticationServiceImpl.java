@@ -17,6 +17,7 @@ import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.helper.AuthorizationHelper;
 import org.srcm.heartfulness.model.CurrentUser;
 import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
+import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
 import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
@@ -43,12 +44,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	@Autowired
 	APIAccessLogService apiAccessLogService;
 	
+	@Autowired
+	private UserProfileService userProfileService;
+
 	/**
 	 * Method to validate the user with MySRCM.
 	 * 
 	 * @throws ParseException
 	 */
-	@Override
+	/*@Override
 	public SrcmAuthenticationResponse validateLogin(AuthenticationRequest authenticationRequest, HttpSession session,
 			int id) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException,
 			ParseException {
@@ -62,10 +66,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(authenticationResponse));
 		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-		/*authenticationResponse.setAccess_token(encryptDecryptAES.encrypt(authenticationResponse.getAccess_token(),
+		authenticationResponse.setAccess_token(encryptDecryptAES.encrypt(authenticationResponse.getAccess_token(),
 				env.getProperty("security.encrypt.token")));
 		authenticationResponse.setRefresh_token(encryptDecryptAES.encrypt(authenticationResponse.getRefresh_token(),
-				env.getProperty("security.encrypt.token")));*/
+				env.getProperty("security.encrypt.token")));
 		LOGGER.debug("User:{} is validated and token is generated", authenticationRequest.getUsername());
 		authHelper.doAutoLogin(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 		session.setAttribute("Authentication", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
@@ -73,6 +77,33 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 		authenticationResponse.setIspmpAllowed(currentUser.getIsPmpAllowed());
 		authenticationResponse.setIsSahajmargAllowed(currentUser.getIsSahajmargAllowed());
 		return authenticationResponse;
+	}*/
+
+
+	@Override
+	public SrcmAuthenticationResponse validateLogin(AuthenticationRequest authenticationRequest, HttpSession session,
+			int id) throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException,ParseException {
+
+		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(id,
+				EndpointConstants.AUTHENTICATION_TOKEN_URL, DateUtils.getCurrentTimeInMilliSec(), null,
+				ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(authenticationRequest.getUsername()), null);
+		apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
+		
+		SrcmAuthenticationResponse authenticationResponse = srcmRest.authenticate(authenticationRequest);
+		LOGGER.info("User:{} is validated and token is generated", authenticationRequest.getUsername());
+		
+		User user = userProfileService.getUserProfileAndCreateUser(authenticationResponse.getAccess_token(), id);
+		user.setPassword(authenticationRequest.getPassword());
+		authHelper.doAutoLogin(user);
+		session.setAttribute("Authentication", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+		authenticationResponse.setIspmpAllowed(user.getIsPmpAllowed());
+		authenticationResponse.setIsSahajmargAllowed(user.getIsSahajmargAllowed());
+		
+		accessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
+		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(authenticationResponse));
+		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+		return authenticationResponse;
 	}
-	
+
 }

@@ -55,7 +55,7 @@
 			$('#modal_trigger')[0].click();
 		}
 		var url = 'https://pmp.heartfulness.org/pmp/api/authenticate';
-		var getuserurl = 'https://pmp.heartfulness.org/pmp/api/v1/user'; 
+		//var getuserurl = 'https://pmp.heartfulness.org/pmp/api/v1/user'; 
 		var id;
 		$("#submit").click(function() {
 			$.ajax({
@@ -65,7 +65,14 @@
 				type : "POST",
 				data : JSON.stringify(getFormData($("#loginform"))),
 				success : function(loginresponse) {
-					$.ajax({
+					
+					if (redirectUrl != null) {
+						window.location.href = "/pmp" + redirectUrl;
+					} else {
+						window.location.href = "/pmp/index";
+					}
+					
+					/* $.ajax({
 						url : getuserurl,
 						contentType : "application/json",
 						dataType : "json",
@@ -84,9 +91,8 @@
 						error : function(loginresponse) {
 						}
 
-					});
-
-					/* window.location.href = "/pmp/index"; */
+					}); */
+				 /* window.location.href = "/pmp/index"; */ 
 				},
 				error : function(response) {
 					$("#changepassword").html("");

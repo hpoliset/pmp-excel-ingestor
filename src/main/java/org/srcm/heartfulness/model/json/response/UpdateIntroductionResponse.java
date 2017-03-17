@@ -15,11 +15,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class UpdateIntroductionResponse {
 
 	private String seqId;
-
 	private String participantName;
-
 	private String status;
-
 	private List<String> description;
 
 	public String getSeqId() {

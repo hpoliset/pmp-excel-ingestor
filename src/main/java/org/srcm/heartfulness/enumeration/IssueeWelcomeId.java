@@ -1,11 +1,10 @@
 package org.srcm.heartfulness.enumeration;
 
 public enum IssueeWelcomeId {
-	
+
 	issueeWelcomeId("Issue eWelcome ID"),
 	issueeWelcomeIds("Issue eWelcome IDs"),
 	issueeWelcomeIdsWithApostrophe("Issue eWelcome ID's"),
-	
 	issueeWelcomeIdWithoutSpace("Issue eWelcomeID"),
 	issueeWelcomeIdsWithoutSpace("Issue eWelcomeIDs"),
 	issueeWelcomeIdsWithApostropheAndWithoutSpace("Issue eWelcomeID's"),
@@ -13,7 +12,6 @@ public enum IssueeWelcomeId {
 	pleaseIssueeWelcomeId("Please Issue eWelcome ID"),
 	pleaseIssueeWelcomeIds("Please Issue eWelcome IDs"),
 	pleaseIssueeWelcomeIdsWithApostrophe("Please Issue eWelcome ID's"),
-	
 	pleaseIssueeWelcomeIdWithoutSpace("Please Issue eWelcomeID"),
 	pleaseIssueeWelcomeIdsWithoutSpace("Please Issue eWelcomeIDs"),
 	pleaseIssueeWelcomeIdsWithApostropheAndWithoutSpace("Please Issue eWelcomeID's"),
@@ -21,7 +19,6 @@ public enum IssueeWelcomeId {
 	generateeWelcomeId("Generate eWelcome ID"),
 	generateeeWelcomeIds("Generate eWelcome IDs"),
 	generateeWelcomeIdsWithApostrophe("Generate eWelcome ID's"),
-	
 	generateeWelcomeIdWithoutSpace("Generate eWelcomeID"),
 	generateeeWelcomeIdsWithoutSpace("Generate eWelcomeIDs"),
 	generateeWelcomeIdsWithApostropheAndWithoutSpace("Generate eWelcomeID's"),
@@ -29,11 +26,10 @@ public enum IssueeWelcomeId {
 	pleaseGenerateeWelcomeId("Please Generate eWelcome ID"),
 	pleaseGenerateeeWelcomeIds("Please Generate eWelcome IDs"),
 	pleaseGenerateeWelcomeIdsWithApostrophe("Please Generate eWelcome ID's"),
-	
 	pleaseGenerateeWelcomeIdWithoutSpace("Please Generate eWelcomeID"),
 	pleaseGenerateeeWelcomeIdsWithoutSpace("Please Generate eWelcomeIDs"),
 	pleaseGenerateeWelcomeIdsWithApostropheAndWithoutSpace("Please Generate eWelcomeID's");
-	
+
 	String value;
 
 	public String getValue() {
@@ -50,5 +46,5 @@ public enum IssueeWelcomeId {
 
 	private IssueeWelcomeId() {
 	}
-	
+
 }

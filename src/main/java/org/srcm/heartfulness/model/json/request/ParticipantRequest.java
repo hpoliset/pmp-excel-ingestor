@@ -17,45 +17,25 @@ public class ParticipantRequest {
 
 	@JsonIgnore
 	private int programId;
-
 	private String seqId;
-
 	private String eventId;
-
 	private String printName;
-
 	private String gender;
-
 	private String dateOfBirth;
-
 	private String addressLine1;
-
 	private String addressLine2;
-
 	private String email;
-
 	private String mobilePhone;
-
 	private String city;
-
 	private String state;
-
 	private String country;
-
 	private String introducedStatus;
-
 	private String introductionDate;
-
 	private String firstSittingDate;
-
 	private String secondSittingDate;
-
 	private String thirdSittingDate;
-
 	private String firstSitting;
-
 	private String secondSitting;
-
 	private String thirdSitting;
 
 	@JsonIgnore

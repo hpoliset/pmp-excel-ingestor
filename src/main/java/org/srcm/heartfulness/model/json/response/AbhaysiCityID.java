@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class AbhaysiCityID {
 
 	private String id;
-
 	private String name;
 
 	public String getId() {

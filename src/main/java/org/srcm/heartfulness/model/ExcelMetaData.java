@@ -17,6 +17,7 @@ public class ExcelMetaData {
 	private String excelVersion;
 	private String status;
 	private List<String> errorMsg;
+	
 	public String getFileName() {
 		return fileName;
 	}
@@ -58,6 +59,6 @@ public class ExcelMetaData {
 		return "ExcelMetaData [fileName=" + fileName + ", fileSize=" + fileSize + ", fileType=" + fileType
 				+ ", excelVersion=" + excelVersion + ", status=" + status + ", errorMsg=" + errorMsg + "]";
 	}
-	
-	
+
+
 }

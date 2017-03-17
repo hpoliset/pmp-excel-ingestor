@@ -22,24 +22,17 @@ public class CreateUserRequest {
 	private String lastName;
 
 	private String gender;
-
 	private String email;
-
 	private String mobile;
-
 	private String password;
 
 	@JsonProperty("age_group")
 	private String ageGroup;
 
 	private String zipcode;
-
 	private String languagePreference;
-
 	private String city;
-
 	private String state;
-
 	private String country;
 
 	@JsonProperty("user_type")

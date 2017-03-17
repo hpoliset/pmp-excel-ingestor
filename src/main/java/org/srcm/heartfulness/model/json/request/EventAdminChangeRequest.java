@@ -14,7 +14,6 @@ public class EventAdminChangeRequest {
 
 	@JsonIgnore
 	private int id;
-
 	private String eventId;
 
 	@JsonIgnore
@@ -22,11 +21,8 @@ public class EventAdminChangeRequest {
 
 	@JsonIgnore
 	private int programId;
-
 	private String newCoordinatorEmail;
-
 	private String coordinatorName;
-
 	private String coordinatorMobile;
 
 	@JsonIgnore

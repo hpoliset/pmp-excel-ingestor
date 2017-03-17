@@ -1,0 +1,1 @@
+ALTER TABLE program ADD jira_issue_number VARCHAR(100) NULL DEFAULT NULL;

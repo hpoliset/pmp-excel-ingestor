@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Response {
 
 	private String status;
-
 	private String description;
 
 	public Response() {

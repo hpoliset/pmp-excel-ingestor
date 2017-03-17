@@ -7,6 +7,8 @@ import java.text.ParseException;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -34,7 +36,6 @@ import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.proxy.ProxyHelper;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,6 +52,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ConfigurationProperties(locations = "classpath:prod.srcm.api.properties", ignoreUnknownFields = true, prefix = "srcm.oauth2")
 public class SrcmRestTemplate extends RestTemplate {
 
+	private static Logger LOGGER = LoggerFactory.getLogger(SrcmRestTemplate.class);
+
 	@Autowired
 	ProxyHelper proxyHelper;
 
@@ -64,7 +67,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	private String clientIdToCreateProfile;
 	private String clientSecretToCreateProfile;
 	private String tokenNameToCreateProfile;
-	
+
 	@Value("${proxy}")
 	private boolean proxy;
 
@@ -181,7 +184,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * @throws ParseException
 	 */
 	public Result getUserProfile(String accessToken) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException, ParseException {
+	JsonMappingException, IOException, ParseException {
 		setProxy();
 		MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<String, String>();
 		HttpHeaders httpHeaders = new HttpHeaders();
@@ -205,7 +208,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * @throws IOException
 	 */
 	public User createUserProfile(User user) throws HttpClientErrorException, JsonParseException, JsonMappingException,
-			IOException {
+	IOException {
 		setProxy();
 		MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<String, String>();
 		bodyParams.add(RestTemplateConstants.GRANT_TYPE, tokenNameToCreateProfile);
@@ -241,7 +244,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * @throws IOException
 	 */
 	public AbhyasiResult getAbyasiProfile(String refNo) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException {
+	JsonMappingException, IOException {
 		setProxy();
 		MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<String, String>();
 		bodyParams.add(RestTemplateConstants.GRANT_TYPE, tokenNameToCreateProfile);
@@ -253,7 +256,7 @@ public class SrcmRestTemplate extends RestTemplate {
 		ResponseEntity<String> tokenResponse = this.exchange(accessTokenUri, HttpMethod.POST, httpEntity, String.class);
 		SrcmAuthenticationResponse authResponse = mapper.readValue(tokenResponse.getBody(),
 				SrcmAuthenticationResponse.class);
-
+		LOGGER.info("Token received from MYSRCM during preceptor ID validation :{}",authResponse.getAccess_token());
 		httpHeaders.clear();
 		bodyParams.clear();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -277,7 +280,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * @throws IOException
 	 */
 	public AbhyasiResult fetchParticipantEWelcomeID(String email) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException {
+	JsonMappingException, IOException {
 		setProxy();
 		MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<String, String>();
 		bodyParams.add(RestTemplateConstants.GRANT_TYPE, tokenNameToCreateProfile);
@@ -287,9 +290,9 @@ public class SrcmRestTemplate extends RestTemplate {
 				+ getBase64Credentials(clientIdToCreateProfile, clientSecretToCreateProfile));
 		HttpEntity<?> httpEntity = new HttpEntity<Object>(bodyParams, httpHeaders);
 		ResponseEntity<String> tokenResponse = this.exchange(accessTokenUri, HttpMethod.POST, httpEntity, String.class);
-		SrcmAuthenticationResponse authResponse = mapper.readValue(tokenResponse.getBody(),
-				SrcmAuthenticationResponse.class);
+		SrcmAuthenticationResponse authResponse = mapper.readValue(tokenResponse.getBody(),SrcmAuthenticationResponse.class);
 
+		LOGGER.info("Token received from MYSRCM during coordinator email validation :{}",authResponse.getAccess_token());
 		httpHeaders.clear();
 		bodyParams.clear();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -313,7 +316,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * @throws IOException
 	 */
 	public GeoSearchResponse geoSearch(String address) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException {
+	JsonMappingException, IOException {
 		setProxy();
 		MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<String, String>();
 		bodyParams.add(RestTemplateConstants.PARAMS_FORMATTED_ADDRESS, address);
@@ -335,7 +338,7 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * @throws IOException
 	 */
 	public UserProfile createAspirant(Aspirant aspirant) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException {
+	JsonMappingException, IOException {
 		setProxy();
 		MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<String, String>();
 		bodyParams.add(RestTemplateConstants.GRANT_TYPE, tokenNameToCreateProfile);
@@ -381,7 +384,7 @@ public class SrcmRestTemplate extends RestTemplate {
 		byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
 		return new String(base64CredsBytes);
 	}
-	
+
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
 	}
@@ -422,14 +425,14 @@ public class SrcmRestTemplate extends RestTemplate {
 	public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
 		return new PropertySourcesPlaceholderConfigurer();
 	}
-	
+
 	/**
 	 * Method to set the proxy (development use only)
 	 */
 	public void setProxy() {
-		if (proxy) {
+		/*if (proxy) {
 
-			/*CredentialsProvider credsProvider = new BasicCredentialsProvider();
+			CredentialsProvider credsProvider = new BasicCredentialsProvider();
 			credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 					new UsernamePasswordCredentials(proxyUser, proxyPassword));
 			HttpClientBuilder clientBuilder = HttpClientBuilder.create();
@@ -440,9 +443,9 @@ public class SrcmRestTemplate extends RestTemplate {
 			CloseableHttpClient client = clientBuilder.build();
 			HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
 			factory.setHttpClient(client);
-			this.setRequestFactory(factory);*/
+			this.setRequestFactory(factory);
 
-		}
+		}*/
 
 	}
 
