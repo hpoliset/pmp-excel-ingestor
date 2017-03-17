@@ -7,12 +7,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.AddressException;
@@ -29,7 +23,6 @@ import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.SendySubscriber;
 import org.srcm.heartfulness.repository.MailLogRepository;
 import org.srcm.heartfulness.repository.WelcomeMailRepository;
-import org.srcm.heartfulness.util.DaemonThreadFactory;
 import org.srcm.heartfulness.util.StackTraceUtils;
 
 /**
