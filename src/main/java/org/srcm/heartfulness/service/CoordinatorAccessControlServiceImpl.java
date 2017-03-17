@@ -633,12 +633,10 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 				apiAccessLogService.createPmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
 
 				AbhyasiResult abhyasiResult = srcmRestTemplate.fetchParticipantEWelcomeID(program.getCoordinatorEmail());
-				LOGGER.info("Profile received from MYSRCM : {}","Id:"+abhyasiResult.getUserProfile()[0].getId() + ",First Name:"+abhyasiResult.getUserProfile()[0].getFirst_name()
-						+",LastName:"+abhyasiResult.getUserProfile()[0].getLast_name() +",Email:"+abhyasiResult.getUserProfile()[0].getEmail()
-						+",Prefect ID:"+abhyasiResult.getUserProfile()[0].getPrefect_id()+",SrcmGroup:"+abhyasiResult.getUserProfile()[0].getSrcm_group()
-						+",Is Prefect:"+abhyasiResult.getUserProfile()[0].isIs_prefect());
+				LOGGER.info("Response length from MYSRCM :",abhyasiResult.getUserProfile().length);
 				if (abhyasiResult.getUserProfile().length > 0) {
 					AbhyasiUserProfile userProfile = abhyasiResult.getUserProfile()[0];
+					
 					if (null == userProfile) {
 
 						if (null != fetchEwelcomeIDAPIAccessLogDetails) {
@@ -653,6 +651,11 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 
 						return "Invalid coordinator email Id";
 					} else {
+						
+						LOGGER.info("Profile received from MYSRCM : {}","Id:"+userProfile.getId() + ",First Name:"+userProfile.getFirst_name()
+						+",LastName:"+abhyasiResult.getUserProfile()[0].getLast_name() +",Email:"+userProfile.getEmail()
+						+",Prefect ID:"+userProfile.getPrefect_id()+",SrcmGroup:"+userProfile.getSrcm_group()
+						+",Is Prefect:"+userProfile.isIs_prefect());
 
 						// create user and assign role
 						User user = new User();
@@ -675,8 +678,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 							fetchEwelcomeIDAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
 							apiAccessLogService.updatePmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
 						} catch (Exception e) {
-							LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-									StackTraceUtils.convertPojoToJson(e));
+							LOGGER.error("Exception while inserting PMP API log details in table : {} ",StackTraceUtils.convertPojoToJson(e));
 						}
 
 					}
