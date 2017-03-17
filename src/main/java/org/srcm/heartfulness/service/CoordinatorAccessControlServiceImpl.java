@@ -423,13 +423,14 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 
 				AbhyasiResult result = srcmRestTemplate.getAbyasiProfile(program.getPreceptorIdCardNumber());
 
-				LOGGER.info("Profile received from MYSRCM : {}","Id:"+result.getUserProfile()[0].getId() + ",First Name:"+result.getUserProfile()[0].getFirst_name()
-						+",LastName:"+result.getUserProfile()[0].getLast_name() +",Email:"+result.getUserProfile()[0].getEmail()
-						+",Prefect ID:"+result.getUserProfile()[0].getPrefect_id()+",SrcmGroup:"+result.getUserProfile()[0].getSrcm_group()
-						+",Is Prefect:"+result.getUserProfile()[0].isIs_prefect());
-
 				if (result.getUserProfile().length > 0) {
 					AbhyasiUserProfile userProfile = result.getUserProfile()[0];
+					
+					LOGGER.info("Profile received from MYSRCM : {}","Id:"+userProfile.getId() + ",First Name:"+userProfile.getFirst_name()
+							+",LastName:"+userProfile.getLast_name() +",Email:"+userProfile.getEmail()
+							+",Prefect ID:"+userProfile.getPrefect_id()+",SrcmGroup:"+userProfile.getSrcm_group()
+							+",Is Prefect:"+userProfile.isIs_prefect());
+					
 					if (null != userProfile) {
 						if (0 != userProfile.getId()) {
 							// update program
