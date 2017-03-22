@@ -7,6 +7,14 @@ import java.text.ParseException;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -36,6 +45,7 @@ import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.proxy.ProxyHelper;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,7 +59,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Component
 @PropertySource("classpath:application.properties")
-@ConfigurationProperties(locations = "classpath:prod.srcm.api.properties", ignoreUnknownFields = true, prefix = "srcm.oauth2")
+@ConfigurationProperties(locations = "classpath:dev.srcm.api.properties", ignoreUnknownFields = true, prefix = "srcm.oauth2")
 public class SrcmRestTemplate extends RestTemplate {
 
 	private static Logger LOGGER = LoggerFactory.getLogger(SrcmRestTemplate.class);
