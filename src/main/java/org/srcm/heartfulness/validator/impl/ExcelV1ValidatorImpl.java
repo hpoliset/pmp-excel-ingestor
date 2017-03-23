@@ -63,7 +63,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 		for (V1ProgramCols column : V1ProgramCols.values()) {
 			row = column.getRow();
 			col = column.getCell();
-			if (!column.getHeader().equalsIgnoreCase(sheet.getRow(row).getCell(col).getStringCellValue().trim())) {
+			if (!column.getHeader().equalsIgnoreCase(sheet.getRow(row).getCell(col,Row.CREATE_NULL_AS_BLANK).getStringCellValue().trim())) {
 				errorList.add(" Invalid Program Header:  " + column.getHeader()
 				+ " is not present as per the template.");
 			}
@@ -83,7 +83,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 		for (V1ParticipantCols column : V1ParticipantCols.values()) {
 			row = column.getRow();
 			col = column.getCell();
-			if (!column.getHeader().equalsIgnoreCase(sheet.getRow(row).getCell(col).getStringCellValue().trim())) {
+			if (!column.getHeader().equalsIgnoreCase(sheet.getRow(row).getCell(col,Row.CREATE_NULL_AS_BLANK).getStringCellValue().trim())) {
 				errorList.add(" Invalid Participant Header " + column.getHeader()
 				+ " is not present as per the template.");
 			}
