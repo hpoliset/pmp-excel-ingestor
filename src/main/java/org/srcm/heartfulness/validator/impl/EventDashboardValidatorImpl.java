@@ -400,7 +400,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 					isValid=true;
 				}
 			}
-		} else if (!(null == participantInput.getThirdSittingDate())	&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())) {
+		} else if (!(null == participantInput.getThirdSittingDate()	&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting()))) {
 			isValid=true;
 		}
 		return isValid;

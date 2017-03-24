@@ -259,6 +259,8 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		}else{
 			program.setIsEwelcomeIdGenerationDisabled(EventDetailsUploadConstants.EWELCOME_ID_ENABLED_STATE);
 		}
+		program.setSendersEmailAddress(eventSheet.getRow(16).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		
 		LOGGER.info("Completed extracting program for V2 template");
 		return program;
 	}

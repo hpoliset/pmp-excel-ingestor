@@ -466,7 +466,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 									EmailLogConstants.STATUS_FAILED, ex.toString());
 							mailLogRepository.createMailLog(pmpMailLog);
 							LOGGER.error("EXCEPTION  :Failed to sent mail to {} :Exception : {} ", map
-									.getKey().getCoordinatorEmail(), ex);
+									.getKey().getCoordinatorEmail(), ex.getMessage());
 							LOGGER.error("EXCEPTION - Looking for next coordinator if available");
 						}
 						 Thread.sleep(5000);

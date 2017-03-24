@@ -41,7 +41,6 @@ public class SessionDetailsServiceImpl implements SessionDetailsService {
 		try{
 			response = sessionDtlsRepo.saveOrUpdateSessionDetails(sessionDetails);
 		}catch(DataAccessException dae){
-			dae.printStackTrace();
 			LOGGER.error("DAE Failed to save session id details for event id " + sessionDetails.getEventId());
 			response = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.SESSION_CREATION_FAILED);
 		}catch(Exception ex){
