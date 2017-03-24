@@ -1,0 +1,1 @@
+ALTER TABLE program ADD senders_email_address VARCHAR(100) NULL DEFAULT NULL;

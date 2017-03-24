@@ -397,6 +397,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 	 * @return
 	 */
 	@Override
+	@SuppressWarnings("unused")
 	public String validatePreceptorIDCardNumberandCreateUser(Program program, int id, String source) {
 		LOGGER.info("Started validating preceptor Id card number {}",program.getPreceptorIdCardNumber());
 		PMPAPIAccessLogDetails accessLogDetails = null;
@@ -634,7 +635,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 				apiAccessLogService.createPmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
 
 				AbhyasiResult abhyasiResult = srcmRestTemplate.fetchParticipantEWelcomeID(program.getCoordinatorEmail());
-				LOGGER.info("Response length from MYSRCM :",abhyasiResult.getUserProfile().length);
+				LOGGER.info("Response length from MYSRCM : {}",abhyasiResult.getUserProfile().length);
 				if (abhyasiResult.getUserProfile().length > 0) {
 					AbhyasiUserProfile userProfile = abhyasiResult.getUserProfile()[0];
 					
@@ -649,7 +650,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 							fetchEwelcomeIDAPIAccessLogDetails.setErrorMessage("Invalid coordinator email Id");
 							apiAccessLogService.updatePmpAPIAccesslogDetails(fetchEwelcomeIDAPIAccessLogDetails);
 						}
-
+						LOGGER.info("MYSRCM returned an empty profile");
 						return "Invalid coordinator email Id";
 					} else {
 						

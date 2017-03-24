@@ -95,6 +95,7 @@ public class Program {
 	private String isEwelcomeIdGenerationDisabled;
 	private String isReadOnly;
 	private String jiraIssueNumber;
+	private String sendersEmailAddress;
 
 	public String getSrcmGroup() {
 		return srcmGroup;
@@ -541,10 +542,18 @@ public class Program {
 	public void setJiraIssueNumber(String jiraIssueNumber) {
 		this.jiraIssueNumber = jiraIssueNumber;
 	}
+	
+	public String getSendersEmailAddress() {
+		return sendersEmailAddress;
+	}
+
+	public void setSendersEmailAddress(String sendersEmailAddress) {
+		this.sendersEmailAddress = sendersEmailAddress;
+	}
 
 	@Override
 	public String toString() {
-		return "Program [programChannelId=" + programChannelId + ", programChannel=" + programChannel
+		return "Program [programHashCode=" + programHashCode + ", programChannel=" + programChannel
 				+ ", programStartDate=" + programStartDate + ", programEndDate=" + programEndDate + ", coordinatorName="
 				+ coordinatorName + ", coordinatorEmail=" + coordinatorEmail + ", coordinatorMobile="
 				+ coordinatorMobile + ", eventPlace=" + eventPlace + ", eventCity=" + eventCity + ", eventState="
@@ -567,7 +576,7 @@ public class Program {
 				+ ", organizationDecisionMakerEmail=" + organizationDecisionMakerEmail
 				+ ", organizationDecisionMakerPhoneNo=" + organizationDecisionMakerPhoneNo
 				+ ", isEwelcomeIdGenerationDisabled=" + isEwelcomeIdGenerationDisabled + ", isReadOnly=" + isReadOnly
-				+ ", jiraIssueNumber=" + jiraIssueNumber + "]";
+				+ ", jiraIssueNumber=" + jiraIssueNumber + ", sendersEmailAddress=" + sendersEmailAddress + "]";
 	}
 
 }
