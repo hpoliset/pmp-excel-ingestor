@@ -7,7 +7,7 @@
 Dear ${COORDINATOR_NAME},
 <br/>
 <div style="padding-left: 10px;">
-<p>Please note that the following coordinators have requested access to the event <a href="${UPDATE_EVENT_LINK}">${EVENT_ID}</a>. Kindly login to the application using the following <u><a href="${UPDATE_EVENT_LINK}">URL</a></u> to approve the request.</p>
+<p>Please note that the following coordinator have requested access to the event ${EVENT_ID}. Kindly login to the application using the following <u><a href="${UPDATE_EVENT_LINK}">URL</a></u> to approve the request.</p>
 <p>
 <table border="1" style="width: 100%;">
 <tr>

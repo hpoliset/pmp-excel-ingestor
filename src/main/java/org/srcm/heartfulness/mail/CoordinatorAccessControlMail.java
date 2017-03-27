@@ -405,12 +405,12 @@ public class CoordinatorAccessControlMail {
 	public void sendApprovalMailToPrimaryCoordinator(Program program, User user, String eventId)
 			throws MessagingException, UnsupportedEncodingException {
 		try{
-			addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, program.getCoordinatorName());
+			addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, null != program.getCoordinatorName() ? program.getCoordinatorName() : "");
 			addParameter(EmailLogConstants.EVENT_ID_PARAMETER, eventId);
 			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + eventId);
-			addParameter(EmailLogConstants.SECONDARY_COORDINATOR_NAME_PARAMETER, user.getName());
-			addParameter(EmailLogConstants.SECONDARY_COORDINATOR_EMAIL_PARAMETER, user.getEmail());
-			addParameter(EmailLogConstants.SECONDARY_COORDINATOR_ABHYASIID_PARAMETER, user.getAbyasiId());
+			addParameter(EmailLogConstants.SECONDARY_COORDINATOR_NAME_PARAMETER, null != user.getName() ? user.getName() : "");
+			addParameter(EmailLogConstants.SECONDARY_COORDINATOR_EMAIL_PARAMETER, null != user.getEmail() ? user.getEmail() : "");
+			addParameter(EmailLogConstants.SECONDARY_COORDINATOR_ABHYASIID_PARAMETER, null != user.getAbyasiId() ? user.getAbyasiId() :"");
 			Session session = sendMail.getSession();
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(frommail, name));
