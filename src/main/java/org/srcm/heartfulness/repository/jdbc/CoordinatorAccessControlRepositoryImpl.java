@@ -88,7 +88,7 @@ public class CoordinatorAccessControlRepositoryImpl implements CoordinatorAccess
 		Map<String, Object> params = new HashMap<>();
 		params.put("email", userEmail);
 		user = this.namedParameterJdbcTemplate.queryForObject(
-				"SELECT id,name,First_name,Last_name,email,abyasi_id FROM user WHERE email=:email", params,
+				"SELECT id,name,First_name,Last_name,email,abyasi_id,role FROM user WHERE email=:email", params,
 				BeanPropertyRowMapper.newInstance(User.class));
 		return user;
 	}

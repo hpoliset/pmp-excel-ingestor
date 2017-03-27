@@ -57,5 +57,10 @@ public class EmailLogConstants {
 	public static final String CREATE_PROFILE_LINK_PARAMETER 						= 	"CREATE_PROFILE_LINK";
 	public static final String COORDINATOR_EMAILID_PARAMETER 						= 	"COORDINATOR_EMAILID";
 	public static final String MAIL_CONTENT_TYPE_TEXT_HTML							=	"text/html";
+	public static final String EVENT_ID_PARAMETER									=	"EVENT_ID";
+	public static final String MAIL_TO_PRIMARY_COORDINATOR_FOR_APPROVAL				=	"MAIL_TO_PRIMARY_COORDINATOR_FOR_APPROVAL";
+	public static final String SECONDARY_COORDINATOR_NAME_PARAMETER					=	"SECONDARY_COORDINATOR_NAME";
+	public static final String SECONDARY_COORDINATOR_EMAIL_PARAMETER				=	"SECONDARY_COORDINATOR_EMAIL";
+	public static final String SECONDARY_COORDINATOR_ABHYASIID_PARAMETER			=	"SECONDARY_COORDINATOR_ABHYASIID";
 
 }

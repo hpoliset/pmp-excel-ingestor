@@ -1,0 +1,36 @@
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<div>
+Dear ${COORDINATOR_NAME},
+<br/>
+<div style="padding-left: 10px;">
+<p>Please note that the following coordinators have requested access to the event <a href="${UPDATE_EVENT_LINK}">${EVENT_ID}</a>. Kindly login to the application using the following <u><a href="${UPDATE_EVENT_LINK}">URL</a></u> to approve the request.</p>
+<p>
+<table border="1" style="width: 100%;">
+<tr>
+<td style=" width: 10%;" ><b>Sr.No</b></td>
+<td style=" width: 30%;" ><b>Name</b></td>
+<td style=" width: 35%;" ><b>Coordinator Email</b></td>
+<td style=" width: 25%;" ><b>Abhyasi Id</b></td>
+</tr>
+<tr>
+<td style=" width: 10%;" align=left >1.</td>
+<td style=" width: 30%;" align=left >${SECONDARY_COORDINATOR_NAME}</td>
+<td style=" width: 35%;" align=left >${SECONDARY_COORDINATOR_EMAIL}</td>
+<td style=" width: 25%;" align=left >${SECONDARY_COORDINATOR_ABHYASIID}</td>
+</tr>
+</table>
+</p>
+*Please note that once this request is approved, the above user will be able to modify the event details.</br>
+<br/>
+</div>
+<div style="font-style: italic; font-weight: bold;">
+With Regards,
+<br/>
+Heartfulness Team
+</div>
+</body>
+</html>
