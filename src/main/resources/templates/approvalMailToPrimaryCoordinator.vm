@@ -25,9 +25,8 @@ Dear ${COORDINATOR_NAME},
 <td style=" width: 35%;" align=left >${SECONDARY_COORDINATOR_NOTES}</td>
 </tr>
 </table>
-</p></br>
-*Please note that once this request is approved, the above list of users will be able to modify the event details.</br>
-<br/>
+</p><br>
+*Please note that once this request is approved, the above list of users will be able to modify the event details.<br><br>
 </div>
 <div style="font-style: italic; font-weight: bold;">
 With Regards,
