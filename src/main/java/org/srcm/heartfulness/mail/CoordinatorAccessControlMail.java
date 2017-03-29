@@ -30,6 +30,8 @@ import org.srcm.heartfulness.constants.SMSConstants;
 import org.srcm.heartfulness.model.CoordinatorAccessControlEmail;
 import org.srcm.heartfulness.model.CoordinatorEmail;
 import org.srcm.heartfulness.model.PMPMailLog;
+import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.repository.MailLogRepository;
 import org.srcm.heartfulness.util.StackTraceUtils;
 
@@ -319,13 +321,13 @@ public class CoordinatorAccessControlMail {
 	public void sendMailToCoordinatorToUpdatePreceptorID(CoordinatorEmail coordinator) throws AddressException,
 	MessagingException, UnsupportedEncodingException, ParseException {
 
+		LOGGER.error("Sending mail to coordinator to update Preceptor Id ");
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, sendMail.getName(coordinator.getCoordinatorName()));
 		addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
 				+ "?id=" + coordinator.getEventID());
 		addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinator.getEventName());
 		SimpleDateFormat outputsdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
-		addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER,
-				outputsdf.format(coordinator.getProgramCreateDate()));
+		addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER,null != coordinator.getProgramCreateDate() ? outputsdf.format(coordinator.getProgramCreateDate()) : "");
 		Session session = sendMail.getSession();
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail, name));
@@ -349,6 +351,8 @@ public class CoordinatorAccessControlMail {
 	 * @param <code>CoordinatorAccessControlEmail</code> coordinator
 	 */
 	public void sendMailToCoordinatorWithLinktoCreateProfile(CoordinatorAccessControlEmail coordinator) {
+		
+		LOGGER.error("Sending mail to coordinator with a link to create profile");
 		try {
 			Session session = sendMail.getSession();
 			SMTPMessage message = new SMTPMessage(session);
@@ -400,25 +404,45 @@ public class CoordinatorAccessControlMail {
 
 	}
 
-	public void sendRequestMailToCoordinatorAndPreceptor(String recipientName, String recipientEmail, String eventId)
+	public void sendApprovalMailToPrimaryCoordinator(Program program, User user, String eventId, String secondaryCoordinatorNotes)
 			throws MessagingException, UnsupportedEncodingException {
-		addParameter(EmailLogConstants.NAME_PARAMETER, recipientName);
-		Session session = sendMail.getSession();
-		SMTPMessage message = new SMTPMessage(session);
-		message.setFrom(new InternetAddress(frommail, name));
-		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(recipientEmail));
-		message.setSubject(requestMailSubject + eventId);
-		message.setContent(getMessageContentbyTemplateName(requestMailTemplate),
-				EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
-		message.setAllow8bitMIME(true);
-		message.setSentDate(new Date());
-		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-		Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
-		transport.send(message);
-		transport.close();
+		try{
+			addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, null != program.getCoordinatorName() ? program.getCoordinatorName() : "");
+			addParameter(EmailLogConstants.EVENT_ID_PARAMETER, eventId);
+			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + eventId);
+			addParameter(EmailLogConstants.SECONDARY_COORDINATOR_NAME_PARAMETER, null != user.getName() ? user.getName() : "");
+			addParameter(EmailLogConstants.SECONDARY_COORDINATOR_EMAIL_PARAMETER, null != user.getEmail() ? user.getEmail() : "");
+			addParameter(EmailLogConstants.SECONDARY_COORDINATOR_ABHYASIID_PARAMETER, null != user.getAbyasiId() ? user.getAbyasiId() :"");
+			addParameter(EmailLogConstants.SECONDARY_COORDINATOR_NOTES, null != secondaryCoordinatorNotes ? secondaryCoordinatorNotes : "");
+			Session session = sendMail.getSession();
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
+			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(program.getCoordinatorEmail()));
+			message.setSubject(requestMailSubject + eventId);
+			message.setContent(getMessageContentbyTemplateName(approvalMailTemplate),
+					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
+			message.setAllow8bitMIME(true);
+			message.setSentDate(new Date());
+			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+			Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
+			transport.send(message);
+			transport.close();
+			
+			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(program.getProgramId()), program.getCoordinatorEmail(),
+					EmailLogConstants.MAIL_TO_PRIMARY_COORDINATOR_FOR_APPROVAL, EmailLogConstants.STATUS_SUCCESS, null);
+			mailLogRepository.createMailLog(pmpMailLog);
+			
+		} catch(Exception ex){
+			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(program.getProgramId()), program.getCoordinatorEmail(),
+					EmailLogConstants.MAIL_TO_PRIMARY_COORDINATOR_FOR_APPROVAL, EmailLogConstants.STATUS_FAILED,
+					StackTraceUtils.convertStackTracetoString(ex));
+			mailLogRepository.createMailLog(pmpMailLog);
+		}
+
+
 	}
 
-	public void sendMailToNewSecondaryCoordinator(String recipientName, String recipientEmail, String eventId)
+	/*public void sendMailToNewSecondaryCoordinator(String recipientName, String recipientEmail, String eventId)
 			throws UnsupportedEncodingException, MessagingException {
 		addParameter(EmailLogConstants.NAME_PARAMETER, recipientName);
 		Session session = sendMail.getSession();
@@ -434,6 +458,6 @@ public class CoordinatorAccessControlMail {
 		Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
 		transport.send(message);
 		transport.close();
-	}
+	}*/
 
 }

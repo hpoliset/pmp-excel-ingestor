@@ -124,6 +124,8 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 						}
 					}
 				}
+			}else if(!coordinatorEmail.matches(ExpressionConstants.EMAIL_REGEX)){
+				eventErrorList.add(V1ProgramCols.EVENT_COORDINATOR_MAIL.getHeader() + " is invalid at row number 6");
 			}
 			
 		}

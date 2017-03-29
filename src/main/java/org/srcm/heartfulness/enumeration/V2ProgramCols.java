@@ -6,7 +6,7 @@ package org.srcm.heartfulness.enumeration;
  * @author Koustav Dutta
  *
  */
-public enum V2ProgramCols2 {
+public enum V2ProgramCols {
 
 	EVENT_TYPE("Event Type*", 0, 2), 
 	OTHER("Other", 2, 2), 
@@ -36,7 +36,7 @@ public enum V2ProgramCols2 {
 	/**Instance to identify the row value for participants in v2.1 template. */
 	private int row;
 
-	private V2ProgramCols2(String header, int cell, int row) {
+	private V2ProgramCols(String header, int cell, int row) {
 		this.header = header;
 		this.cell = cell;
 		this.row = row;

@@ -285,6 +285,10 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				&& !event.getOrganizationDecisionMakerPhoneNo().matches(ExpressionConstants.MOBILE_REGEX)) {
 			errors.put("organizationDecisionMakerPhoneNo", "Head of the department mobile number is invalid");
 		}
+		
+		if (null == event.getPreceptorIdCardNumber() || event.getPreceptorIdCardNumber().isEmpty()) {
+			errors.put("preceptorIdCardNumber", "Preceptor Id card number is required");
+		}
 
 		return errors;
 	}
