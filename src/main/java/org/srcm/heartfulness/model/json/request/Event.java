@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 	"organizationLocation", "organizationFullAddress", "organizationContactName", "organizationContactEmail",
 	"organizationContactMobile", "organizationDecisionMakerName", "organizationDecisionMakerPhoneNo",
 	"organizationDecisionMakerEmail", "preceptorName", "preceptorIdCardNumber", "welcomeCardSignedByName",
-	"welcomeCardSignerIdCardNumber", "remarks", "isEwelcomeIdGenerationDisabled","status","isReadOnly", "jiraIssueNumber", "errors" })
+	"welcomeCardSignerIdCardNumber", "remarks", "isEwelcomeIdGenerationDisabled","status","isReadOnly", "jiraIssueNumber", "secondaryCoordinatorNotes", "errors" })
 public class Event {
 
 	@JsonProperty(value = "eventId")
@@ -77,6 +77,7 @@ public class Event {
 	private Map<String, String> errors;
 	private String isEwelcomeIdGenerationDisabled;
 	private String isReadOnly;
+	private String secondaryCoordinatorNotes;
 
 	@JsonInclude(value = Include.ALWAYS)
 	private String jiraIssueNumber;
@@ -428,6 +429,14 @@ public class Event {
 
 	public void setJiraIssueNumber(String jiraIssueNumber) {
 		this.jiraIssueNumber = jiraIssueNumber;
+	}
+	
+	public String getSecondaryCoordinatorNotes() {
+		return secondaryCoordinatorNotes;
+	}
+
+	public void setSecondaryCoordinatorNotes(String secondaryCoordinatorNotes) {
+		this.secondaryCoordinatorNotes = secondaryCoordinatorNotes;
 	}
 
 	/**
