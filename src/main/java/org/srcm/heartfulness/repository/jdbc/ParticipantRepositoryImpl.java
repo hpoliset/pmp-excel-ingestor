@@ -380,8 +380,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 		return this.jdbcTemplate.queryForList("SELECT DISTINCT(pr.program_id) FROM program p,participant pr"
 				+ " WHERE p.program_id = pr.program_id AND pr.create_time < CURDATE()"
-				+ " AND pr.ewelcome_id_state = 'T' AND ("
-				+ "pr.welcome_card_number IS NULL OR pr.welcome_card_number = '')", null, Integer.class);
+				+ " AND pr.ewelcome_id_state = 'T'", null, Integer.class);
 	}
 
 	@Override
