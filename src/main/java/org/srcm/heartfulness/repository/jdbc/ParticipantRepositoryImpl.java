@@ -380,8 +380,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 		return this.jdbcTemplate.queryForList("SELECT DISTINCT(pr.program_id) FROM program p,participant pr"
 				+ " WHERE p.program_id = pr.program_id AND pr.create_time < CURDATE()"
-				+ " AND pr.ewelcome_id_state = 'T' AND ("
-				+ "pr.welcome_card_number IS NULL OR pr.welcome_card_number = '')", null, Integer.class);
+				+ " AND pr.ewelcome_id_state = 'T'", null, Integer.class);
 	}
 
 	@Override
@@ -394,8 +393,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 						+ "welcome_card_date,id,mobile_phone,introduction_date,address_line1,address_line2,"
 						+ "ewelcome_id_state,ewelcome_id_remarks,seqId from participant "
 						+ " WHERE program_id=:programId AND create_time < CURDATE()"
-						+ " AND ewelcome_id_state = 'T' AND ("
-						+ "welcome_card_number IS NULL OR welcome_card_number = '')", params,
+						+ " AND ewelcome_id_state = 'T'", params,
 						BeanPropertyRowMapper.newInstance(Participant.class));
 	}
 
