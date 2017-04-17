@@ -1,5 +1,6 @@
 package org.srcm.heartfulness.repository.jdbc;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,8 @@ public class ChannelRepositoryImpl implements ChannelRepository {
 		Map<String, Object> params = new HashMap<>();
 		params.put("active", 1);
 		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
-		List<Channel> listOfChannels = this.namedParameterJdbcTemplate.query(
+		List<Channel> listOfChannels = new ArrayList<Channel>();
+		listOfChannels = this.namedParameterJdbcTemplate.query(
 				"SELECT * FROM channel WHERE active=:active", sqlParameterSource,
 				BeanPropertyRowMapper.newInstance(Channel.class));
 		return listOfChannels;

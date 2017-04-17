@@ -156,7 +156,8 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 	 */
 	@Override
 	public List<String> getCountries() {
-		List<String> countries = this.jdbcTemplate.queryForList(
+		List<String> countries = new ArrayList<String>();
+		countries = this.jdbcTemplate.queryForList(
 				"SELECT distinct event_country from program order by event_country asc", null, String.class);
 		return countries;
 	}
@@ -169,7 +170,8 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 	 */
 	@Override
 	public List<String> getStatesForCountry(String country) {
-		List<String> states = this.jdbcTemplate.queryForList(
+		List<String> states = new ArrayList<String>();
+		states = this.jdbcTemplate.queryForList(
 				"SELECT distinct event_state FROM program WHERE event_country = ? order by event_state asc",
 				new Object[] { country }, String.class);
 		return states;
@@ -183,7 +185,8 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 	 */
 	@Override
 	public List<String> getEventTypes() {
-		List<String> eventTypes = this.jdbcTemplate.queryForList(
+		List<String> eventTypes = new ArrayList<String>();
+		eventTypes = this.jdbcTemplate.queryForList(
 				"SELECT program_channel FROM program order by program_channel asc", new Object[] {}, String.class);
 		return eventTypes;
 	}

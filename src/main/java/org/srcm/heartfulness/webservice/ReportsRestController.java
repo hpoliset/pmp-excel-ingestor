@@ -1,6 +1,8 @@
 package org.srcm.heartfulness.webservice;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -12,18 +14,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.srcm.heartfulness.constants.ErrorConstants;
+import org.srcm.heartfulness.model.Channel;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.ParticipantFullDetails;
 import org.srcm.heartfulness.model.json.response.Response;
 import org.srcm.heartfulness.service.APIAccessLogService;
+import org.srcm.heartfulness.service.ChannelService;
 import org.srcm.heartfulness.service.ReportService;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
 import org.srcm.heartfulness.util.ZipUtils;
 import org.srcm.heartfulness.validator.ReportsValidator;
 import org.srcm.heartfulness.vo.ReportVO;
+
+import com.mysql.fabric.xmlrpc.base.Array;
 
 @RestController
 @RequestMapping("/api/")
@@ -37,6 +45,9 @@ public class ReportsRestController {
 	
 	@Autowired
 	ReportsValidator reportsValidator;
+	
+	@Autowired
+	ChannelService channelService;
 	
 	@RequestMapping(value = "/report/generate", method = RequestMethod.POST)
 	public ResponseEntity<?> generateReport(@RequestHeader(value = "Authorization") String token,@RequestBody ReportVO reportVO,@Context HttpServletRequest httpRequest) {
@@ -82,6 +93,54 @@ public class ReportsRestController {
 			Response response = new Response(ErrorConstants.STATUS_FAILED, "Internal Server error.");
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
 		}
+	}
+	/**
+	 * Fetches the list of states for the given country, to be used in the
+	 * Report parameter screen.
+	 * 
+	 * @param country
+	 *            - Event country
+	 * @return the list of state
+	 */
+	@RequestMapping(value = "/report/getCountries", method = RequestMethod.POST)
+	public ResponseEntity<?> getCountrries() {
+		try {
+			List<String> eventCountries = reportService.getCountries();
+			return new ResponseEntity<List<String>>(eventCountries, HttpStatus.OK);
+		} catch (Exception e) {
+			Response response = new Response(ErrorConstants.STATUS_FAILED, "Internal Server error.");
+			return new ResponseEntity<Response>(response, HttpStatus.OK);
+		}
+	}
+	/**
+	 * Fetches the list of states for the given country, to be used in the
+	 * Report parameter screen.
+	 * 
+	 * @param country
+	 *            - Event country
+	 * @return the list of state
+	 */
+	@RequestMapping(value = "/report/getStates", method = RequestMethod.POST)
+	public ResponseEntity<?> getStatesForCountry(@RequestParam(required = false, name = "country") String country) {
+		try {
+			List<String>  eventStates = reportService.getStatesForCountry(country);
+			return new ResponseEntity<List<String>>(eventStates, HttpStatus.OK);
+		} catch (Exception e) {
+			Response response = new Response(ErrorConstants.STATUS_FAILED, "Internal Server error.");
+			return new ResponseEntity<Response>(response, HttpStatus.OK);
+		}
+	}
+
+	/**
+	 * Fetches the list of active channel, to be used in the Report parameter
+	 * screen.
+	 * 
+	 * @return the list of Channel
+	 */
+	@RequestMapping(value = "/report/getProgramChannels", method = RequestMethod.POST)
+	public ResponseEntity<?> getProgramChannels() {
+		List<Channel> programChannels = channelService.findAllActiveChannels();
+		return new ResponseEntity<List<Channel>>(programChannels, HttpStatus.OK);
 	}
 
 }
