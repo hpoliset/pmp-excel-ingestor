@@ -5,6 +5,7 @@ package org.srcm.heartfulness.validator.impl;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -103,7 +104,8 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 		LOGGER.info("Started validating Event Details fields for altered 1.0 template.");
 		String eventDateStr = sheet.getRow(11).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim();
 		try {
-			if(DateUtils.parseDate(eventDateStr).after(new Date())){
+			SimpleDateFormat sdf = new SimpleDateFormat(DateUtils.determineDateFormat(eventDateStr));
+			if(DateUtils.parseDate(eventDateStr).after(sdf.parse(sdf.format(new Date())))){
 				LOGGER.error("Program start date cannot be a future date :[" + eventDateStr + "]");
 				eventErrorList.add("Program start date cannot be a future date:[" + eventDateStr + "]");
 			}
@@ -172,7 +174,8 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 
 			String introducedDateStr = currentRow.getCell(8, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			try {
-				if(DateUtils.parseDate(introducedDateStr).after(new Date())){
+				SimpleDateFormat sdf = new SimpleDateFormat(DateUtils.determineDateFormat(introducedDateStr));
+				if(DateUtils.parseDate(introducedDateStr).after(sdf.parse(sdf.format(new Date())))){
 					LOGGER.error("Introduced date cannot be a future date :[" + introducedDateStr + "] at row number " + rowNumber);
 					errorList.add("Introduced date date cannot be a future date:[" + introducedDateStr + "] at row number " + rowNumber);
 				}
