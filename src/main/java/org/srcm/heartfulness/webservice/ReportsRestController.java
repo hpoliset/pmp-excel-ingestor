@@ -1,6 +1,5 @@
 package org.srcm.heartfulness.webservice;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.model.Channel;
@@ -30,8 +28,6 @@ import org.srcm.heartfulness.util.StackTraceUtils;
 import org.srcm.heartfulness.util.ZipUtils;
 import org.srcm.heartfulness.validator.ReportsValidator;
 import org.srcm.heartfulness.vo.ReportVO;
-
-import com.mysql.fabric.xmlrpc.base.Array;
 
 @RestController
 @RequestMapping("/api/")
