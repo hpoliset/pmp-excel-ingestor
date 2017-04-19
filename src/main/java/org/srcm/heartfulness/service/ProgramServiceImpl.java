@@ -1011,7 +1011,7 @@ public class ProgramServiceImpl implements ProgramService {
 					if (result.getUserProfile().length > 0) {
 						AbhyasiUserProfile userProfile = result.getUserProfile()[0];
 						if (null != userProfile) {
-							if (true == userProfile.isIs_prefect() && 0 != userProfile.getId()) {
+							if ( 0 != userProfile.getId()) {
 								program.setAbyasiRefNo(program.getPreceptorIdCardNumber());
 								program.setFirstSittingBy(userProfile.getId());
 								program.setPreceptorName(userProfile.getName());
