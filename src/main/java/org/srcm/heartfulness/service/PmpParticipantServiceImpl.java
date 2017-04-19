@@ -305,7 +305,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	 * @return participant details
 	 */
 	@Override
-	public ParticipantRequest getParticipantBySeqId(ParticipantRequest participantRequest) {
+	public ParticipantRequest getParticipantBySeqId(ParticipantRequest participantRequest,String mail) {
 		SimpleDateFormat convertedsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
 		Participant participant = findBySeqId(participantRequest);
 		if (null != participant) {
@@ -470,6 +470,18 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participantRequest.setProgramId(programrepository.getProgramIdByEventId(participantRequest.getEventId()));
 			Participant newParticipant = programrepository.findParticipantBySeqId(participantRequest.getSeqId(),
 					participantRequest.getProgramId());
+			return newParticipant;
+		} else {
+			return null;
+		}
+	}
+	
+	@Override
+	public Participant findBySeqIdAndRole(ParticipantRequest participantRequest,String mail) {
+		if (0 != programrepository.getProgramIdByEventId(participantRequest.getEventId())) {
+			participantRequest.setProgramId(programrepository.getProgramIdByEventId(participantRequest.getEventId()));
+			Participant newParticipant = programrepository.findParticipantBySeqIdAndRole(participantRequest.getSeqId(),
+					participantRequest.getProgramId(),mail);
 			return newParticipant;
 		} else {
 			return null;

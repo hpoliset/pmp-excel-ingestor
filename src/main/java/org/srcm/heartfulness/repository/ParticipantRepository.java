@@ -41,6 +41,14 @@ public interface ParticipantRepository {
 	 * @return
 	 */
 	List<Participant> findByProgramId(int programId);
+	
+	/**
+	 * Retrieve the List of Participants
+	 * 
+	 * @param programId
+	 * @return
+	 */
+	List<Participant> findByProgramIdAndRole(int programId,String mail);
 
 	/**
 	 * Save an <code>Participant</code> to the data store, either inserting or

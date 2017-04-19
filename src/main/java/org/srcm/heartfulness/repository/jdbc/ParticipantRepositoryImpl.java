@@ -24,6 +24,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.constants.ExpressionConstants;
+import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
@@ -102,6 +103,51 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 		List<Participant> participants = this.namedParameterJdbcTemplate.query(
 				"SELECT * FROM participant WHERE program_id=:programId", sqlParameterSource,
 				BeanPropertyRowMapper.newInstance(Participant.class));
+
+		return participants;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.ParticipantRepository#findByProgramIdAndRole
+	 * (java.lang.Integer)
+	 */
+	@Override
+	public List<Participant> findByProgramIdAndRole(int programId, String mail) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("programId", programId);
+		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+		StringBuilder whereCondition = new StringBuilder("");
+
+		String userRole = this.jdbcTemplate.query("SELECT role from user WHERE email=? ", new Object[] { mail },
+				new ResultSetExtractor<String>() {
+					@Override
+					public String extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+						if (resultSet.next()) {
+							return resultSet.getString(1);
+						}
+						return null;
+					}
+				});
+		if (!userRole.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
+
+			if (userRole.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)) {
+				whereCondition
+						.append(" ( p.program_channel NOT REGEXP ('G-Connect|G Connect|GConnect|G-Conect|G - Connect|G.CONNECT|G -CONNECT|G- connect|G-Connet|G  Connect')"
+								+ " OR (p.coordinator_email IN( " + mail + ") OR pc.email IN(" + mail + "))) ");
+			} else {
+				whereCondition.append(" (p.coordinator_email IN( " + mail + ") OR pc.email IN(" + mail + ")) ");
+			}
+		}
+		whereCondition
+				.append((whereCondition.length() > 0) ? " AND pr.program_id=:programId AND pr.program_id=p.program_id "
+						: " pr.program_id=:programId AND pr.program_id=p.program_id ");
+
+		List<Participant> participants = this.namedParameterJdbcTemplate
+				.query("SELECT DISTINCT pr.* FROM participant pr,program p LEFT JOIN program_coordinators pc ON p.program_id = pc.program_id WHERE "
+						+ whereCondition, sqlParameterSource, BeanPropertyRowMapper.newInstance(Participant.class));
 
 		return participants;
 	}
