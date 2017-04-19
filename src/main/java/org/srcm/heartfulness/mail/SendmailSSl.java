@@ -14,11 +14,12 @@ import javax.mail.internet.InternetAddress;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import org.srcm.heartfulness.constants.EmailLogConstants;
 
 import com.sun.mail.smtp.SMTPMessage;
 
-@RequestMapping
+@RestController
 public class SendmailSSl {
 
 	@RequestMapping(value = "/smtpmail", method = RequestMethod.POST)
