@@ -866,9 +866,9 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			if (userRole.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)) {
 				whereCondition
 						.append(" ( p.program_channel NOT REGEXP ('G-Connect|G Connect|GConnect|G-Conect|G - Connect|G.CONNECT|G -CONNECT|G- connect|G-Connet|G  Connect')"
-								+ " OR (p.coordinator_email IN( " + mail + ") OR pc.email IN(" + mail + "))) ");
+								+ " OR (p.coordinator_email IN(' " + mail + "') OR pc.email IN('" + mail + "'))) ");
 			} else {
-				whereCondition.append(" (p.coordinator_email IN( " + mail + ") OR pc.email IN(" + mail + ")) ");
+				whereCondition.append(" (p.coordinator_email IN(' " + mail + "') OR pc.email IN('" + mail + "')) ");
 			}
 		}
 
