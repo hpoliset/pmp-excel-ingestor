@@ -19,6 +19,10 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.dao.TypeMismatchDataAccessException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,59 +106,64 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	 */
 	@Override
 	@Transactional
+	@SuppressWarnings("static-access")
 	public ExcelUploadResponse parseAndPersistExcelFile(String fileName, byte[] fileContent, String eWelcomeIdCheckbox) {
+
 		LOGGER.info("Started parsing and persisting Excel file.");
-		ExcelUploadResponse response = new ExcelUploadResponse();
-		response.setFileName(fileName);
-		response.setExcelVersion(ExcelType.INVALID);
 		List<String> errorResponse = new ArrayList<String>();
+		ExcelUploadResponse response = new ExcelUploadResponse(fileName,ExcelType.INVALID,EventDetailsUploadConstants.FAILURE_STATUS, errorResponse);
+		Workbook workBook = null;
 		try {
-			Workbook workBook = ExcelParserUtils.getWorkbook(fileName, fileContent);
-			// Validate and Parse the excel file
-			ExcelType version = versionIdentifier.findVersion(workBook);
+
+			workBook = ExcelParserUtils.getWorkbook(fileName, fileContent); //get the workbook type
+
+		} catch (InvalidExcelFileException iefex) {
+			errorResponse.add(iefex.getMessage());
+		} catch (Exception ex) {
+			errorResponse.add("Excel sheet workbook content is invalid or empty");
+		}
+
+		if(null != workBook){
+			ExcelType version = versionIdentifier.findVersion(workBook); // Find the excel version
 			response.setExcelVersion(version);
+
 			if (version != version.INVALID) {
-				errorResponse = EventDetailsExcelValidatorFactory.validateExcel(workBook, version);
-				if (!errorResponse.isEmpty()) {
-					response.setErrorMsg(errorResponse);
-					response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
-				} else {
-					// Persist the program
+
+				try{
+					errorResponse = EventDetailsExcelValidatorFactory.validateExcel(workBook, version); //Sheet structure and mandatory fields validation
+				} catch(NullPointerException npex){
+					errorResponse.add("Excel file you are trying to upload seems to be corrupted. "
+							+ "Please copy the content into a valid excel file and re-try");
+				} catch(Exception ex){
+					errorResponse.add("Error while validating excel file " + fileName + ".Please contact Administrator ");
+				}
+
+				if(errorResponse.isEmpty()){
 					try {
 						Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version,eWelcomeIdCheckbox);
 						program.setCreatedSource(PMPConstants.CREATED_SOURCE_EXCEL);
 						programRepository.save(program);
-						// preceptor ID card number validation
-						validatePreceptorIdandCoordinatorEmailIdAndPersistProgram(program, response, errorResponse);
+						validatePreceptorIdandCoordinatorEmailIdAndPersistProgram(program, response, errorResponse); // preceptor ID card number validation
 					} catch (InvalidExcelFileException ex) {
-						errorResponse.add("File you are trying to upload is invalid.Please contact Administrator");
-						response.setErrorMsg(errorResponse);
-						response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
+						errorResponse.add("Invalid excel file version.Available versions are v1 and v2.1");
+					} catch(TypeMismatchDataAccessException tmdae){
+						errorResponse.add("There is a mismatch between Java type and data type, such as trying to insert a String into a numeric column");
+					} catch(DataIntegrityViolationException divex) {
+						errorResponse.add(divex.getCause().getMessage().replaceAll("at row 1",""));
+					} catch (InvalidDataAccessResourceUsageException idarue) {
+						errorResponse.add("A data access resource is used incorrectly, such as using bad SQL grammar to access a relational database");
+					} catch(DataAccessException daex){
+						errorResponse.add("Something went wrong!! Unable to save event and participant data.");
 					} catch (Exception ex) {
-						ex.printStackTrace();
-						errorResponse.add("Failed to upload excel file.Please contact Administrator");
-						response.setErrorMsg(errorResponse);
-						response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
+						errorResponse.add("Something went wrong!! Unable to save event and participant data.");
 					}
 				}
 			} else {
-				errorResponse.add("Invalid file contents.Please contact Administrator");
-				response.setErrorMsg(errorResponse);
-				response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
+				errorResponse.add("Invalid excel file version.Available versions are v1 and v2.1");
 			}
-		} catch (IOException | InvalidExcelFileException | POIXMLException ex) {
-			// To show the error message to the end user.
-			LOGGER.error(ex.getMessage());
-			errorResponse.add("Error while uploading excel file.Please contact Administrator");
-			response.setErrorMsg(errorResponse);
-			response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			LOGGER.error(ex.getMessage());
-			errorResponse.add("Exception while uploading excel file.Please contact Administrator");
-			response.setErrorMsg(errorResponse);
-			response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
 		}
+		
+		response.setErrorMsg(errorResponse);
 		return response;
 	}
 
@@ -170,7 +179,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			ExcelUploadResponse response, List<String> errorResponse) {
 
 		PMPAPIAccessLog accessLog = null;
-		accessLog = new PMPAPIAccessLog(null, null, "EXCEL UPLOAD", DateUtils.getCurrentTimeInMilliSec(), null,
+		accessLog = new PMPAPIAccessLog(null, null, PMPConstants.CREATED_SOURCE_EXCEL, DateUtils.getCurrentTimeInMilliSec(), null,
 				ErrorConstants.STATUS_FAILED, null, StackTraceUtils.convertPojoToJson(program
 						.getAutoGeneratedEventId()), null);
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
@@ -211,7 +220,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 					response.setErrorMsg(errorResponse);
 					accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				}else{*/
-					//add  sender email as secondary coordinator
+				//add  sender email as secondary coordinator
 				if(!program.getSendersEmailAddress().isEmpty()){
 					ProgramCoordinators programCoordinators = new ProgramCoordinators(program.getProgramId(), 0, null, program.getSendersEmailAddress(), 0);
 					try{
@@ -228,10 +237,10 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 						LOGGER.error("Failed to update secondary coordinator "+program.getSendersEmailAddress() +" while uploading excel ");
 					}
 				}
-					//update ewelcome ID status
-					participantService.updateParticipantEWelcomeIDStatuswithProgramID(program.getProgramId(),PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, isPreceptorIdValid);
+				//update ewelcome ID status
+				participantService.updateParticipantEWelcomeIDStatuswithProgramID(program.getProgramId(),PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, isPreceptorIdValid);
 
-					//send him mail with create profile template
+				//send him mail with create profile template
 				if(!program.getSendersEmailAddress().isEmpty()){
 					CoordinatorAccessControlEmail coordinator = new CoordinatorAccessControlEmail();
 					coordinator.setCoordinatorName("Friend");
@@ -255,10 +264,10 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 					};
 					new Thread(task, "Service-Thread").start();
 				}
-					accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
-					response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
+				accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+				response.setStatus(EventDetailsUploadConstants.SUCCESS_STATUS);
 				//}
-				
+
 				accessLog.setErrorMessage(StackTraceUtils.convertPojoToJson(response));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
