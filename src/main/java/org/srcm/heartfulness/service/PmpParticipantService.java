@@ -44,7 +44,7 @@ public interface PmpParticipantService {
 	 *            contains seqId and event Id
 	 * @return participant details
 	 */
-	public ParticipantRequest getParticipantBySeqId(ParticipantRequest participantRequest,String mail);
+	public ParticipantRequest getParticipantBySeqId(ParticipantRequest participantRequest,List<String> mail,String role);
 
 	/**
 	 * Service to get the participant details depending on the values given in
@@ -70,7 +70,7 @@ public interface PmpParticipantService {
 	 * @param mail
 	 * @return <code>Participant</code>
 	 */
-	public Participant findBySeqIdAndRole(ParticipantRequest participantRequest, String mail);
+	public Participant findBySeqIdAndRole(ParticipantRequest participantRequest, List<String> mail,String role);
 
 	/**
 	 * Service to update the participants and generate eWelcomeID by calling MySRCM API.

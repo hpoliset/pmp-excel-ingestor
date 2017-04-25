@@ -14,7 +14,6 @@ import java.util.List;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
-import org.apache.poi.POIXMLException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -297,7 +296,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			public void run() {
 				try {
 					String isValid = coordinatorAccessControlService.validatePreceptorIDCardNumberandCreateUser(program, id,null);
-					if (null != isValid) {
+					if (null != isValid &&"Preceptor Email Id is not available for the provided preceptor Id" != isValid ) {
 						participantService.updateParticipantEWelcomeIDStatuswithProgramID(program.getProgramId(),
 								PMPConstants.EWELCOMEID_FAILED_STATE, isValid);
 						Runnable task = new Runnable() {

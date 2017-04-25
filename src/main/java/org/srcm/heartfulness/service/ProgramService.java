@@ -75,7 +75,7 @@ public interface ProgramService {
 	 * @param decryptedProgramId
 	 * @return
 	 */
-	List<Participant> getParticipantByProgramId(int decryptedProgramId,String mail);
+	List<Participant> getParticipantByProgramId(int decryptedProgramId,List<String> mail,String role);
 
 	/**
 	 * Get the list of events depending on the coordinator email
@@ -94,7 +94,7 @@ public interface ProgramService {
 	 *  @param mail
 	 * @return List<ParticipantRequest>
 	 */
-	public List<ParticipantRequest> getParticipantByEventId(String eventId,String mail);
+	public List<ParticipantRequest> getParticipantByEventId(String eventId,List<String> mail,String role);
 
 	/**
 	 * This service method is used to create a new record or update an existing

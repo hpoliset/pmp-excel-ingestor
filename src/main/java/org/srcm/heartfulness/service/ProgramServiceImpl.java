@@ -142,8 +142,8 @@ public class ProgramServiceImpl implements ProgramService {
 	 * @return
 	 */
 	@Override
-	public List<Participant> getParticipantByProgramId(int decryptedProgramId,String mail) {
-		return programRepository.getParticipantList(decryptedProgramId,mail);
+	public List<Participant> getParticipantByProgramId(int decryptedProgramId,List<String> mail,String role) {
+		return programRepository.getParticipantList(decryptedProgramId,mail,role);
 	}
 
 	/**
@@ -205,7 +205,7 @@ public class ProgramServiceImpl implements ProgramService {
 	 * @return List<ParticipantRequest>
 	 */
 	@Override
-	public List<ParticipantRequest> getParticipantByEventId(String eventId,String mail) {
+	public List<ParticipantRequest> getParticipantByEventId(String eventId,List<String> mail,String role) {
 		List<Participant> participantList = new ArrayList<Participant>();
 		List<ParticipantRequest> participantReqList = new ArrayList<ParticipantRequest>();
 
@@ -214,7 +214,7 @@ public class ProgramServiceImpl implements ProgramService {
 			return participantReqList;
 		} else {
 			SimpleDateFormat convertedsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
-			participantList = programRepository.getParticipantList(programId,mail);
+			participantList = programRepository.getParticipantList(programId,mail,role);
 
 			for (Participant participant : participantList) {
 				ParticipantRequest participantReq = new ParticipantRequest();

@@ -499,9 +499,9 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	}
 
 	@Override
-	public List<Participant> getParticipantList(int decryptedProgramId,String mail) {
+	public List<Participant> getParticipantList(int decryptedProgramId,List<String> mail,String role) {
 		List<Participant> participants = new ArrayList<Participant>();
-		participants = this.participantRepository.findByProgramIdAndRole(decryptedProgramId,mail);
+		participants = this.participantRepository.findByProgramIdAndRole(decryptedProgramId,mail,role);
 		return participants;
 	}
 
@@ -843,7 +843,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	}
 
 	@Override
-	public Participant findParticipantBySeqIdAndRole(String seqId, int programId, String mail) {
+	public Participant findParticipantBySeqIdAndRole(String seqId, int programId, List<String> emailList,String userRole) {
 		Participant participant;
 		Program program;
 		Map<String, Object> params = new HashMap<>();
@@ -851,7 +851,8 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		params.put("programId", programId);
 
 		StringBuilder whereCondition = new StringBuilder("");
-		String userRole = this.jdbcTemplate.query("SELECT role from user WHERE email=? ", new Object[] { mail },
+		StringBuilder emailString = new StringBuilder("");
+		/*String userRole = this.jdbcTemplate.query("SELECT role from user WHERE email=? ", new Object[] { mail },
 				new ResultSetExtractor<String>() {
 					@Override
 					public String extractData(ResultSet resultSet) throws SQLException, DataAccessException {
@@ -860,15 +861,24 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 						}
 						return null;
 					}
-				});
+				});*/
+		
+		if(emailList.size() == 1){
+			emailString.append("'"+emailList.get(0)+"'");
+		}else{
+			for(int i = 0; i < emailList.size(); i++){
+				emailString.append( i != (emailList.size() -1 ) ? "'"+emailList.get(i)+"'" + ",": "'"+emailList.get(i)+"'");
+			}
+		}
+		
 		if (!userRole.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
 
 			if (userRole.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)) {
 				whereCondition
 						.append(" ( p.program_channel NOT REGEXP ('G-Connect|G Connect|GConnect|G-Conect|G - Connect|G.CONNECT|G -CONNECT|G- connect|G-Connet|G  Connect')"
-								+ " OR (p.coordinator_email IN(' " + mail + "') OR pc.email IN('" + mail + "'))) ");
+								+ " OR (p.coordinator_email IN(" + emailString + ") OR pc.email IN(" + emailString + "))) ");
 			} else {
-				whereCondition.append(" (p.coordinator_email IN(' " + mail + "') OR pc.email IN('" + mail + "')) ");
+				whereCondition.append(" (p.coordinator_email IN(' " + emailString + "') OR pc.email IN(" + emailString + ")) ");
 			}
 		}
 

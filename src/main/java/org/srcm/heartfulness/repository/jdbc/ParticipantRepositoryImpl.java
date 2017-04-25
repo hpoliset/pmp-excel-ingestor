@@ -115,13 +115,14 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	 * (java.lang.Integer)
 	 */
 	@Override
-	public List<Participant> findByProgramIdAndRole(int programId, String mail) {
+	public List<Participant> findByProgramIdAndRole(int programId, List<String> emailList,String userRole) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("programId", programId);
 		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
 		StringBuilder whereCondition = new StringBuilder("");
+		StringBuilder emailString = new StringBuilder("");
 
-		String userRole = this.jdbcTemplate.query("SELECT role from user WHERE email=? ", new Object[] { mail },
+		/*String userRole = this.jdbcTemplate.query("SELECT role from user WHERE email=? ", new Object[] { mail },
 				new ResultSetExtractor<String>() {
 					@Override
 					public String extractData(ResultSet resultSet) throws SQLException, DataAccessException {
@@ -130,15 +131,23 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 						}
 						return null;
 					}
-				});
-		if (!userRole.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
+				});*/
+		if(null != emailList && emailList.size() == 1){
+			emailString.append("'"+emailList.get(0)+"'");
+		}else{
+			for(int i = 0; i < emailList.size(); i++){
+				emailString.append( i != (emailList.size() -1 ) ? "'"+emailList.get(i)+"'" + ",": "'"+emailList.get(i)+"'");
+			}
+		}
+		
+		if (null != userRole && !userRole.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
 
 			if (userRole.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)) {
 				whereCondition
 						.append(" ( p.program_channel NOT REGEXP ('G-Connect|G Connect|GConnect|G-Conect|G - Connect|G.CONNECT|G -CONNECT|G- connect|G-Connet|G  Connect')"
-								+ " OR (p.coordinator_email IN(' " + mail + "') OR pc.email IN('" + mail + "'))) ");
+								+ " OR (p.coordinator_email IN(" + emailString + ") OR pc.email IN(" + emailString + "))) ");
 			} else {
-				whereCondition.append(" (p.coordinator_email IN( '" + mail + "') OR pc.email IN('" + mail + "')) ");
+				whereCondition.append(" (p.coordinator_email IN(" + emailString + ") OR pc.email IN(" + emailString + ")) ");
 			}
 		}
 		whereCondition
