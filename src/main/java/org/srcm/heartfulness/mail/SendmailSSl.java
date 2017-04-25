@@ -99,7 +99,7 @@ public class SendmailSSl {
 			}
 		});
 
-		for (int i = 1; i < 21; i++) {
+		for (int i = 1; i < 31; i++) {
 			LOGGER.info(" prodmail method called loop: {}" , i);
 			try {
 				SMTPMessage message = new SMTPMessage(session);
@@ -108,18 +108,20 @@ public class SendmailSSl {
 				message.addRecipients(Message.RecipientType.TO, InternetAddress.parse("koustav.dipak@htcindia.com"));
 				message.addRecipients(Message.RecipientType.TO, InternetAddress.parse("himasree.vemuru@htcindia.com"));
 
-				message.setSubject("Testing Subject");
+				message.setSubject("Testing prod Subject");
 				message.setText("HI this is test java with prod properties ");
-				message.setAllow8bitMIME(true);
+			//	message.setAllow8bitMIME(true);
 				message.setSentDate(new Date());
 
 				message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-				int returnOption = message.getReturnOption();
-
-				System.out.println(returnOption);
-				Transport transport = session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
-				transport.sendMessage(message, message.getAllRecipients());
-				transport.close();
+				Transport transport = new SMTPTransport(session, new URLName( "sahajmarg.info"));
+				transport.connect("sahajmarg.info","heartfulness.newsletter@heartfulness.org", "send2all");
+				System.out.println(message.getAllRecipients());
+				try {
+					transport.sendMessage(message, message.getAllRecipients());
+				} finally {
+					transport.close();
+				}
 
 			} catch (MessagingException e) {
 				LOGGER.error(StackTraceUtils.convertStackTracetoString(e));
@@ -128,6 +130,6 @@ public class SendmailSSl {
 				LOGGER.error(StackTraceUtils.convertStackTracetoString(e));
 			}
 		}
-		return "sent";
+		return "completed";
 	}
 }
