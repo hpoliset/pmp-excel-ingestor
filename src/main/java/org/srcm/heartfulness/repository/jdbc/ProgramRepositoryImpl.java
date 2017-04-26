@@ -875,17 +875,17 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 			if (userRole.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)) {
 				whereCondition
-						.append(" ( p.program_channel NOT REGEXP ('G-Connect|G Connect|GConnect|G-Conect|G - Connect|G.CONNECT|G -CONNECT|G- connect|G-Connet|G  Connect')"
+						.append(" AND ( p.program_channel NOT REGEXP ('G-Connect|G Connect|GConnect|G-Conect|G - Connect|G.CONNECT|G -CONNECT|G- connect|G-Connet|G  Connect')"
 								+ " OR (p.coordinator_email IN(" + emailString + ") OR pc.email IN(" + emailString + "))) ");
 			} else {
-				whereCondition.append(" (p.coordinator_email IN(' " + emailString + "') OR pc.email IN(" + emailString + ")) ");
+				whereCondition.append(" AND (p.coordinator_email IN(' " + emailString + "') OR pc.email IN(" + emailString + ")) ");
 			}
 		}
 
 		try {
 			participant = this.namedParameterJdbcTemplate
 					.queryForObject(
-							"SELECT DISTINCT pr.* FROM participant pr,program p LEFT JOIN program_coordinators pc ON p.program_id = pc.program_id WHERE seqId=:seqId AND PR.program_id=:programId AND "
+							"SELECT DISTINCT pr.* FROM participant pr,program p LEFT JOIN program_coordinators pc ON p.program_id = pc.program_id WHERE seqId=:seqId AND PR.program_id=:programId "
 									+ whereCondition, params, BeanPropertyRowMapper.newInstance(Participant.class));
 			if (participant != null && participant.getProgramId() > 0) {
 				program = participantRepository.findOnlyProgramById(participant.getProgramId());
