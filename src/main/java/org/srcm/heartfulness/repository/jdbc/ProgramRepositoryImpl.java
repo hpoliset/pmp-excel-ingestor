@@ -885,7 +885,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		try {
 			participant = this.namedParameterJdbcTemplate
 					.queryForObject(
-							"SELECT DISTINCT pr.* FROM participant pr,program p LEFT JOIN program_coordinators pc ON p.program_id = pc.program_id WHERE seqId=:seqId AND PR.program_id=:programId "
+							"SELECT DISTINCT pr.* FROM participant pr,program p LEFT JOIN program_coordinators pc ON p.program_id = pc.program_id WHERE seqId=:seqId AND pr.program_id=:programId "
 									+ whereCondition, params, BeanPropertyRowMapper.newInstance(Participant.class));
 			if (participant != null && participant.getProgramId() > 0) {
 				program = participantRepository.findOnlyProgramById(participant.getProgramId());
