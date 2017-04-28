@@ -18,6 +18,18 @@ public class ExcelUploadResponse {
 	private ExcelType excelVersion;
 	private String status;
 	private List<String> errorMsg;
+	
+	public ExcelUploadResponse() {
+		super();
+	}
+
+	public ExcelUploadResponse(String fileName, ExcelType excelVersion, String status, List<String> errorMsg) {
+		super();
+		this.fileName = fileName;
+		this.excelVersion = excelVersion;
+		this.status = status;
+		this.errorMsg = errorMsg;
+	}
 
 	public String getFileName() {
 		return fileName;

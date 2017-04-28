@@ -122,7 +122,7 @@ public interface ProgramRepository {
 	 * @param decryptedProgramId
 	 * @return List<Participant>
 	 */
-	List<Participant> getParticipantList(int decryptedProgramId);
+	List<Participant> getParticipantList(int decryptedProgramId,List<String> mail,String role);
 
 	/**
 	 * Get the list of programs depending on the coordinator email and whether
@@ -180,6 +180,16 @@ public interface ProgramRepository {
 	 * @return
 	 */
 	Participant findParticipantBySeqId(String seqId, int programId);
+	
+	/**
+	 * Fetch the participant for the given seqId and program ID
+	 * 
+	 * @param seqId
+	 * @param programId
+	 * @param mail
+	 * @return
+	 */
+	Participant findParticipantBySeqIdAndRole(String seqId, int programId,List<String> mail,String role);
 
 	/**
 	 * Updates the participant introduced status for the given participant Ids

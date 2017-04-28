@@ -148,7 +148,7 @@ public class EventController {
 		if (!encryptedProgramId.isEmpty()) {
 			String decryptedProgramId = aesEncryptDecrypt.decrypt(encryptedProgramId,
 					env.getProperty("security.encrypt.token"));
-			participantList = programService.getParticipantByProgramId(Integer.valueOf(decryptedProgramId));
+			participantList = programService.getParticipantByProgramId(Integer.valueOf(decryptedProgramId),null,null);
 		}
 		// model.addAttribute("participantListSize",participantList);
 		return new ResponseEntity<List<Participant>>(participantList, HttpStatus.OK);

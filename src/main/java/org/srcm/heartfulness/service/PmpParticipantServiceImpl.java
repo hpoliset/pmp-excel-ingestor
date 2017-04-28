@@ -94,14 +94,14 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					&& (participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE) || participantRequest
 							.getGender().equalsIgnoreCase(PMPConstants.FEMALE)))
 				participantRequest
-						.setGender((participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE)
-								&& participantRequest.getGender() != null && !participantRequest.getGender().isEmpty()) ? PMPConstants.GENDER_MALE
+				.setGender((participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE)
+						&& participantRequest.getGender() != null && !participantRequest.getGender().isEmpty()) ? PMPConstants.GENDER_MALE
 								: PMPConstants.GENDER_FEMALE);
 			participant.setGender(participantRequest.getGender());
 			participant
-					.setDateOfBirth((null != participantRequest.getDateOfBirth() && !participantRequest
-							.getDateOfBirth().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest
-							.getDateOfBirth()))) : null);
+			.setDateOfBirth((null != participantRequest.getDateOfBirth() && !participantRequest
+			.getDateOfBirth().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest
+					.getDateOfBirth()))) : null);
 			participant.setAddressLine1(participantRequest.getAddressLine1());
 			participant.setAddressLine2(participantRequest.getAddressLine2());
 			participant.setCity(participantRequest.getCity());
@@ -113,7 +113,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					.equalsIgnoreCase(participantRequest.getIntroducedStatus())) ? 1 : 0);
 			participant.setIntroductionDate((null != participantRequest.getIntroductionDate() && !participantRequest
 					.getIntroductionDate().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest
-					.getIntroductionDate()))) : null);
+							.getIntroductionDate()))) : null);
 
 			if (null == participantRequest.getFirstSittingDate()) {
 				participant.setFirstSittingDate(null);
@@ -167,13 +167,13 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					.getGender().equalsIgnoreCase(PMPConstants.MALE) || participantRequest.getGender()
 					.equalsIgnoreCase(PMPConstants.FEMALE))))
 				participantRequest
-						.setGender(participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE) ? PMPConstants.GENDER_MALE
-								: PMPConstants.GENDER_FEMALE);
+				.setGender(participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE) ? PMPConstants.GENDER_MALE
+						: PMPConstants.GENDER_FEMALE);
 			participant.setGender(participantRequest.getGender());
 			participant
-					.setDateOfBirth((null != participantRequest.getDateOfBirth() && !participantRequest
-							.getDateOfBirth().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest
-							.getDateOfBirth()))) : null);
+			.setDateOfBirth((null != participantRequest.getDateOfBirth() && !participantRequest
+			.getDateOfBirth().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest
+					.getDateOfBirth()))) : null);
 			participant.setAddressLine1(participantRequest.getAddressLine1());
 			participant.setAddressLine2(participantRequest.getAddressLine2());
 			participant.setCity(participantRequest.getCity());
@@ -185,7 +185,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					.equalsIgnoreCase(participantRequest.getIntroducedStatus())) ? 1 : 0);
 			participant.setIntroductionDate((null != participantRequest.getIntroductionDate() && !participantRequest
 					.getIntroductionDate().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest
-					.getIntroductionDate()))) : null);
+							.getIntroductionDate()))) : null);
 			participant.setEwelcomeIdRemarks(participantRequest.getEwelcomeIdRemarks());
 			if (null == participantRequest.getFirstSittingDate()) {
 				participant.setFirstSittingDate(null);
@@ -237,8 +237,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			if ((participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_FEMALE) || participant.getGender()
 					.equalsIgnoreCase(PMPConstants.GENDER_MALE)))
 				participant
-						.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) ? PMPConstants.MALE
-								: PMPConstants.FEMALE);
+				.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) ? PMPConstants.MALE
+						: PMPConstants.FEMALE);
 			participantRequest.setGender(participant.getGender());
 		}
 
@@ -283,13 +283,13 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			}
 		}
 		participantRequest
-				.setFirstSitting((null != participant.getFirstSitting() && 1 == participant.getFirstSitting()) ? PMPConstants.REQUIRED_YES
-						: PMPConstants.REQUIRED_NO);
+		.setFirstSitting((null != participant.getFirstSitting() && 1 == participant.getFirstSitting()) ? PMPConstants.REQUIRED_YES
+				: PMPConstants.REQUIRED_NO);
 		participantRequest.setSecondSitting((null != participant.getSecondSitting() && 1 == participant
 				.getSecondSitting()) ? PMPConstants.REQUIRED_YES : PMPConstants.REQUIRED_NO);
 		participantRequest
-				.setThirdSitting((null != participant.getThirdSitting() && 1 == participant.getThirdSitting()) ? PMPConstants.REQUIRED_YES
-						: PMPConstants.REQUIRED_NO);
+		.setThirdSitting((null != participant.getThirdSitting() && 1 == participant.getThirdSitting()) ? PMPConstants.REQUIRED_YES
+				: PMPConstants.REQUIRED_NO);
 		participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
 				.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
 		participantRequest.setEwelcomeIdRemarks(participant.getEwelcomeIdRemarks());
@@ -305,9 +305,9 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	 * @return participant details
 	 */
 	@Override
-	public ParticipantRequest getParticipantBySeqId(ParticipantRequest participantRequest) {
+	public ParticipantRequest getParticipantBySeqId(ParticipantRequest participantRequest,List<String> mail,String role) {
 		SimpleDateFormat convertedsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
-		Participant participant = findBySeqId(participantRequest);
+		Participant participant = findBySeqIdAndRole(participantRequest, mail,role);
 		if (null != participant) {
 			participantRequest.setPrintName(participant.getPrintName());
 			participantRequest.setEmail(participant.getEmail());
@@ -316,8 +316,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				if ((participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_FEMALE) || participant.getGender()
 						.equalsIgnoreCase(PMPConstants.GENDER_MALE)))
 					participant
-							.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) ? PMPConstants.MALE
-									: PMPConstants.FEMALE);
+					.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) ? PMPConstants.MALE
+							: PMPConstants.FEMALE);
 			}
 
 			participantRequest.setGender(participant.getGender());
@@ -477,9 +477,21 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	}
 
 	@Override
+	public Participant findBySeqIdAndRole(ParticipantRequest participantRequest,List<String> mail,String role) {
+		if (0 != programrepository.getProgramIdByEventId(participantRequest.getEventId())) {
+			participantRequest.setProgramId(programrepository.getProgramIdByEventId(participantRequest.getEventId()));
+			Participant newParticipant = programrepository.findParticipantBySeqIdAndRole(participantRequest.getSeqId(),
+					participantRequest.getProgramId(),mail,role);
+			return newParticipant;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
 	public List<UpdateIntroductionResponse> introduceParticipants(ParticipantIntroductionRequest participantRequest,
 			String userEmailID, int id) throws HttpClientErrorException, JsonParseException, JsonMappingException,
-			IOException, ParseException {
+	IOException, ParseException {
 		List<UpdateIntroductionResponse> result = new ArrayList<UpdateIntroductionResponse>();
 		List<String> description = null;
 		for (ParticipantRequest participant : participantRequest.getParticipantIds()) {
@@ -540,7 +552,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 						}
 						result.add(response);
 						//LOGGER.info("END - {} : Response of eWelcomeID Generation for the participant : {} ",
-							//	participantInput.getSeqId(), response.toString());
+						//	participantInput.getSeqId(), response.toString());
 					}
 				} else {
 					LOGGER.info("START - {} : Updating participant Status : {} ", participantInput.getSeqId(),
@@ -624,12 +636,11 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 		if (null != participant.getWelcomeCardNumber() && !participant.getWelcomeCardNumber().isEmpty() && participant.getWelcomeCardNumber().matches(ExpressionConstants.EWELCOME_ID_REGEX)) {
 			participant.setEwelcomeIdRemarks(null);
 			participant.setIntroduced(1);
-			if (null != participant.getWelcomeCardDate()) {
-				participant.setIntroductionDate(participant.getWelcomeCardDate());
-			} else {
+			if (null == participant.getWelcomeCardDate()) {
 				participant.setWelcomeCardDate(new Date());
-				participant.setIntroductionDate(new Date());
 			}
+			participant.setIntroductionDate(null != participant.getIntroductionDate() ? participant.getIntroductionDate() : null != participant.getFirstSittingDate()?participant.getFirstSittingDate():program.getProgramStartDate());
+
 			participant.setIsEwelcomeIdInformed((null != participant.getIsEwelcomeIdInformed() && participant
 					.getIsEwelcomeIdInformed() == 1) ? 1 : 0);
 			participant.setIntroducedBy(program.getCoordinatorEmail());
@@ -652,104 +663,104 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			}
 		}
 	}
-	
-    @Override
-    public ResponseEntity<?> validateExcelAndPersistParticipantData(String originalFilename, byte[] bytes,PMPAPIAccessLog accessLog,List<String> details) {
 
-        Workbook workBook = null;
-        try{
-            workBook = ExcelParserUtils.getWorkbook(originalFilename, bytes);
-        }catch(InvalidExcelFileException iefex){
-            LOGGER.error("File extension should be xlsx/xlsm/xls",iefex);
-        }catch(Exception ex){
-            LOGGER.error("File extension should be xlsx/xlsm/xls",ex);
-        }
+	@Override
+	public ResponseEntity<?> validateExcelAndPersistParticipantData(String originalFilename, byte[] bytes,PMPAPIAccessLog accessLog,List<String> details) {
 
-        if(null == workBook){
-            ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"File extension should be xlsx/xlsm/xls");
-            accessLog.setErrorMessage("File extension should be xlsx/xlsm/xls");
-            accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-            accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
-            return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_FAILED);
-        }
+		Workbook workBook = null;
+		try{
+			workBook = ExcelParserUtils.getWorkbook(originalFilename, bytes);
+		}catch(InvalidExcelFileException iefex){
+			LOGGER.error("File extension should be xlsx/xlsm/xls",iefex);
+		}catch(Exception ex){
+			LOGGER.error("File extension should be xlsx/xlsm/xls",ex);
+		}
 
-        Sheet participantSheet = workBook.getSheet(EventDetailsUploadConstants.PARTICIPANT_SHEET_NAME);
-        if (null == participantSheet) {
-            ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"Participants Details Sheet is not present/invalid or empty");
-            accessLog.setErrorMessage("Participants Details Sheet is not present/invalid or empty");
-            accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-            accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
-            return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_FAILED);
-        }
+		if(null == workBook){
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"File extension should be xlsx/xlsm/xls");
+			accessLog.setErrorMessage("File extension should be xlsx/xlsm/xls");
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_FAILED);
+		}
 
-        List<String> errorList = new ArrayList<>();
-        ExcelV2ValidatorImpl v2ValidatorImpl = new ExcelV2ValidatorImpl();
-        v2ValidatorImpl.validateParticipantDetails(participantSheet,errorList);
-        ExcelUploadResponse excelUploadResponse = new ExcelUploadResponse();
-        excelUploadResponse.setFileName(originalFilename);
-        if(!errorList.isEmpty()){
-            excelUploadResponse.setStatus(ErrorConstants.STATUS_FAILED);
-            excelUploadResponse.setErrorMsg(errorList);
+		Sheet participantSheet = workBook.getSheet(EventDetailsUploadConstants.PARTICIPANT_SHEET_NAME);
+		if (null == participantSheet) {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"Participants Details Sheet is not present/invalid or empty");
+			accessLog.setErrorMessage("Participants Details Sheet is not present/invalid or empty");
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_FAILED);
+		}
 
-            accessLog.setErrorMessage("Errors validating Participant Details sheet structure");
-            accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-            accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(excelUploadResponse));
-            return new ResponseEntity<ExcelUploadResponse>(excelUploadResponse,HttpStatus.PRECONDITION_FAILED);
-        }
+		List<String> errorList = new ArrayList<>();
+		ExcelV2ValidatorImpl v2ValidatorImpl = new ExcelV2ValidatorImpl();
+		v2ValidatorImpl.validateParticipantDetails(participantSheet,errorList);
+		ExcelUploadResponse excelUploadResponse = new ExcelUploadResponse();
+		excelUploadResponse.setFileName(originalFilename);
+		if(!errorList.isEmpty()){
+			excelUploadResponse.setStatus(ErrorConstants.STATUS_FAILED);
+			excelUploadResponse.setErrorMsg(errorList);
 
-        v2ValidatorImpl.checkParticipantMandatoryFields(participantSheet,errorList);
-        if(!errorList.isEmpty()){
-            excelUploadResponse.setStatus(ErrorConstants.STATUS_FAILED);
-            excelUploadResponse.setErrorMsg(errorList);
+			accessLog.setErrorMessage("Errors validating Participant Details sheet structure");
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(excelUploadResponse));
+			return new ResponseEntity<ExcelUploadResponse>(excelUploadResponse,HttpStatus.PRECONDITION_FAILED);
+		}
 
-            accessLog.setErrorMessage("Errors while validating Participant Details mandatory fields");
-            accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-            accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(excelUploadResponse));
-            return new ResponseEntity<ExcelUploadResponse>(excelUploadResponse,HttpStatus.PRECONDITION_FAILED);
-        }
+		v2ValidatorImpl.checkParticipantMandatoryFields(participantSheet,errorList);
+		if(!errorList.isEmpty()){
+			excelUploadResponse.setStatus(ErrorConstants.STATUS_FAILED);
+			excelUploadResponse.setErrorMsg(errorList);
 
-        boolean disableEwelcomeIdGeneration = false;
-        if(null != details.get(1)){
-            if(details.get(1).equals(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE)){
-                disableEwelcomeIdGeneration = true;
-            }
-        }
-        List<Participant> participantList = null; 
-        try{
-            ExcelDataExtractorV2Impl v2ExtractorImpl = new ExcelDataExtractorV2Impl();
-            participantList = v2ExtractorImpl.getParticipantList(participantSheet,disableEwelcomeIdGeneration);
-        }catch (Exception ex){
-            LOGGER.error("Error while extracting participant details",ex);
-            ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"Failed to save participant records");
-            accessLog.setErrorMessage("Failed to extract participant records");
-            accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-            accessLog.setResponseBody(StackTraceUtils.convertStackTracetoString(ex));
-            return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.BAD_REQUEST);
-        }
+			accessLog.setErrorMessage("Errors while validating Participant Details mandatory fields");
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(excelUploadResponse));
+			return new ResponseEntity<ExcelUploadResponse>(excelUploadResponse,HttpStatus.PRECONDITION_FAILED);
+		}
 
-        Program pgrm = new Program();
-        pgrm.setIsEwelcomeIdGenerationDisabled(details.get(1));
-        pgrm.setCoordinatorEmail(details.get(2));
-        for (Participant participant : participantList) {
-            participant.setProgramId(Integer.parseInt(details.get(0)));
-            participant.setCreatedSource(PMPConstants.CREATED_SOURCE_EXCEL_VIA_DASHBOARD);
-            setParticipantEWelcomeIDStatus(pgrm,participant,PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE,null);
-            try{
-                participantRepository.save(participant);
-            }catch(Exception ex){
-                errorList.add("Failed to persist participant "+participant.getPrintName());
-            }
-            
-        }
+		boolean disableEwelcomeIdGeneration = false;
+		if(null != details.get(1)){
+			if(details.get(1).equals(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE)){
+				disableEwelcomeIdGeneration = true;
+			}
+		}
+		List<Participant> participantList = null; 
+		try{
+			ExcelDataExtractorV2Impl v2ExtractorImpl = new ExcelDataExtractorV2Impl();
+			participantList = v2ExtractorImpl.getParticipantList(participantSheet,disableEwelcomeIdGeneration);
+		}catch (Exception ex){
+			LOGGER.error("Error while extracting participant details",ex);
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"Failed to save participant records");
+			accessLog.setErrorMessage("Failed to extract participant records");
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLog.setResponseBody(StackTraceUtils.convertStackTracetoString(ex));
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.BAD_REQUEST);
+		}
 
-        excelUploadResponse.setStatus(ErrorConstants.STATUS_SUCCESS);
-        excelUploadResponse.setErrorMsg(errorList);
+		Program pgrm = new Program();
+		pgrm.setIsEwelcomeIdGenerationDisabled(details.get(1));
+		pgrm.setCoordinatorEmail(details.get(2));
+		for (Participant participant : participantList) {
+			participant.setProgramId(Integer.parseInt(details.get(0)));
+			participant.setCreatedSource(PMPConstants.CREATED_SOURCE_EXCEL_VIA_DASHBOARD);
+			setParticipantEWelcomeIDStatus(pgrm,participant,PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE,null);
+			try{
+				participantRepository.save(participant);
+			}catch(Exception ex){
+				errorList.add("Failed to persist participant "+participant.getPrintName());
+			}
 
-        accessLog.setErrorMessage("");
-        accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-        accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(excelUploadResponse));
-        return new ResponseEntity<ExcelUploadResponse>(excelUploadResponse,HttpStatus.OK);
-    }
+		}
+
+		excelUploadResponse.setStatus(ErrorConstants.STATUS_SUCCESS);
+		excelUploadResponse.setErrorMsg(errorList);
+
+		accessLog.setErrorMessage("");
+		accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+		accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(excelUploadResponse));
+		return new ResponseEntity<ExcelUploadResponse>(excelUploadResponse,HttpStatus.OK);
+	}
 
 
 }

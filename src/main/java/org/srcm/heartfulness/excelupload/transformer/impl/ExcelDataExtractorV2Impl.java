@@ -231,7 +231,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		Date eventDate = null;
 		try {
 			eventDate = DateUtils.parseDate(eventDateStr);
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			throw new InvalidExcelFileException("Not able to parse program event date:[" + eventDateStr + "]");
 		}
 		program.setProgramStartDate(eventDate);

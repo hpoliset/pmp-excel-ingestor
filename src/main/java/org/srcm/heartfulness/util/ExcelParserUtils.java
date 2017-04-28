@@ -25,18 +25,18 @@ public abstract class ExcelParserUtils {
 
 	public static Workbook getWorkbook(String fileName, byte[] fileContent) throws InvalidExcelFileException, IOException {
 		Workbook workbook = null;
-		try{
+		//try{
 			ByteArrayInputStream bs = new ByteArrayInputStream(fileContent);
 			if (fileName.endsWith("xlsx") || fileName.endsWith("xlsm")) {
 				workbook = new XSSFWorkbook(bs);
 			} else if (fileName.endsWith("xls")) {
 				workbook = new HSSFWorkbook(bs);
 			}else{
-				throw new InvalidExcelFileException("Invalid file");
+				throw new InvalidExcelFileException("Invalid file extension.Available extensions are xlsx,xlsm,xls");
 			}
-		}catch(InvalidExcelFileException e){
-			throw new InvalidExcelFileException("Invalid file");
-		}
+		/*}catch(InvalidExcelFileException e){
+			throw new InvalidExcelFileException("Invalid file extension.Available extensions can be xlsx,xlsm,xls");
+		}*/
 		return workbook;
 	}
 

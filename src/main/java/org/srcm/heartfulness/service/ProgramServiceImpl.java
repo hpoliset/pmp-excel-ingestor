@@ -142,8 +142,8 @@ public class ProgramServiceImpl implements ProgramService {
 	 * @return
 	 */
 	@Override
-	public List<Participant> getParticipantByProgramId(int decryptedProgramId) {
-		return programRepository.getParticipantList(decryptedProgramId);
+	public List<Participant> getParticipantByProgramId(int decryptedProgramId,List<String> mail,String role) {
+		return programRepository.getParticipantList(decryptedProgramId,mail,role);
 	}
 
 	/**
@@ -205,7 +205,7 @@ public class ProgramServiceImpl implements ProgramService {
 	 * @return List<ParticipantRequest>
 	 */
 	@Override
-	public List<ParticipantRequest> getParticipantByEventId(String eventId) {
+	public List<ParticipantRequest> getParticipantByEventId(String eventId,List<String> mail,String role) {
 		List<Participant> participantList = new ArrayList<Participant>();
 		List<ParticipantRequest> participantReqList = new ArrayList<ParticipantRequest>();
 
@@ -214,7 +214,7 @@ public class ProgramServiceImpl implements ProgramService {
 			return participantReqList;
 		} else {
 			SimpleDateFormat convertedsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
-			participantList = programRepository.getParticipantList(programId);
+			participantList = programRepository.getParticipantList(programId,mail,role);
 
 			for (Participant participant : participantList) {
 				ParticipantRequest participantReq = new ParticipantRequest();
@@ -804,7 +804,7 @@ public class ProgramServiceImpl implements ProgramService {
 												participant.setIntroducedBy(participant.getProgram()
 														.getCoordinatorEmail());
 												participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
-												participant.setIntroductionDate(new Date());
+												participant.setIntroductionDate(null != participant.getIntroductionDate() ? participant.getIntroductionDate() : null != participant.getFirstSittingDate()?participant.getFirstSittingDate():new Date());
 												participant.setIntroduced(1);
 												participantRepository.updateParticipantEwelcomeIDDetails(participant);
 												return "success";
@@ -1011,7 +1011,7 @@ public class ProgramServiceImpl implements ProgramService {
 					if (result.getUserProfile().length > 0) {
 						AbhyasiUserProfile userProfile = result.getUserProfile()[0];
 						if (null != userProfile) {
-							if (true == userProfile.isIs_prefect() && 0 != userProfile.getId()) {
+							if ( 0 != userProfile.getId()) {
 								program.setAbyasiRefNo(program.getPreceptorIdCardNumber());
 								program.setFirstSittingBy(userProfile.getId());
 								program.setPreceptorName(userProfile.getName());

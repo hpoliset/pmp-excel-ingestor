@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.srcm.heartfulness.constants.ErrorConstants;
-import org.srcm.heartfulness.helper.SessionDetailsHelper;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.SessionDetails;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
@@ -27,6 +26,7 @@ import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.SessionDetailsService;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
+import org.srcm.heartfulness.validator.SessionDetailsValidator;
 
 /**
  * 
@@ -42,7 +42,7 @@ public class SessionDetailsController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SessionDetailsController.class);
 
 	@Autowired
-	SessionDetailsHelper sessionDtlsHlpr;
+	SessionDetailsValidator sessionDtlsValidator;
 
 	@Autowired
 	APIAccessLogService apiAccessLogService;
@@ -80,12 +80,12 @@ public class SessionDetailsController {
 				StackTraceUtils.convertPojoToJson(sessionDetails));
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 
-		PMPResponse tokenResponse = sessionDtlsHlpr.validateAuthToken(authToken, accessLog);
+		PMPResponse tokenResponse = sessionDtlsValidator.validateAuthToken(authToken, accessLog);
 		if (tokenResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(tokenResponse, HttpStatus.OK);
 		}
 
-		PMPResponse validationResponse = sessionDtlsHlpr.validateSessionDetailsParams(sessionDetails, accessLog);
+		PMPResponse validationResponse = sessionDtlsValidator.validateSessionDetailsParams(sessionDetails, accessLog);
 		if (validationResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(validationResponse, HttpStatus.OK);
 		}
@@ -156,12 +156,12 @@ public class SessionDetailsController {
 				StackTraceUtils.convertPojoToJson(sessionDetails));
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 
-		PMPResponse tokenResponse = sessionDtlsHlpr.validateAuthToken(authToken, accessLog);
+		PMPResponse tokenResponse = sessionDtlsValidator.validateAuthToken(authToken, accessLog);
 		if (tokenResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(tokenResponse, HttpStatus.OK);
 		}
 
-		PMPResponse validationResponse = sessionDtlsHlpr.validateDeleteSessionDetailParams(sessionDetails, accessLog);
+		PMPResponse validationResponse = sessionDtlsValidator.validateDeleteSessionDetailParams(sessionDetails, accessLog);
 		if (validationResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(validationResponse, HttpStatus.OK);
 		}
@@ -211,12 +211,12 @@ public class SessionDetailsController {
 				StackTraceUtils.convertPojoToJson(sessionDetails));
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 
-		PMPResponse tokenResponse = sessionDtlsHlpr.validateAuthToken(authToken, accessLog);
+		PMPResponse tokenResponse = sessionDtlsValidator.validateAuthToken(authToken, accessLog);
 		if (tokenResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(tokenResponse, HttpStatus.OK);
 		}
 
-		PMPResponse validationResponse = sessionDtlsHlpr.validateGetSessionDetailsParams(sessionDetails, accessLog);
+		PMPResponse validationResponse = sessionDtlsValidator.validateGetSessionDetailsParams(sessionDetails, accessLog);
 		if (validationResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(validationResponse, HttpStatus.OK);
 		}

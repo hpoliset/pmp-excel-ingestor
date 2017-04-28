@@ -223,7 +223,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		// If there are participants update them.
 		List<Participant> participants = program.getParticipantList();
 		for (Participant participant : participants) {
-			participant.setCreatedSource(PMPConstants.CREATED_SOURCE_EXCEL);
+			participant.setCreatedSource(program.getCreatedSource());
 			participant.setProgramId(program.getProgramId());
 			participantRepository.save(participant);
 		}
@@ -499,9 +499,9 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	}
 
 	@Override
-	public List<Participant> getParticipantList(int decryptedProgramId) {
+	public List<Participant> getParticipantList(int decryptedProgramId,List<String> mail,String role) {
 		List<Participant> participants = new ArrayList<Participant>();
-		participants = this.participantRepository.findByProgramId(decryptedProgramId);
+		participants = this.participantRepository.findByProgramIdAndRole(decryptedProgramId,mail,role);
 		return participants;
 	}
 
@@ -842,6 +842,65 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 	}
 
+	@Override
+	public Participant findParticipantBySeqIdAndRole(String seqId, int programId, List<String> emailList,String userRole) {
+		Participant participant;
+		Program program;
+		Map<String, Object> params = new HashMap<>();
+		params.put("seqId", seqId);
+		params.put("programId", programId);
+
+		StringBuilder whereCondition = new StringBuilder("");
+		StringBuilder emailString = new StringBuilder("");
+		/*String userRole = this.jdbcTemplate.query("SELECT role from user WHERE email=? ", new Object[] { mail },
+				new ResultSetExtractor<String>() {
+					@Override
+					public String extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+						if (resultSet.next()) {
+							return resultSet.getString(1);
+						}
+						return null;
+					}
+				});*/
+		
+		if(emailList.size() == 1){
+			emailString.append("'"+emailList.get(0)+"'");
+		}else{
+			for(int i = 0; i < emailList.size(); i++){
+				emailString.append( i != (emailList.size() -1 ) ? "'"+emailList.get(i)+"'" + ",": "'"+emailList.get(i)+"'");
+			}
+		}
+		
+		if (!userRole.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
+
+			if (userRole.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)) {
+				whereCondition
+						.append(" AND ( p.program_channel NOT REGEXP ('G-Connect|G Connect|GConnect|G-Conect|G - Connect|G.CONNECT|G -CONNECT|G- connect|G-Connet|G  Connect')"
+								+ " OR (p.coordinator_email IN(" + emailString + ") OR pc.email IN(" + emailString + "))) ");
+			} else {
+				whereCondition.append(" AND (p.coordinator_email IN(' " + emailString + "') OR pc.email IN(" + emailString + ")) ");
+			}
+		}
+
+		try {
+			participant = this.namedParameterJdbcTemplate
+					.queryForObject(
+							"SELECT DISTINCT pr.* FROM participant pr,program p LEFT JOIN program_coordinators pc ON p.program_id = pc.program_id WHERE seqId=:seqId AND pr.program_id=:programId "
+									+ whereCondition, params, BeanPropertyRowMapper.newInstance(Participant.class));
+			if (participant != null && participant.getProgramId() > 0) {
+				program = participantRepository.findOnlyProgramById(participant.getProgramId());
+			} else {
+				program = new Program();
+			}
+			participant.setProgram(program);
+			return participant;
+
+		} catch (EmptyResultDataAccessException ex) {
+			// participant=new ParticipantRequest();
+			return null;
+		}
+
+	}
 	/**
 	 * Updates the participant introduced status for the given participant Ids
 	 * of the given eventId

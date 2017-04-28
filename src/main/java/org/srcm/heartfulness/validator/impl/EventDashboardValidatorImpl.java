@@ -402,11 +402,15 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			for (IssueeWelcomeId field : IssueeWelcomeId.values()) {
 				if (participantInput.getWelcomeCardNumber().equalsIgnoreCase(field.getValue())) {
 					isValid=true;
+					break;
 				}
 			}
 		} else if (!(null == participantInput.getThirdSittingDate()	&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting()))) {
 			isValid=true;
+		}else if( participantInput.getTotalDays() > 2 ){
+			isValid = true;
 		}
+		
 		return isValid;
 	}
 

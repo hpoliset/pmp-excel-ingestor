@@ -82,7 +82,9 @@ public class ReportsRestController {
 		fos.write(byteArray);
 		fos.close();*/
 		
-		return new ResponseEntity<byte[]>(ZipUtils.getByteArray(participants, sb),HttpStatus.OK);
+		Response response = new Response(ErrorConstants.STATUS_SUCCESS, ZipUtils.getByteArray(participants, sb));
+		return new ResponseEntity<Response>(response, HttpStatus.OK);
+		//return new ResponseEntity<byte[]>(ZipUtils.getByteArray(participants, sb),HttpStatus.OK);
 		
 		} catch (Exception ex) {
 			ex.printStackTrace();

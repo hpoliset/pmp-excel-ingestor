@@ -1,4 +1,4 @@
-package org.srcm.heartfulness.helper;
+package org.srcm.heartfulness.validator.impl;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -29,6 +29,7 @@ import org.srcm.heartfulness.service.SessionDetailsService;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
 import org.srcm.heartfulness.validator.EventDashboardValidator;
+import org.srcm.heartfulness.validator.SessionDetailsValidator;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -38,9 +39,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
  *
  */
 @Component
-public class SessionDetailsHelper {
+public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SessionDetailsHelper.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SessionDetailsValidatorImpl.class);
 
 	@Autowired
 	EventDashboardValidator eventDashboardValidator;
@@ -68,6 +69,7 @@ public class SessionDetailsHelper {
 	 *            to persist the api log details.
 	 * @return PMPResponse success or failure response
 	 */
+	@Override
 	public PMPResponse validateAuthToken(String authToken, PMPAPIAccessLog accessLog) {
 
 		ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "");
@@ -152,6 +154,7 @@ public class SessionDetailsHelper {
 	 *            to create the pmp api access log details in db.
 	 * @return success response is returned else an error response is returned
 	 */
+	@Override
 	public PMPResponse validateSessionDetailsParams(SessionDetails sessionDetails, PMPAPIAccessLog accessLog) {
 
 		ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "");
@@ -306,6 +309,7 @@ public class SessionDetailsHelper {
 	 *            to persist the access log details in db.
 	 * @return success or error response depending on the parameters validated.
 	 */
+	@Override
 	public PMPResponse validateDeleteSessionDetailParams(SessionDetails sessionDetails, PMPAPIAccessLog accessLog) {
 
 		ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "");
@@ -368,6 +372,7 @@ public class SessionDetailsHelper {
 	 *            is used to create log details in pmp.
 	 * @return success or error response depending on the validation.
 	 */
+	@Override
 	public PMPResponse validateGetSessionDetailsParams(SessionDetails sessionDetails, PMPAPIAccessLog accessLog) {
 
 		ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "");

@@ -32,4 +32,14 @@ public class EventDetailsUploadConstants {
 	
 	/*** Holds the enabled eWelcome Id state **/
 	public static final String EWELCOME_ID_ENABLED_STATE  			= "E";
+	
+	/** Holds the name of the sheet that contains Event details for Excel version 1.0. **/
+	public static final String V1_EVENT_SHEET_NAME 					= "Sheet1";
+	
+	/** Holds the name of the sheet that contains Participant details for Excel version 1.0.*/
+	public static final String V1_PARTICIPANT_SHEET_NAME 			= "Sheet2";
+	
+	public static final String M1_0_EVENT_COUNTRY 					= "India";
+	
+	
 }

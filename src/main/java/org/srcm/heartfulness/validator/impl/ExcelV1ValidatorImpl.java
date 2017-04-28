@@ -109,7 +109,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 				LOGGER.error("Program start date cannot be a future date :[" + eventDateStr + "]");
 				eventErrorList.add("Program start date cannot be a future date:[" + eventDateStr + "]");
 			}
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			LOGGER.error("Not able to parse program start date:[" + eventDateStr + "]");
 			eventErrorList.add("Not able to parse program start date:[" + eventDateStr + "]");
 		}
@@ -179,7 +179,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 					LOGGER.error("Introduced date cannot be a future date :[" + introducedDateStr + "] at row number " + rowNumber);
 					errorList.add("Introduced date date cannot be a future date:[" + introducedDateStr + "] at row number " + rowNumber);
 				}
-			} catch (ParseException e) {
+			} catch (Exception e) {
 				LOGGER.error("Not able to parse Introduced date:[" + introducedDateStr + "] at row number " + rowNumber);
 				errorList.add("Not able to parse Introduced date:[" + introducedDateStr + "] at row number " + rowNumber);
 			}
