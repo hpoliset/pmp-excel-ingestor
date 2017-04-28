@@ -212,7 +212,6 @@ public class MobileDataIngestionValidatorV1Impl implements EventDetailsExcelVali
 			errorMsg.add(" "+MobileDataParticipantCols.MOBILE.getHeader() + " number is invalid at row number "+rowNumber);
 		}*/
 
-		//need to validate total days.
 		try{
 			Integer.parseInt(currentRow.getCell(13, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		} catch(Exception ex){
