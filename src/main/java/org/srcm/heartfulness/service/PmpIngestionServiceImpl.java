@@ -192,7 +192,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 		}
 		LOGGER.info("Coordinator email Id validation status :{}",isCoordinatorEmailIdvalid);
 		if (null == isCoordinatorEmailIdvalid) {
-			programRepository.save(program);
+			//programRepository.save(program);
 			// persist coordinator details
 			ProgramCoordinators programCoordinators = new ProgramCoordinators(program.getProgramId(), 0,
 					program.getCoordinatorName(), program.getCoordinatorEmail(), 1);

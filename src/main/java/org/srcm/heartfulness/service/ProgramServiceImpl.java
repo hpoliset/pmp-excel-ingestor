@@ -804,7 +804,7 @@ public class ProgramServiceImpl implements ProgramService {
 												participant.setIntroducedBy(participant.getProgram()
 														.getCoordinatorEmail());
 												participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
-												participant.setIntroductionDate(new Date());
+												participant.setIntroductionDate(null != participant.getIntroductionDate() ? participant.getIntroductionDate() : null != participant.getFirstSittingDate()?participant.getFirstSittingDate():new Date());
 												participant.setIntroduced(1);
 												participantRepository.updateParticipantEwelcomeIDDetails(participant);
 												return "success";

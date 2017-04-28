@@ -444,7 +444,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 		params.put("programId", programId);
 		return this.namedParameterJdbcTemplate
 				.query("SELECT print_name"
-						+ ",first_name,date_of_birth,email,third_sitting_date,third_sitting,city,state,country,welcome_card_number,"
+						+ ",first_name,date_of_birth,email,first_sitting_date,third_sitting_date,third_sitting,city,state,country,welcome_card_number,"
 						+ "welcome_card_date,id,mobile_phone,introduction_date,address_line1,address_line2,"
 						+ "ewelcome_id_state,ewelcome_id_remarks,seqId from participant "
 						+ " WHERE program_id=:programId AND create_time < CURDATE()"
