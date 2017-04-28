@@ -289,7 +289,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 					+ "third_sitting=:thirdSitting," + "first_sitting_date=:firstSittingDate, "
 					+ "second_sitting_date=:secondSittingDate, " + "third_sitting_date=:thirdSittingDate, "
 					+ "is_ewelcome_id_informed=:isEwelcomeIdInformed, " + "batch=:batch, " + "receive_updates=:receiveUpdates, " + "introduced=:introduced, "
-					+ "seqId=:seqId, " + "ewelcome_id_state=:ewelcomeIdState, " + "ewelcome_id_remarks=:ewelcomeIdRemarks " + "WHERE id=:id", parameterSource);
+					+ "seqId=:seqId, " + "ewelcome_id_state=:ewelcomeIdState, " + "ewelcome_id_remarks=:ewelcomeIdRemarks, " +"total_days=:totalDays "+ "WHERE id=:id", parameterSource);
 		}
 	}
 

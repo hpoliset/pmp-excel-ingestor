@@ -223,7 +223,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		// If there are participants update them.
 		List<Participant> participants = program.getParticipantList();
 		for (Participant participant : participants) {
-			participant.setCreatedSource(PMPConstants.CREATED_SOURCE_EXCEL);
+			participant.setCreatedSource(program.getCreatedSource());
 			participant.setProgramId(program.getProgramId());
 			participantRepository.save(participant);
 		}

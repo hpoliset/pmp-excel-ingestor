@@ -140,11 +140,11 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 				if(errorResponse.isEmpty()){
 					try {
 						Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version,eWelcomeIdCheckbox);
-						program.setCreatedSource(PMPConstants.CREATED_SOURCE_EXCEL);
+						program.setCreatedSource(version.equals(ExcelType.M1_0)? PMPConstants.CREATED_SOURCE_EXCEL_VIA_MOBILE : PMPConstants.CREATED_SOURCE_EXCEL);
 						programRepository.save(program);
 						validatePreceptorIdandCoordinatorEmailIdAndPersistProgram(program, response, errorResponse); // preceptor ID card number validation
 					} catch (InvalidExcelFileException ex) {
-						errorResponse.add("Invalid excel file version.Available versions are v1 and v2.1");
+						errorResponse.add("Invalid excel file version.Available versions are v1 and v2.1 and m1.0");
 					} catch(TypeMismatchDataAccessException tmdae){
 						errorResponse.add("There is a mismatch between Java type and data type, such as trying to insert a String into a numeric column");
 					} catch(DataIntegrityViolationException divex) {
@@ -158,7 +158,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 					}
 				}
 			} else {
-				errorResponse.add("Invalid excel file version.Available versions are v1 and v2.1");
+				errorResponse.add("Invalid excel file version.Available versions are v1,v2.1 and m1.0");
 			}
 		}
 		
@@ -211,7 +211,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			String isPreceptorIdValid = coordinatorAccessControlService.validatePreceptorIDCardNumberandCreateUser(program, accessLog.getId() , PMPConstants.CREATED_SOURCE_EXCEL);
 			LOGGER.info("Preceptor Id validation status :{}",isPreceptorIdValid);
 
-			if (null != isPreceptorIdValid) {
+			if (null != isPreceptorIdValid && "Preceptor Email Id is not available for the provided preceptor Id" != isPreceptorIdValid) {
 
 				/*if(null == program.getSendersEmailAddress() || program.getSendersEmailAddress().isEmpty()){
 					response.setStatus(EventDetailsUploadConstants.FAILURE_STATUS);
@@ -237,7 +237,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 					}
 				}
 				//update ewelcome ID status
-				participantService.updateParticipantEWelcomeIDStatuswithProgramID(program.getProgramId(),PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, isPreceptorIdValid);
+				participantService.updateParticipantEWelcomeIDStatuswithProgramID(program.getProgramId(),PMPConstants.EWELCOMEID_FAILED_STATE, isPreceptorIdValid);
 
 				//send him mail with create profile template
 				if(!program.getSendersEmailAddress().isEmpty()){
@@ -296,7 +296,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			public void run() {
 				try {
 					String isValid = coordinatorAccessControlService.validatePreceptorIDCardNumberandCreateUser(program, id,null);
-					if (null != isValid &&"Preceptor Email Id is not available for the provided preceptor Id" != isValid ) {
+					if (null != isValid && "Preceptor Email Id is not available for the provided preceptor Id" != isValid ) {
 						participantService.updateParticipantEWelcomeIDStatuswithProgramID(program.getProgramId(),
 								PMPConstants.EWELCOMEID_FAILED_STATE, isValid);
 						Runnable task = new Runnable() {

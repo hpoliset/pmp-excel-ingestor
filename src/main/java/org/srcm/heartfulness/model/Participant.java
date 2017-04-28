@@ -56,6 +56,7 @@ public class Participant {
 	private Integer isEwelcomeIdInformed;
 	private String ewelcomeIdState;
 	private String ewelcomeIdRemarks;
+	private int totalDays;
 
 
 	public String getCreatedSource() {
@@ -451,27 +452,34 @@ public class Participant {
 	public void setEwelcomeIdRemarks(String ewelcomeIdRemarks) {
 		this.ewelcomeIdRemarks = ewelcomeIdRemarks;
 	}
+	
+	public int getTotalDays() {
+		return totalDays;
+	}
+
+	public void setTotalDays(int totalDays) {
+		this.totalDays = totalDays;
+	}
 
 	@Override
 	public String toString() {
-		return "Participant [id=" + id + ", hashCode=" + hashCode + ", firstName=" + firstName + ", lastName="
-				+ lastName + ", middleName=" + middleName + ", email=" + email + ", mobilePhone=" + mobilePhone
-				+ ", gender=" + gender + ", dateOfBirth=" + dateOfBirth + ", dateOfRegistration=" + dateOfRegistration
-				+ ", abhyasiId=" + abhyasiId + ", status=" + status + ", addressLine1=" + addressLine1
-				+ ", addressLine2=" + addressLine2 + ", city=" + city + ", state=" + state + ", country=" + country
-				+ ", program_id=" + program_id + ", remarks=" + remarks + ", idCardNumber=" + idCardNumber
-				+ ", syncStatus=" + syncStatus + ", introduced=" + introduced + ", introductionDate="
-				+ introductionDate + ", introducedBy=" + introducedBy + ", welcomeCardNumber=" + welcomeCardNumber
-				+ ", welcomeCardDate=" + welcomeCardDate + ", ageGroup=" + ageGroup + ", uploadStatus=" + uploadStatus
-				+ ", firstSittingDate=" + firstSittingDate + ", secondSittingDate=" + secondSittingDate
-				+ ", thirdSittingDate=" + thirdSittingDate + ", batch=" + batch + ", receiveUpdates=" + receiveUpdates
-				+ ", printName=" + printName + ", firstSitting=" + firstSitting + ", secondSitting=" + secondSitting
-				+ ", thirdSitting=" + thirdSitting + ", profession=" + profession + ", department=" + department
-				+ ", language=" + language + ", program=" + program + ", excelSheetSequenceNumber="
-				+ excelSheetSequenceNumber + ", seqId=" + seqId + ", welcomeMailSent=" + welcomeMailSent
-				+ ", createdSource=" + createdSource + ", isCoOrdinatorInformed=" + isCoOrdinatorInformed
-				+ ", isEwelcomeIdInformed=" + isEwelcomeIdInformed + ", ewelcomeIdState=" + ewelcomeIdState
-				+ ", ewelcomeIdRemarks=" + ewelcomeIdRemarks + "]";
+		return "Participant [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
+				+ ", email=" + email + ", mobilePhone=" + mobilePhone + ", gender=" + gender + ", dateOfBirth="
+				+ dateOfBirth + ", dateOfRegistration=" + dateOfRegistration + ", abhyasiId=" + abhyasiId + ", status="
+				+ status + ", addressLine1=" + addressLine1 + ", addressLine2=" + addressLine2 + ", city=" + city
+				+ ", state=" + state + ", country=" + country + ", program_id=" + program_id + ", remarks=" + remarks
+				+ ", idCardNumber=" + idCardNumber + ", syncStatus=" + syncStatus + ", introduced=" + introduced
+				+ ", introductionDate=" + introductionDate + ", introducedBy=" + introducedBy + ", welcomeCardNumber="
+				+ welcomeCardNumber + ", welcomeCardDate=" + welcomeCardDate + ", ageGroup=" + ageGroup
+				+ ", uploadStatus=" + uploadStatus + ", firstSittingDate=" + firstSittingDate + ", secondSittingDate="
+				+ secondSittingDate + ", thirdSittingDate=" + thirdSittingDate + ", batch=" + batch
+				+ ", receiveUpdates=" + receiveUpdates + ", printName=" + printName + ", firstSitting=" + firstSitting
+				+ ", secondSitting=" + secondSitting + ", thirdSitting=" + thirdSitting + ", profession=" + profession
+				+ ", department=" + department + ", language=" + language + ", program=" + program
+				+ ", excelSheetSequenceNumber=" + excelSheetSequenceNumber + ", seqId=" + seqId + ", welcomeMailSent="
+				+ welcomeMailSent + ", createdSource=" + createdSource + ", isCoOrdinatorInformed="
+				+ isCoOrdinatorInformed + ", isEwelcomeIdInformed=" + isEwelcomeIdInformed + ", ewelcomeIdState="
+				+ ewelcomeIdState + ", ewelcomeIdRemarks=" + ewelcomeIdRemarks + ", totalDays=" + totalDays + "]";
 	}
 
 }

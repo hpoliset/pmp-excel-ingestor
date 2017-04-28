@@ -33,8 +33,15 @@ public class VersionIdentifier {
 			String versionName = sheet.getRow(1).getCell(0, Row.CREATE_NULL_AS_BLANK).toString();
 			if (versionName != null && versionName.contains("/V2.1/")) {
 				version = ExcelType.V2_1;
+			}else{
+				String columnValue = sheet.getRow(1).getCell(0, Row.CREATE_NULL_AS_BLANK).toString();
+				if(null != columnValue && columnValue.contains("/m1.0/") && uploadedExcelWorkbook.getNumberOfSheets() == 2){
+					version = ExcelType.M1_0;
+				}
 			}
-		} else if (uploadedExcelWorkbook.getNumberOfSheets() == 2) {
+		} else if (uploadedExcelWorkbook.getNumberOfSheets() == 2 
+				&& null != uploadedExcelWorkbook.getSheet(EventDetailsUploadConstants.V1_EVENT_SHEET_NAME)
+						&& null != uploadedExcelWorkbook.getSheet(EventDetailsUploadConstants.V1_PARTICIPANT_SHEET_NAME)) {
 			version = ExcelType.V1;
 		}
 		return version;

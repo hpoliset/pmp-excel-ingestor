@@ -9,7 +9,7 @@ package org.srcm.heartfulness.constants;
 public class ExpressionConstants {
 
 	public static final String  DATE_REGEX 						= 	"^\\d{2}-\\d{2}-\\d{4}$";
-	public static final String EMAIL_REGEX 						= 	"^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&’*+/=?`{|}~^-]+)*@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$"; //"^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+	public static final String EMAIL_REGEX 						= 	"^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^-]+(?:\\.[a-zA-Z0-9_!#$%&’*+/=?`{|}~^-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$"; //"^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 	public static final String MOBILE_REGEX 					= 	"^[7-9]\\d{9}$";
 	public static final String EVENT_ID_PREFIX					=	"E";
 	public static final String INTRO_ID_PREFIX					=	"I";
@@ -26,5 +26,6 @@ public class ExpressionConstants {
 	public static final String DATE_FORMAT 						= 	"dd-MM-yyyy";
 	public static final String SQL_DATE_FORMAT 					= 	"yyyy-MM-dd";
 	public static final String MAIL_DATE_FORMAT 				= 	"dd-MMM-yyyy";
+	//public static final String MOBILE_V1_0_REGEX 				= 	"^([0|\\+[0-9]{1,5})?([7-9][0-9]{9})$";
 	
 }

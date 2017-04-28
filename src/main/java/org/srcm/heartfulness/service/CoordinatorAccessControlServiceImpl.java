@@ -431,7 +431,6 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 						apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
 						//accessLogDetails.setId(accessdetailsID);
 					} catch (Exception e) {
-						e.printStackTrace();
 						LOGGER.error("Exception while inserting PMP API log details in table : {} ",
 								StackTraceUtils.convertPojoToJson(e));
 					}
