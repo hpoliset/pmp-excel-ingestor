@@ -93,6 +93,7 @@ public class MobileDataExtractorV1Impl implements ExcelDataExtractor{
 		if(disableEwelcomeIdGeneration){
 			program.setIsEwelcomeIdGenerationDisabled(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
 		}
+		program.setSendersEmailAddress("");
 		LOGGER.info("Completed extracting program for M1.0 template");
 		return program;
 	}
