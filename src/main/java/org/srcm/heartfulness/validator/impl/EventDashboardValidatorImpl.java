@@ -407,7 +407,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			}
 		} else if (!(null == participantInput.getThirdSittingDate()	&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting()))) {
 			isValid=true;
-		}else if( participantInput.getTotalDays() > 2 ){
+		}else if( null != participantInput.getTotalDays() ? participantInput.getTotalDays() > 2 : false  ){
 			isValid = true;
 		}
 		

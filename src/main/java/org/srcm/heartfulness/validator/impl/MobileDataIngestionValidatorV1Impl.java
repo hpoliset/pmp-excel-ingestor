@@ -211,9 +211,11 @@ public class MobileDataIngestionValidatorV1Impl implements EventDetailsExcelVali
 		if(!phoneNumber.isEmpty() && !phoneNumber.matches(ExpressionConstants.MOBILE_V1_0_REGEX)){
 			errorMsg.add(" "+MobileDataParticipantCols.MOBILE.getHeader() + " number is invalid at row number "+rowNumber);
 		}*/
-
 		try{
-			Integer.parseInt(currentRow.getCell(13, Row.CREATE_NULL_AS_BLANK).toString().trim());
+			String totalDays = currentRow.getCell(13, Row.CREATE_NULL_AS_BLANK).toString().trim();
+			if(!totalDays.isEmpty()){
+				Integer.parseInt(totalDays);
+			}
 		} catch(Exception ex){
 			errorMsg.add(" "+MobileDataParticipantCols.TOTAL_DAYS.getHeader() + " should be numeric value at row number "+rowNumber);
 		}

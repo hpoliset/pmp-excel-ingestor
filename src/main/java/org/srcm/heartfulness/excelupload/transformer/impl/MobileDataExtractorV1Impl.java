@@ -141,7 +141,8 @@ public class MobileDataExtractorV1Impl implements ExcelDataExtractor{
 		if(disableEwelcomeIdGeneration){
 			participant.setEwelcomeIdState(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
 		}
-		participant.setTotalDays(Integer.parseInt(participantRow.getCell(13, Row.CREATE_NULL_AS_BLANK).toString().trim()));
+		String totalDays = participantRow.getCell(13, Row.CREATE_NULL_AS_BLANK).toString().trim();
+		participant.setTotalDays(totalDays.isEmpty() ? 0 : Integer.parseInt(totalDays));
 		return participant;
 	}
 
