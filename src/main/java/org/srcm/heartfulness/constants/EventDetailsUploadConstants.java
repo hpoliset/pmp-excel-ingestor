@@ -39,7 +39,10 @@ public class EventDetailsUploadConstants {
 	/** Holds the name of the sheet that contains Participant details for Excel version 1.0.*/
 	public static final String V1_PARTICIPANT_SHEET_NAME 			= "Sheet2";
 	
+	/** Holds the country value for Event and Participant details of Excel version m1.0.*/
 	public static final String M1_0_EVENT_COUNTRY 					= "India";
 	
+	/**Holds the failure response which will be sent to the client while validating authorization token */
+	public static final String INVALID_UPLOAD_REQUEST 			    = "Unable to complete your request. Please try after sometime";
 	
 }
