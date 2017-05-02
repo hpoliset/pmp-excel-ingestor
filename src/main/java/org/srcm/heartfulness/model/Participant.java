@@ -2,6 +2,8 @@ package org.srcm.heartfulness.model;
 
 import java.util.Date;
 
+import javax.ws.rs.DefaultValue;
+
 /**
  * Created by vsonnathi on 11/22/15.
  */
@@ -56,7 +58,7 @@ public class Participant {
 	private Integer isEwelcomeIdInformed;
 	private String ewelcomeIdState;
 	private String ewelcomeIdRemarks;
-	private int totalDays;
+	private Integer totalDays;
 
 
 	public String getCreatedSource() {
@@ -452,12 +454,12 @@ public class Participant {
 	public void setEwelcomeIdRemarks(String ewelcomeIdRemarks) {
 		this.ewelcomeIdRemarks = ewelcomeIdRemarks;
 	}
-	
-	public int getTotalDays() {
+
+	public Integer getTotalDays() {
 		return totalDays;
 	}
 
-	public void setTotalDays(int totalDays) {
+	public void setTotalDays(Integer totalDays) {
 		this.totalDays = totalDays;
 	}
 
@@ -481,5 +483,5 @@ public class Participant {
 				+ isCoOrdinatorInformed + ", isEwelcomeIdInformed=" + isEwelcomeIdInformed + ", ewelcomeIdState="
 				+ ewelcomeIdState + ", ewelcomeIdRemarks=" + ewelcomeIdRemarks + ", totalDays=" + totalDays + "]";
 	}
-
+	
 }
