@@ -226,7 +226,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 		program.setPreceptorName(eventSheet.getRow(13).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		program.setPreceptorIdCardNumber(eventSheet.getRow(14).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		
-		program.setRemarks(eventSheet.getRow(16).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		program.setRemarks(eventSheet.getRow(17).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
 
 		String eventDateStr = eventSheet.getRow(3).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim();
 		Date eventDate = null;
