@@ -20,6 +20,7 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.srcm.heartfulness.PmpApplication;
 import org.srcm.heartfulness.assertion.PmpAssertTest;
+import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.enumeration.ExcelType;
 import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractorFactory;
 import org.srcm.heartfulness.helper.PmpApplicationHelper;
@@ -76,7 +77,7 @@ public class ParticipantDeduplicationTest {
 		pmpAssertTest.assertValidExcelFile(listOfErrors);
 
 		//Extract event and participant details and persist
-		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
+		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
 		List<Participant> participantList = program.getParticipantList();
 		programRepository.save(program);
 
@@ -87,7 +88,7 @@ public class ParticipantDeduplicationTest {
 		pmpAssertTest.validateParticipantCount(participantList.size(), uploadedProgram.getParticipantList().size());
 
 		//Let's insert the excel file one more time.
-		Program sameProgram = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
+		Program sameProgram = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
 		programRepository.save(sameProgram);
 
 		//Get the latest participant count
@@ -124,7 +125,7 @@ public class ParticipantDeduplicationTest {
 		pmpAssertTest.assertValidExcelFile(listOfErrors);
 
 		//Extract event and participant details and persist
-		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
+		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
 		List<Participant> participantList = program.getParticipantList();
 		programRepository.save(program);
 
@@ -157,7 +158,7 @@ public class ParticipantDeduplicationTest {
 		pmpAssertTest.assertValidExcelFile(listOfErrors);
 
 		//Extract event and participant details and persist
-		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
+		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
 		List<Participant> participantList = program.getParticipantList();
 		programRepository.save(program);
 
@@ -190,7 +191,7 @@ public class ParticipantDeduplicationTest {
 		pmpAssertTest.assertValidExcelFile(listOfErrors);
 
 		//Extract event and participant details and persist
-		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
+		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
 		programRepository.save(program);
 
 		//We have modified email of two participants but since name and mobile number are same so participant count should be same
@@ -220,7 +221,7 @@ public class ParticipantDeduplicationTest {
 		pmpAssertTest.assertValidExcelFile(listOfErrors);
 
 		//Extract event and participant details and persist
-		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
+		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
 		programRepository.save(program);
 
 		//We have added a new record in the same excel sheet so count should increase by 1
@@ -251,7 +252,7 @@ public class ParticipantDeduplicationTest {
 		pmpAssertTest.assertValidExcelFile(listOfErrors);
 
 		//Extract event and participant details and persist
-		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
+		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
 		programRepository.save(program);
 
 		//Get the uploaded event

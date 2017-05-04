@@ -25,7 +25,7 @@ public class InvalidExcelDataExtractor implements ExcelDataExtractor{
 	}
 */
 	@Override
-	public Program extractExcel(Workbook workbook,String eWelcomeIdCheckbox) throws InvalidExcelFileException {
+	public Program extractExcel(Workbook workbook,String eWelcomeIdCheckbox,String jiraIssueNumber) throws InvalidExcelFileException {
 		throw new InvalidExcelFileException("Template version is invalid");
 	}
 

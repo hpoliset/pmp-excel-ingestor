@@ -2,7 +2,11 @@ package org.srcm.heartfulness.webservice;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -52,18 +56,22 @@ public class IngestionRestController {
 	ExcelIngestionValidator excelIngestionValidator;
 
 	@RequestMapping(value = "/excelupload", method = RequestMethod.POST)
-	public ResponseEntity<?> processFileUpload(@RequestHeader(value = "Authorization") String token,
-			@RequestParam("file") MultipartFile excelDataFile, @RequestParam(required = true) String eWelcomeIdCheckbox,
+	public ResponseEntity<?> processSingleFileUpload(
+			@RequestHeader(value = "Authorization") String token,
+			@RequestParam(name = "file", required = true) MultipartFile excelDataFile,
+			@RequestParam(name = "jiraissuenumber", required = true) String jiraIssueNumber,
+			@RequestParam(required = true) String eWelcomeIdCheckbox,
 			@Context HttpServletRequest httpRequest) {
-
+		
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-				StackTraceUtils.convertPojoToJson(excelDataFile.getOriginalFilename()));
+				StackTraceUtils.convertPojoToJson("Filename = "+excelDataFile.getOriginalFilename() + "\n Jira issue number = "+jiraIssueNumber));
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 
 		ExcelUploadResponse excelResponse = new ExcelUploadResponse(excelDataFile.getOriginalFilename(),ExcelType.UNDEFINED,EventDetailsUploadConstants.FAILURE_STATUS,null);
 
 		try{
+			//token validation
 			Response eResponse = excelIngestionValidator.validateExcelUploadRequest(accessLog, token);
 			if(null != eResponse){
 				List<String> errorList = new ArrayList<>(1);
@@ -72,17 +80,23 @@ public class IngestionRestController {
 				return new ResponseEntity<ExcelUploadResponse>(excelResponse,HttpStatus.PRECONDITION_FAILED);
 			}
 
-			MultipartFile[] uploadedFile = new MultipartFile[] { excelDataFile };
-			excelResponse = pmpIngestionService.parseAndPersistExcelFile(uploadedFile,eWelcomeIdCheckbox).get(0);
-			return new ResponseEntity<ExcelUploadResponse>(excelResponse, HttpStatus.OK);
+			//service layer call for data validation and extraction
+			//MultipartFile[] uploadedFile = new MultipartFile[] { excelDataFile };
+			excelResponse = pmpIngestionService.parseAndPersistExcelFile(excelDataFile.getOriginalFilename(),excelDataFile.getBytes(),eWelcomeIdCheckbox,jiraIssueNumber);
+			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 
 		} catch(Exception ex){
 			LOGGER.error("Error while fetching token from MYSRCM for single upload {}",ex);
 			List<String> errorList = new ArrayList<>(1);
 			errorList.add(EventDetailsUploadConstants.INVALID_UPLOAD_REQUEST);
 			excelResponse.setErrorMsg(errorList);
-			return new ResponseEntity<ExcelUploadResponse>(excelResponse, HttpStatus.OK);
+			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
 		}
+		
+		accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+		accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(excelResponse));
+		apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+		return new ResponseEntity<ExcelUploadResponse>(excelResponse, HttpStatus.OK);
 
 	}
 
@@ -95,8 +109,11 @@ public class IngestionRestController {
 	 * @throws IOException
 	 */
 	@RequestMapping(value = "bulkexcelupload", method = RequestMethod.POST)
-	public ResponseEntity<?> processFileUpload(@RequestHeader(value = "Authorization") String token,
-			@RequestParam("files") MultipartFile uploadedExcelFiles[], @RequestParam(required = true) String eWelcomeIdCheckbox,
+	public ResponseEntity<?> processBulkFileUpload(
+			@RequestHeader(value = "Authorization") String token,
+			@RequestParam(name = "files", required = true ) MultipartFile uploadedExcelFiles[],
+			@RequestParam(name = "jiraissuenumbers", required = true) String jiraIssueNumbers[],
+			@RequestParam(required = true) String eWelcomeIdCheckbox,
 			@Context HttpServletRequest httpRequest) {
 
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
@@ -107,6 +124,7 @@ public class IngestionRestController {
 		List<ExcelUploadResponse> excelUploadResponseList = new ArrayList<ExcelUploadResponse>();
 		
 		try {
+			//token validation
 			Response eResponse = excelIngestionValidator.validateExcelUploadRequest(accessLog, token);
 			if (null != eResponse) {
 				List<String> errorList = new ArrayList<>(1);
@@ -116,9 +134,23 @@ public class IngestionRestController {
 				}
 				return new ResponseEntity<List<ExcelUploadResponse>>(excelUploadResponseList,HttpStatus.PRECONDITION_FAILED);
 			}
-			excelUploadResponseList = pmpIngestionService.parseAndPersistExcelFile(uploadedExcelFiles,eWelcomeIdCheckbox);
-			return new ResponseEntity<List<ExcelUploadResponse>>(excelUploadResponseList, HttpStatus.OK);
+			//file upload vs jira issue count validation
+			excelIngestionValidator.validateFilesWithJiraIssuesCount(uploadedExcelFiles,jiraIssueNumbers,excelUploadResponseList,accessLog);
+			if(excelUploadResponseList.size() > 0){
+				return new ResponseEntity<List<ExcelUploadResponse>>(excelUploadResponseList,HttpStatus.PRECONDITION_FAILED);
+			}
 			
+			//service layer call for data validation and extraction
+			Map<String, MultipartFile> uploadedFileDetails = IntStream.range(0, jiraIssueNumbers.length).boxed()
+				    .collect(Collectors.toMap(i -> jiraIssueNumbers[i], i -> uploadedExcelFiles[i]));
+			
+			/*for(Map.Entry<String, MultipartFile> map : uploadedFileDetails.entrySet()){
+				System.out.println("key=="+map.getKey()+"..value=="+map.getValue().getOriginalFilename());
+			}*/
+			//return null;
+			excelUploadResponseList = pmpIngestionService.parseAndPersistExcelFile(uploadedFileDetails,eWelcomeIdCheckbox);
+			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+
 		} catch (Exception ex) {
 			LOGGER.error("Error while fetching token from MYSRCM for bulk upload {}",ex);
 			List<String> errorList = new ArrayList<>(1);
@@ -126,8 +158,13 @@ public class IngestionRestController {
 			for(MultipartFile files : uploadedExcelFiles){
 				excelUploadResponseList.add(new ExcelUploadResponse(files.getOriginalFilename(),ExcelType.UNDEFINED,EventDetailsUploadConstants.FAILURE_STATUS,errorList));
 			}
-			return new ResponseEntity<List<ExcelUploadResponse>>(excelUploadResponseList, HttpStatus.OK);
+			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
 		}
+		
+		accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+		accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(excelUploadResponseList));
+		apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+		return new ResponseEntity<List<ExcelUploadResponse>>(excelUploadResponseList, HttpStatus.OK);
 	}
 
 }

@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -106,7 +107,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	@Override
 	@Transactional
 	@SuppressWarnings("static-access")
-	public ExcelUploadResponse parseAndPersistExcelFile(String fileName, byte[] fileContent, String eWelcomeIdCheckbox) {
+	public ExcelUploadResponse parseAndPersistExcelFile(String fileName, byte[] fileContent, String eWelcomeIdCheckbox,String jiraIssueNumber) {
 
 		LOGGER.info("Started parsing and persisting Excel file.");
 		List<String> errorResponse = new ArrayList<String>();
@@ -139,7 +140,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 
 				if(errorResponse.isEmpty()){
 					try {
-						Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version,eWelcomeIdCheckbox);
+						Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version,eWelcomeIdCheckbox,jiraIssueNumber);
 						program.setCreatedSource(version.equals(ExcelType.M1_0)? PMPConstants.CREATED_SOURCE_EXCEL_VIA_MOBILE : PMPConstants.CREATED_SOURCE_EXCEL);
 						programRepository.save(program);
 						validatePreceptorIdandCoordinatorEmailIdAndPersistProgram(program, response, errorResponse); // preceptor ID card number validation
@@ -413,13 +414,12 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	/**
 	 * This method is used to parse the excel files.
 	 * 
-	 * @param excelFiles
+	 * @param excelFiles,eWelcomeIdCheckbox
 	 * @return List of ExcelUploadResponse
 	 * @see {@link ExcelUploadResponse}
 	 */
 	@Override
-	public List<ExcelUploadResponse> parseAndPersistExcelFile(MultipartFile[] excelFiles, String eWelcomeIdCheckbox)
-			throws IOException {
+	public List<ExcelUploadResponse> parseAndPersistExcelFile(MultipartFile[] excelFiles, String eWelcomeIdCheckbox) throws IOException {
 
 		List<ExcelUploadResponse> responseList = new LinkedList<ExcelUploadResponse>();
 		// sorting the files based on excel file name
@@ -430,8 +430,22 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			}
 		});
 		for (MultipartFile multipartFile : excelFiles) {
-			responseList.add(parseAndPersistExcelFile(multipartFile.getOriginalFilename(), multipartFile.getBytes(),
-					eWelcomeIdCheckbox));
+			responseList.add(parseAndPersistExcelFile(multipartFile.getOriginalFilename(), multipartFile.getBytes(),eWelcomeIdCheckbox,""));
+		}
+		return responseList;
+	}
+
+	
+	/**
+	 * This method is used to parse the excel files.
+	 * @param uploadedFileDetails,eWelcomeIdCheckbox
+	 * @return List of ExcelUploadResponse
+	 */
+	@Override
+	public List<ExcelUploadResponse> parseAndPersistExcelFile(Map<String, MultipartFile> uploadedFileDetails, String eWelcomeIdCheckbox) throws IOException {
+		List<ExcelUploadResponse> responseList = new LinkedList<ExcelUploadResponse>();
+		for(Map.Entry<String, MultipartFile> file : uploadedFileDetails.entrySet()){
+			responseList.add(parseAndPersistExcelFile(file.getValue().getOriginalFilename(), file.getValue().getBytes(),eWelcomeIdCheckbox,file.getKey()));
 		}
 		return responseList;
 	}

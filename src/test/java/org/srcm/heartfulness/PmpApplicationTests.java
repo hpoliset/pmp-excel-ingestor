@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.util.StreamUtils;
+import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.enumeration.ExcelType;
 import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractorFactory;
 import org.srcm.heartfulness.model.Participant;
@@ -51,7 +52,7 @@ public class PmpApplicationTests {
 
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
         Workbook workbook = ExcelParserUtils.getWorkbook(fileName, fileContent);
-        Program validV21Program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
+        Program validV21Program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
         List<Participant> participantList = validV21Program.getParticipantList();
         programRepository.save(validV21Program);
 
@@ -62,7 +63,7 @@ public class PmpApplicationTests {
         Assert.assertEquals("Should be same number of participants", newProgram.getParticipantList().size(), participantList.size());
 
         //Let's insert the excel file one more time.
-        Program validV21ProgramDuplicate = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
+        Program validV21ProgramDuplicate = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
         programRepository.save(validV21ProgramDuplicate);
 
         Assert.assertEquals("Should not have create a new row", validV21ProgramDuplicate.getProgramId(),
@@ -83,7 +84,7 @@ public class PmpApplicationTests {
 
         byte[] fileContent = StreamUtils.copyToByteArray(v2ValidResource.getInputStream());
         Workbook workbook = ExcelParserUtils.getWorkbook(fileName, fileContent);
-        Program validV21Program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
+        Program validV21Program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
         List<Participant> participantList = validV21Program.getParticipantList();
         validV21Program.setParticipantList(participantList);
 
@@ -100,7 +101,7 @@ public class PmpApplicationTests {
         Resource v21Day3Resource = resourceLoader.getResource("classpath:" + day3FileName);
         byte[] v21Day3FileContent = StreamUtils.copyToByteArray(v21Day3Resource.getInputStream());
         workbook = ExcelParserUtils.getWorkbook(fileName, v21Day3FileContent);
-        Program validV21ProgramDuplicate = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox);
+        Program validV21ProgramDuplicate = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
         List<Participant> participantListDuplicate = validV21ProgramDuplicate.getParticipantList();
         validV21ProgramDuplicate.setParticipantList(participantListDuplicate);
         programRepository.save(validV21ProgramDuplicate);
