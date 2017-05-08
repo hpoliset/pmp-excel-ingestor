@@ -1136,7 +1136,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	}
 
 	@Override
-	public List<Program> getEventsByEmailAndRole(/*String email*/List<String> emailList, String role, int offset, int pageSize) {
+	public List<Program> getEventsByEmailAndRole(List<String> emailList, String role, int offset, int pageSize) {
 
 		List<Program> programs = new ArrayList<Program>();
 		StringBuilder whereCondition = new StringBuilder("");

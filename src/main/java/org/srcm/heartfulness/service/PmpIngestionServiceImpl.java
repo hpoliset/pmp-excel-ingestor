@@ -144,6 +144,9 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 						program.setCreatedSource(version.equals(ExcelType.M1_0)? PMPConstants.CREATED_SOURCE_EXCEL_VIA_MOBILE : PMPConstants.CREATED_SOURCE_EXCEL);
 						programRepository.save(program);
 						validatePreceptorIdandCoordinatorEmailIdAndPersistProgram(program, response, errorResponse); // preceptor ID card number validation
+					} catch(NullPointerException npex){
+						errorResponse.add("Excel file you are trying to upload seems to be corrupted. "
+								+ "Please copy the content into a valid excel file and re-try");	
 					} catch (InvalidExcelFileException ex) {
 						errorResponse.add("Invalid excel file version.Available versions are v1 and v2.1 and m1.0");
 					} catch(TypeMismatchDataAccessException tmdae){

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.CoordinatorAccessControlConstants;
 import org.srcm.heartfulness.constants.EndpointConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
@@ -1155,6 +1156,7 @@ public class ProgramServiceImpl implements ProgramService {
 			event.setPreceptorIdCardNumber(program.getPreceptorIdCardNumber());
 			event.setRemarks(program.getRemarks());
 			event.setJiraIssueNumber(program.getJiraIssueNumber());
+			event.setIsReadOnly(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE);
 			eventList.add(event);
 		}
 
@@ -1217,6 +1219,7 @@ public class ProgramServiceImpl implements ProgramService {
 			event.setPreceptorName(program.getPreceptorName());
 			event.setPreceptorIdCardNumber(program.getPreceptorIdCardNumber());
 			event.setJiraIssueNumber(program.getJiraIssueNumber());
+			event.setIsReadOnly(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE);
 			eventList.add(event);
 		}
 
