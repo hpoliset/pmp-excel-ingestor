@@ -878,7 +878,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 						.append(" AND ( p.program_channel NOT REGEXP ('G-Connect|G Connect|GConnect|G-Conect|G - Connect|G.CONNECT|G -CONNECT|G- connect|G-Connet|G  Connect')"
 								+ " OR (p.coordinator_email IN(" + emailString + ") OR pc.email IN(" + emailString + "))) ");
 			} else {
-				whereCondition.append(" AND (p.coordinator_email IN(' " + emailString + "') OR pc.email IN(" + emailString + ")) ");
+				whereCondition.append(" AND (p.coordinator_email IN(" + emailString + ") OR pc.email IN(" + emailString + ")) ");
 			}
 		}
 
