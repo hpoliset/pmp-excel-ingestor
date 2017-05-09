@@ -1,5 +1,8 @@
 package org.srcm.heartfulness.validator.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
@@ -8,14 +11,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.multipart.MultipartFile;
 import org.srcm.heartfulness.constants.ErrorConstants;
+import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.enumeration.ExcelAndReportAdmins;
+import org.srcm.heartfulness.enumeration.ExcelType;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.response.Response;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.UserProfileService;
+import org.srcm.heartfulness.service.response.ExcelUploadResponse;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
 import org.srcm.heartfulness.validator.EventDashboardValidator;
@@ -127,5 +134,31 @@ public class ExcelIngestionValidatorImpl implements ExcelIngestionValidator {
 		}
 		return null;
 	}
+
+	@Override
+	public void validateFilesWithJiraIssuesCount(MultipartFile[] uploadedExcelFiles, String[] jiraIssueNumbers,
+			List<ExcelUploadResponse> excelUploadResponseList, PMPAPIAccessLog accessLog) {
+		
+		if(uploadedExcelFiles.length <= 0){
+			
+			List<String> errorList = new ArrayList<>(1);
+			errorList.add(EventDetailsUploadConstants.MINIMUM_FILE_UPLOAD_COUNT);
+			excelUploadResponseList.add(new ExcelUploadResponse("",ExcelType.UNDEFINED,EventDetailsUploadConstants.FAILURE_STATUS,errorList));
+			accessLog.setErrorMessage(EventDetailsUploadConstants.MINIMUM_FILE_UPLOAD_COUNT);
+			
+		} if(uploadedExcelFiles.length != jiraIssueNumbers.length){
+			List<String> errorList = new ArrayList<>(1);
+			errorList.add(EventDetailsUploadConstants.COUNT_MISMATCH);
+			for(MultipartFile files : uploadedExcelFiles){
+				excelUploadResponseList.add(new ExcelUploadResponse(files.getOriginalFilename(),ExcelType.UNDEFINED,EventDetailsUploadConstants.FAILURE_STATUS,errorList));
+			}
+			accessLog.setErrorMessage(EventDetailsUploadConstants.COUNT_MISMATCH);
+		}
+		
+		accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+		accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(excelUploadResponseList));
+		apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+	}
+
 
 }

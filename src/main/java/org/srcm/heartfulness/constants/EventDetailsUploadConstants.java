@@ -39,7 +39,19 @@ public class EventDetailsUploadConstants {
 	/** Holds the name of the sheet that contains Participant details for Excel version 1.0.*/
 	public static final String V1_PARTICIPANT_SHEET_NAME 			= "Sheet2";
 	
+	/** Holds the country value for Event and Participant details of Excel version m1.0.*/
 	public static final String M1_0_EVENT_COUNTRY 					= "India";
 	
+	/**Holds the failure response which will be sent to the client while validating authorization token */
+	public static final String INVALID_UPLOAD_REQUEST 			    = "Unable to complete your request. Please try after sometime";
+	
+	/**Holds the failure response which will be sent to the client while validating count of file and jira issue number mismatch */
+	public static final String COUNT_MISMATCH 			    		= "Count of files selected doesn't match count of Jira Issue numbers provided";
+	
+	/**Holds the default jira issue number */
+	public static final String DEFAULT_JIRA_NUMBER					= "";
+	
+	/**Holds the error message to be returned to the client in case of no excel file is uploaded*/
+	public static final String MINIMUM_FILE_UPLOAD_COUNT			= "Please upload atleast a single excel file";
 	
 }

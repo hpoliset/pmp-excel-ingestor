@@ -37,7 +37,7 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 	 * @see org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractor#extractExcel(org.apache.poi.ss.usermodel.Workbook)
 	 */
 	@Override
-	public Program extractExcel(Workbook workbook,String eWelcomeIdCheckbox) throws InvalidExcelFileException {
+	public Program extractExcel(Workbook workbook,String eWelcomeIdCheckbox,String jiraIssueNumber) throws InvalidExcelFileException {
 		Sheet sheet = workbook.getSheet(EventDetailsUploadConstants.V1_SHEET_NAME);
 		Program program = new Program();
 		boolean disableEwelcomeIdGeneration = false;
@@ -46,6 +46,7 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 		}
 		program = parseProgram(sheet,disableEwelcomeIdGeneration);
 		program.setParticipantList(getParticipantList(sheet, disableEwelcomeIdGeneration));
+		program.setJiraIssueNumber(jiraIssueNumber);
 		return program;
 	}
 
@@ -105,7 +106,8 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 			participant.setMobilePhone(String.valueOf(phoneCell).trim());
 		}
 		participant.setProfession(currentRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString().trim());
-		if (currentRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString().trim().equalsIgnoreCase("YES")) {
+		String isIntroduced = currentRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString().trim();
+		if (isIntroduced.equalsIgnoreCase("YES") || isIntroduced.equalsIgnoreCase("Y")) {
 			participant.setIntroduced(1);
 		} else {
 			participant.setIntroduced(0);

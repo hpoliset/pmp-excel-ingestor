@@ -103,7 +103,7 @@ public class SessionDetailsController {
 				try {
 					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 				} catch (Exception ex) {
-					LOGGER.error("Exception while updating logger", ex);
+					LOGGER.error("Exception while updating logger {}", ex);
 				}
 				return new ResponseEntity<SessionDetails>(sessionDetails, HttpStatus.OK);
 			} else if (((SuccessResponse) serviceResponse).getSuccess_description().equals(
@@ -111,7 +111,7 @@ public class SessionDetailsController {
 				try {
 					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 				} catch (Exception ex) {
-					LOGGER.error("Exception while updating logger", ex);
+					LOGGER.error("Exception while updating logger {}", ex);
 				}
 				return new ResponseEntity<PMPResponse>(serviceResponse, HttpStatus.OK);
 			}

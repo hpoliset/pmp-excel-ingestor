@@ -125,10 +125,10 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 						}
 					});
 		}catch(DataAccessException ex){
-			LOGGER.error("DAE Failed to get count of already generated session id for auto generated session id "+autoGnrtdSessionId);
+			LOGGER.error("DAE Failed to get count of already generated session id for auto generated session id {}",autoGnrtdSessionId);
 			return 0;
 		} catch(Exception ex){
-			LOGGER.error("Ex Failed to get count of already generated session id for auto generated session id "+autoGnrtdSessionId);
+			LOGGER.error("Ex Failed to get count of already generated session id for auto generated session id {}",autoGnrtdSessionId);
 			return -1;
 		}
 		return sessionIdCount;	
@@ -177,11 +177,11 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 						}
 					});
 		}catch(DataAccessException ex){
-			LOGGER.error("DAE Error while fetching session id for auto generated session id :"+autoGnrtdSessionId);
+			LOGGER.error("DAE Error while fetching session id for auto generated session id : {}",autoGnrtdSessionId);
 			return 0;
 		}catch(Exception ex){
-			LOGGER.error("EX Error while fetching session id for auto generated session id :"+autoGnrtdSessionId);
-			LOGGER.error("EX Error while fetching session id ",ex);
+			LOGGER.error("EX Error while fetching session id for auto generated session id : {}",autoGnrtdSessionId);
+			LOGGER.error("EX Error while fetching session id {}",ex);
 			return -1;
 		}
 		return sessionId;

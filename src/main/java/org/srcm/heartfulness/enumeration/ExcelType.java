@@ -20,8 +20,9 @@ public enum ExcelType {
 	V1(new ExcelV1ValidatorImpl(), new ExcelDataExtractorV1Impl()),					 // Denotes Excel version altered 1.0
 	V2_1 (new ExcelV2ValidatorImpl(), new ExcelDataExtractorV2Impl()),				 // Denotes Excel extractor for altered v2.1
 	M1_0(new MobileDataIngestionValidatorV1Impl(),new MobileDataExtractorV1Impl()),	 // Denotes Excel extractor for altered m1.0
+	UNDEFINED(null),																 // Denotes that excel version is still not identified
 	INVALID(null); 																	 // Holder to display error message for invalid formats
-
+	
 
 	/** Instance of validator to be used for the corresponding template type.  */
 	private EventDetailsExcelValidator validator;

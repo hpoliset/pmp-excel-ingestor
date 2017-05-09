@@ -17,10 +17,10 @@ import org.srcm.heartfulness.model.Program;
  */
 public abstract class ExcelParserUtils {
 
-	public static Program getProgramFromExcel(String fileName, Workbook workbook,String eWelcomeIdCheckbox) throws InvalidExcelFileException {
+	public static Program getProgramFromExcel(String fileName, Workbook workbook,String eWelcomeIdCheckbox,String jiraIssueNumber) throws InvalidExcelFileException {
 		// TODO: Deal with version 1 later
 		ExcelDataExtractor v2Extractor = new ExcelDataExtractorV2Impl();
-		return v2Extractor.extractExcel(workbook,eWelcomeIdCheckbox);
+		return v2Extractor.extractExcel(workbook,eWelcomeIdCheckbox,jiraIssueNumber);
 	}
 
 	public static Workbook getWorkbook(String fileName, byte[] fileContent) throws InvalidExcelFileException, IOException {

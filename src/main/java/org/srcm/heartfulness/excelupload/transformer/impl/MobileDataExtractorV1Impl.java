@@ -30,7 +30,7 @@ public class MobileDataExtractorV1Impl implements ExcelDataExtractor{
 	private static final Logger LOGGER = LoggerFactory.getLogger(MobileDataExtractorV1Impl.class);
 
 	@Override
-	public Program extractExcel(Workbook workbook, String eWelcomeIdCheckbox) throws InvalidExcelFileException {
+	public Program extractExcel(Workbook workbook, String eWelcomeIdCheckbox, String jiraIssueNumber) throws InvalidExcelFileException {
 		
 		Program program = null;
 		Sheet eventSheet = workbook.getSheet("Event Details");
@@ -41,6 +41,7 @@ public class MobileDataExtractorV1Impl implements ExcelDataExtractor{
 		}
 		program = parseProgram(eventSheet,disableEwelcomeIdGeneration);
 		program.setParticipantList(getParticipantList(participantSheet,disableEwelcomeIdGeneration));
+		program.setJiraIssueNumber(jiraIssueNumber);
 		return program;
 	}
 

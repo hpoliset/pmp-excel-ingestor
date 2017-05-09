@@ -24,10 +24,10 @@ public class ExcelDataExtractorFactory {
 	 * @throws InvalidExcelFileException
 	 *             when the given excel does not adhere to the template defined.
 	 */
-	public static Program extractProgramDetails(Workbook workBook, ExcelType version,String eWelcomeIdCheckbox) throws InvalidExcelFileException {
+	public static Program extractProgramDetails(Workbook workBook, ExcelType version,String eWelcomeIdCheckbox,String jiraIssueNumber) throws InvalidExcelFileException {
 		Program program = new Program();
 		ExcelDataExtractor extractor = version.getExtractor();
-		program = extractor.extractExcel(workBook,eWelcomeIdCheckbox);
+		program = extractor.extractExcel(workBook,eWelcomeIdCheckbox,jiraIssueNumber);
 		return program;
 
 	}
