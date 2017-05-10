@@ -2,7 +2,6 @@ package org.srcm.heartfulness.webservice;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -82,7 +81,7 @@ public class IngestionRestController {
 
 			//service layer call for data validation and extraction
 			//MultipartFile[] uploadedFile = new MultipartFile[] { excelDataFile };
-			excelResponse = pmpIngestionService.parseAndPersistExcelFile(excelDataFile.getOriginalFilename(),excelDataFile.getBytes(),eWelcomeIdCheckbox,jiraIssueNumber);
+			excelResponse = pmpIngestionService.parseAndPersistExcelFile(excelDataFile.getOriginalFilename(),excelDataFile.getBytes(),eWelcomeIdCheckbox,jiraIssueNumber,accessLog.getUsername());
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 
 		} catch(Exception ex){
@@ -148,7 +147,7 @@ public class IngestionRestController {
 				System.out.println("key=="+map.getKey()+"..value=="+map.getValue().getOriginalFilename());
 			}*/
 			//return null;
-			excelUploadResponseList = pmpIngestionService.parseAndPersistExcelFile(uploadedFileDetails,eWelcomeIdCheckbox);
+			excelUploadResponseList = pmpIngestionService.parseAndPersistExcelFile(uploadedFileDetails,eWelcomeIdCheckbox,accessLog.getUsername());
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 
 		} catch (Exception ex) {

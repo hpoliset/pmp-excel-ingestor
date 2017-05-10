@@ -12,11 +12,11 @@ import org.srcm.heartfulness.service.response.ExcelUploadResponse;
  */
 public interface PmpIngestionService {
 
-	ExcelUploadResponse parseAndPersistExcelFile(String fileName, byte[] fileContent,String eWelcomeIdCheckbox,String jiraIssueNumber);
+	ExcelUploadResponse parseAndPersistExcelFile(String fileName, byte[] fileContent,String eWelcomeIdCheckbox,String jiraIssueNumber,String email);
 
 	List<ExcelUploadResponse> parseAndPersistExcelFile(MultipartFile[] excels,String eWelcomeIdCheckbox) throws IOException;
 	
-	List<ExcelUploadResponse> parseAndPersistExcelFile(Map<String, MultipartFile> uploadedFileDetails,String eWelcomeIdCheckbox)throws IOException;
+	List<ExcelUploadResponse> parseAndPersistExcelFile(Map<String, MultipartFile> uploadedFileDetails,String eWelcomeIdCheckbox,String email)throws IOException;
 
 	void normalizeStagingRecords();
 

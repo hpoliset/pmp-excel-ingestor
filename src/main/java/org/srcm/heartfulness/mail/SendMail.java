@@ -50,7 +50,7 @@ import com.sun.mail.smtp.SMTPMessage;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:prod.mail.api.properties", ignoreUnknownFields = false, prefix = "mail.api")
+@ConfigurationProperties(locations = "classpath:dev.mail.api.properties", ignoreUnknownFields = false, prefix = "mail.api")
 public class SendMail {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendMail.class);
@@ -81,6 +81,8 @@ public class SendMail {
 	private String welcomemailtemplatename;
 	private String welcomemailbcc;
 	private String welcomemailbcc2;
+	private String uploadermailsubject;
+	private String uploadermailtemplatename;
 
 	public static class ProcessExecution {
 
@@ -428,6 +430,21 @@ public class SendMail {
 
 	public void setWelcomemailbcc2(String welcomemailbcc2) {
 		this.welcomemailbcc2 = welcomemailbcc2;
+	}
+	public String getUploadermailsubject() {
+		return uploadermailsubject;
+	}
+
+	public void setUploadermailsubject(String uploadermailsubject) {
+		this.uploadermailsubject = uploadermailsubject;
+	}
+
+	public String getUploadermailtemplatename() {
+		return uploadermailtemplatename;
+	}
+
+	public void setUploadermailtemplatename(String uploadermailtemplatename) {
+		this.uploadermailtemplatename = uploadermailtemplatename;
 	}
 
 	@Autowired
@@ -931,5 +948,43 @@ public class SendMail {
 		Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
 		transport.send(message);
 		transport.close();
+	}
+	
+	public void sendMailToUploader(String jiraIssueNumber, String email) throws AddressException, MessagingException, UnsupportedEncodingException,
+	ParseException {
+		try {
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.DATE, -1);
+			SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
+			Date date = new Date();
+			String date_str = sdf.format(date);
+			addParameter(EmailLogConstants.DATE_PARAMETER, date_str);
+			addParameter(EmailLogConstants.JIRA_NUMBER, jiraIssueNumber);
+			Session session = getSession();
+			SMTPMessage message = new SMTPMessage(session);
+			message.setFrom(new InternetAddress(frommail, name));
+			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
+			//message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc));
+			//message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc2));
+			message.setSubject(uploadermailsubject + " "+ jiraIssueNumber + " " + EmailLogConstants.MAIL_TO_UPLOADER);
+			message.setContent(getMessageContentbyTemplateName(uploadermailtemplatename),
+					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
+			message.setAllow8bitMIME(true);
+			message.setSentDate(new Date());
+			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
+			Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
+			transport.send(message);
+			transport.close();
+			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), email,
+					EmailLogConstants.UPLOADER_DETAILS, EmailLogConstants.STATUS_SUCCESS, null);
+			mailLogRepository.createMailLog(pmpMailLog);
+
+		} catch (MessagingException | UnsupportedEncodingException e) {
+			LOGGER.error("Sending Mail Failed : {} " + e.getMessage());
+			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), email,
+					EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_FAILED,
+					StackTraceUtils.convertStackTracetoString(e));
+			mailLogRepository.createMailLog(pmpMailLog);
+		}
 	}
 }

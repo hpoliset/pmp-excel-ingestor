@@ -63,5 +63,8 @@ public class EmailLogConstants {
 	public static final String SECONDARY_COORDINATOR_EMAIL_PARAMETER				=	"SECONDARY_COORDINATOR_EMAIL";
 	public static final String SECONDARY_COORDINATOR_ABHYASIID_PARAMETER			=	"SECONDARY_COORDINATOR_ABHYASIID";
 	public static final String SECONDARY_COORDINATOR_NOTES							=	"SECONDARY_COORDINATOR_NOTES";
+	public static final String UPLOADER_DETAILS 									= 	"EXCEL_UPLOADER_DETAILS";
+	public static final String JIRA_NUMBER											=	"JIRA_NUMBER";
+	public static final String MAIL_TO_UPLOADER										=	"is successfully uploaded ";
 
 }

@@ -107,7 +107,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	@Override
 	@Transactional
 	@SuppressWarnings("static-access")
-	public ExcelUploadResponse parseAndPersistExcelFile(String fileName, byte[] fileContent, String eWelcomeIdCheckbox,String jiraIssueNumber) {
+	public ExcelUploadResponse parseAndPersistExcelFile(String fileName, byte[] fileContent, String eWelcomeIdCheckbox,String jiraIssueNumber,String email) {
 
 		LOGGER.info("Started parsing and persisting Excel file.");
 		List<String> errorResponse = new ArrayList<String>();
@@ -144,6 +144,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 						program.setCreatedSource(version.equals(ExcelType.M1_0)? PMPConstants.CREATED_SOURCE_EXCEL_VIA_MOBILE : PMPConstants.CREATED_SOURCE_EXCEL);
 						programRepository.save(program);
 						validatePreceptorIdandCoordinatorEmailIdAndPersistProgram(program, response, errorResponse); // preceptor ID card number validation
+						sendMailToUploader(jiraIssueNumber,email);
 					} catch(NullPointerException npex){
 						errorResponse.add("Excel file you are trying to upload seems to be corrupted. "
 								+ "Please copy the content into a valid excel file and re-try");	
@@ -330,6 +331,25 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	}
 
 	@Async
+	private void sendMailToUploader(String jiraIssueNumber, String email) {
+			
+			try {
+				System.out.println("send maill service");
+				if (null != email ) {
+					sendMail.sendMailToUploader(jiraIssueNumber, email);
+				}
+			} catch (AddressException e) {
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			} catch (MessagingException e) {
+				e.printStackTrace();
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
+	
+	@Async
 	private void sendMailToCoordinatorToUpdatePreceptorID(Program program) {
 		try {
 			CoordinatorEmail coordinatorEmail = new CoordinatorEmail();
@@ -433,7 +453,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			}
 		});
 		for (MultipartFile multipartFile : excelFiles) {
-			responseList.add(parseAndPersistExcelFile(multipartFile.getOriginalFilename(), multipartFile.getBytes(),eWelcomeIdCheckbox,""));
+			responseList.add(parseAndPersistExcelFile(multipartFile.getOriginalFilename(), multipartFile.getBytes(),eWelcomeIdCheckbox,"",""));
 		}
 		return responseList;
 	}
@@ -445,10 +465,10 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	 * @return List of ExcelUploadResponse
 	 */
 	@Override
-	public List<ExcelUploadResponse> parseAndPersistExcelFile(Map<String, MultipartFile> uploadedFileDetails, String eWelcomeIdCheckbox) throws IOException {
+	public List<ExcelUploadResponse> parseAndPersistExcelFile(Map<String, MultipartFile> uploadedFileDetails, String eWelcomeIdCheckbox,String email) throws IOException {
 		List<ExcelUploadResponse> responseList = new LinkedList<ExcelUploadResponse>();
 		for(Map.Entry<String, MultipartFile> file : uploadedFileDetails.entrySet()){
-			responseList.add(parseAndPersistExcelFile(file.getValue().getOriginalFilename(), file.getValue().getBytes(),eWelcomeIdCheckbox,file.getKey()));
+			responseList.add(parseAndPersistExcelFile(file.getValue().getOriginalFilename(), file.getValue().getBytes(),eWelcomeIdCheckbox,file.getKey(),email));
 		}
 		return responseList;
 	}

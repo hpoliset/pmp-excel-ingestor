@@ -1,0 +1,18 @@
+<html>
+<head>
+<title></title>
+</head>
+<body>
+<div>
+Dear Team,
+<br/>
+<div style="padding-left: 10px;">
+<p>Please note that the excel with the JIRA issue number ${JIRA_NUMBER} has been uploaded successfully.</p>
+
+<div style="font-style: italic; font-weight: bold;">
+With Regards,
+<br/>
+Heartfulness Team
+</div>
+</body>
+</html>
