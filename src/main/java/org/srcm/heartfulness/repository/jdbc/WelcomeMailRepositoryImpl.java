@@ -505,7 +505,8 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 						+ " AND pr.create_time <= CURRENT_TIMESTAMP"
 						+ " AND pr.is_ewelcome_id_informed = 0 AND "
 						+ "((pr.ewelcome_id_state='C' AND pr.welcome_card_number IS NOT NULL AND pr.welcome_card_number<>'')"
-						+ " OR (pr.ewelcome_id_state='F' AND (pr.welcome_card_number IS NULL OR pr.welcome_card_number='')))",
+						+ " OR (pr.ewelcome_id_state='F' AND (pr.welcome_card_number IS NULL OR pr.welcome_card_number='')))"
+						+ " AND p.is_ewelcome_id_generation_disabled='E'",
 						new Object[] {}, new ResultSetExtractor<Map<CoordinatorEmail, List<Participant>>>() {
 							@Override
 							public Map<CoordinatorEmail, List<Participant>> extractData(ResultSet resultSet)
@@ -570,7 +571,8 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 						"SELECT count(DISTINCT(p.program_id)) FROM program p,participant pr WHERE p.program_id = pr.program_id"
 								+ " AND pr.is_ewelcome_id_informed = 0 AND "
 								+ "((pr.ewelcome_id_state='C' AND pr.welcome_card_number IS NOT NULL AND pr.welcome_card_number<>'')"
-								+ " OR (pr.ewelcome_id_state='F' AND (pr.welcome_card_number IS NULL OR pr.welcome_card_number='')))",
+								+ " OR (pr.ewelcome_id_state='F' AND (pr.welcome_card_number IS NULL OR pr.welcome_card_number='')))"
+								+ " AND p.is_ewelcome_id_generation_disabled='E'",
 								null, Integer.class);
 
 	}
