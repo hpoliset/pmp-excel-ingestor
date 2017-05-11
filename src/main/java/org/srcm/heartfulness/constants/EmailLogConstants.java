@@ -65,6 +65,8 @@ public class EmailLogConstants {
 	public static final String SECONDARY_COORDINATOR_NOTES							=	"SECONDARY_COORDINATOR_NOTES";
 	public static final String UPLOADER_DETAILS 									= 	"EXCEL_UPLOADER_DETAILS";
 	public static final String JIRA_NUMBER											=	"JIRA_NUMBER";
-	public static final String MAIL_TO_UPLOADER										=	"is successfully uploaded ";
+	public static final String FILE_NAME											=	"FILE_NAME";
+	public static final String MAIL_TO_UPLOADER										=	"is successfully uploaded";
+	public static final String MAIL_TO_UPLOADER_1									=	"with JIRA issue number";
 
 }

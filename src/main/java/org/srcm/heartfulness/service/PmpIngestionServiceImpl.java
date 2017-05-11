@@ -144,7 +144,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 						program.setCreatedSource(version.equals(ExcelType.M1_0)? PMPConstants.CREATED_SOURCE_EXCEL_VIA_MOBILE : PMPConstants.CREATED_SOURCE_EXCEL);
 						programRepository.save(program);
 						validatePreceptorIdandCoordinatorEmailIdAndPersistProgram(program, response, errorResponse); // preceptor ID card number validation
-						sendMailToUploader(jiraIssueNumber,email);
+						sendMailToUploader(fileName,jiraIssueNumber,email);
 					} catch(NullPointerException npex){
 						errorResponse.add("Excel file you are trying to upload seems to be corrupted. "
 								+ "Please copy the content into a valid excel file and re-try");	
@@ -331,12 +331,12 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	}
 
 	@Async
-	private void sendMailToUploader(String jiraIssueNumber, String email) {
+	private void sendMailToUploader(String fileName,String jiraIssueNumber, String email) {
 			
 			try {
 				System.out.println("send maill service");
 				if (null != email ) {
-					sendMail.sendMailToUploader(jiraIssueNumber, email);
+					sendMail.sendMailToUploader(fileName,jiraIssueNumber, email);
 				}
 			} catch (AddressException e) {
 				e.printStackTrace();

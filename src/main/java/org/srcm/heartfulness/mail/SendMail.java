@@ -950,7 +950,7 @@ public class SendMail {
 		transport.close();
 	}
 	
-	public void sendMailToUploader(String jiraIssueNumber, String email) throws AddressException, MessagingException, UnsupportedEncodingException,
+	public void sendMailToUploader(String fileName,String jiraIssueNumber, String email) throws AddressException, MessagingException, UnsupportedEncodingException,
 	ParseException {
 		try {
 			Calendar cal = Calendar.getInstance();
@@ -960,13 +960,16 @@ public class SendMail {
 			String date_str = sdf.format(date);
 			addParameter(EmailLogConstants.DATE_PARAMETER, date_str);
 			addParameter(EmailLogConstants.JIRA_NUMBER, jiraIssueNumber);
+			addParameter(EmailLogConstants.FILE_NAME, fileName);
 			Session session = getSession();
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(frommail, name));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
-			//message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc));
-			//message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc2));
-			message.setSubject(uploadermailsubject + " "+ jiraIssueNumber + " " + EmailLogConstants.MAIL_TO_UPLOADER);
+			if(jiraIssueNumber !=null && !jiraIssueNumber.isEmpty()){
+				message.setSubject(uploadermailsubject + EmailLogConstants.MAIL_TO_UPLOADER_1 +" "+ jiraIssueNumber + " " + EmailLogConstants.MAIL_TO_UPLOADER);
+			}else{
+				message.setSubject(uploadermailsubject +" "+ EmailLogConstants.MAIL_TO_UPLOADER);
+			}
 			message.setContent(getMessageContentbyTemplateName(uploadermailtemplatename),
 					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 			message.setAllow8bitMIME(true);

@@ -7,7 +7,9 @@
 Dear Team,
 <br/>
 <div style="padding-left: 10px;">
-<p>Please note that the excel with the JIRA issue number ${JIRA_NUMBER} has been uploaded successfully.</p>
+<p>Please note that the excel with the following details has been uploaded successfully.</p>
+<p>File name			: ${FILE_NAME}</p>
+<p>Jira Issue number	:${JIRA_NUMBER}</P>
 
 <div style="font-style: italic; font-weight: bold;">
 With Regards,
