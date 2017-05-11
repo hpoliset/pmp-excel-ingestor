@@ -965,11 +965,10 @@ public class SendMail {
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(frommail, name));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
-			if(jiraIssueNumber !=null && !jiraIssueNumber.isEmpty()){
-				message.setSubject(uploadermailsubject + EmailLogConstants.MAIL_TO_UPLOADER_1 +" "+ jiraIssueNumber + " " + EmailLogConstants.MAIL_TO_UPLOADER);
-			}else{
-				message.setSubject(uploadermailsubject +" "+ EmailLogConstants.MAIL_TO_UPLOADER);
-			}
+			message.setSubject((jiraIssueNumber !=null  && !jiraIssueNumber.isEmpty()) ? uploadermailsubject + EmailLogConstants.MAIL_TO_UPLOADER_WITH_JIRA_SUBJECT
+					+ jiraIssueNumber + EmailLogConstants.MAIL_TO_UPLOADER_WITHOUT_JIRA_SUBJECT 
+					: uploadermailsubject + EmailLogConstants.MAIL_TO_UPLOADER_WITHOUT_JIRA_SUBJECT);
+			
 			message.setContent(getMessageContentbyTemplateName(uploadermailtemplatename),
 					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 			message.setAllow8bitMIME(true);

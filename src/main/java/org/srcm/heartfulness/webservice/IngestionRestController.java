@@ -146,7 +146,6 @@ public class IngestionRestController {
 			/*for(Map.Entry<String, MultipartFile> map : uploadedFileDetails.entrySet()){
 				System.out.println("key=="+map.getKey()+"..value=="+map.getValue().getOriginalFilename());
 			}*/
-			//return null;
 			excelUploadResponseList = pmpIngestionService.parseAndPersistExcelFile(uploadedFileDetails,eWelcomeIdCheckbox,accessLog.getUsername());
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 

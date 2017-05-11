@@ -146,7 +146,7 @@ public class ExcelIngestionValidatorImpl implements ExcelIngestionValidator {
 			excelUploadResponseList.add(new ExcelUploadResponse("",ExcelType.UNDEFINED,EventDetailsUploadConstants.FAILURE_STATUS,errorList));
 			accessLog.setErrorMessage(EventDetailsUploadConstants.MINIMUM_FILE_UPLOAD_COUNT);
 			
-		} if(uploadedExcelFiles.length != jiraIssueNumbers.length){
+		} else if(uploadedExcelFiles.length != jiraIssueNumbers.length){
 			List<String> errorList = new ArrayList<>(1);
 			errorList.add(EventDetailsUploadConstants.COUNT_MISMATCH);
 			for(MultipartFile files : uploadedExcelFiles){
