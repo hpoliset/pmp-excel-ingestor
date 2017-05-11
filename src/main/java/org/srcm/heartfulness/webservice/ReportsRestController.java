@@ -64,17 +64,17 @@ public class ReportsRestController {
 
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("Id\tprintName\tfirstName\tmiddleName\tlastName\temail\tmobilePhone\t")
-				.append("gender\tdateOfBirth\tdateOfRegistration\tlanguage\tprofession\t")
-				.append("abhyasiId\tidCardNumber\tstatus\taddressLine1\taddressLine2\tcity\tstate\tcountry\tremarks\t")
-				.append("introduced\tintroducedBy\tintroductionDate\twelcomeCardNumber\twelcomeCardDate\tageGroup\t")
-				.append("firstSittingTaken\tfirstSittingDate\tsecondSittingTaken\tsecondSittingDate\tthirdSittingTaken\tthirdSittingDate\t")
-				.append("batch\treceiveUpdates\tsyncStatus\taimsSyncTime\tuploadStatus\t")
-				.append("programId\tprogramChannel\tprogramName.\tprogramStartDate\tprogramEndDate\t")
-				.append("eventPlace\teventState\teventCity\teventCountry\t")
-				.append("organizationId\torganizationName\torganizationDepartment\torganizationWebSite\torganizationContactName\t")
-				.append("organizationContactEmail\torganizationContactMobile\t")
-				.append("preceptorName\tpreceptorIdCardNumber\twelcomeCardSignedByName\twelcomeCardSignerIdCardNumber")
+		sb.append("ParticipantName\tFirstName\tMiddleName\tLastName\tEmail\tMobilePhone\t")
+				.append("Gender\tDateOfBirth\tDateOfRegistration\tLanguage\tProfession\t")
+				.append("AbhyasiId\tIdCardNumber\tStatus\tAddressLine1\tAddressLine2\tCity\tState\tCountry\tRemarks\t")
+				.append("Introduced\tIntroducedBy\tIntroductionDate\tWelcomeCardNumber\tWelcomeCardDate\tAgeGroup\t")
+				.append("FirstSittingTaken\tFirstSittingDate\tSecondSittingTaken\tSecondSittingDate\tThirdSittingTaken\tThirdSittingDate\t")
+				.append("Batch\tReceiveUpdates\tSyncStatus\tAimsSyncTime\tUploadStatus\t")
+				.append("ProgramChannel\tProgramName.\tProgramStartDate\tProgramEndDate\t")
+				.append("EventPlace\tEventState\tEventCity\tEventCountry\t")
+				.append("OrganizationId\tOrganizationName\tOrganizationDepartment\tOrganizationWebSite\tOrganizationContactName\t")
+				.append("OrganizationContactEmail\tOrganizationContactMobile\t")
+				.append("PreceptorName\tPreceptorIdCardNumber\tWelcomeCardSignedByName\tWelcomeCardSignerIdCardNumber")
 				.append("\n");
 		
 		/*byte[] byteArray = ZipUtils.getByteArray(participants, sb);
