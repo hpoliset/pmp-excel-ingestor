@@ -59,7 +59,7 @@ public class ReportsRestController {
 			if (null != eResponse) {
 				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
 			}
-			System.out.println(reportVO.toString());
+			
 		Collection<ParticipantFullDetails> participants = reportService.getParticipants(reportVO);
 
 		StringBuilder sb = new StringBuilder();
@@ -77,6 +77,11 @@ public class ReportsRestController {
 				.append("PreceptorName\tPreceptorIdCardNumber\tWelcomeCardSignedByName\tWelcomeCardSignerIdCardNumber")
 				.append("\n");
 		
+		/*System.out.println(sb.toString());
+		for(ParticipantFullDetails p:participants){
+		System.out.println(p);
+		}*/
+		
 		/*byte[] byteArray = ZipUtils.getByteArray(participants, sb);
 		FileOutputStream fos = new FileOutputStream("D:\\test_Reports\\"+ new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss").format(new Date()) +".zip");
 		fos.write(byteArray);
@@ -87,7 +92,6 @@ public class ReportsRestController {
 		//return new ResponseEntity<byte[]>(ZipUtils.getByteArray(participants, sb),HttpStatus.OK);
 		
 		} catch (Exception ex) {
-			ex.printStackTrace();
 			Response response = new Response(ErrorConstants.STATUS_FAILED, "Internal Server error.");
 			return new ResponseEntity<Response>(response, HttpStatus.OK);
 		}

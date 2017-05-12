@@ -23,7 +23,7 @@ class FullParticipantRowCallbackHandler implements RowCallbackHandler {
 
        try {	
 
-       int programId = rs.getInt("pg.program_id");
+       //int programId = rs.getInt("pg.program_id");
        String programChannel = rs.getString("pg.program_channel");
        String programName = rs.getString("pg.program_name");
    	   Date programStartDate = rs.getDate("pg.program_start_date");   
@@ -60,7 +60,7 @@ class FullParticipantRowCallbackHandler implements RowCallbackHandler {
        String pgmCreatedBy = rs.getString("pg.created_by");
        String pgmUpdatedBy = rs.getString("pg.updated_by");
 
-       int id = rs.getInt("pr.id");
+       //int id = rs.getInt("pr.id");
        String printName = rs.getString("pr.print_name");
        String firstName = rs.getString("pr.first_name");
        String lastName = rs.getString("pr.last_name");
@@ -104,7 +104,7 @@ class FullParticipantRowCallbackHandler implements RowCallbackHandler {
        //String department = rs.getString("pr.gender");
        String language = rs.getString("pr.language");
        
-       participant.setProgramId(programId);
+       //participant.setProgramId(programId);
        //participant.setProgramChannelId(programChannelId);
        participant.setProgramName(programName);
        participant.setProgramChannel(programChannel);
@@ -140,7 +140,7 @@ class FullParticipantRowCallbackHandler implements RowCallbackHandler {
        participant.setPgmCreatedBy(pgmCreatedBy);
        participant.setPgmUpdatedBy(pgmUpdatedBy);
        
-       participant.setId(id);
+       //participant.setId(id);
        participant.setPrintName(printName);
        participant.setFirstName(firstName);
        participant.setMiddleName(middleName);
