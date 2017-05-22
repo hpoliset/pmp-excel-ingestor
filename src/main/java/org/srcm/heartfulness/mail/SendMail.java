@@ -81,8 +81,6 @@ public class SendMail {
 	private String welcomemailtemplatename;
 	private String welcomemailbcc;
 	private String welcomemailbcc2;
-	private String uploadermailsubject;
-	private String uploadermailtemplatename;
 
 	public static class ProcessExecution {
 
@@ -430,21 +428,6 @@ public class SendMail {
 
 	public void setWelcomemailbcc2(String welcomemailbcc2) {
 		this.welcomemailbcc2 = welcomemailbcc2;
-	}
-	public String getUploadermailsubject() {
-		return uploadermailsubject;
-	}
-
-	public void setUploadermailsubject(String uploadermailsubject) {
-		this.uploadermailsubject = uploadermailsubject;
-	}
-
-	public String getUploadermailtemplatename() {
-		return uploadermailtemplatename;
-	}
-
-	public void setUploadermailtemplatename(String uploadermailtemplatename) {
-		this.uploadermailtemplatename = uploadermailtemplatename;
 	}
 
 	@Autowired
