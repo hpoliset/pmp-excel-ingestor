@@ -499,7 +499,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 												try {
 													coordinatorAccessControlMail.sendMailToPreceptorToUpdateCoordinatorEmailID(coordinator);
 												} catch (Exception ex) {
-													LOGGER.error("Error while sending email to the coordinator - {} ",program.getCoordinatorEmail());
+													LOGGER.error("Error while sending email to the preceptor - {} ",program.getCoordinatorEmail());
 												}
 											}
 										};

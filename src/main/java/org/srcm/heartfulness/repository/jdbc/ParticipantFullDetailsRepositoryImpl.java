@@ -93,7 +93,7 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 		FullParticipantRowCallbackHandler rowCallbackHandler = new FullParticipantRowCallbackHandler();
 
 		jdbcTemplate.query("select "
-				+ "pg.program_id,"
+				//+ "pg.program_id,"
 				+ "pg.program_channel, "
 				+"pg.program_name, "
 				// "pg.program_channel_id, " +
@@ -113,7 +113,7 @@ public class ParticipantFullDetailsRepositoryImpl implements ParticipantFullDeta
 				"pg.batch_processed_time, " + "pg.create_time, " + "pg.update_time, " + "pg.created_by, "
 				+ "pg.updated_by, " +
 
-				"pr.id, " + "pr.excel_sheet_sequence_number, " + "pr.print_name, " + "pr.first_name, "
+				/*"pr.id, " +*/ "pr.excel_sheet_sequence_number, " + "pr.print_name, " + "pr.first_name, "
 				+ "pr.last_name, " + "pr.middle_name, " + "pr.email, " + "pr.mobile_phone, " + "pr.gender, "
 				+ "pr.date_of_birth, " + "pr.date_of_registration, " + "pr.abhyasi_id, " + "pr.status, " +
 

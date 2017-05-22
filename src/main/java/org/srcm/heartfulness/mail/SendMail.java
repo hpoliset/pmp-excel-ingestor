@@ -932,4 +932,5 @@ public class SendMail {
 		transport.send(message);
 		transport.close();
 	}
+	
 }

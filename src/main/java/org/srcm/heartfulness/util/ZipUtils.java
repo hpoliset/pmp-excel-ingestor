@@ -34,7 +34,6 @@ public class ZipUtils {
 		zos.closeEntry();
 		zos.close();
 		baos.close();
-		
 		return baos.toByteArray();
 	 }
 }
