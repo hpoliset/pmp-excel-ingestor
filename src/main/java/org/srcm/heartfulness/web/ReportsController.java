@@ -102,7 +102,7 @@ public class ReportsController {
 			@RequestParam(required = false) String channel, @RequestParam(required = false) String fromDate,
 			@RequestParam(required = false) String tillDate, @RequestParam(required = false) String city,
 			@RequestParam(required = false) String state, @RequestParam(required = false) String country)
-			throws IOException {
+					throws IOException {
 
 		ReportVO reportVO = new ReportVO();
 		ZipUtils zipUtils = new ZipUtils();
@@ -120,7 +120,7 @@ public class ReportsController {
 
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("Id\tprintName\tfirstName\tmiddleName\tlastName\temail\tmobilePhone\t")
+		/*sb.append("Id\tprintName\tfirstName\tmiddleName\tlastName\temail\tmobilePhone\t")
 				.append("gender\tdateOfBirth\tdateOfRegistration\tlanguage\tprofession\t")
 				.append("abhyasiId\tidCardNumber\tstatus\taddressLine1\taddressLine2\tcity\tstate\tcountry\tremarks\t")
 				.append("introduced\tintroducedBy\tintroductionDate\twelcomeCardNumber\twelcomeCardDate\tageGroup\t")
@@ -131,7 +131,20 @@ public class ReportsController {
 				.append("organizationId\torganizationName\torganizationDepartment\torganizationWebSite\torganizationContactName\t")
 				.append("organizationContactEmail\torganizationContactMobile\t")
 				.append("preceptorName\tpreceptorIdCardNumber\twelcomeCardSignedByName\twelcomeCardSignerIdCardNumber")
-				.append("\n");
+				.append("\n");*/
+
+		sb.append("ParticipantName\tFirstName\tMiddleName\tLastName\tEmail\tMobilePhone\t")
+		.append("Gender\tDateOfBirth\tDateOfRegistration\tLanguage\tProfession\t")
+		.append("AbhyasiId\tIdCardNumber\tStatus\tAddressLine1\tAddressLine2\tCity\tState\tCountry\tRemarks\t")
+		.append("Introduced\tIntroducedBy\tIntroductionDate\tWelcomeCardNumber\tWelcomeCardDate\tAgeGroup\t")
+		.append("FirstSittingTaken\tFirstSittingDate\tSecondSittingTaken\tSecondSittingDate\tThirdSittingTaken\tThirdSittingDate\t")
+		.append("Batch\tReceiveUpdates\tSyncStatus\tAimsSyncTime\tUploadStatus\t")
+		.append("ProgramChannel\tProgramName.\tProgramStartDate\tProgramEndDate\t")
+		.append("EventPlace\tEventState\tEventCity\tEventCountry\t")
+		.append("OrganizationId\tOrganizationName\tOrganizationDepartment\tOrganizationWebSite\tOrganizationContactName\t")
+		.append("OrganizationContactEmail\tOrganizationContactMobile\t")
+		.append("PreceptorName\tPreceptorIdCardNumber\tWelcomeCardSignedByName\tWelcomeCardSignerIdCardNumber")
+		.append("\n");
 
 		response.reset();
 		response.setContentType("application/zip");

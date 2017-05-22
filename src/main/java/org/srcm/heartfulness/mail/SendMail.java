@@ -950,43 +950,4 @@ public class SendMail {
 		transport.close();
 	}
 	
-	public void sendMailToUploader(String fileName,String jiraIssueNumber, String email) throws AddressException, MessagingException, UnsupportedEncodingException,
-	ParseException {
-		try {
-			Calendar cal = Calendar.getInstance();
-			cal.add(Calendar.DATE, -1);
-			SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
-			Date date = new Date();
-			String date_str = sdf.format(date);
-			addParameter(EmailLogConstants.DATE_PARAMETER, date_str);
-			addParameter(EmailLogConstants.JIRA_NUMBER, jiraIssueNumber);
-			addParameter(EmailLogConstants.FILE_NAME, fileName);
-			Session session = getSession();
-			SMTPMessage message = new SMTPMessage(session);
-			message.setFrom(new InternetAddress(frommail, name));
-			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
-			message.setSubject((jiraIssueNumber !=null  && !jiraIssueNumber.isEmpty()) ? uploadermailsubject + EmailLogConstants.MAIL_TO_UPLOADER_WITH_JIRA_SUBJECT
-					+ jiraIssueNumber + EmailLogConstants.MAIL_TO_UPLOADER_WITHOUT_JIRA_SUBJECT 
-					: uploadermailsubject + EmailLogConstants.MAIL_TO_UPLOADER_WITHOUT_JIRA_SUBJECT);
-			
-			message.setContent(getMessageContentbyTemplateName(uploadermailtemplatename),
-					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
-			message.setAllow8bitMIME(true);
-			message.setSentDate(new Date());
-			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
-			Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
-			transport.send(message);
-			transport.close();
-			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(0), email,
-					EmailLogConstants.UPLOADER_DETAILS, EmailLogConstants.STATUS_SUCCESS, null);
-			mailLogRepository.createMailLog(pmpMailLog);
-
-		} catch (MessagingException | UnsupportedEncodingException e) {
-			LOGGER.error("Sending Mail Failed : {} " + e.getMessage());
-			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), email,
-					EmailLogConstants.FTP_UPLOAD_DETAILS, EmailLogConstants.STATUS_FAILED,
-					StackTraceUtils.convertStackTracetoString(e));
-			mailLogRepository.createMailLog(pmpMailLog);
-		}
-	}
 }

@@ -77,11 +77,6 @@ public class ReportsRestController {
 				.append("PreceptorName\tPreceptorIdCardNumber\tWelcomeCardSignedByName\tWelcomeCardSignerIdCardNumber")
 				.append("\n");
 		
-		/*System.out.println(sb.toString());
-		for(ParticipantFullDetails p:participants){
-		System.out.println(p);
-		}*/
-		
 		/*byte[] byteArray = ZipUtils.getByteArray(participants, sb);
 		FileOutputStream fos = new FileOutputStream("D:\\test_Reports\\"+ new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss").format(new Date()) +".zip");
 		fos.write(byteArray);
