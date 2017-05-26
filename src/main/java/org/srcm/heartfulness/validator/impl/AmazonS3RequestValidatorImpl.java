@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import org.srcm.heartfulness.constants.ErrorConstants;
+import org.srcm.heartfulness.constants.TokenValidationConstants;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.User;
@@ -354,7 +355,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 		try {
 			userProfile = eventDashboardValidator.validateToken(token, accessLog.getId());
 		} catch (HttpClientErrorException e) {
-			eResponse.setDescription(ErrorConstants.INVALID_AUTH_TOKEN);
+			eResponse.setDescription(TokenValidationConstants.INVALID_CLIENT_CREDENTIALS);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -362,7 +363,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (JsonParseException | JsonMappingException e) {
-			eResponse.setDescription(ErrorConstants.ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM);
+			eResponse.setDescription(TokenValidationConstants.ERROR_PROFILE);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -378,7 +379,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (IOException | ParseException e) {
-			eResponse.setDescription(ErrorConstants.ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM);
+			eResponse.setDescription(TokenValidationConstants.ERROR_PROFILE);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -386,7 +387,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			return eResponse;
 		} catch (Exception e) {
-			eResponse.setDescription(ErrorConstants.ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM);
+			eResponse.setDescription(TokenValidationConstants.INVALID_REQUEST);
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(eResponse.toString());
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
@@ -418,8 +419,7 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			if (null == program || 0 == program.getProgramId()) {
 				errors.put("eventId", "Invalid Event Id");
 			} else if (null == sessionId || sessionId.isEmpty()) {
-				int sessionDetailsId = sessionDetailsService.getSessionDetailsIdBySessionIdandProgramId(sessionId,
-						program.getProgramId());
+				int sessionDetailsId = sessionDetailsService.getSessionDetailsIdBySessionIdandProgramId(sessionId,program.getProgramId());
 				if (0 == sessionDetailsId) {
 					errors.put("sessionId", "Invalid Session Id");
 				} else if (0 == sessionDetailsService.getCountOfSessionImages(sessionDetailsId)) {

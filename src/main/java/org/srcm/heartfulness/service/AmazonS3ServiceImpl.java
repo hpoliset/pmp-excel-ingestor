@@ -85,28 +85,22 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 						accessLog.getUsername());
 				programRepository.saveProgramPermissionLetterDetails(programPermissionLetterdetails);
 
-				response = new Response(ErrorConstants.STATUS_SUCCESS, "Successfully uploaded "
-						+ multipartFile.getOriginalFilename());
+				response = new Response(ErrorConstants.STATUS_SUCCESS, "Successfully uploaded " + multipartFile.getOriginalFilename());
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-				accessLog
-						.setResponseBody(StackTraceUtils.convertPojoToJson(StackTraceUtils.convertPojoToJson(response)));
+				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(StackTraceUtils.convertPojoToJson(response)));
 				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 				listOfResponse.add(response);
 			} catch (HttpClientErrorException cee) {
 				LOGGER.error("HttpClientErrorException occured while uploading file. Exception : {}", cee);
-				response = new Response(ErrorConstants.STATUS_FAILED, "Failed to upload "
-						+ multipartFile.getOriginalFilename());
+				response = new Response(ErrorConstants.STATUS_FAILED, "Failed to upload "+ multipartFile.getOriginalFilename());
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(cee));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
 				apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 				listOfResponse.add(response);
 			} catch (InvalidKeyException | NoSuchAlgorithmException | IllegalStateException ex) {
-				LOGGER.error(
-						"Exception occured while uploading file. Problem while generating signature.  Exception : {}",
-						ex);
-				response = new Response(ErrorConstants.STATUS_FAILED, "Failed to upload "
-						+ multipartFile.getOriginalFilename());
+				LOGGER.error("Exception occured while uploading file. Problem while generating signature.  Exception : {}",ex);
+				response = new Response(ErrorConstants.STATUS_FAILED, "Failed to upload " + multipartFile.getOriginalFilename());
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
@@ -114,8 +108,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 				listOfResponse.add(response);
 			} catch (IOException ioe) {
 				LOGGER.error("IO Exception occured while uploading file. Exception : {}", ioe);
-				response = new Response(ErrorConstants.STATUS_FAILED, "Failed to upload "
-						+ multipartFile.getOriginalFilename());
+				response = new Response(ErrorConstants.STATUS_FAILED, "Failed to upload " + multipartFile.getOriginalFilename());
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ioe));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
@@ -123,8 +116,7 @@ public class AmazonS3ServiceImpl implements AmazonS3Service {
 				listOfResponse.add(response);
 			} catch (Exception ex) {
 				LOGGER.error("Exception occured while uploading file. Exception : {}", ex);
-				response = new Response(ErrorConstants.STATUS_FAILED, "Internal Server Error : Failed to upload "
-						+ multipartFile.getOriginalFilename());
+				response = new Response(ErrorConstants.STATUS_FAILED, "Failed to upload " + multipartFile.getOriginalFilename());
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
 				accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
