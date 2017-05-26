@@ -216,7 +216,12 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 					+ "organization_decision_maker_phone_no=:organizationDecisionMakerPhoneNo, "
 					+ "is_ewelcome_id_generation_disabled=:isEwelcomeIdGenerationDisabled, "
 					+ "jira_issue_number=:jiraIssueNumber, "
-					+ "senders_email_address=:sendersEmailAddress "
+					+ "senders_email_address=:sendersEmailAddress, "
+					+ "batch_description=:batchDescription, "
+					+ "program_address=:programAddress, "
+					+ "program_district=:programDistrict, "
+					+ "organization_contact_designation=:organizationContactDesignation, "
+					+ "program_channel_type=:programChannelType "
 					+ "WHERE program_id=:programId",
 					parameterSource);
 		}
@@ -1172,7 +1177,10 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 				+ "p.organization_name,p.organization_web_site,p.organization_contact_name,"
 				+ "p.organization_contact_email,p.organization_contact_mobile,p.preceptor_name,"
 				+ "p.preceptor_id_card_number,p.welcome_card_signed_by_name,p.welcome_card_signer_Id_card_number,"
-				+ "p.remarks,p.auto_generated_event_id,p.auto_generated_intro_id,p.jira_issue_number "
+				+ "p.remarks,p.auto_generated_event_id,p.auto_generated_intro_id,p.jira_issue_number, "
+				+ "p.batch_description,p.program_channel_type,p.program_address,p.program_district,p.program_zone,"
+				+ "p.program_center,p.organization_contact_name,p.organization_contact_designation,p.organization_contact_email,"
+				+ "p.organization_contact_mobile,p.coordinator_abhyasi_id,p.coordinator_name,p.coordinator_email,p.coordinator_mobile "
 				+ "FROM program p LEFT JOIN program_coordinators pc "
 				+ " ON p.program_id = pc.program_id "
 				+ (whereCondition.length() > 0 ? " WHERE " +  whereCondition : "")
@@ -1267,7 +1275,7 @@ public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequ
 		Map<String, Object> params = new HashMap<>();
 		
 		if (!("ALL".equals(searchRequest.getSearchField())) && null != searchRequest.getSearchField()
-				&& !searchRequest.getSearchField().isEmpty()) {
+				/*&& !searchRequest.getSearchField().isEmpty()*/) {
 			if (null != searchRequest.getSearchText() && !searchRequest.getSearchText().isEmpty()) {
 				whereCondition.append(whereCondition.length() > 0 ? " AND p." + searchRequest.getSearchField()
 				+ " LIKE '%" + searchRequest.getSearchText() + "%'" : "p."+searchRequest.getSearchField()
@@ -1329,7 +1337,10 @@ public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequ
 						+ " p.program_name,p.program_start_date,p.program_end_date, "
 						+ " p.coordinator_name,p.coordinator_email,p.coordinator_mobile,"
 						+ " p.event_place,p.event_city,p.event_state,p.event_country,p.organization_name,"
-						+ " p.organization_department,p.preceptor_name,p.preceptor_id_card_number,p.jira_issue_number"
+						+ " p.organization_department,p.preceptor_name,p.preceptor_id_card_number,p.jira_issue_number,"
+						+ "p.batch_description,p.program_channel_type,p.program_address,p.program_district,p.program_zone,"
+						+ "p.program_center,p.organization_contact_name,p.organization_contact_designation,p.organization_contact_email,"
+						+ "p.organization_contact_mobile,p.coordinator_abhyasi_id,p.coordinator_name,p.coordinator_email,p.coordinator_mobile "
 						+ " FROM program p LEFT JOIN program_coordinators pc"
 						+ " ON p.program_id = pc.program_id "
 						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : "")

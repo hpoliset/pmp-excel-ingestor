@@ -26,6 +26,7 @@ import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.SessionDetailsService;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
+import org.srcm.heartfulness.validator.PMPAuthTokenValidator;
 import org.srcm.heartfulness.validator.SessionDetailsValidator;
 
 /**
@@ -43,6 +44,9 @@ public class SessionDetailsController {
 
 	@Autowired
 	SessionDetailsValidator sessionDtlsValidator;
+
+	@Autowired
+	PMPAuthTokenValidator authTokenVldtr;
 
 	@Autowired
 	APIAccessLogService apiAccessLogService;
@@ -71,16 +75,19 @@ public class SessionDetailsController {
 	 *         successfully.
 	 * 
 	 */
-	@RequestMapping(value = "/session", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/session",
+			method = RequestMethod.POST, 
+			consumes = MediaType.APPLICATION_JSON_VALUE, 
+			produces = MediaType.APPLICATION_JSON_VALUE)
+
 	public ResponseEntity<?> createOrUpdateSessionDetails(@RequestHeader(value = "Authorization") String authToken,
 			@RequestBody SessionDetails sessionDetails, @Context HttpServletRequest httpRequest) {
 
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-				StackTraceUtils.convertPojoToJson(sessionDetails));
-		apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		//save request details in PMP
+		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,StackTraceUtils.convertPojoToJson(sessionDetails));
 
-		PMPResponse tokenResponse = sessionDtlsValidator.validateAuthToken(authToken, accessLog);
+		//validate token details
+		PMPResponse tokenResponse = authTokenVldtr.validateAuthToken(authToken, accessLog);
 		if (tokenResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(tokenResponse, HttpStatus.OK);
 		}
@@ -94,35 +101,21 @@ public class SessionDetailsController {
 
 		if (serviceResponse instanceof SuccessResponse) {
 
-			accessLog.setErrorMessage("");
-			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
-			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(sessionDetails));
-			if (((SuccessResponse) serviceResponse).getSuccess_description().equals(
-					ErrorConstants.SESSION_SUCCESSFULLY_CREATED)) {
-				try {
-					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-				} catch (Exception ex) {
-					LOGGER.error("Exception while updating logger {}", ex);
-				}
+			if (((SuccessResponse) serviceResponse).getSuccess_description().equals(ErrorConstants.SESSION_SUCCESSFULLY_CREATED)) {
+
+				updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS,null, StackTraceUtils.convertPojoToJson(sessionDetails));
 				return new ResponseEntity<SessionDetails>(sessionDetails, HttpStatus.OK);
-			} else if (((SuccessResponse) serviceResponse).getSuccess_description().equals(
-					ErrorConstants.SESSION_SUCCESSFULLY_UPDATED)) {
-				try {
-					apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-				} catch (Exception ex) {
-					LOGGER.error("Exception while updating logger {}", ex);
-				}
+
+			} else if (((SuccessResponse) serviceResponse).getSuccess_description().equals(ErrorConstants.SESSION_SUCCESSFULLY_UPDATED)) {
+
+				updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS,null, StackTraceUtils.convertPojoToJson(sessionDetails));
 				return new ResponseEntity<PMPResponse>(serviceResponse, HttpStatus.OK);
+
 			}
 
 		}
 
-		accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-		accessLog.setErrorMessage(StackTraceUtils.convertPojoToJson(serviceResponse));
-		accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(serviceResponse));
-		apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-
+		updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS,StackTraceUtils.convertPojoToJson(serviceResponse), StackTraceUtils.convertPojoToJson(serviceResponse));
 		return new ResponseEntity<PMPResponse>(serviceResponse, HttpStatus.OK);
 	}
 
@@ -147,16 +140,19 @@ public class SessionDetailsController {
 	 * @return Success response if Session details is successfully deleted.
 	 * 
 	 */
-	@RequestMapping(value = "/session/delete", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/session/delete", 
+			method = RequestMethod.DELETE, 
+			consumes = MediaType.APPLICATION_JSON_VALUE, 
+			produces = MediaType.APPLICATION_JSON_VALUE)
+
 	public ResponseEntity<?> deleteSessionDetails(@RequestHeader(value = "Authorization") String authToken,
 			@RequestBody SessionDetails sessionDetails, @Context HttpServletRequest httpRequest) {
 
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-				StackTraceUtils.convertPojoToJson(sessionDetails));
-		apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		//save request details in PMP
+		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,StackTraceUtils.convertPojoToJson(sessionDetails));
 
-		PMPResponse tokenResponse = sessionDtlsValidator.validateAuthToken(authToken, accessLog);
+		//validate token details
+		PMPResponse tokenResponse = authTokenVldtr.validateAuthToken(authToken, accessLog);
 		if (tokenResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(tokenResponse, HttpStatus.OK);
 		}
@@ -175,10 +171,7 @@ public class SessionDetailsController {
 			accessLog.setErrorMessage(StackTraceUtils.convertPojoToJson(serviceResponse));
 		}
 
-		accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-		accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(serviceResponse));
-		apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-
+		updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS,accessLog.getErrorMessage(), StackTraceUtils.convertPojoToJson(serviceResponse));
 		return new ResponseEntity<PMPResponse>(serviceResponse, HttpStatus.OK);
 	}
 
@@ -202,18 +195,21 @@ public class SessionDetailsController {
 	 * @return list of SessionDetails for a particular event.
 	 * 
 	 */
-	@RequestMapping(value = "/session/sessionlist", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/session/sessionlist", 
+			method = RequestMethod.POST, 
+			consumes = MediaType.APPLICATION_JSON_VALUE, 
+			produces = MediaType.APPLICATION_JSON_VALUE)
+
 	public ResponseEntity<?> getSessionDetails(@RequestHeader(value = "Authorization") String authToken,
 			@RequestBody SessionDetails sessionDetails, @Context HttpServletRequest httpRequest) {
 
-		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
-				StackTraceUtils.convertPojoToJson(sessionDetails));
-		apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		//save request details in PMP
+		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,StackTraceUtils.convertPojoToJson(sessionDetails));
 
-		PMPResponse tokenResponse = sessionDtlsValidator.validateAuthToken(authToken, accessLog);
-		if (tokenResponse instanceof ErrorResponse) {
-			return new ResponseEntity<PMPResponse>(tokenResponse, HttpStatus.OK);
+		//validate token details
+		PMPResponse pmpResponse = authTokenVldtr.validateAuthToken(authToken, accessLog);
+		if(pmpResponse instanceof ErrorResponse){
+			return new ResponseEntity<PMPResponse>(pmpResponse, HttpStatus.OK);
 		}
 
 		PMPResponse validationResponse = sessionDtlsValidator.validateGetSessionDetailsParams(sessionDetails, accessLog);
@@ -224,12 +220,29 @@ public class SessionDetailsController {
 		List<SessionDetails> sessionDtlsList = sessionDtlsSrcv.getSessionDetails(sessionDetails.getProgramId(),
 				sessionDetails.getEventId());
 
-		accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
-		accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-		accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(sessionDtlsList));
-		apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 
+		updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS,accessLog.getErrorMessage(), StackTraceUtils.convertPojoToJson(sessionDtlsList));
 		return new ResponseEntity<List<SessionDetails>>(sessionDtlsList, HttpStatus.OK);
+	}
+
+
+	private PMPAPIAccessLog createPMPAPIAccessLog(String username,HttpServletRequest httpRequest,String requestBody){
+
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(username, httpRequest.getRemoteAddr(), 
+				httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(), null, 
+				ErrorConstants.STATUS_FAILED, null,requestBody);
+		apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		return accessLog;
+	}
+
+
+	private void updatePMPAPIAccessLog(PMPAPIAccessLog pmpApiAccessLog, String status, String errorMessage, String responseBody){
+
+		pmpApiAccessLog.setStatus(status);
+		pmpApiAccessLog.setErrorMessage(errorMessage);
+		pmpApiAccessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+		pmpApiAccessLog.setResponseBody(responseBody);
+		apiAccessLogService.updatePmpAPIAccessLog(pmpApiAccessLog);
 	}
 
 }

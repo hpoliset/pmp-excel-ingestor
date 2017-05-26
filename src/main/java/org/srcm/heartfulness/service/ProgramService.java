@@ -354,8 +354,7 @@ public interface ProgramService {
 	 * @throws JsonMappingException
 	 * @throws IOException
 	 */
-	public void createOrUpdateProgram(Event event, int id) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException;
+	public void createOrUpdateProgram(Event event, int id);
 	
     
     /**

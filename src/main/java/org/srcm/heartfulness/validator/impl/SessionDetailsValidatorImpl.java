@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.EndpointConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
+import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 import org.srcm.heartfulness.model.SessionDetails;
@@ -69,7 +70,7 @@ public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 	 *            to persist the api log details.
 	 * @return PMPResponse success or failure response
 	 */
-	@Override
+	/*@Override
 	public PMPResponse validateAuthToken(String authToken, PMPAPIAccessLog accessLog) {
 
 		ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "");
@@ -120,7 +121,7 @@ public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 					"Token validation successfull");
 			return sResponse;
 		}
-	}
+	}*/
 
 	/**
 	 * Method is used to set the PMP API access log details.
@@ -222,6 +223,27 @@ public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 			return eResponse;
 		}
 
+		if (null == sessionDetails.getPreceptorEmail() || sessionDetails.getPreceptorEmail().isEmpty()) {
+			eResponse.setError_description(ErrorConstants.EMPTY_PRECEPTOR_EMAIL);
+			accessLog.setErrorMessage(ErrorConstants.EMPTY_PRECEPTOR_EMAIL);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
+			return eResponse;
+		}else if(!sessionDetails.getPreceptorEmail().matches(ExpressionConstants.EMAIL_REGEX)){
+			eResponse.setError_description(ErrorConstants.INVALID_PRECEPTOR_EMAIL);
+			accessLog.setErrorMessage(ErrorConstants.INVALID_PRECEPTOR_EMAIL);
+			setPMPAccessLogAndPersist(accessLog, eResponse);
+			return eResponse;
+		}
+
+		if(null != sessionDetails.getPreceptorMobile()){
+			if(!sessionDetails.getPreceptorMobile().isEmpty() && !sessionDetails.getPreceptorMobile().matches(ExpressionConstants.MOBILE_REGEX)){
+				eResponse.setError_description(ErrorConstants.INVALID_PRECEPTOR_MOBILE);
+				accessLog.setErrorMessage(ErrorConstants.INVALID_PRECEPTOR_MOBILE);
+				setPMPAccessLogAndPersist(accessLog, eResponse);
+				return eResponse;
+			}
+		}
+
 		String preceptorCardNo = sessionDetails.getPreceptorIdCardNo();
 		if (null == preceptorCardNo || preceptorCardNo.isEmpty()) {
 			eResponse.setError_description(ErrorConstants.EMPTY_PRECEPTOR_ID_CARD_NO);
@@ -247,7 +269,7 @@ public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 					setPMPAccessLogAndPersist(accessLog, eResponse);
 					return eResponse;
 				}
-				if (null == sessionDetails.getPreceptorName()) {
+				if (null == sessionDetails.getPreceptorName() || sessionDetails.getPreceptorName().isEmpty()) {
 					sessionDetails.setPreceptorName(userProfile.getName());
 				}
 			} catch (HttpClientErrorException httpcee) {

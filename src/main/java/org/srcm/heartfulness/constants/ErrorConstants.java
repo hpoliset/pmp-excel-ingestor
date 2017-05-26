@@ -32,6 +32,9 @@ public class ErrorConstants {
 	public static final String INVALID_NEW_PCTPT_COUNT 								= 	"Please enter a valid count for new participants";
 	public static final String EMPTY_PRECEPTOR_ID_CARD_NO 							= 	"Preceptor Id card number cannot be empty";
 	public static final String INVALID_PRECEPTOR_ID_CARD_NO 						= 	"Please enter a valid Preceptor Id card number";
+	public static final String EMPTY_PRECEPTOR_EMAIL 								= 	"Preceptor email address cannot be empty";
+	public static final String INVALID_PRECEPTOR_EMAIL 								= 	"Please enter a valid Preceptor email address";
+	public static final String INVALID_PRECEPTOR_MOBILE 							= 	"Please enter a valid Preceptor mobile number";
 	public static final String SESSION_SUCCESSFULLY_CREATED 						= 	"Session Details has been successfully created";
 	public static final String SESSION_SUCCESSFULLY_UPDATED 						= 	"Session Details has been successfully updated";
 	public static final String SESSION_CREATION_FAILED 								= 	"Failed to save session details";

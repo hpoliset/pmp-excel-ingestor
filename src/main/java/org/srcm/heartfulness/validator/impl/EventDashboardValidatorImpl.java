@@ -17,6 +17,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.constants.ErrorConstants;
+import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.enumeration.IssueeWelcomeId;
@@ -200,9 +201,42 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	@Override
 	public Map<String, String> checkMandatoryEventFields(Event event) {
 		Map<String, String> errors = new HashMap<>();
-
+		
+		if (null == event.getBatchDescription() || event.getBatchDescription().isEmpty()) {
+			errors.put("batchDescription", "Batch description is required");
+		}
+		if (null == event.getProgramChannel() || event.getProgramChannel().isEmpty()) {
+			errors.put("programChannel", "Program channel is required");
+		}
+		if (null == event.getProgramChannelType() || event.getProgramChannelType().isEmpty()) {
+			errors.put("programChannelType", "Program channel type is required");
+		}
+		if (null == event.getOrganizationName() || event.getOrganizationName().isEmpty()) {
+			errors.put("organizationName", "Organization name is required");
+		}
+		if (null == event.getEventPlace() || event.getEventPlace().isEmpty()) {
+			errors.put("eventPlace", "Event place is required");
+		}
+		if (null == event.getEventCity() || event.getEventCity().isEmpty()) {
+			errors.put("eventCity", "Event city is required");
+		}
+		if (null == event.getProgramDistrict() || event.getProgramDistrict().isEmpty()) {
+			errors.put("programDistrict", "Program district is required");
+		}
+		if (null == event.getEventState() || event.getEventState().isEmpty()) {
+			errors.put("eventState", "Event state is required");
+		}
+		if (null == event.getEventCountry() || event.getEventCountry().isEmpty()) {
+			errors.put("eventCountry", "Event country is required");
+		}
+		if(null == event.getProgramZone() || event.getProgramZone().isEmpty()){
+			errors.put("programZone", "Program zone is required");
+		}
+		if(null == event.getProgramCenter() || event.getProgramCenter().isEmpty()){
+			errors.put("programCenter", "Program center is required");
+		}
 		if (null == event.getProgramStartDate()) {
-			errors.put("programStartDate", "Program Start Date is required");
+			errors.put("programStartDate", "Program start date is required");
 		} else {
 			
 			if (!event.getProgramStartDate().matches(ExpressionConstants.DATE_REGEX)) {
@@ -230,22 +264,24 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				errors.put("programEndDate", "Invalid date format,correct format is dd-MM-yyyy");
 			}
 		}
-
-		if (null == event.getEventPlace() || event.getEventPlace().isEmpty()) {
-			errors.put("eventPlace", "Event place is required");
+		if (null == event.getOrganizationContactName() || event.getOrganizationContactName().isEmpty()) {
+			errors.put("organizationContactName", "Organization contact name is required");
 		}
-		if (null == event.getEventCity() || event.getEventCity().isEmpty()) {
-			errors.put("eventCity", "Event city is required");
+		if (null == event.getOrganizationContactEmail() || event.getOrganizationContactEmail().isEmpty()) {
+			errors.put("organizationContactEmail", "Organization contact email is required");
+		} else if (!event.getOrganizationContactEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
+			errors.put("organizationContactEmail", "Organization contact person email is invalid");
 		}
-		if (null == event.getEventState() || event.getEventState().isEmpty()) {
-			errors.put("eventState", "Event state is required");
+		if (null == event.getOrganizationContactMobile() || event.getOrganizationContactMobile().isEmpty()) {
+			errors.put("organizationContactMobile", "Organization contact mobile is required");
+		} else if (!event.getOrganizationContactMobile().matches(ExpressionConstants.MOBILE_REGEX)) {
+			errors.put("organizationContactMobile", "Organization contact person mobile number is invalid");
 		}
-		if (null == event.getEventCountry() || event.getEventCountry().isEmpty()) {
-			errors.put("eventCountry", "Event country is required");
-		}
-
 		if (null == event.getCoordinatorName() || event.getCoordinatorName().isEmpty()) {
 			errors.put("coordinatorName", "Coordinator name is required");
+		}
+		if (null == event.getCoordinatorAbhyasiId() || event.getCoordinatorAbhyasiId().isEmpty()) {
+			errors.put("coordinatorAbhyasiId", "Coordinator abhyasi Id is required");
 		}
 		if (null == event.getCoordinatorEmail() || event.getCoordinatorEmail().isEmpty()) {
 			errors.put("coordinatorEmail", "Coordinator email is required");
@@ -257,26 +293,18 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		} else if (!event.getCoordinatorMobile().matches(ExpressionConstants.MOBILE_REGEX)) {
 			errors.put("coordinatorMobile", "Coordinator mobile number is invalid");
 		}
-
-		if (null == event.getOrganizationName() || event.getOrganizationName().isEmpty()) {
-			errors.put("organizationName", "Organization name is required");
+		if (null == event.getPreceptorIdCardNumber() || event.getPreceptorIdCardNumber().isEmpty()) {
+			errors.put("preceptorIdCardNumber", "Preceptor Id card number is required");
 		}
-		if (null == event.getOrganizationContactName() || event.getOrganizationContactName().isEmpty()) {
-			errors.put("organizationContactName", "Organization contact name is required");
-		}
-		if (null == event.getOrganizationContactMobile() || event.getOrganizationContactMobile().isEmpty()) {
-			errors.put("organizationContactMobile", "Organization contact mobile is required");
-		} else if (!event.getOrganizationContactMobile().matches(ExpressionConstants.MOBILE_REGEX)) {
-			errors.put("organizationContactMobile", "Organization contact person mobile number is invalid");
+		if(null == event.getIsEwelcomeIdGenerationDisabled() || event.getIsEwelcomeIdGenerationDisabled().isEmpty()){
+			errors.put("isEwelcomeIdgenerationDisabled", "eWelcome Id generation status is required");
+		}else if(!event.getIsEwelcomeIdGenerationDisabled().equals(EventDetailsUploadConstants.EWELCOME_ID_ENABLED_STATE)){
+			if(!event.getIsEwelcomeIdGenerationDisabled().equals(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE)){
+				errors.put("isEwelcomeIdgenerationDisabled", "eWelcome Id generation status can only be E or D ");
+			}
 		}
 
-		if (null == event.getOrganizationContactEmail() || event.getOrganizationContactEmail().isEmpty()) {
-			errors.put("organizationContactEmail", "Organization contact email is required");
-		} else if (!event.getOrganizationContactEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
-			errors.put("organizationContactEmail", "Organization contact person email is invalid");
-		}
-
-		if (null != event.getOrganizationDecisionMakerEmail()
+		/*if (null != event.getOrganizationDecisionMakerEmail()
 				&& !event.getOrganizationDecisionMakerEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
 			errors.put("organizationDecisionMakerEmail", "Head of the department email is invalid");
 		}
@@ -284,11 +312,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if (null != event.getOrganizationDecisionMakerPhoneNo()
 				&& !event.getOrganizationDecisionMakerPhoneNo().matches(ExpressionConstants.MOBILE_REGEX)) {
 			errors.put("organizationDecisionMakerPhoneNo", "Head of the department mobile number is invalid");
-		}
-		
-		if (null == event.getPreceptorIdCardNumber() || event.getPreceptorIdCardNumber().isEmpty()) {
-			errors.put("preceptorIdCardNumber", "Preceptor Id card number is required");
-		}
+		}*/
 
 		return errors;
 	}

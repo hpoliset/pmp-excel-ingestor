@@ -17,7 +17,7 @@ public interface SessionDetailsValidator {
 	 *            to persist the api log details.
 	 * @return PMPResponse success or failure response
 	 */
-	PMPResponse validateAuthToken(String authToken, PMPAPIAccessLog accessLog);
+	//PMPResponse validateAuthToken(String authToken, PMPAPIAccessLog accessLog);
 
 	/**
 	 * Method is used to validate the mandatory session details parameters. If

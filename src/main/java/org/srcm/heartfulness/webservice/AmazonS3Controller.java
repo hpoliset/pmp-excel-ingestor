@@ -61,6 +61,9 @@ public class AmazonS3Controller {
 	 */
 	@RequestMapping(value = "/upload/event/permissionletter", method = RequestMethod.POST)
 	public ResponseEntity<?> uploadPermissionLetterForEvent(@RequestHeader(value = "Authorization") String token,
+			
+			
+			
 			@RequestParam String eventId, @RequestParam("file") MultipartFile multipartFiles[], 
 			@Context HttpServletRequest httpRequest) throws ParseException, IOException {
 
