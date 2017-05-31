@@ -16,6 +16,7 @@ import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
+import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -134,5 +135,7 @@ public interface EventDashboardValidator {
 	 * @return error message, if invalid.
 	 */
 	public String validatePaginationProperties(EventPagination eventPagination);
+	
+	public String validateSearchParameters(SearchRequest searchRequest);
 
 }

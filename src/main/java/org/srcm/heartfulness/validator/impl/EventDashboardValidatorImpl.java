@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.DashboardConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
@@ -28,8 +29,11 @@ import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
+import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.UserProfile;
+import org.srcm.heartfulness.repository.ParticipantRepository;
+import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.service.PmpParticipantService;
 import org.srcm.heartfulness.service.ProgramService;
 import org.srcm.heartfulness.service.UserProfileService;
@@ -60,6 +64,12 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 
 	@Autowired
 	Environment env;
+	
+	@Autowired
+	ProgramRepository programrepository;
+	
+	@Autowired
+	ParticipantRepository participantRepository;
 
 	/**
 	 * Method to validate mandatory fields in the participant request before
@@ -71,48 +81,47 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	@Override
 	public Map<String, String> checkParticipantMandatoryFields(ParticipantRequest participant) {
 		Map<String, String> errors = new HashMap<>();
-		if (null == participant.getEventId()) {
-			errors.put("eventId", "program ID is required");
-		} else if (null != participant.getEventId() && !participant.getEventId().matches(ExpressionConstants.EVENT_ID_REGEX)) {
+		if (null == participant.getEventId() || participant.getEventId().isEmpty()) {
+			errors.put("eventId", DashboardConstants.INVALID_OR_EMPTY_EVENTID);
+		} /*else if (null != participant.getEventId() && !participant.getEventId().matches(ExpressionConstants.EVENT_ID_REGEX)) {
 			errors.put("eventId", "event Id Format is invalid");
-		} else {
+		}*/ else {
 			if (0 == programService.getProgramIdByEventId(participant.getEventId()))
-				errors.put("eventId", "No event is available for the provided event ID");
+				errors.put("eventId", DashboardConstants.INVALID_EVENTID);
 		}
 		if (null != participant.getGender()
 				&& !participant.getGender().isEmpty()
 				&& !(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) || participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_FEMALE)
 						|| participant.getGender().equalsIgnoreCase(PMPConstants.MALE) || participant.getGender()
 						.equalsIgnoreCase(PMPConstants.FEMALE))) {
-			errors.put("gender", "gender is not valid.");
+			errors.put("gender", DashboardConstants.INVALID_GENDER);
 		}
 
 		if (null == participant.getPrintName() || participant.getPrintName().isEmpty()) {
-			errors.put("printName", "name is required");
+			errors.put("printName", DashboardConstants.PRINT_NAME_REQUIRED);
 		}
 		if (null == participant.getCity() || participant.getCity().isEmpty()) {
-			errors.put("city", "city is required");
+			errors.put("city", DashboardConstants.PARTICIPANT_City_REQ);
 		}
 		if (null == participant.getState() || participant.getState().isEmpty()) {
-			errors.put("state", "state is required");
+			errors.put("state", DashboardConstants.PARTICIPANT_STATE_REQ);
 		}
 		if (null == participant.getCountry() || participant.getCountry().isEmpty()) {
-			errors.put("country", "country is required");
+			errors.put("country", DashboardConstants.PARTICIPANT_COUNTRY_REQ);
 		}
 		if (null != participant.getEmail()) {
-			if (!participant.getEmail().matches(
-					"^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")) {
-				errors.put("email", "email is invalid");
+			if (!participant.getEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
+				errors.put("email", DashboardConstants.INVALID_PARTICIPANT_EMAIL);
 			}
 		}
 		if (null != participant.getIntroductionDate()) {
-			if (!participant.getIntroductionDate().matches("^\\d{2}-\\d{2}-\\d{4}$")) {
-				errors.put("introductionDate", "date is invalid. Valid format DD-MM-YYYY");
+			if (!participant.getIntroductionDate().matches(ExpressionConstants.DATE_REGEX)) {
+				errors.put("introductionDate", DashboardConstants.INVALID_INTRODUCED_DATE);
 			}
 		}
 		if (null != participant.getDateOfBirth()) {
-			if (!participant.getDateOfBirth().matches("^\\d{2}-\\d{2}-\\d{4}$")) {
-				errors.put("dateOfBirth", "date is invalid. Valid format DD-MM-YYYY");
+			if (!participant.getDateOfBirth().matches(ExpressionConstants.DATE_REGEX)) {
+				errors.put("dateOfBirth", DashboardConstants.INVALID_DOB);
 			}
 		}
 		return errors;
@@ -449,10 +458,22 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	public Map<String, String> checkUpdateParticipantMandatoryFields(ParticipantRequest participant) {
 		Map<String, String> errors = new HashMap<String, String>();
 		if (null == participant.getPrintName() || participant.getPrintName().isEmpty()) {
-			errors.put(ErrorConstants.STATUS_FAILED, "print name is required ");
+			errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.PRINT_NAME_REQUIRED);
 		}
+		if (null == participant.getEventId() || participant.getEventId().isEmpty()) {
+			errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_OR_EMPTY_EVENTID);
+		}else {
+			int programId = programrepository.getProgramIdByEventId(participant.getEventId());
+			if(programId <= 0 )
+			errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_EVENTID);
+			else
+				participant.setProgramId(programId);
+		}
+		
 		if (null == participant.getSeqId() || participant.getSeqId().isEmpty()) {
-			errors.put(ErrorConstants.STATUS_FAILED, "SeqID is required ");
+			errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.SEQ_ID_REQUIRED);
+		}else if(0 == participantRepository.getParticipantCountByProgIdAndSeqId(participant.getProgramId(),participant.getSeqId())){
+			errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_SEQ_ID);
 		}
 		return errors;
 	}
@@ -472,6 +493,16 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if (eventPagination.getPageSize() <= 0) {
 			return "Invalid page size";
 		}
+		return "";
+	}
+
+	@Override
+	public String validateSearchParameters(SearchRequest searchRequest) {
+		if(null == searchRequest.getSearchField())
+			return DashboardConstants.INVALID_SEARCH_FIELD;
+		if(null == searchRequest.getSearchText())
+			return DashboardConstants.INVALID_SEARCH_TEXT;
+		
 		return "";
 	}
 

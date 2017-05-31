@@ -298,6 +298,9 @@ public class ProgramServiceImpl implements ProgramService {
 				participantReq.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
 						.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
 				participantReq.setEwelcomeIdRemarks(participant.getEwelcomeIdRemarks());
+				participantReq.setPhone(participant.getPhone());
+				participantReq.setDistrict(participant.getDistrict());
+				participantReq.setAgeGroup(participant.getAgeGroup());
 				participantReqList.add(participantReq);
 			}
 			return participantReqList;

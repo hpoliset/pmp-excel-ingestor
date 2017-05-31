@@ -81,8 +81,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 		SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
 		SimpleDateFormat sdf1 = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 		Participant participant;
-		if ((null == participantRequest.getSeqId() || participantRequest.getSeqId().isEmpty())
-				&& 0 == participantRequest.getId()) {
+		if ((null == participantRequest.getSeqId() || participantRequest.getSeqId().isEmpty())&& 0 == participantRequest.getId()) {
 			participant = new Participant();
 			participant.setProgramId(programrepository.getProgramIdByEventId(participantRequest.getEventId()));
 			participant.setProgram(programrepository.findById(participant.getProgramId()));
@@ -93,11 +92,11 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					&& !participantRequest.getGender().isEmpty()
 					&& (participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE) || participantRequest
 							.getGender().equalsIgnoreCase(PMPConstants.FEMALE)))
-				participantRequest
+				participant
 				.setGender((participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE)
 						&& participantRequest.getGender() != null && !participantRequest.getGender().isEmpty()) ? PMPConstants.GENDER_MALE
 								: PMPConstants.GENDER_FEMALE);
-			participant.setGender(participantRequest.getGender());
+			//participant.setGender(participantRequest.getGender());
 			participant
 			.setDateOfBirth((null != participantRequest.getDateOfBirth() && !participantRequest
 			.getDateOfBirth().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest
@@ -155,9 +154,11 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					.geteWelcomeID().isEmpty()) ? participantRequest.geteWelcomeID() : null);
 			participant.setCreatedSource(PMPConstants.CREATED_SOURCE_DASHBOARD);
 			participant.setEwelcomeIdRemarks(participantRequest.getEwelcomeIdRemarks());
-			setParticipantEWelcomeIDStatus(participant.getProgram(), participant,
-					PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, null);
+			setParticipantEWelcomeIDStatus(participant.getProgram(), participant,PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, null);
 			participant.setReceiveUpdates(1);
+			participant.setPhone(participantRequest.getPhone());
+			participant.setDistrict(participantRequest.getDistrict());
+			participant.setAgeGroup(participantRequest.getAgeGroup());
 		} else {
 			participant = findBySeqId(participantRequest);
 			participant.setPrintName(participantRequest.getPrintName());
@@ -166,10 +167,10 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			if ((null != participantRequest.getGender() && !participantRequest.getGender().isEmpty() && (participantRequest
 					.getGender().equalsIgnoreCase(PMPConstants.MALE) || participantRequest.getGender()
 					.equalsIgnoreCase(PMPConstants.FEMALE))))
-				participantRequest
+				participant
 				.setGender(participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE) ? PMPConstants.GENDER_MALE
 						: PMPConstants.GENDER_FEMALE);
-			participant.setGender(participantRequest.getGender());
+			//participant.setGender(participantRequest.getGender());
 			participant
 			.setDateOfBirth((null != participantRequest.getDateOfBirth() && !participantRequest
 			.getDateOfBirth().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest
@@ -225,35 +226,36 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					.equalsIgnoreCase(participantRequest.getThirdSitting())) ? 1 : 0);
 			participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
 					.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
-			setParticipantEWelcomeIDStatus(participant.getProgram(), participant,
-					PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, null);
+			setParticipantEWelcomeIDStatus(participant.getProgram(), participant,PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, null);
+			participant.setPhone(participantRequest.getPhone());
+			participant.setDistrict(participantRequest.getDistrict());
+			participant.setAgeGroup(participantRequest.getAgeGroup());
 		}
 		participantRepository.save(participant);
 		participantRequest.setSeqId(participant.getSeqId());
-		participantRequest.setPrintName(participant.getPrintName());
-		participantRequest.setEmail(participant.getEmail());
-		participantRequest.setMobilePhone(participant.getMobilePhone());
-		if (participant.getGender() != null && !participant.getGender().isEmpty()) {
+		//participantRequest.setPrintName(participant.getPrintName());
+		//participantRequest.setEmail(participant.getEmail());
+		//participantRequest.setMobilePhone(participant.getMobilePhone());
+		/*if (participant.getGender() != null && !participant.getGender().isEmpty()) {
 			if ((participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_FEMALE) || participant.getGender()
 					.equalsIgnoreCase(PMPConstants.GENDER_MALE)))
 				participant
 				.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) ? PMPConstants.MALE
 						: PMPConstants.FEMALE);
 			participantRequest.setGender(participant.getGender());
-		}
+		}*/
 
-		participantRequest.setDateOfBirth((null != participant.getDateOfBirth() && !participantRequest.getDateOfBirth()
-				.isEmpty()) ? sdf.format(participant.getDateOfBirth()) : null);
-		participantRequest.setAddressLine1(participant.getAddressLine1());
-		participantRequest.setAddressLine2(participant.getAddressLine2());
-		participantRequest.setCity(participant.getCity());
-		participantRequest.setState(participant.getState());
-		participantRequest.setCountry(participant.getCountry());
-		participantRequest.setIntroducedStatus(0 != participant.getIntroduced() ? PMPConstants.REQUIRED_YES
-				: PMPConstants.REQUIRED_NO);
+		//participantRequest.setDateOfBirth((null != participant.getDateOfBirth() && !participantRequest.getDateOfBirth()
+				//.isEmpty()) ? sdf.format(participant.getDateOfBirth()) : null);
+		//participantRequest.setAddressLine1(participant.getAddressLine1());
+		//participantRequest.setAddressLine2(participant.getAddressLine2());
+		//participantRequest.setCity(participant.getCity());
+		//participantRequest.setState(participant.getState());
+		//participantRequest.setCountry(participant.getCountry());
+		participantRequest.setIntroducedStatus(0 != participant.getIntroduced() ? PMPConstants.REQUIRED_YES : PMPConstants.REQUIRED_NO);
 		participantRequest.setIntroductionDate((null != participantRequest.getIntroductionDate() && !participantRequest
-				.getIntroductionDate().isEmpty()) ? sdf.format(participant.getIntroductionDate()) : null);
-		participantRequest.setAbhyasiId(participant.getAbhyasiId());
+				.getIntroductionDate().isEmpty()) ? sdf.format(participant.getIntroductionDate()) : sdf.format(participant.getIntroductionDate()));
+		//participantRequest.setAbhyasiId(participant.getAbhyasiId());
 		participantRequest.setIntroducedBy(participant.getIntroducedBy());
 		if (null == participant.getFirstSittingDate()) {
 			participantRequest.setFirstSittingDate("");
@@ -371,6 +373,9 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
 					.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
 			participantRequest.setEwelcomeIdRemarks(participant.getEwelcomeIdRemarks());
+			participantRequest.setPhone(participant.getPhone());
+			participantRequest.setAgeGroup(participant.getAgeGroup());
+			participantRequest.setDistrict(participant.getDistrict());
 			return participantRequest;
 		} else {
 			return null;
@@ -630,8 +635,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 		}
 	}
 
-	private void setParticipantEWelcomeIDStatus(Program program, Participant participant, String eWelcomeIDStatus,
-			String remarks) {
+	private void setParticipantEWelcomeIDStatus(Program program, Participant participant, String eWelcomeIDStatus,String remarks) {
 
 		if (null != participant.getWelcomeCardNumber() && !participant.getWelcomeCardNumber().isEmpty() && participant.getWelcomeCardNumber().matches(ExpressionConstants.EWELCOME_ID_REGEX)) {
 			participant.setEwelcomeIdRemarks(null);

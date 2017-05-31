@@ -841,7 +841,6 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			return participant;
 
 		} catch (EmptyResultDataAccessException ex) {
-			// participant=new ParticipantRequest();
 			return null;
 		}
 
@@ -1184,6 +1183,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 				+ "FROM program p LEFT JOIN program_coordinators pc "
 				+ " ON p.program_id = pc.program_id "
 				+ (whereCondition.length() > 0 ? " WHERE " +  whereCondition : "")
+				+ " ORDER BY p.program_start_date DESC"
 				+ (limitCondition.length() > 0 ? limitCondition : "")
 				, BeanPropertyRowMapper.newInstance(Program.class));
 
@@ -1344,7 +1344,7 @@ public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequ
 						+ " FROM program p LEFT JOIN program_coordinators pc"
 						+ " ON p.program_id = pc.program_id "
 						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : "")
-						+ (orderBy.length() > 0 ? " ORDER BY " + orderBy : "") 
+						+ (orderBy.length() > 0 ? " ORDER BY " + orderBy : " ORDER BY p.program_start_date DESC ") 
 						+ " LIMIT " + offset + "," + searchRequest.getPageSize(), params, BeanPropertyRowMapper.newInstance(Program.class));
 		return programs;
 	}

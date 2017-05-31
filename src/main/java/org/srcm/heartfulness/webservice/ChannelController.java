@@ -14,8 +14,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.srcm.heartfulness.constants.DashboardConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
+import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.Response;
 import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.ChannelService;
@@ -51,26 +53,38 @@ public class ChannelController {
 	@RequestMapping(value = "channel", method = RequestMethod.GET)
 	public ResponseEntity<?> getChannelList(ModelMap model, @Context HttpServletRequest httpRequest) {
 		LOGGER.info("START : Get channel list called.");
-		PMPAPIAccessLog accessLog = null;
-		accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null, null, null);
-		apiAccessLogService.createPmpAPIAccessLog(accessLog);
+
+		//save request details in PMP
+		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,null);
 		try {
 			List<String> channelList = channelService.findAllActiveChannelNames();
-			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
-			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(channelList));
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
 			LOGGER.info("END : Fetching channel list completed.");
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS,null, StackTraceUtils.convertPojoToJson(channelList));
 			return new ResponseEntity<List<String>>(channelList, HttpStatus.OK);
 		} catch (Exception ex) {
 			LOGGER.info("END : Error occured while Fetching channel list. Exception : {}", ex.getMessage());
-			Response response = new Response(ErrorConstants.STATUS_FAILED, ex.getMessage());
-			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
-			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
-			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
-			return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.PROCESSING_FAILED);
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(ex), StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	private PMPAPIAccessLog createPMPAPIAccessLog(String username,HttpServletRequest httpRequest,String requestBody){
+
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(username, httpRequest.getRemoteAddr(), 
+				httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(), null, 
+				ErrorConstants.STATUS_FAILED, null,requestBody);
+		apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		return accessLog;
+	}
+
+
+	private void updatePMPAPIAccessLog(PMPAPIAccessLog pmpApiAccessLog, String status, String errorMessage, String responseBody){
+
+		pmpApiAccessLog.setStatus(status);
+		pmpApiAccessLog.setErrorMessage(errorMessage);
+		pmpApiAccessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+		pmpApiAccessLog.setResponseBody(responseBody);
+		apiAccessLogService.updatePmpAPIAccessLog(pmpApiAccessLog);
 	}
 }

@@ -59,7 +59,8 @@ public class Participant {
 	private String ewelcomeIdState;
 	private String ewelcomeIdRemarks;
 	private Integer totalDays;
-
+	private String phone;
+	private String district;
 
 	public String getCreatedSource() {
 		return createdSource;
@@ -463,6 +464,22 @@ public class Participant {
 		this.totalDays = totalDays;
 	}
 
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
 	@Override
 	public String toString() {
 		return "Participant [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
@@ -481,7 +498,8 @@ public class Participant {
 				+ ", excelSheetSequenceNumber=" + excelSheetSequenceNumber + ", seqId=" + seqId + ", welcomeMailSent="
 				+ welcomeMailSent + ", createdSource=" + createdSource + ", isCoOrdinatorInformed="
 				+ isCoOrdinatorInformed + ", isEwelcomeIdInformed=" + isEwelcomeIdInformed + ", ewelcomeIdState="
-				+ ewelcomeIdState + ", ewelcomeIdRemarks=" + ewelcomeIdRemarks + ", totalDays=" + totalDays + "]";
+				+ ewelcomeIdState + ", ewelcomeIdRemarks=" + ewelcomeIdRemarks + ", totalDays=" + totalDays + ", phone="
+				+ phone + ", district=" + district + "]";
 	}
-	
+
 }

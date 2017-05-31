@@ -37,20 +37,21 @@ public class ParticipantRequest {
 	private String firstSitting;
 	private String secondSitting;
 	private String thirdSitting;
-
 	@JsonIgnore
 	private int introduced;
-
 	private String introducedBy;
-
 	private String abhyasiId;
-
 	private String eWelcomeID;
-
 	@JsonIgnore
 	private int excelSheetSequenceNumber;
-
 	private String ewelcomeIdRemarks;
+	private String phone;
+	private String district;
+	private String ageGroup;
+	
+	public ParticipantRequest() {
+		super();
+	}
 
 	public int getExcelSheetSequenceNumber() {
 		return excelSheetSequenceNumber;
@@ -275,15 +276,34 @@ public class ParticipantRequest {
 	public void setEwelcomeIdRemarks(String ewelcomeIdRemarks) {
 		this.ewelcomeIdRemarks = ewelcomeIdRemarks;
 	}
+	
+	public String getPhone() {
+		return phone;
+	}
 
-	public ParticipantRequest() {
-		super();
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+	
+	public String getAgeGroup() {
+		return ageGroup;
+	}
+
+	public void setAgeGroup(String ageGroup) {
+		this.ageGroup = ageGroup;
 	}
 
 	@Override
 	public String toString() {
-		return "ParticipantRequest [id=" + id + ", programId=" + programId + ", seqId=" + seqId + ", eventId="
-				+ eventId + ", printName=" + printName + ", gender=" + gender + ", dateOfBirth=" + dateOfBirth
+		return "ParticipantRequest [printName=" + printName + ", gender=" + gender + ", dateOfBirth=" + dateOfBirth
 				+ ", addressLine1=" + addressLine1 + ", addressLine2=" + addressLine2 + ", email=" + email
 				+ ", mobilePhone=" + mobilePhone + ", city=" + city + ", state=" + state + ", country=" + country
 				+ ", introducedStatus=" + introducedStatus + ", introductionDate=" + introductionDate
@@ -292,7 +312,7 @@ public class ParticipantRequest {
 				+ secondSitting + ", thirdSitting=" + thirdSitting + ", introduced=" + introduced + ", introducedBy="
 				+ introducedBy + ", abhyasiId=" + abhyasiId + ", eWelcomeID=" + eWelcomeID
 				+ ", excelSheetSequenceNumber=" + excelSheetSequenceNumber + ", ewelcomeIdRemarks=" + ewelcomeIdRemarks
-				+ "]";
+				+ ", phone=" + phone + ", district=" + district + "]";
 	}
 
 }
