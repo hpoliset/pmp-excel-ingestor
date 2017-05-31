@@ -28,5 +28,7 @@ public class DashboardConstants {
 	public static final String INVALID_INTRODUCED_DATE										= 	"Introduction date is invalid. Valid format DD-MM-YYYY";
 	public static final String INVALID_DOB													= 	"DOB is invalid. Valid format DD-MM-YYYY";
 	
+	public static final String EMPTY_CHANNEL												= 	"Channel cannot be empty";
+	
 
 }

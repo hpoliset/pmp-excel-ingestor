@@ -1,5 +1,6 @@
 package org.srcm.heartfulness.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,18 @@ public class ChannelServiceImpl implements ChannelService {
 	@Override
 	public List<Channel> findAllActiveChannelsBasedOnRole(String role) {
 		return channelRepository.findAllActiveChannelsBasedOnRole(role);		
+	}
+
+	@Override
+	public List<String> getListOfChannelTypes(String channel) {
+		List<String> listOfChannelTypes = new ArrayList<String>();
+		int channelId = channelRepository.getChannelId(channel);
+		if( 0 == channelId){
+			return listOfChannelTypes;
+		}else{
+			listOfChannelTypes = channelRepository.getChannelType(channelId);
+			return listOfChannelTypes;
+		}
 	}
 
 }

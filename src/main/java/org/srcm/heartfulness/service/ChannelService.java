@@ -34,4 +34,12 @@ public interface ChannelService {
 	 * @return<code>List<Channel></code> list of channel.
 	 */
 	public List<Channel> findAllActiveChannelsBasedOnRole(String role);
+
+	/**
+	 * Service to get the list of channel types 
+	 * based on the channel.
+	 * @param channel is used to get the channel types.
+	 * @return List<String> channelTypes.
+	 */
+	public List<String> getListOfChannelTypes(String channel);
 }

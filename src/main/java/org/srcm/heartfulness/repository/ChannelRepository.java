@@ -35,4 +35,18 @@ public interface ChannelRepository {
 	 */
 	public List<Channel> findAllActiveChannelsBasedOnRole(String role);
 
+	/**
+	 * Method is used to get the channel Id 
+	 * based on the channel passed.
+	 * @param channel to retrieve channel Id.
+	 * @return channel Id.
+	 */
+	public int getChannelId(String channel);
+
+	/**
+	 * Method is used to get the channel types based on channel Id.
+	 * @param channelId is used to retrieve channel types.
+	 * @return List<String> channelTypes.
+	 */
+	public List<String> getChannelType(int channelId);
 }

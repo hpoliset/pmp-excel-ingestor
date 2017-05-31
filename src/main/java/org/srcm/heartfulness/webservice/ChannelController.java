@@ -13,12 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.srcm.heartfulness.constants.DashboardConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
-import org.srcm.heartfulness.model.json.response.Response;
 import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.ChannelService;
 import org.srcm.heartfulness.util.DateUtils;
@@ -50,7 +50,9 @@ public class ChannelController {
 	 * @param httpRequest
 	 * @return <code>List<String></code>
 	 */
-	@RequestMapping(value = "channel", method = RequestMethod.GET)
+	@RequestMapping(value = "channel", 
+			method = RequestMethod.GET)
+
 	public ResponseEntity<?> getChannelList(ModelMap model, @Context HttpServletRequest httpRequest) {
 		LOGGER.info("START : Get channel list called.");
 
@@ -61,11 +63,39 @@ public class ChannelController {
 			LOGGER.info("END : Fetching channel list completed.");
 			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS,null, StackTraceUtils.convertPojoToJson(channelList));
 			return new ResponseEntity<List<String>>(channelList, HttpStatus.OK);
-		} catch (Exception ex) {
-			LOGGER.info("END : Error occured while Fetching channel list. Exception : {}", ex.getMessage());
+		} catch (Exception e) {
+			LOGGER.info("END : Error occured while fetching channel list {}", e);
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.PROCESSING_FAILED);
-			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(ex), StackTraceUtils.convertPojoToJson(eResponse));
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(e), StackTraceUtils.convertPojoToJson(eResponse));
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@RequestMapping(value = "channeltype", 
+			method = RequestMethod.GET)
+	public ResponseEntity<?> getChannelType(@RequestParam(name = "channel",defaultValue="")String channel, @Context HttpServletRequest httpRequest) {
+
+		//save request details in PMP
+		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,channel);
+		
+		if(channel.isEmpty()){
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.EMPTY_CHANNEL);
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED, DashboardConstants.EMPTY_CHANNEL, StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_REQUIRED);
+		}else{
+			try{
+				List<String> listOfChannelTypes = channelService.getListOfChannelTypes(channel);
+				updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS,null, StackTraceUtils.convertPojoToJson(listOfChannelTypes));
+				return new ResponseEntity<List<String>>(listOfChannelTypes, HttpStatus.OK);
+			} catch(Exception e){
+				LOGGER.info("END : Error occured while fetching channel type for channel {}{}",channel,e);
+				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.PROCESSING_FAILED);
+				updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(e), StackTraceUtils.convertPojoToJson(eResponse));
+				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			
+			
+			
 		}
 	}
 

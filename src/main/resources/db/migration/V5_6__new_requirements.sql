@@ -12,7 +12,7 @@ CREATE TABLE channel_type (
   channel_id int(4) UNSIGNED NOT NULL,
   name VARCHAR(100) NOT NULL,
   description LONGTEXT,
-  active tinyint(1) DEFAULT '0' COMMENT '0 Means Active and 1 means Inactive',
+  active tinyint(1) DEFAULT '1' COMMENT '1 Means Active and 0 means Inactive',
   update_time TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   create_time TIMESTAMP NOT NULL,
   created_by varchar(45) DEFAULT 'ADMINISTRATOR',
