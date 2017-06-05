@@ -180,7 +180,7 @@ public interface ProgramRepository {
 	 * @return
 	 */
 	Participant findParticipantBySeqId(String seqId, int programId);
-	
+
 	/**
 	 * Fetch the participant for the given seqId and program ID
 	 * 
@@ -401,7 +401,7 @@ public interface ProgramRepository {
 	 * @return <code>List<ProgramPermissionLetterdetails></code>
 	 */
 	List<ProgramPermissionLetterdetails> getListOfPermissionLetters(int programId);
-	
+
 	/**
 	 * This method is used to get the program details 
 	 * using email,role of logged in user and auto generated event Id.
@@ -424,5 +424,9 @@ public interface ProgramRepository {
 	 * event Id's for the logged in user have conducted.
 	 */
 	LinkedHashMap<Integer,String> getListOfProgramIdsByEmail(List<String> emailList,String userRole);
+
+	public List<Integer> getProgramIdsForSQSPush();
+
+	public void updateProgramIdStatusAfterSQSPush(int programId);
 
 }

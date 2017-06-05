@@ -1583,5 +1583,23 @@ public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequ
 		}
 		return programIds;
 	}
+	
+	@Override
+	public List<Integer> getProgramIdsForSQSPush() {
+		return this.jdbcTemplate
+				.queryForList(
+						"SELECT DISTINCT(pr.program_id)"
+								+ " FROM program p,participant pr"
+								+ " WHERE p.program_id = pr.program_id"
+								+ " AND pr.create_time <= CURRENT_TIMESTAMP"
+								+ " AND pr.ewelcome_id_state = 'T'"
+								+ " AND p.sqs_push_status=0",
+								null, Integer.class);
+	}
+	
+	@Override
+	public void updateProgramIdStatusAfterSQSPush(int programId) {
+		this.jdbcTemplate.update("UPDATE program set sqs_push_status=1 WHERE program_id=? ", new Object[] { programId });
+	}
 
 }

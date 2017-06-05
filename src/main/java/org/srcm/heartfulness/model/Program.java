@@ -96,6 +96,7 @@ public class Program {
 	private String isReadOnly;
 	private String jiraIssueNumber;
 	private String sendersEmailAddress;
+	private int sqsPushStatus;
 
 	public String getSrcmGroup() {
 		return srcmGroup;
@@ -549,6 +550,14 @@ public class Program {
 
 	public void setSendersEmailAddress(String sendersEmailAddress) {
 		this.sendersEmailAddress = sendersEmailAddress;
+	}
+	
+	public int getSqsPushStatus() {
+		return sqsPushStatus;
+	}
+
+	public void setSqsPushStatus(int sqsPushStatus) {
+		this.sqsPushStatus = sqsPushStatus;
 	}
 
 	@Override
