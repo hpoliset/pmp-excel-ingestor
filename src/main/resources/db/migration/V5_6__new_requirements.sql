@@ -27,7 +27,7 @@ CREATE TABLE coordinator_history (
   coordinator_email VARCHAR(150) NOT NULL,
   abhyasi_id VARCHAR(25) DEFAULT NULL,
   assigned_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  removal_time TIMESTAMP DEFAULT NULL,
+  removal_time TIMESTAMP NULL,
   create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   update_time TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT program_id_foreign_key FOREIGN KEY (program_id) REFERENCES program(program_id) ON DELETE NO ACTION ON UPDATE NO ACTION
