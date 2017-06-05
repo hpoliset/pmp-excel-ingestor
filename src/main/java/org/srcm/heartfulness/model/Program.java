@@ -101,7 +101,7 @@ public class Program {
 	private String programAddress;
 	private String programDistrict;
 	private String organizationContactDesignation;
-	private String programChannelType;
+	private int programChannelType;
 
 	public String getSrcmGroup() {
 		return srcmGroup;
@@ -561,11 +561,11 @@ public class Program {
 		this.organizationContactDesignation = organizationContactDesignation;
 	}
 	
-	public String getProgramChannelType() {
+	public int getProgramChannelType() {
 		return programChannelType;
 	}
 
-	public void setProgramChannelType(String programChannelType) {
+	public void setProgramChannelType(int programChannelType) {
 		this.programChannelType = programChannelType;
 	}
 

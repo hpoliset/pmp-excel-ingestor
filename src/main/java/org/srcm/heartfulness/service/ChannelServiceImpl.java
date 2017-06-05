@@ -1,11 +1,14 @@
 package org.srcm.heartfulness.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.srcm.heartfulness.model.Channel;
+import org.srcm.heartfulness.model.json.response.ProgramChannelType;
 import org.srcm.heartfulness.repository.ChannelRepository;
 
 /**
@@ -51,8 +54,8 @@ public class ChannelServiceImpl implements ChannelService {
 	}
 
 	@Override
-	public List<String> getListOfChannelTypes(String channel) {
-		List<String> listOfChannelTypes = new ArrayList<String>();
+	public List<ProgramChannelType> getListOfChannelTypes(String channel) {
+		List<ProgramChannelType> listOfChannelTypes = new ArrayList<ProgramChannelType>();
 		int channelId = channelRepository.getChannelId(channel);
 		if( 0 == channelId){
 			return listOfChannelTypes;

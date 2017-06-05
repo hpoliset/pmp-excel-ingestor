@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,12 +27,15 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.constants.ErrorConstants;
+import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.SessionDetails;
 import org.srcm.heartfulness.model.SessionImageDetails;
+import org.srcm.heartfulness.model.json.request.SearchSession;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.PMPResponse;
 import org.srcm.heartfulness.model.json.response.SuccessResponse;
 import org.srcm.heartfulness.repository.SessionDetailsRepository;
+import org.srcm.heartfulness.util.DateUtils;
 
 /**
  * @author Koustav Dutta
@@ -134,7 +138,7 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 		}
 		return sessionIdCount;	
 	}
-	
+
 	/**
 	 * Method is used to generate an auto generated session id for every session
 	 * details object.
@@ -188,7 +192,7 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 		return sessionId;
 	}
 
-	
+
 	@Override
 	public int deleteSessionDetail(SessionDetails sessionDetails) {
 
@@ -206,7 +210,8 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 				+ "session_number,session_date,number_of_participants,"
 				+ "number_of_new_participants,topic_covered,preceptor_name,"
 				+ "preceptor_id_card_no,comments,preceptor_email,preceptor_mobile "
-				+ "FROM session_details WHERE is_deleted = 0 AND program_id = ?",
+				+ "FROM session_details WHERE is_deleted = 0 AND program_id = ? "
+				+ "ORDER BY session_date DESC",
 				new Object[] {programId}, 
 				new ResultSetExtractor<List<SessionDetails>>() {
 					@Override
@@ -303,14 +308,14 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 	public int getCountOfSessionImages(int sessionDetailsId) {
 		return this.jdbcTemplate.query("SELECT count(image_id) FROM session_images WHERE session_id= ?",
 				new Object[] { sessionDetailsId }, new ResultSetExtractor<Integer>() {
-					@Override
-					public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-						if (resultSet.next()) {
-							return resultSet.getInt(1);
-						}
-						return 0;
-					}
-				});
+			@Override
+			public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+				if (resultSet.next()) {
+					return resultSet.getInt(1);
+				}
+				return 0;
+			}
+		});
 	}
 
 	/*
@@ -325,5 +330,51 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 		params.put("sessionId", sessionDetailsId);
 		return this.namedParameterJdbcTemplate.query("Select * from session_images WHERE session_id=:sessionId",
 				params, BeanPropertyRowMapper.newInstance(SessionImageDetails.class));
+	}
+
+
+	@Override
+	public List<SessionDetails> searchSessionData(int programId, SearchSession searchSession) {
+
+		StringBuilder whereCondition = new StringBuilder("");
+		Map<String, Object> params = new HashMap<>();
+		params.put("programId", programId);
+
+		if(!searchSession.getSearchText().isEmpty() && null !=searchSession.getDbSearchField()){
+			whereCondition.append(" s." + searchSession.getDbSearchField()
+			+ " LIKE '%" + searchSession.getSearchText() + "%'");
+		}
+		
+		if(null != searchSession.getDateFrom() && !searchSession.getDateFrom().isEmpty()){
+			whereCondition.append(whereCondition.length() > 0 ? 
+					" AND s.session_date >=:sessionFromDate " : " s.session_date >=:sessionFromDate" );
+			try {
+				params.put("sessionFromDate", DateUtils.parseToSqlDate(searchSession.getDateFrom()));
+			} catch (Exception e) {
+				LOGGER.error("Failed to parse from date {}",e.getMessage());
+			}
+		}
+		
+		if(null != searchSession.getDateTo() && !searchSession.getDateTo().isEmpty()){
+			whereCondition.append(whereCondition.length() > 0 ? 
+					" AND s.session_date <=:sessionToDate " : " s.session_date <=:sessionToDate" );
+			try {
+				params.put("sessionToDate", DateUtils.parseToSqlDate(searchSession.getDateTo()));
+			} catch (Exception e) {
+				LOGGER.error("Failed to parse to date {}",e.getMessage());
+			}
+		}
+		
+		List<SessionDetails> sessionList = new ArrayList<SessionDetails>();
+		sessionList	= this.namedParameterJdbcTemplate.query("SELECT s.auto_generated_session_id,"
+				+ "s.session_number,s.session_date,s.number_of_participants,"
+				+ "s.number_of_new_participants,s.topic_covered,s.preceptor_name,"
+				+ "s.preceptor_id_card_no,s.comments,s.preceptor_email,s.preceptor_mobile "
+				+ "FROM session_details s "
+				+ "WHERE s.is_deleted = 0 AND s.program_id =:programId "
+				+ (whereCondition.length() > 0 ? " AND " + whereCondition : ""
+				+ " ORDER BY s.session_date DESC ")
+				, params, BeanPropertyRowMapper.newInstance(SessionDetails.class));
+		return sessionList;
 	}
 }

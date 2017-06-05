@@ -1,6 +1,7 @@
 package org.srcm.heartfulness.webservice;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -19,6 +20,7 @@ import org.srcm.heartfulness.constants.DashboardConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
+import org.srcm.heartfulness.model.json.response.ProgramChannelType;
 import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.ChannelService;
 import org.srcm.heartfulness.util.DateUtils;
@@ -84,18 +86,15 @@ public class ChannelController {
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_REQUIRED);
 		}else{
 			try{
-				List<String> listOfChannelTypes = channelService.getListOfChannelTypes(channel);
-				updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS,null, StackTraceUtils.convertPojoToJson(listOfChannelTypes));
-				return new ResponseEntity<List<String>>(listOfChannelTypes, HttpStatus.OK);
+				List<ProgramChannelType> channelTypes = channelService.getListOfChannelTypes(channel);
+				updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS,null, StackTraceUtils.convertPojoToJson(channelTypes));
+				return new ResponseEntity<List<ProgramChannelType>>(channelTypes, HttpStatus.OK);
 			} catch(Exception e){
 				LOGGER.info("END : Error occured while fetching channel type for channel {}{}",channel,e);
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.PROCESSING_FAILED);
 				updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(e), StackTraceUtils.convertPojoToJson(eResponse));
 				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			
-			
-			
 		}
 	}
 

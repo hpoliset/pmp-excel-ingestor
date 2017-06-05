@@ -87,7 +87,8 @@ public class Event {
 	private String programAddress;
 	private String programDistrict;
 	private String organizationContactDesignation;
-	private String programChannelType;
+	@JsonInclude(value = Include.ALWAYS)
+	private int programChannelType;
 	
 	
 
@@ -480,11 +481,11 @@ public class Event {
 		this.organizationContactDesignation = organizationContactDesignation;
 	}
 
-	public String getProgramChannelType() {
+	public int getProgramChannelType() {
 		return programChannelType;
 	}
 
-	public void setProgramChannelType(String programChannelType) {
+	public void setProgramChannelType(int programChannelType) {
 		this.programChannelType = programChannelType;
 	}
 

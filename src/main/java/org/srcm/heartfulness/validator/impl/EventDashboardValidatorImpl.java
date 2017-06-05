@@ -32,6 +32,7 @@ import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.UserProfile;
+import org.srcm.heartfulness.repository.ChannelRepository;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.service.PmpParticipantService;
@@ -70,6 +71,9 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	
 	@Autowired
 	ParticipantRepository participantRepository;
+	
+	@Autowired
+	private ChannelRepository channelRepository;
 
 	/**
 	 * Method to validate mandatory fields in the participant request before
@@ -109,6 +113,10 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if (null == participant.getCountry() || participant.getCountry().isEmpty()) {
 			errors.put("country", DashboardConstants.PARTICIPANT_COUNTRY_REQ);
 		}
+		if(null == participant.getDistrict() || participant.getDistrict().isEmpty()){
+			errors.put("district", DashboardConstants.PARTICIPANT_DISTRICT_REQ);
+		}
+		
 		if (null != participant.getEmail()) {
 			if (!participant.getEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
 				errors.put("email", DashboardConstants.INVALID_PARTICIPANT_EMAIL);
@@ -216,10 +224,18 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		}
 		if (null == event.getProgramChannel() || event.getProgramChannel().isEmpty()) {
 			errors.put("programChannel", "Program channel is required");
+		}else if(event.getProgramChannel().equals(DashboardConstants.G_CONNECT_CHANNEL)){
+			if (0 == event.getProgramChannelType()) {
+				errors.put("programChannelType", "Program channel type is required");
+			}else{
+				if(!channelRepository.validateChannelType(event.getProgramChannelType())){
+					errors.put("programChannelType", "Program channel type is not available");
+				}
+			}
+		}else{
+			event.setProgramChannelType(0);
 		}
-		if (null == event.getProgramChannelType() || event.getProgramChannelType().isEmpty()) {
-			errors.put("programChannelType", "Program channel type is required");
-		}
+		
 		if (null == event.getOrganizationName() || event.getOrganizationName().isEmpty()) {
 			errors.put("organizationName", "Organization name is required");
 		}

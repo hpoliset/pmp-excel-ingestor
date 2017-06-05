@@ -1,8 +1,10 @@
 package org.srcm.heartfulness.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.srcm.heartfulness.model.Channel;
+import org.srcm.heartfulness.model.json.response.ProgramChannelType;
 
 /**
  * Service Class for managing <code>Channel</code> domain objects.
@@ -39,7 +41,7 @@ public interface ChannelService {
 	 * Service to get the list of channel types 
 	 * based on the channel.
 	 * @param channel is used to get the channel types.
-	 * @return List<String> channelTypes.
+	 * @return List<ProgramChannelType> channelTypes.
 	 */
-	public List<String> getListOfChannelTypes(String channel);
+	public List<ProgramChannelType> getListOfChannelTypes(String channel);
 }

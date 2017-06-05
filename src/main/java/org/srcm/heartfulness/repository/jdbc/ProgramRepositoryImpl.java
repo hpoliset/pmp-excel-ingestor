@@ -2,6 +2,7 @@ package org.srcm.heartfulness.repository.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +32,7 @@ import org.srcm.heartfulness.constants.CoordinatorAccessControlConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.model.Coordinator;
+import org.srcm.heartfulness.model.CoordinatorHistory;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.ProgramPermissionLetterdetails;
@@ -59,6 +61,8 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	private SimpleJdbcInsert insertDeletedParticipants;
 	private SimpleJdbcInsert insertProgramPermissionLetter;
 
+	private SimpleJdbcInsert insertCoordinatorHistory;
+
 	@Autowired
 	public ProgramRepositoryImpl(DataSource dataSource, ParticipantRepository participantRepository) {
 		this.participantRepository = participantRepository;
@@ -72,6 +76,8 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		this.insertProgramPermissionLetter=new SimpleJdbcInsert(dataSource).withTableName("program_permission_letters").usingGeneratedKeyColumns("permission_letter_id");
 		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.insertCoordinatorHistory = new SimpleJdbcInsert(dataSource).withTableName("coordinator_history")
+				.usingGeneratedKeyColumns("id");
 	}
 
 	/*
@@ -191,6 +197,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		if (program.getProgramId() == 0) {
 			Number newId = this.insertProgram.executeAndReturnKey(parameterSource);
 			program.setProgramId(newId.intValue());
+			saveCoordinatorHistory(new CoordinatorHistory(newId.intValue(),program.getCoordinatorName(),program.getCoordinatorEmail(),null!= program.getCoordinatorAbhyasiId() ? program.getCoordinatorAbhyasiId() : null));
 		} else {
 			// TODO: Need to deal with Hashcode.
 			this.namedParameterJdbcTemplate.update("UPDATE program SET " + "program_hash_code=:programHashCode, "
@@ -224,6 +231,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 					+ "program_channel_type=:programChannelType "
 					+ "WHERE program_id=:programId",
 					parameterSource);
+			updateCoordinatorHistory(program.getProgramId(), new CoordinatorHistory(program.getProgramId(),program.getCoordinatorName(),program.getCoordinatorEmail(),null));
 		}
 		// If there are participants update them.
 		List<Participant> participants = program.getParticipantList();
@@ -265,6 +273,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		if (program.getProgramId() == 0) {
 			Number newId = this.insertProgram.executeAndReturnKey(parameterSource);
 			program.setProgramId(newId.intValue());
+			saveCoordinatorHistory(new CoordinatorHistory(newId.intValue(),program.getCoordinatorName(),program.getCoordinatorEmail(),null!= program.getCoordinatorAbhyasiId() ? program.getCoordinatorAbhyasiId() : null));
 		} else {
 			// TODO: Need to deal with Hashcode.
 			this.namedParameterJdbcTemplate
@@ -287,6 +296,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 					+ "is_ewelcome_id_generation_disabled=:isEwelcomeIdGenerationDisabled "
 					+ "WHERE program_id=:programId",
 					parameterSource);
+			updateCoordinatorHistory(program.getProgramId(), new CoordinatorHistory(program.getProgramId(),program.getCoordinatorName(),program.getCoordinatorEmail(),null));
 		}
 
 		// If there are participants update them.
@@ -866,7 +876,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 						return null;
 					}
 				});*/
-		
+
 		if(emailList.size() == 1){
 			emailString.append("'"+emailList.get(0)+"'");
 		}else{
@@ -874,13 +884,13 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 				emailString.append( i != (emailList.size() -1 ) ? "'"+emailList.get(i)+"'" + ",": "'"+emailList.get(i)+"'");
 			}
 		}
-		
+
 		if (!userRole.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
 
 			if (userRole.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)) {
 				whereCondition
-						.append(" AND ( p.program_channel NOT REGEXP ('G-Connect|G Connect|GConnect|G-Conect|G - Connect|G.CONNECT|G -CONNECT|G- connect|G-Connet|G  Connect')"
-								+ " OR (p.coordinator_email IN(" + emailString + ") OR pc.email IN(" + emailString + "))) ");
+				.append(" AND ( p.program_channel NOT REGEXP ('G-Connect|G Connect|GConnect|G-Conect|G - Connect|G.CONNECT|G -CONNECT|G- connect|G-Connet|G  Connect')"
+						+ " OR (p.coordinator_email IN(" + emailString + ") OR pc.email IN(" + emailString + "))) ");
 			} else {
 				whereCondition.append(" AND (p.coordinator_email IN(" + emailString + ") OR pc.email IN(" + emailString + ")) ");
 			}
@@ -1106,7 +1116,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 	@Override
 	public int getProgramCountWithUserRoleAndEmailId(List<String> emailList, String role) {
-		
+
 		StringBuilder whereCondition = new StringBuilder("");
 		StringBuilder emailString = new StringBuilder("");
 
@@ -1196,7 +1206,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		StringBuilder orderBy = new StringBuilder("");
 		StringBuilder emailString = new StringBuilder("");
 		Map<String, Object> params = new HashMap<>();
-		
+
 		if (!("ALL".equals(searchRequest.getSearchField())) && null != searchRequest.getSearchField()
 				&& !searchRequest.getSearchField().isEmpty() ) {
 			if (null != searchRequest.getSearchText() && !searchRequest.getSearchText().isEmpty()) {
@@ -1205,7 +1215,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 				+ " LIKE '%" + searchRequest.getSearchText() + "%'");
 			}
 		}
-		
+
 		if ((searchRequest.getDateFrom() != null && !searchRequest.getDateFrom().isEmpty())) {
 			try {
 				whereCondition.append(whereCondition.length() > 0 ? " and p.program_start_date >=:program_start_date "
@@ -1226,14 +1236,14 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 				LOGGER.error("Error While converting date", e);
 			}
 		}
-		
+
 		if (null != searchRequest.getSortBy() && !searchRequest.getSortBy().isEmpty()) {
 			orderBy.append(orderBy.length() > 0 ? ", " + searchRequest.getSortBy() : searchRequest.getSortBy());
 			if (null != searchRequest.getSortDirection() && !searchRequest.getSortDirection().isEmpty()) {
 				orderBy.append(searchRequest.getSortDirection().equalsIgnoreCase("0") ? " asc" : " desc");
 			}
 		}
-		
+
 		if(emailList.size() == 1){
 			emailString.append("'"+emailList.get(0)+"'");
 		}else{
@@ -1241,7 +1251,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 				emailString.append( i != (emailList.size() -1 ) ? "'"+emailList.get(i)+"'" + ",": "'"+emailList.get(i)+"'");
 			}
 		}
-		
+
 		if (!role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
 
 			if(role.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)){
@@ -1249,7 +1259,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 				.append( whereCondition.length() > 0 ? " AND (p.program_channel NOT REGEXP ('G-Connect|G Connect|GConnect|G-Conect|G - Connect|G.CONNECT|G -CONNECT|G- connect|G-Connet|G  Connect')"
 						+	" OR (p.coordinator_email IN( " + emailString +") OR pc.email IN("+ emailString + "))) "
 						: " (p.program_channel NOT REGEXP ('G-Connect|G Connect|GConnect|G-Conect|G - Connect|G.CONNECT|G -CONNECT|G- connect|G-Connet|G  Connect')"
-								+	" OR (p.coordinator_email IN( " + emailString +") OR pc.email IN("+ emailString + "))) ");
+						+	" OR (p.coordinator_email IN( " + emailString +") OR pc.email IN("+ emailString + "))) ");
 			}else{
 				whereCondition.append( whereCondition.length() > 0 ? " AND (p.coordinator_email IN( " + emailString +") OR pc.email IN("+ emailString + ")) "
 						: " (p.coordinator_email IN( " + emailString +") OR pc.email IN("+ emailString + ")) ");
@@ -1266,14 +1276,14 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	}
 
 	@Override
-public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList/*String email*/, String role, int offset) {
-		
+	public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList/*String email*/, String role, int offset) {
+
 		List<Program> programs = null;
 		StringBuilder whereCondition = new StringBuilder("");
 		StringBuilder orderBy = new StringBuilder("");
 		StringBuilder emailString = new StringBuilder("");
 		Map<String, Object> params = new HashMap<>();
-		
+
 		if (!("ALL".equals(searchRequest.getSearchField())) && null != searchRequest.getSearchField()
 				/*&& !searchRequest.getSearchField().isEmpty()*/) {
 			if (null != searchRequest.getSearchText() && !searchRequest.getSearchText().isEmpty()) {
@@ -1282,7 +1292,7 @@ public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequ
 				+ " LIKE '%" + searchRequest.getSearchText() + "%'");
 			}
 		}
-		
+
 		if ((searchRequest.getDateFrom() != null && !searchRequest.getDateFrom().isEmpty())) {
 			try {
 				whereCondition.append(whereCondition.length() > 0 ? " and p.program_start_date >=:program_start_date "
@@ -1303,14 +1313,14 @@ public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequ
 				LOGGER.error("Error While converting date", e);
 			}
 		}
-		
+
 		if (null != searchRequest.getSortBy() && !searchRequest.getSortBy().isEmpty()) {
 			orderBy.append(orderBy.length() > 0 ? ", " + searchRequest.getSortBy() : searchRequest.getSortBy());
 			if (null != searchRequest.getSortDirection() && !searchRequest.getSortDirection().isEmpty()) {
 				orderBy.append(searchRequest.getSortDirection().equalsIgnoreCase("0") ? " asc" : " desc");
 			}
 		}
-		
+
 		if(emailList.size() == 1){
 			emailString.append("'"+emailList.get(0)+"'");
 		}else{
@@ -1318,7 +1328,7 @@ public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequ
 				emailString.append( i != (emailList.size() -1 ) ? "'"+emailList.get(i)+"'" + ",": "'"+emailList.get(i)+"'");
 			}
 		}
-		
+
 		if (!role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
 
 			if(role.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)){
@@ -1326,26 +1336,26 @@ public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequ
 				.append( whereCondition.length() > 0 ? " AND (p.program_channel NOT REGEXP ('G-Connect|G Connect|GConnect|G-Conect|G - Connect|G.CONNECT|G -CONNECT|G- connect|G-Connet|G  Connect')"
 						+	" OR (p.coordinator_email IN( " + emailString +") OR pc.email IN("+ emailString + "))) "
 						: " (p.program_channel NOT REGEXP ('G-Connect|G Connect|GConnect|G-Conect|G - Connect|G.CONNECT|G -CONNECT|G- connect|G-Connet|G  Connect')"
-								+	" OR (p.coordinator_email IN( " + emailString +") OR pc.email IN("+ emailString + "))) ");
+						+	" OR (p.coordinator_email IN( " + emailString +") OR pc.email IN("+ emailString + "))) ");
 			}else{
 				whereCondition.append( whereCondition.length() > 0 ? " AND (p.coordinator_email IN( " + emailString +") OR pc.email IN("+ emailString + ")) "
 						: " (p.coordinator_email IN( " + emailString +") OR pc.email IN("+ emailString + ")) ");
 			}
 		}
-		
+
 		programs = this.namedParameterJdbcTemplate.query( "SELECT DISTINCT p.program_id,p.auto_generated_event_id,p.program_channel, "
-						+ " p.program_name,p.program_start_date,p.program_end_date, "
-						+ " p.coordinator_name,p.coordinator_email,p.coordinator_mobile,"
-						+ " p.event_place,p.event_city,p.event_state,p.event_country,p.organization_name,"
-						+ " p.organization_department,p.preceptor_name,p.preceptor_id_card_number,p.jira_issue_number,"
-						+ "p.batch_description,p.program_channel_type,p.program_address,p.program_district,p.program_zone,"
-						+ "p.program_center,p.organization_contact_name,p.organization_contact_designation,p.organization_contact_email,"
-						+ "p.organization_contact_mobile,p.coordinator_abhyasi_id,p.coordinator_name,p.coordinator_email,p.coordinator_mobile "
-						+ " FROM program p LEFT JOIN program_coordinators pc"
-						+ " ON p.program_id = pc.program_id "
-						+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : "")
-						+ (orderBy.length() > 0 ? " ORDER BY " + orderBy : " ORDER BY p.program_start_date DESC ") 
-						+ " LIMIT " + offset + "," + searchRequest.getPageSize(), params, BeanPropertyRowMapper.newInstance(Program.class));
+				+ " p.program_name,p.program_start_date,p.program_end_date, "
+				+ " p.coordinator_name,p.coordinator_email,p.coordinator_mobile,"
+				+ " p.event_place,p.event_city,p.event_state,p.event_country,p.organization_name,"
+				+ " p.organization_department,p.preceptor_name,p.preceptor_id_card_number,p.jira_issue_number,"
+				+ "p.batch_description,p.program_channel_type,p.program_address,p.program_district,p.program_zone,"
+				+ "p.program_center,p.organization_contact_name,p.organization_contact_designation,p.organization_contact_email,"
+				+ "p.organization_contact_mobile,p.coordinator_abhyasi_id,p.coordinator_name,p.coordinator_email,p.coordinator_mobile "
+				+ " FROM program p LEFT JOIN program_coordinators pc"
+				+ " ON p.program_id = pc.program_id "
+				+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : "")
+				+ (orderBy.length() > 0 ? " ORDER BY " + orderBy : " ORDER BY p.program_start_date DESC ") 
+				+ " LIMIT " + offset + "," + searchRequest.getPageSize(), params, BeanPropertyRowMapper.newInstance(Program.class));
 		return programs;
 	}
 
@@ -1516,7 +1526,7 @@ public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequ
 		}
 
 		try{
-			
+
 			program = this.namedParameterJdbcTemplate.queryForObject("SELECT DISTINCT p.* "
 					+ " FROM program p LEFT JOIN program_coordinators pc"
 					+ " ON p.program_id = pc.program_id "
@@ -1524,10 +1534,10 @@ public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequ
 					+ (whereCondition.length() > 0 ? whereCondition +" AND ": "")
 					+ " p.auto_generated_event_id=:auto_generated_event_id ", params,
 					BeanPropertyRowMapper.newInstance(Program.class));
-			
+
 			program.setIsReadOnly(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE);
 		} catch(Exception ex){
-			
+
 			program = this.namedParameterJdbcTemplate.queryForObject("SELECT DISTINCT p.* "
 					+ " FROM program p LEFT JOIN program_coordinators pc"
 					+ " ON p.program_id = pc.program_id "
@@ -1550,7 +1560,7 @@ public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequ
 	 */
 	@Override
 	public LinkedHashMap<Integer,String> getListOfProgramIdsByEmail(List<String> emailList,String userRole) {
-		
+
 		LinkedHashMap<Integer,String> programIds = new LinkedHashMap<Integer,String>();
 		StringBuilder whereCondition = new StringBuilder("");
 		StringBuilder emailString = new StringBuilder("");
@@ -1588,11 +1598,47 @@ public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequ
 							return ids;
 						}
 					});
-			
+
 		}catch(Exception ex){
 			LOGGER.error("EXCEPTION : while fetching events for the logged in user with email id "+emailList.toString());
 		}
 		return programIds;
+	}
+
+	private void saveCoordinatorHistory(CoordinatorHistory crdntrHstry){
+		crdntrHstry.setAssignedTime(new Timestamp(new Date().getTime()));
+		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(crdntrHstry);
+		if (crdntrHstry.getId() == 0) {
+			Number newId = this.insertCoordinatorHistory.executeAndReturnKey(parameterSource);
+			crdntrHstry.setId(newId.intValue());
+		}
+	}
+
+	private void updateCoordinatorHistory(int programId,CoordinatorHistory updatedcrdntrHstry) {
+		CoordinatorHistory oldcrdntrHstry = null;
+		Map<String, Object> params = new HashMap<>();
+		params.put("programId", programId);
+		try{
+			oldcrdntrHstry = this.namedParameterJdbcTemplate.queryForObject(
+					"SELECT id,program_id,coordinator_name,coordinator_email,"
+							+ "abhyasi_id,assigned_time,removal_time FROM coordinator_history"
+							+ " WHERE program_id=:programId ORDER BY assigned_time DESC LIMIT 1", params,BeanPropertyRowMapper.newInstance(CoordinatorHistory.class));
+		} catch(Exception ex){
+			LOGGER.error("Coordinator history not found for given program Id");
+		}
+
+		if(null == oldcrdntrHstry){
+			saveCoordinatorHistory(updatedcrdntrHstry);
+		}else{
+			if(!updatedcrdntrHstry.getCoordinatorEmail().equals(oldcrdntrHstry.getCoordinatorEmail())){
+				BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(oldcrdntrHstry);
+				this.namedParameterJdbcTemplate.update("UPDATE coordinator_history SET " 
+						+ "removal_time = CURRENT_TIMESTAMP "
+						+ "WHERE id=:id",parameterSource);
+				saveCoordinatorHistory(updatedcrdntrHstry);
+			}
+		}
+
 	}
 
 }

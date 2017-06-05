@@ -1,7 +1,10 @@
 package org.srcm.heartfulness.validator;
 
+import java.util.List;
+
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.SessionDetails;
+import org.srcm.heartfulness.model.json.request.SearchSession;
 import org.srcm.heartfulness.model.json.response.PMPResponse;
 
 public interface SessionDetailsValidator {
@@ -55,5 +58,16 @@ public interface SessionDetailsValidator {
 	 * @return success or error response depending on the validation.
 	 */
 	PMPResponse validateGetSessionDetailsParams(SessionDetails sessionDetails, PMPAPIAccessLog accessLog);
+
+	/**
+	 * Method is used to validate parameters which are
+	 * send to search sessions for a particular event.
+	 * @param searchSession Object is used to search session for 
+	 * a particular event Id.
+	 * @param accessLog to log details in PMP system.
+	 * @return Success or Error response is returned depending on
+	 * validations.
+	 */
+	PMPResponse validateSearchSessionParams(SearchSession searchSession, PMPAPIAccessLog accessLog);
 
 }

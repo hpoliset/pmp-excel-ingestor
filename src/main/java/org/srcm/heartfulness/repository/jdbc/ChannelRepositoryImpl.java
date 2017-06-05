@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.model.Channel;
+import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.model.json.response.ProgramChannelType;
 import org.srcm.heartfulness.repository.ChannelRepository;
 
 /**
@@ -119,14 +122,34 @@ public class ChannelRepositoryImpl implements ChannelRepository {
 	}
 
 	@Override
-	public List<String> getChannelType(int channelId) {
+	public List<ProgramChannelType> getChannelType(int channelId) {
+		List<ProgramChannelType> progChannelType = new ArrayList<ProgramChannelType>();
 		Map<String, Object> params = new HashMap<>();
 		params.put("channelId", channelId);
 		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
-		List<String> listOfChannelTypes = 
-				this.namedParameterJdbcTemplate.queryForList("SELECT name FROM channel_type "
-						+ "WHERE active=1 and channel_id=:channelId ", sqlParameterSource, String.class);
-		return listOfChannelTypes;
+		
+		progChannelType = this.namedParameterJdbcTemplate.query("SELECT id,name FROM channel_type "
+				+ "WHERE active=1 and channel_id =:channelId",sqlParameterSource
+				, BeanPropertyRowMapper.newInstance(ProgramChannelType.class));
+		return progChannelType;
+	}
+
+	@Override
+	public boolean validateChannelType(int channelTypeId) {
+		String channelName = this.jdbcTemplate.query("SELECT name from channel_type where id=? AND active=1",
+				new Object[] { channelTypeId }, new ResultSetExtractor<String>() {
+			@Override
+			public String extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+				if (resultSet.next()) {
+					return resultSet.getString(1);
+				}
+				return "";
+			}
+		});
+		if(channelName.isEmpty())
+			return false;
+		else
+			return true;
 	}
 
 }

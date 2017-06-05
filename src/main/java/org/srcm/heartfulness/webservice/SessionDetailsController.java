@@ -1,5 +1,6 @@
 package org.srcm.heartfulness.webservice;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,14 +17,18 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.srcm.heartfulness.constants.DashboardConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.SessionDetails;
+import org.srcm.heartfulness.model.User;
+import org.srcm.heartfulness.model.json.request.SearchSession;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.PMPResponse;
 import org.srcm.heartfulness.model.json.response.SuccessResponse;
 import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.SessionDetailsService;
+import org.srcm.heartfulness.service.UserProfileService;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
 import org.srcm.heartfulness.validator.PMPAuthTokenValidator;
@@ -53,6 +58,9 @@ public class SessionDetailsController {
 
 	@Autowired
 	SessionDetailsService sessionDtlsSrcv;
+
+	@Autowired
+	private UserProfileService userProfileService;
 
 	/**
 	 * Web service endpoint to create and update a session details for a
@@ -90,6 +98,16 @@ public class SessionDetailsController {
 		PMPResponse tokenResponse = authTokenVldtr.validateAuthToken(authToken, accessLog);
 		if (tokenResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(tokenResponse, HttpStatus.OK);
+		}
+
+		User user = userProfileService.loadUserByEmail(accessLog.getUsername());
+		if (null == user) {
+
+			LOGGER.info(DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			accessLog.setErrorMessage(DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP, StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		}
 
 		PMPResponse validationResponse = sessionDtlsValidator.validateSessionDetailsParams(sessionDetails, accessLog);
@@ -157,6 +175,16 @@ public class SessionDetailsController {
 			return new ResponseEntity<PMPResponse>(tokenResponse, HttpStatus.OK);
 		}
 
+		User user = userProfileService.loadUserByEmail(accessLog.getUsername());
+		if (null == user) {
+
+			LOGGER.info(DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			accessLog.setErrorMessage(DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP, StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		}
+
 		PMPResponse validationResponse = sessionDtlsValidator.validateDeleteSessionDetailParams(sessionDetails, accessLog);
 		if (validationResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(validationResponse, HttpStatus.OK);
@@ -212,17 +240,104 @@ public class SessionDetailsController {
 			return new ResponseEntity<PMPResponse>(pmpResponse, HttpStatus.OK);
 		}
 
+		User user = userProfileService.loadUserByEmail(accessLog.getUsername());
+		if (null == user) {
+
+			LOGGER.info(DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			accessLog.setErrorMessage(DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP, StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		}
+
 		PMPResponse validationResponse = sessionDtlsValidator.validateGetSessionDetailsParams(sessionDetails, accessLog);
 		if (validationResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(validationResponse, HttpStatus.OK);
 		}
 
+		List<String> emailList = new ArrayList<String>();
+		if(null != user.getAbyasiId()){
+			emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
+		}
+		if(emailList.size() == 0){
+			emailList.add(accessLog.getUsername());
+		}
+
 		List<SessionDetails> sessionDtlsList = sessionDtlsSrcv.getSessionDetails(sessionDetails.getProgramId(),
-				sessionDetails.getEventId());
+				sessionDetails.getEventId(),emailList,user.getRole());
 
 
 		updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS,accessLog.getErrorMessage(), StackTraceUtils.convertPojoToJson(sessionDtlsList));
 		return new ResponseEntity<List<SessionDetails>>(sessionDtlsList, HttpStatus.OK);
+	}
+	
+	
+	/**
+	 * Web service endpoint to search and return list of session details for a particular
+	 * event. The HTTP request body is expected to contain a SearchSession
+	 * object in JSON format.
+	 * 
+	 * If session details are avaibale for a particular event after searching,
+	 *  it is returned in a list format with HTTP status 200.
+	 * 
+	 * If not an empty list is returned.
+	 * 
+	 * @param authToken
+	 *            Token to be validated against mysrcm endpoint.
+	 *            
+	 * @param searchSessionRequest Object to get the search filters.
+	 * @param httpRequest
+	 * @return If search criteria matches SearchSession object with
+	 * added list of session details is returned back.
+	 */
+	@RequestMapping(value = "/session/search",
+			method = RequestMethod.POST,
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> searchSession(@RequestHeader(value = "Authorization") String authToken,
+			@RequestBody SearchSession searchSessionRequest, @Context HttpServletRequest httpRequest){
+
+		//save request details in PMP
+		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,StackTraceUtils.convertPojoToJson(searchSessionRequest));
+
+		//validate token details
+		PMPResponse pmpResponse = authTokenVldtr.validateAuthToken(authToken, accessLog);
+		if(pmpResponse instanceof ErrorResponse){
+			return new ResponseEntity<PMPResponse>(pmpResponse, HttpStatus.OK);
+		}
+
+		User user = userProfileService.loadUserByEmail(accessLog.getUsername());
+		if (null == user) {
+			LOGGER.info(DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			accessLog.setErrorMessage(DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP, StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		}
+
+		PMPResponse validationResponse = sessionDtlsValidator.validateSearchSessionParams(searchSessionRequest, accessLog);
+		if (validationResponse instanceof ErrorResponse) {
+			return new ResponseEntity<PMPResponse>(validationResponse, HttpStatus.OK);
+		}
+
+		List<String> emailList = new ArrayList<String>();
+		if(null != user.getAbyasiId()){
+			emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
+		}
+		if(emailList.size() == 0){
+			emailList.add(accessLog.getUsername());
+		}
+		try{
+			searchSessionRequest.setSessionList(sessionDtlsSrcv.getSearchSessionData(emailList,user.getRole(),searchSessionRequest));
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS,null, StackTraceUtils.convertPojoToJson(searchSessionRequest));
+			return new ResponseEntity<SearchSession>(searchSessionRequest, HttpStatus.OK ); 
+		} catch(Exception e){
+			LOGGER.error("Exception while searching session list for logged in user {}{}",accessLog.getUsername(),e);
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.PROCESSING_FAILED);
+			updatePMPAPIAccessLog(accessLog, ErrorConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e), StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
 	}
 
 
