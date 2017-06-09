@@ -11,6 +11,8 @@ public class CoordinatorAccessControlEmail {
 	private String preceptorEmailId;
 	private String preceptorName;
 	private String eventPlace;
+	private String uploaderMail;
+	private String jiraNumber;
 
 	public String getCoordinatorEmail() {
 		return coordinatorEmail;
@@ -83,13 +85,30 @@ public class CoordinatorAccessControlEmail {
 	public void setEventPlace(String eventPlace) {
 		this.eventPlace = eventPlace;
 	}
+	
+	public String getUploaderMail() {
+		return uploaderMail;
+	}
+
+	public void setUploaderMail(String uploaderMail) {
+		this.uploaderMail = uploaderMail;
+	}
+
+	public String getJiraNumber() {
+		return jiraNumber;
+	}
+
+	public void setJiraNumber(String jiraNumber) {
+		this.jiraNumber = jiraNumber;
+	}
 
 	@Override
 	public String toString() {
 		return "CoordinatorAccessControlEmail [coordinatorEmail=" + coordinatorEmail + ", eventName=" + eventName
 				+ ", coordinatorName=" + coordinatorName + ", programId=" + programId + ", programCreateDate="
 				+ programCreateDate + ", eventID=" + eventID + ", preceptorEmailId=" + preceptorEmailId
-				+ ", preceptorName=" + preceptorName + ", eventPlace=" + eventPlace + "]";
+				+ ", preceptorName=" + preceptorName + ", eventPlace=" + eventPlace + ", uploaderMail=" + uploaderMail
+				+ ", jiraNumber=" + jiraNumber + "]";
 	}
 
 }

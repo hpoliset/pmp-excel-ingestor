@@ -2,6 +2,8 @@ package org.srcm.heartfulness.rest.template;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +13,11 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.srcm.heartfulness.proxy.ProxyHelper;
-import org.srcm.heartfulness.repository.jdbc.ProgramRepositoryImpl;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.DeleteMessageRequest;
 import com.amazonaws.services.sqs.model.GetQueueUrlRequest;
 import com.amazonaws.services.sqs.model.Message;
@@ -61,11 +65,9 @@ public class AmazonSqsRestTemplate extends RestTemplate {
 	@Value("${proxyPassword}")
 	private String proxyPassword;
 	
-	/*private BasicAWSCredentials credentials;*/
+	private BasicAWSCredentials credentials;
 	
     private AmazonSQS sqs;
-    
-    /*private String simpleQueue;*/
 
 	public String getAccesskeyid() {
 		return accesskeyid;
@@ -134,7 +136,9 @@ public class AmazonSqsRestTemplate extends RestTemplate {
      * @param message
      */
     public void sendMessageToQueue(String queueUrl, String message){
-        SendMessageResult messageResult =  this.sqs.sendMessage(new SendMessageRequest(queueUrl, message));
+    	SendMessageRequest sendMessageRequest = new SendMessageRequest(queueUrl, message);
+    	sendMessageRequest.setMessageGroupId("1");
+        SendMessageResult messageResult =  this.sqs.sendMessage(sendMessageRequest);
         LOGGER.info("Message result - {}",messageResult.toString());
     }
 
@@ -163,23 +167,26 @@ public class AmazonSqsRestTemplate extends RestTemplate {
 	/**
 	 * Method to set the proxy (development use only)
 	 */
-	/*public void setProxy() {
-		if (proxy) {
-			this.credentials = new   BasicAWSCredentials(getAccesskeyid(), getSecretkey());
-			this.simpleQueue = getQueuename();
-            
-            ClientConfiguration clientConfig = new ClientConfiguration();
-            clientConfig.setProtocol(Protocol.HTTP);
-            clientConfig.setProxyHost(proxyHost);
-            clientConfig.setProxyPort(proxyPort);
-            clientConfig.setProxyUsername(proxyUser);
-            clientConfig.setProxyPassword(proxyPassword);
-            
-            AmazonSQSClientBuilder builder = AmazonSQSClientBuilder.standard();
-            builder.setRegion(getRegion());
-            builder.setClientConfiguration(clientConfig);
-            this.sqs = builder.withCredentials(new AWSStaticCredentialsProvider(this.credentials)).build();
-		}
-	}*/
+    @PostConstruct
+    public void init(){
+        this.credentials = new BasicAWSCredentials(getAccesskeyid(), getSecretkey());
+        AmazonSQSClientBuilder builder = AmazonSQSClientBuilder.standard();
+        builder.setRegion(this.region);
+        if (proxy) {
+        	/*CredentialsProvider credsProvider = new BasicCredentialsProvider();
+			credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
+					new UsernamePasswordCredentials(proxyUser, proxyPassword));
+			HttpClientBuilder clientBuilder = HttpClientBuilder.create();
+			clientBuilder.useSystemProperties();
+			clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
+			clientBuilder.setDefaultCredentialsProvider(credsProvider);
+			clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
+			CloseableHttpClient client = clientBuilder.build();
+			HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+			factory.setHttpClient(client);
+			this.setRequestFactory(factory);*/
+        }
+        this.sqs = builder.withCredentials(new AWSStaticCredentialsProvider(this.credentials)).build();
+    } 
 
 }

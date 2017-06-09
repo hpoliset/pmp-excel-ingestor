@@ -248,17 +248,15 @@ public class CoordinatorAccessControlMail {
 	 * @throws UnsupportedEncodingException
 	 * @throws ParseException
 	 */
-	public void sendMailToPreceptorToUpdateCoordinatorEmailID(
-			CoordinatorAccessControlEmail coordinatorAccessControlEmail) throws AddressException, MessagingException,
-	UnsupportedEncodingException, ParseException {
+	public void sendMailToPreceptorToUpdateCoordinatorEmailID(CoordinatorAccessControlEmail coordinatorAccessControlEmail)
+			throws AddressException, MessagingException,UnsupportedEncodingException, ParseException {
 		try {
 			Session session = sendMail.getSession();
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(frommail, name));
 			addParameter(EmailLogConstants.PRECEPTOR_NAME_PARAMETER,
 					sendMail.getName(coordinatorAccessControlEmail.getPreceptorName()));
-			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
-					+ "?id=" + coordinatorAccessControlEmail.getEventID());
+			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + coordinatorAccessControlEmail.getEventID());
 			addParameter(EmailLogConstants.EVENT_PLACE_PARAMETER, coordinatorAccessControlEmail.getEventPlace());
 			addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinatorAccessControlEmail.getEventName());
 			SimpleDateFormat inputsdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
@@ -276,34 +274,32 @@ public class CoordinatorAccessControlMail {
 			Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
 			transport.send(message);
 			transport.close();
-			LOGGER.info("Mail sent successfully to Coordinator : {} ",
-					coordinatorAccessControlEmail.getPreceptorEmailId());
-			PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
-					coordinatorAccessControlEmail.getCoordinatorEmail(),
-					EmailLogConstants.PRECEPTOR_EMAIL_TO_UPDATE_COORDINATOR_EMAIL_ID, EmailLogConstants.STATUS_SUCCESS,
-					null);
+
+			LOGGER.info("Mail sent successfully to Coordinator : {} ",coordinatorAccessControlEmail.getPreceptorEmailId());
+			PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),coordinatorAccessControlEmail.getCoordinatorEmail(),
+					EmailLogConstants.PRECEPTOR_EMAIL_TO_UPDATE_COORDINATOR_EMAIL_ID, EmailLogConstants.STATUS_SUCCESS,	null);
 			mailLogRepository.createMailLog(pmpMailLog);
 		} catch (MessagingException e) {
+
 			LOGGER.error("MessagingException : Sending Mail Failed : {} " + e.getMessage());
-			PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
-					coordinatorAccessControlEmail.getCoordinatorEmail(),
-					EmailLogConstants.PRECEPTOR_EMAIL_TO_UPDATE_COORDINATOR_EMAIL_ID, EmailLogConstants.STATUS_FAILED,
-					StackTraceUtils.convertStackTracetoString(e));
+			PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),coordinatorAccessControlEmail.getCoordinatorEmail(),
+					EmailLogConstants.PRECEPTOR_EMAIL_TO_UPDATE_COORDINATOR_EMAIL_ID, EmailLogConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(e));
 			mailLogRepository.createMailLog(pmpMailLog);
+
 		} catch (ParseException e) {
+
 			LOGGER.error("ParseException : Sending Mail Failed : {} " + e.getMessage());
-			PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
-					coordinatorAccessControlEmail.getCoordinatorEmail(),
-					EmailLogConstants.PRECEPTOR_EMAIL_TO_UPDATE_COORDINATOR_EMAIL_ID, EmailLogConstants.STATUS_FAILED,
-					StackTraceUtils.convertStackTracetoString(e));
+			PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),coordinatorAccessControlEmail.getCoordinatorEmail(),
+					EmailLogConstants.PRECEPTOR_EMAIL_TO_UPDATE_COORDINATOR_EMAIL_ID, EmailLogConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(e));
 			mailLogRepository.createMailLog(pmpMailLog);
+
 		} catch (Exception e) {
+
 			LOGGER.error("Exception : Sending Mail Failed : {} " + e.getMessage());
-			PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),
-					coordinatorAccessControlEmail.getCoordinatorEmail(),
-					EmailLogConstants.PRECEPTOR_EMAIL_TO_UPDATE_COORDINATOR_EMAIL_ID, EmailLogConstants.STATUS_FAILED,
-					StackTraceUtils.convertStackTracetoString(e));
+			PMPMailLog pmpMailLog = new PMPMailLog(coordinatorAccessControlEmail.getProgramId(),coordinatorAccessControlEmail.getCoordinatorEmail(),
+					EmailLogConstants.PRECEPTOR_EMAIL_TO_UPDATE_COORDINATOR_EMAIL_ID, EmailLogConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(e));
 			mailLogRepository.createMailLog(pmpMailLog);
+
 		}
 
 	}
@@ -332,6 +328,14 @@ public class CoordinatorAccessControlMail {
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
+
+		if(null != coordinator.getJiraNumber() && !coordinator.getJiraNumber().isEmpty()){
+			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+		}
+		if(null != coordinator.getUploaderMail() && !coordinator.getUploaderMail().isEmpty()){
+			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(coordinator.getUploaderMail()));	
+		}
+
 		message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
 		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent),
 				EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
@@ -351,7 +355,7 @@ public class CoordinatorAccessControlMail {
 	 * @param <code>CoordinatorAccessControlEmail</code> coordinator
 	 */
 	public void sendMailToCoordinatorWithLinktoCreateProfile(CoordinatorAccessControlEmail coordinator) {
-		
+
 		LOGGER.error("Sending mail to coordinator with a link to create profile");
 		try {
 			Session session = sendMail.getSession();
@@ -370,6 +374,14 @@ public class CoordinatorAccessControlMail {
 			Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
 			addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
+
+			if(null != coordinator.getJiraNumber() && !coordinator.getJiraNumber().isEmpty()){
+				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+			}
+			if(null != coordinator.getUploaderMail() && !coordinator.getUploaderMail().isEmpty()){
+				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(coordinator.getUploaderMail()));	
+			}
+
 			message.setSubject(coordinatormailsubjecttocreateaccount + " - " + coordinator.getEventName());
 			message.setContent(getMessageContentbyTemplateName(coordinatormailtemplatetocreateaccount),
 					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
@@ -404,7 +416,7 @@ public class CoordinatorAccessControlMail {
 
 	}
 
-	public void sendApprovalMailToPrimaryCoordinator(Program program, User user, String eventId, String secondaryCoordinatorNotes)
+	public void sendApprovalMailToPrimaryCoordinator(Program program, User user, String eventId, String secondaryCoordinatorNotes,String uploaderEmail)
 			throws MessagingException, UnsupportedEncodingException {
 		try{
 			addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, null != program.getCoordinatorName() ? program.getCoordinatorName() : "");
@@ -418,6 +430,14 @@ public class CoordinatorAccessControlMail {
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(frommail, name));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(program.getCoordinatorEmail()));
+
+			if(null != program.getJiraIssueNumber() && !program.getJiraIssueNumber().isEmpty()){
+				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+			}
+			if(null != uploaderEmail && !uploaderEmail.isEmpty()){
+				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(uploaderEmail));
+			}
+
 			message.setSubject(requestMailSubject + eventId);
 			message.setContent(getMessageContentbyTemplateName(approvalMailTemplate),
 					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
@@ -427,11 +447,11 @@ public class CoordinatorAccessControlMail {
 			Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
 			transport.send(message);
 			transport.close();
-			
+
 			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(program.getProgramId()), program.getCoordinatorEmail(),
 					EmailLogConstants.MAIL_TO_PRIMARY_COORDINATOR_FOR_APPROVAL, EmailLogConstants.STATUS_SUCCESS, null);
 			mailLogRepository.createMailLog(pmpMailLog);
-			
+
 		} catch(Exception ex){
 			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(program.getProgramId()), program.getCoordinatorEmail(),
 					EmailLogConstants.MAIL_TO_PRIMARY_COORDINATOR_FOR_APPROVAL, EmailLogConstants.STATUS_FAILED,

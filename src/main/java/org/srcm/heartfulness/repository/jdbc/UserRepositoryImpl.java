@@ -152,4 +152,17 @@ public class UserRepositoryImpl implements UserRepository {
 		}
 		return emailList;
 	}
+
+	@Override
+	public User getUserMailWithId(int userId) {
+		User user = new User();
+		Map<String, Object> map = new HashMap<>();
+		map.put("id", userId);
+		try{
+			user = this.namedParameterJdbcTemplate.queryForObject("SELECT * FROM user WHERE id =:id ", map, BeanPropertyRowMapper.newInstance(User.class));
+		} catch(Exception ex){
+			logger.error("Error while getting user information from db {}",ex);
+		}
+		return user;
+	}
 }

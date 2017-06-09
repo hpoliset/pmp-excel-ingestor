@@ -39,5 +39,7 @@ public interface UserRepository {
 	 * for a given MYSRCM Abhyasi Id.
 	 */
 	List<String> getEmailsWithAbhyasiId(String abyasiId);
+	
+	public User getUserMailWithId(int userId);
 
 }

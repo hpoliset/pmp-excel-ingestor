@@ -1398,6 +1398,8 @@ public class ProgramServiceImpl implements ProgramService {
 			accessControlEmail.setEventName(program.getProgramChannel());
 			accessControlEmail.setProgramId(String.valueOf(program.getProgramId()));
 			accessControlEmail.setEventPlace(program.getEventPlace());
+			accessControlEmail.setUploaderMail(program.getUploaderMail());
+			accessControlEmail.setJiraNumber(program.getJiraIssueNumber());
 			SimpleDateFormat inputsdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 			accessControlEmail.setProgramCreateDate(inputsdf.format(program.getProgramStartDate()));
 			Runnable task = new Runnable() {

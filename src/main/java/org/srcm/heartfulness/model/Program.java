@@ -97,6 +97,10 @@ public class Program {
 	private String jiraIssueNumber;
 	private String sendersEmailAddress;
 	private int sqsPushStatus;
+	private int userId;
+	private int uploadedFilesId;
+	@JsonIgnore
+	private String uploaderMail;
 
 	public String getSrcmGroup() {
 		return srcmGroup;
@@ -558,6 +562,31 @@ public class Program {
 
 	public void setSqsPushStatus(int sqsPushStatus) {
 		this.sqsPushStatus = sqsPushStatus;
+	}
+	
+
+	public int getUserId() {
+		return userId;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+
+	public int getUploadedFilesId() {
+		return uploadedFilesId;
+	}
+
+	public void setUploadedFilesId(int uploadedFilesId) {
+		this.uploadedFilesId = uploadedFilesId;
+	}
+	
+	public String getUploaderMail() {
+		return uploaderMail;
+	}
+
+	public void setUploaderMail(String uploaderMail) {
+		this.uploaderMail = uploaderMail;
 	}
 
 	@Override

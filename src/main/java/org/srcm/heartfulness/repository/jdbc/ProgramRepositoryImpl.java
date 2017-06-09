@@ -34,6 +34,7 @@ import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.ProgramPermissionLetterdetails;
+import org.srcm.heartfulness.model.UploadedFiles;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.repository.ParticipantRepository;
@@ -58,6 +59,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	private SimpleJdbcInsert insertCoOrdinatorStatistics;
 	private SimpleJdbcInsert insertDeletedParticipants;
 	private SimpleJdbcInsert insertProgramPermissionLetter;
+	private SimpleJdbcInsert insertUploadedFiles;
 
 	@Autowired
 	public ProgramRepositoryImpl(DataSource dataSource, ParticipantRepository participantRepository) {
@@ -1598,8 +1600,23 @@ public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequ
 	}
 	
 	@Override
-	public void updateProgramIdStatusAfterSQSPush(int programId) {
-		this.jdbcTemplate.update("UPDATE program set sqs_push_status=1 WHERE program_id=? ", new Object[] { programId });
+	public void updateProgramIdStatus(Integer status, List<Integer> programIds) {
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		parameters.addValue("status", status);
+		parameters.addValue("programIds", programIds);
+		this.namedParameterJdbcTemplate.update("UPDATE program set sqs_push_status=:status WHERE program_id IN (:programIds) ", parameters);
+	}
+	
+	@Override
+	public void saveUploadedFiles(UploadedFiles uploadFiles) {
+		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(uploadFiles);
+		if(uploadFiles.getId()==0){
+			Number id = this.insertUploadedFiles.executeAndReturnKey(source);
+			uploadFiles.setId(id.intValue());
+		}else{
+			this.namedParameterJdbcTemplate.update("UPDATE uploaded_files set status =:status where id=:id ", source);
+		}
+		
 	}
 
 }

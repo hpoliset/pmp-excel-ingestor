@@ -23,6 +23,9 @@ public class CoordinatorEmail {
 	private String eventCity;
 	private String eventPlace;
 	private Date programCreationDate;
+	private int uploaderId;
+	private String uploaderMail;
+	private String jiraNumber;
 
 
 	public String getCoordinatorEmail() {
@@ -120,6 +123,30 @@ public class CoordinatorEmail {
 	public void setProgramCreationDate(Date programCreationDate) {
 		this.programCreationDate = programCreationDate;
 	}
+	
+	public String getUploaderMail() {
+		return uploaderMail;
+	}
+
+	public void setUploaderMail(String uploaderMail) {
+		this.uploaderMail = uploaderMail;
+	}
+
+	public int getUploaderId() {
+		return uploaderId;
+	}
+
+	public void setUploaderId(int uploaderId) {
+		this.uploaderId = uploaderId;
+	}
+
+	public String getJiraNumber() {
+		return jiraNumber;
+	}
+
+	public void setJiraNumber(String jiraNumber) {
+		this.jiraNumber = jiraNumber;
+	}
 
 	@Override
 	public String toString() {
@@ -127,8 +154,9 @@ public class CoordinatorEmail {
 				+ totalParticipantCount + ", pctptAlreadyRcvdWlcmMailCount=" + pctptAlreadyRcvdWlcmMailCount
 				+ ", pctptRcvdWlcmMailYstrdayCount=" + pctptRcvdWlcmMailYstrdayCount + ", eventName=" + eventName
 				+ ", coordinatorName=" + coordinatorName + ", programId=" + programId + ", programCreateDate="
-				+ programCreateDate + ", eventID=" + eventID + ", eventCity=" + eventCity + ", eventPlace="
-				+ eventPlace + ", programCreationDate=" + programCreationDate + "]";
+				+ programCreateDate + ", eventID=" + eventID + ", eventCity=" + eventCity + ", eventPlace=" + eventPlace
+				+ ", programCreationDate=" + programCreationDate + ", uploaderMail=" + uploaderMail + ", uploaderId="
+				+ uploaderId + ", jiraNumber=" + jiraNumber + "]";
 	}
 
 	@Override

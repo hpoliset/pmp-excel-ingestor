@@ -9,6 +9,7 @@ import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.ProgramPermissionLetterdetails;
+import org.srcm.heartfulness.model.UploadedFiles;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
 
@@ -427,6 +428,10 @@ public interface ProgramRepository {
 
 	public List<Integer> getProgramIdsForSQSPush();
 
-	public void updateProgramIdStatusAfterSQSPush(int programId);
+	public void updateProgramIdStatus(Integer status, List<Integer> programIds);
+	
+	public void saveUploadedFiles(UploadedFiles uploadFiles);
+
+	
 
 }

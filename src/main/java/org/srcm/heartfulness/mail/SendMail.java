@@ -600,7 +600,7 @@ public class SendMail {
 	 *             if not able to send email.
 	 * @throws UnsupportedEncodingException
 	 */
-	public void sendMailNotificationToCoordinator(CoordinatorEmail crdntrEmail, Session session)
+	public void sendMailNotificationToCoordinator(CoordinatorEmail crdntrEmail, Session session,String uploaderEmail,String jiraIssueNumber)
 			throws AddressException, MessagingException, UnsupportedEncodingException, ParseException {
 
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER,
@@ -630,6 +630,11 @@ public class SendMail {
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(crdntrEmail.getCoordinatorEmail()));
+		if(!uploaderEmail.isEmpty()){
+			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(uploaderEmail));
+		}
+		if(null != jiraIssueNumber)
+			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
 		message.setSubject(crdntrmailsubject + outputsdf.format(cal.getTime()));
 		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename),
 				EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
@@ -642,14 +647,14 @@ public class SendMail {
 	}
 
 	public void sendGeneratedEwelcomeIdDetailslToCoordinator(CoordinatorEmail coordinatorEmail,
-			List<Participant> participants, List<Participant> failedParticipants, Session session)
+			List<Participant> participants, List<Participant> failedParticipants, Session session,String uploaderEmail,String jiraIssueNumber)
 					throws AddressException, MessagingException, UnsupportedEncodingException {
 
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail, name));
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER,
-				coordinatorEmail.getCoordinatorName() != null ? getName(coordinatorEmail.getCoordinatorName())
-						: "Friend");
+				coordinatorEmail.getCoordinatorName() != null ? getName(coordinatorEmail.getCoordinatorName()): "Friend");
+						
 		addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, null != coordinatorEmail.getEventName() ? "- "
 				+ coordinatorEmail.getEventName() : "");
 		addParameter(EmailLogConstants.EVENT_PLACE_PARAMETER,
@@ -771,6 +776,11 @@ public class SendMail {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinatorEmail.getCoordinatorEmail()));
+		if(!uploaderEmail.isEmpty()){
+			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(uploaderEmail));
+		}
+		if(null != jiraIssueNumber)
+			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
 		message.setSubject(crdntrmailforewlcmidsubject
 				+ (null != coordinatorEmail.getEventName() ? " - " + coordinatorEmail.getEventName() : ""));
 		message.setContent(getMessageContentbyTemplateName(crdntrewlcomeidmailtemplatename),
@@ -932,5 +942,5 @@ public class SendMail {
 		transport.send(message);
 		transport.close();
 	}
-	
+
 }
