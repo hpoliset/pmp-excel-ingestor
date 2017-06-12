@@ -319,8 +319,7 @@ public class CoordinatorAccessControlMail {
 
 		LOGGER.error("Sending mail to coordinator to update Preceptor Id ");
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, sendMail.getName(coordinator.getCoordinatorName()));
-		addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
-				+ "?id=" + coordinator.getEventID());
+		addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + coordinator.getEventID());
 		addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinator.getEventName());
 		SimpleDateFormat outputsdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
 		addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER,null != coordinator.getProgramCreateDate() ? outputsdf.format(coordinator.getProgramCreateDate()) : "");
@@ -337,8 +336,7 @@ public class CoordinatorAccessControlMail {
 		}
 
 		message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
-		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent),
-				EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
+		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent),EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);

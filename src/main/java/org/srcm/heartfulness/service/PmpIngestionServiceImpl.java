@@ -324,28 +324,24 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 				try {
 					String isValid = coordinatorAccessControlService.validatePreceptorIDCardNumberandCreateUser(program, id,null);
 					if (null != isValid && "Preceptor Email Id is not available for the provided preceptor Id" != isValid ) {
-						participantService.updateParticipantEWelcomeIDStatuswithProgramID(program.getProgramId(),
-								PMPConstants.EWELCOMEID_FAILED_STATE, isValid);
+						participantService.updateParticipantEWelcomeIDStatuswithProgramID(program.getProgramId(),PMPConstants.EWELCOMEID_FAILED_STATE, isValid);
 						Runnable task = new Runnable() {
 							@Override
 							public void run() {
 								try {
 									sendMailToCoordinatorToUpdatePreceptorID(program);
 								} catch (Exception ex) {
-									LOGGER.error("Error while sending email to the coordinator - {} ",
-											program.getCoordinatorEmail());
+									LOGGER.error("Error while sending email to the coordinator - {} ",program.getCoordinatorEmail());
 								}
 							}
 						};
 						new Thread(task, "ServiceThread").start();
 					} else {
-						participantService.updateParticipantEWelcomeIDStatuswithProgramID(program.getProgramId(),
-								PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, null);
+						participantService.updateParticipantEWelcomeIDStatuswithProgramID(program.getProgramId(),PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, null);
 					}
 
 				} catch (Exception ex) {
-					LOGGER.error("error while validating preceptor ID : ",
-							StackTraceUtils.convertStackTracetoString(ex));
+					LOGGER.error("error while validating preceptor ID : ",StackTraceUtils.convertStackTracetoString(ex));
 				}
 			}
 		};
