@@ -159,9 +159,10 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 						}
 						program.setUploaderMail(null == user ? username : user.getEmail());
 						program.setUserId(null == user ? 0 : user.getId());
-						program.setUploadedFilesId(uploadFiles.getId());
+						program.setUploadedFileId(uploadFiles.getId());
 
 						programRepository.save(program);
+						uploadFiles.setStatus(ErrorConstants.STATUS_SUCCESS);
 						programRepository.saveUploadedFiles(uploadFiles);
 						validatePreceptorIdandCoordinatorEmailIdAndPersistProgram(program, response, errorResponse); // preceptor ID card number validation
 					} catch(NullPointerException npex){

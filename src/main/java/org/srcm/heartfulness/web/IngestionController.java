@@ -101,9 +101,9 @@ public class IngestionController {
 	 */
 	@RequestMapping(value = "/ingest/processBulkUpload", method = RequestMethod.POST)
 	public String processFileUpload(@RequestParam MultipartFile uploadedExcelFiles[], ModelMap modelMap,
-			HttpServletResponse response,@Context HttpServletRequest httpRequest,@ModelAttribute("generateEWelcomeId") String eWelcomeIdCheckbox) throws IOException {
+			HttpServletResponse response, HttpServletRequest httpRequest,@ModelAttribute("generateEWelcomeId") String eWelcomeIdCheckbox) throws IOException {
 
-		UserDetails userDetails= (UserDetails)httpRequest.getSession().getAttribute("Authentication");
+		UserDetails userDetails = (UserDetails)httpRequest.getSession().getAttribute("Authentication");
 		List<ExcelUploadResponse> responseList = pmpIngestionService.parseAndPersistExcelFile(uploadedExcelFiles,eWelcomeIdCheckbox,userDetails.getUsername());
 		modelMap.addAttribute("uploadReponse", responseList);
 		return "bulkUploadResponse";

@@ -98,7 +98,7 @@ public class Program {
 	private String sendersEmailAddress;
 	private int sqsPushStatus;
 	private int userId;
-	private int uploadedFilesId;
+	private int uploadedFileId;
 	@JsonIgnore
 	private String uploaderMail;
 
@@ -573,14 +573,14 @@ public class Program {
 		this.userId = userId;
 	}
 
-	public int getUploadedFilesId() {
-		return uploadedFilesId;
+	public int getUploadedFileId() {
+		return uploadedFileId;
 	}
 
-	public void setUploadedFilesId(int uploadedFilesId) {
-		this.uploadedFilesId = uploadedFilesId;
+	public void setUploadedFileId(int uploadedFileId) {
+		this.uploadedFileId = uploadedFileId;
 	}
-	
+
 	public String getUploaderMail() {
 		return uploaderMail;
 	}

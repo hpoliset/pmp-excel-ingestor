@@ -65,15 +65,13 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	public ProgramRepositoryImpl(DataSource dataSource, ParticipantRepository participantRepository) {
 		this.participantRepository = participantRepository;
 
-		this.insertProgram = new SimpleJdbcInsert(dataSource).withTableName("program").usingGeneratedKeyColumns(
-				"program_id");
-		this.insertCoOrdinatorStatistics = new SimpleJdbcInsert(dataSource).withTableName("coordinator_statistics")
-				.usingGeneratedKeyColumns("id");
-		this.insertDeletedParticipants = new SimpleJdbcInsert(dataSource).withTableName("deleted_participants")
-				.usingGeneratedKeyColumns("id");
+		this.insertProgram = new SimpleJdbcInsert(dataSource).withTableName("program").usingGeneratedKeyColumns("program_id");
+		this.insertCoOrdinatorStatistics = new SimpleJdbcInsert(dataSource).withTableName("coordinator_statistics").usingGeneratedKeyColumns("id");
+		this.insertDeletedParticipants = new SimpleJdbcInsert(dataSource).withTableName("deleted_participants").usingGeneratedKeyColumns("id");
 		this.insertProgramPermissionLetter=new SimpleJdbcInsert(dataSource).withTableName("program_permission_letters").usingGeneratedKeyColumns("permission_letter_id");
 		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.insertUploadedFiles = new SimpleJdbcInsert(dataSource).withTableName("uploaded_files").usingGeneratedKeyColumns("id");
 	}
 
 	/*

@@ -82,8 +82,8 @@ public class IngestionRestController {
 
 			//service layer call for data validation and extraction
 			//MultipartFile[] uploadedFile = new MultipartFile[] { excelDataFile };
-			UserDetails userDetails= (UserDetails)httpRequest.getSession().getAttribute("Authentication");
-			excelResponse = pmpIngestionService.parseAndPersistExcelFile(excelDataFile.getOriginalFilename(),excelDataFile.getBytes(),eWelcomeIdCheckbox,jiraIssueNumber,userDetails.getUsername());
+			//UserDetails userDetails= (UserDetails)httpRequest.getSession().getAttribute("Authentication");
+			excelResponse = pmpIngestionService.parseAndPersistExcelFile(excelDataFile.getOriginalFilename(),excelDataFile.getBytes(),eWelcomeIdCheckbox,jiraIssueNumber,accessLog.getUsername());
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 
 		} catch(Exception ex){
@@ -148,8 +148,8 @@ public class IngestionRestController {
 			/*for(Map.Entry<String, MultipartFile> map : uploadedFileDetails.entrySet()){
 				System.out.println("key=="+map.getKey()+"..value=="+map.getValue().getOriginalFilename());
 			}*/
-			UserDetails userDetails= (UserDetails)httpRequest.getSession().getAttribute("Authentication");
-			excelUploadResponseList = pmpIngestionService.parseAndPersistExcelFile(uploadedFileDetails,eWelcomeIdCheckbox,userDetails.getUsername());
+			//UserDetails userDetails= (UserDetails)httpRequest.getSession().getAttribute("Authentication");
+			excelUploadResponseList = pmpIngestionService.parseAndPersistExcelFile(uploadedFileDetails,eWelcomeIdCheckbox,accessLog.getUsername());
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 
 		} catch (Exception ex) {
