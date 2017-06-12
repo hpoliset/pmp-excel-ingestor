@@ -168,25 +168,20 @@ public class AmazonSqsRestTemplate extends RestTemplate {
 	 * Method to set the proxy (development use only)
 	 */
     @PostConstruct
-    public void init(){
-        this.credentials = new BasicAWSCredentials(getAccesskeyid(), getSecretkey());
-        AmazonSQSClientBuilder builder = AmazonSQSClientBuilder.standard();
-        builder.setRegion(this.region);
-        if (proxy) {
-        	/*CredentialsProvider credsProvider = new BasicCredentialsProvider();
-			credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
-					new UsernamePasswordCredentials(proxyUser, proxyPassword));
-			HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-			clientBuilder.useSystemProperties();
-			clientBuilder.setProxy(new HttpHost(proxyHost, proxyPort));
-			clientBuilder.setDefaultCredentialsProvider(credsProvider);
-			clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-			CloseableHttpClient client = clientBuilder.build();
-			HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
-			factory.setHttpClient(client);
-			this.setRequestFactory(factory);*/
-        }
-        this.sqs = builder.withCredentials(new AWSStaticCredentialsProvider(this.credentials)).build();
-    } 
+	public void init() {
+		AmazonSQSClientBuilder builder = AmazonSQSClientBuilder.standard();
+		this.credentials = new BasicAWSCredentials(getAccesskeyid(), getSecretkey());
+		builder.setRegion(getRegion());
+		if (proxy) {
+			/*ClientConfiguration clientConfig = new ClientConfiguration();
+			clientConfig.setProtocol(Protocol.HTTP);
+			clientConfig.setProxyHost(proxyHost);
+			clientConfig.setProxyPort(proxyPort);
+			clientConfig.setProxyUsername(proxyUser);
+			clientConfig.setProxyPassword(proxyPassword);
+			builder.setClientConfiguration(clientConfig);*/
+		}
+		this.sqs = builder.withCredentials(new AWSStaticCredentialsProvider(this.credentials)).build();
+	} 
 
 }

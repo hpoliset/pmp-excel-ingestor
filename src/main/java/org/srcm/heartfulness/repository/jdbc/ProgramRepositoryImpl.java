@@ -216,7 +216,9 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 					+ "organization_decision_maker_phone_no=:organizationDecisionMakerPhoneNo, "
 					+ "is_ewelcome_id_generation_disabled=:isEwelcomeIdGenerationDisabled, "
 					+ "jira_issue_number=:jiraIssueNumber, "
-					+ "senders_email_address=:sendersEmailAddress "
+					+ "senders_email_address=:sendersEmailAddress, "
+					+ "uploaded_file_id=:uploadedFileId, "
+					+ "user_id=:userId "
 					+ "WHERE program_id=:programId",
 					parameterSource);
 		}
@@ -1592,18 +1594,18 @@ public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequ
 								+ " FROM program p,participant pr"
 								+ " WHERE p.program_id = pr.program_id"
 								+ " AND pr.create_time <= CURRENT_TIMESTAMP"
-								+ " AND pr.ewelcome_id_state = 'T'"
-								+ " AND p.sqs_push_status=0",
+								+ " AND pr.ewelcome_id_state = 'T'",
+								//+ " AND p.sqs_push_status=0",
 								null, Integer.class);
 	}
 	
-	@Override
+	/*@Override
 	public void updateProgramIdStatus(Integer status, List<Integer> programIds) {
 		MapSqlParameterSource parameters = new MapSqlParameterSource();
 		parameters.addValue("status", status);
 		parameters.addValue("programIds", programIds);
 		this.namedParameterJdbcTemplate.update("UPDATE program set sqs_push_status=:status WHERE program_id IN (:programIds) ", parameters);
-	}
+	}*/
 	
 	@Override
 	public void saveUploadedFiles(UploadedFiles uploadFiles) {

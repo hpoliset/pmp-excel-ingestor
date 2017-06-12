@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.srcm.heartfulness.constants.EmailLogConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
@@ -138,7 +140,7 @@ public class EWelcomeIDGenerationScheduler {
 						}
 					} catch (Exception e) {
 						
-						pgrmRepository.updateProgramIdStatus(0, Arrays.asList(programId));
+						//pgrmRepository.updateProgramIdStatus(0, Arrays.asList(programId));
 						
 						LOGGER.error("Scheduler to generate EwelcomeID's : Exception :  {} ",StackTraceUtils.convertStackTracetoString(e));
 						String responseBody = "Email:" + participant.getEmail() + " ,EventID:"
@@ -171,19 +173,18 @@ public class EWelcomeIDGenerationScheduler {
 		return eWelcomeID;
 	}
 
-	//@Scheduled(fixedRate = 120000)//Let say every 2 minutes
+	/*@Scheduled(initialDelay = 10000, fixedRate = 10000)*///Let say every 2 minutes
 	public void pushProgramIdsToAwsSqs() {
 		LOGGER.info("Scheduler started to fetch program Id's and sent to SQS");
 		String queueName = amazonSqsRestTemplate.getQueuename();
 		String queueUrl = "";
 		List<Integer> programIds = pgrmRepository.getProgramIdsForSQSPush();
-		//amazonSqsRestTemplate.setProxy();
 		if(!programIds.isEmpty()){
 			queueUrl = amazonSqsRestTemplate.getQueueUrl(queueName);
 			try{
 				amazonSqsRestTemplate.sendMessageToQueue(queueUrl, String.valueOf(programIds));
 				LOGGER.info("Program Id - "+programIds+" sent to AWS SQS at -"+ new Date());
-				pgrmRepository.updateProgramIdStatus(1,programIds);
+				//pgrmRepository.updateProgramIdStatus(1,programIds);
 			} catch (Exception ex){
 				LOGGER.info("Unable to push program Id {} to queue {}",programIds,ex);
 			}
@@ -191,12 +192,11 @@ public class EWelcomeIDGenerationScheduler {
 		LOGGER.info("Scheduler completed to fetch program Id's and sent to SQS");
 	}
 
-	//@Scheduled(fixedRate = 300000)//Let say every 5 minutes
+	/*@Scheduled(initialDelay = 30000 ,fixedDelay = 30000)*///Let say every 5 minutes
 	public void generateEWelcomeIDsForParticipants() {
 		LOGGER.info("Scheduler started to pull program Id's from SQS and generating eWelcome Id's");
 		List<Integer> programIds;
 		try {
-			//amazonSqsRestTemplate.setProxy();
 			String queueUrl = amazonSqsRestTemplate.getQueueUrl(amazonSqsRestTemplate.getQueuename());
 			List<Message> sqsMessages = amazonSqsRestTemplate.getMessagesFromQueue(queueUrl);
 			LOGGER.info("START : EWELCOMEID GENERATION : Process to generate EwelcomeID's for the participants started at - "
@@ -248,5 +248,17 @@ public class EWelcomeIDGenerationScheduler {
 		pmpApiAccessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 		pmpApiAccessLog.setResponseBody(responseBody);
 		apiAccessLogService.updatePmpAPIAccessLog(pmpApiAccessLog);
+	}
+	
+	@RequestMapping(value = "/push", method = RequestMethod.POST)
+	public void push() {
+		System.out.println("push called");
+		pushProgramIdsToAwsSqs();
+	}
+	
+	@RequestMapping(value = "/pull", method = RequestMethod.POST)
+	public void pull() {
+		System.out.println("push called");
+		generateEWelcomeIDsForParticipants();
 	}
 }

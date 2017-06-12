@@ -482,6 +482,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 		UploadedFiles uploadFiles = new UploadedFiles();
 		uploadFiles.setFileName(fileName);
 		uploadFiles.setFileContent(fileContent);
+		uploadFiles.setStatus(ErrorConstants.STATUS_FAILED);
 		uploadFiles.setUploadedDate(new Date());
 		return uploadFiles;
 	}

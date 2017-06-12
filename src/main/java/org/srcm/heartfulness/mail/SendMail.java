@@ -633,7 +633,7 @@ public class SendMail {
 		if(!uploaderEmail.isEmpty()){
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(uploaderEmail));
 		}
-		if(null != jiraIssueNumber)
+		if(null != jiraIssueNumber && !jiraIssueNumber.isEmpty())
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
 		message.setSubject(crdntrmailsubject + outputsdf.format(cal.getTime()));
 		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename),
@@ -779,7 +779,7 @@ public class SendMail {
 		if(!uploaderEmail.isEmpty()){
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(uploaderEmail));
 		}
-		if(null != jiraIssueNumber)
+		if(null != jiraIssueNumber && !jiraIssueNumber.isEmpty())
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
 		message.setSubject(crdntrmailforewlcmidsubject
 				+ (null != coordinatorEmail.getEventName() ? " - " + coordinatorEmail.getEventName() : ""));

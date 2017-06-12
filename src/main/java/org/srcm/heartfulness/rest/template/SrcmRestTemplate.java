@@ -431,9 +431,9 @@ public class SrcmRestTemplate extends RestTemplate {
 	 * Method to set the proxy (development use only)
 	 */
 	public void setProxy() {
-		/*if (proxy) {
+		if (proxy) {
 
-			CredentialsProvider credsProvider = new BasicCredentialsProvider();
+			/*CredentialsProvider credsProvider = new BasicCredentialsProvider();
 			credsProvider.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
 					new UsernamePasswordCredentials(proxyUser, proxyPassword));
 			HttpClientBuilder clientBuilder = HttpClientBuilder.create();
@@ -444,9 +444,9 @@ public class SrcmRestTemplate extends RestTemplate {
 			CloseableHttpClient client = clientBuilder.build();
 			HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
 			factory.setHttpClient(client);
-			this.setRequestFactory(factory);
+			this.setRequestFactory(factory);*/
 
-		}*/
+		}
 
 	}
 

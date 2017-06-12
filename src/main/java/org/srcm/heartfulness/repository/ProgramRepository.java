@@ -428,7 +428,7 @@ public interface ProgramRepository {
 
 	public List<Integer> getProgramIdsForSQSPush();
 
-	public void updateProgramIdStatus(Integer status, List<Integer> programIds);
+	//public void updateProgramIdStatus(Integer status, List<Integer> programIds);
 	
 	public void saveUploadedFiles(UploadedFiles uploadFiles);
 
