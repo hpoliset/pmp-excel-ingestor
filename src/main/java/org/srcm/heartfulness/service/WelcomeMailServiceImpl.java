@@ -311,8 +311,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 									coordinatorEmail.setCoordinatorName(map.getValue().get(2));
 									coordinatorEmail.setEventName(map.getValue().get(1));
 									coordinatorEmail.setTotalParticipantCount(String.valueOf(pctptCount));
-									coordinatorEmail.setPctptAlreadyRcvdWlcmMailCount(String
-											.valueOf(wlcmEmailRcvdPctptCount));
+									coordinatorEmail.setPctptAlreadyRcvdWlcmMailCount(String.valueOf(wlcmEmailRcvdPctptCount));
 									coordinatorEmail.setPctptRcvdWlcmMailYstrdayCount(map.getValue().get(0));
 									SimpleDateFormat inputsdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 									coordinatorEmail.setProgramCreateDate(null != map.getValue().get(4) ?  inputsdf.parse(map.getValue().get(4)) :null);
@@ -398,8 +397,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		LOGGER.info("Fetching co-ordinator details and e-welcomeID details..!");
 		sendEmailNotification.sendNotificationToInformProcessExecution(EmailLogConstants.WLCMID_EMAIL_DETAILS);
 		try {
-			LOGGER.info("Total count of coordinators available in DB with is ewelcome id informed as active - "
-					+ welcomeMailRepository.getCountofIsWelcomeIdInformedcordinators());
+			LOGGER.info("Total count of coordinators available in DB with is ewelcome id informed as active - "+ welcomeMailRepository.getCountofIsWelcomeIdInformedcordinators());
 
 			Map<CoordinatorEmail, List<Participant>> eWelcomeIdDetails = welcomeMailRepository.getGeneratedEwelcomeIdDetails();
 

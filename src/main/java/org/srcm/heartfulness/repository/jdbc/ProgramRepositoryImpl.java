@@ -1599,14 +1599,6 @@ public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequ
 								null, Integer.class);
 	}
 	
-	/*@Override
-	public void updateProgramIdStatus(Integer status, List<Integer> programIds) {
-		MapSqlParameterSource parameters = new MapSqlParameterSource();
-		parameters.addValue("status", status);
-		parameters.addValue("programIds", programIds);
-		this.namedParameterJdbcTemplate.update("UPDATE program set sqs_push_status=:status WHERE program_id IN (:programIds) ", parameters);
-	}*/
-	
 	@Override
 	public void saveUploadedFiles(UploadedFiles uploadFiles) {
 		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(uploadFiles);

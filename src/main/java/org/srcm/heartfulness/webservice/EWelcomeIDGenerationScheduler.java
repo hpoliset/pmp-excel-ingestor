@@ -250,15 +250,4 @@ public class EWelcomeIDGenerationScheduler {
 		apiAccessLogService.updatePmpAPIAccessLog(pmpApiAccessLog);
 	}
 	
-	/*@RequestMapping(value = "/push", method = RequestMethod.POST)
-	public void push() {
-		System.out.println("push called");
-		pushProgramIdsToAwsSqs();
-	}
-	
-	@RequestMapping(value = "/pull", method = RequestMethod.POST)
-	public void pull() {
-		System.out.println("push called");
-		generateEWelcomeIDsForParticipants();
-	}*/
 }

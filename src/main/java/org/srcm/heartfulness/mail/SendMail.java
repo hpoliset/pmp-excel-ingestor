@@ -634,9 +634,9 @@ public class SendMail {
 		if(null != uploaderEmail && !uploaderEmail.isEmpty()){
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(uploaderEmail));
 		}
-		if(null != jiraIssueNumber && !jiraIssueNumber.isEmpty())
+		if(null != jiraIssueNumber && !jiraIssueNumber.isEmpty()){
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
-
+		}
 		message.setSubject(crdntrmailsubject + outputsdf.format(cal.getTime()));
 		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename),
 				EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);

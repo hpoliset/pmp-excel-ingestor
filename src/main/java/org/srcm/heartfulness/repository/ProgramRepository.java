@@ -426,12 +426,18 @@ public interface ProgramRepository {
 	 */
 	LinkedHashMap<Integer,String> getListOfProgramIdsByEmail(List<String> emailList,String userRole);
 
+	/**
+	 * This method is used to get the program ids from database and upload it
+	 * to Amazon SQS.
+	 * @return List<Integer> program Ids.
+	 */
 	public List<Integer> getProgramIdsForSQSPush();
 
-	//public void updateProgramIdStatus(Integer status, List<Integer> programIds);
-	
+	/**
+	 * Below method is used to store upload file
+	 * details in PMP database.
+	 * @param uploadFiles Object which contains upload file details
+	 */
 	public void saveUploadedFiles(UploadedFiles uploadFiles);
-
-	
 
 }
