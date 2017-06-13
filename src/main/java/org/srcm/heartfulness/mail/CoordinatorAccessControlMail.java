@@ -383,7 +383,7 @@ public class CoordinatorAccessControlMail {
 				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
 			}
 			if(null != coordinator.getUploaderMail() && !coordinator.getUploaderMail().isEmpty()){
-				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(coordinator.getUploaderMail()));	
+				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(coordinator.getUploaderMail()));
 			}
 
 			message.setSubject(coordinatormailsubjecttocreateaccount + " - " + coordinator.getEventName());
