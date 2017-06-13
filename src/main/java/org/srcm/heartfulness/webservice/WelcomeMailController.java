@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.service.WelcomeMailService;
@@ -65,6 +66,7 @@ public class WelcomeMailController {
 	 * running at a scheduled time.
 	 */
 	/*@Scheduled(cron = "${welcome.mailids.coordinator.inform.cron.time}")*/
+	@RequestMapping(value = "/mail", method=RequestMethod.POST)
 	public void sendEmailToCoordinator() {
 		LOGGER.info("START		:Cron job started to fetch participants to whom welcome mail already sent");
 		WelcomeMailService.getCoordinatorListAndSendMail();
@@ -72,6 +74,7 @@ public class WelcomeMailController {
 	}
 
 	/*@Scheduled(cron = "${ewelcomeid.generate.coordinator.inform.cron.time}")*/
+	@RequestMapping(value = "/ewelcomeid", method=RequestMethod.POST)
 	public void sendGeneratedEwelcomeIdToCoordinators() {
 		LOGGER.info("START		:Cron job started to send mails to coordinator to inform participant ewelcomeid's");
 		WelcomeMailService.getGeneratedEwelcomeIdAndSendToCoordinators();
