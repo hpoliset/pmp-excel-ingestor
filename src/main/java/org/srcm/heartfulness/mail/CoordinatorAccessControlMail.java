@@ -263,11 +263,17 @@ public class CoordinatorAccessControlMail {
 			SimpleDateFormat outputsdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
 			Date pgrmCreateDate = inputsdf.parse(coordinatorAccessControlEmail.getProgramCreateDate());
 			addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
-			message.addRecipients(Message.RecipientType.TO,
-					InternetAddress.parse(coordinatorAccessControlEmail.getPreceptorEmailId()));
+			message.addRecipients(Message.RecipientType.TO,InternetAddress.parse(coordinatorAccessControlEmail.getPreceptorEmailId()));
+			
+			if(null != coordinatorAccessControlEmail.getJiraNumber() && !coordinatorAccessControlEmail.getJiraNumber().isEmpty()){
+				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+			}
+			if(null != coordinatorAccessControlEmail.getUploaderMail() && !coordinatorAccessControlEmail.getUploaderMail().isEmpty()){
+				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(coordinatorAccessControlEmail.getUploaderMail()));	
+			}
+			
 			message.setSubject(emptycoordinatoremailidsubject + " - " + coordinatorAccessControlEmail.getEventName());
-			message.setContent(getMessageContentbyTemplateName(emptycoordinatoremailidtemplate),
-					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
+			message.setContent(getMessageContentbyTemplateName(emptycoordinatoremailidtemplate),EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 			message.setAllow8bitMIME(true);
 			message.setSentDate(new Date());
 			message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);

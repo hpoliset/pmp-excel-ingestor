@@ -432,8 +432,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 						apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
 						//accessLogDetails.setId(accessdetailsID);
 					} catch (Exception e) {
-						LOGGER.error("Exception while inserting PMP API log details in table : {} ",
-								StackTraceUtils.convertPojoToJson(e));
+						LOGGER.error("Exception while inserting PMP API log details in table : {} ",StackTraceUtils.convertPojoToJson(e));
 					}
 				}
 
@@ -494,8 +493,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 									coordinator.setJiraNumber(program.getJiraIssueNumber());
 									SimpleDateFormat inputsdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 									coordinator.setProgramCreateDate(inputsdf.format(program.getProgramStartDate()));
-									if (null == program.getCoordinatorEmail()
-											|| program.getCoordinatorEmail().isEmpty()) {
+									if (null == program.getCoordinatorEmail() || program.getCoordinatorEmail().isEmpty()) {
 										Runnable task = new Runnable() {
 											@Override
 											public void run() {
