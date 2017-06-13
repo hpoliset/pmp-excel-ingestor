@@ -630,11 +630,13 @@ public class SendMail {
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(crdntrEmail.getCoordinatorEmail()));
-		if(!uploaderEmail.isEmpty()){
+
+		if(null != uploaderEmail && !uploaderEmail.isEmpty()){
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(uploaderEmail));
 		}
 		if(null != jiraIssueNumber && !jiraIssueNumber.isEmpty())
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+
 		message.setSubject(crdntrmailsubject + outputsdf.format(cal.getTime()));
 		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename),
 				EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
@@ -654,7 +656,7 @@ public class SendMail {
 		message.setFrom(new InternetAddress(frommail, name));
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER,
 				coordinatorEmail.getCoordinatorName() != null ? getName(coordinatorEmail.getCoordinatorName()): "Friend");
-						
+
 		addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, null != coordinatorEmail.getEventName() ? "- "
 				+ coordinatorEmail.getEventName() : "");
 		addParameter(EmailLogConstants.EVENT_PLACE_PARAMETER,
@@ -776,11 +778,13 @@ public class SendMail {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinatorEmail.getCoordinatorEmail()));
-		if(!uploaderEmail.isEmpty()){
+
+		if(null != uploaderEmail && !uploaderEmail.isEmpty()){
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(uploaderEmail));
 		}
 		if(null != jiraIssueNumber && !jiraIssueNumber.isEmpty())
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+
 		message.setSubject(crdntrmailforewlcmidsubject
 				+ (null != coordinatorEmail.getEventName() ? " - " + coordinatorEmail.getEventName() : ""));
 		message.setContent(getMessageContentbyTemplateName(crdntrewlcomeidmailtemplatename),

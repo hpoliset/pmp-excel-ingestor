@@ -160,8 +160,10 @@ public class UserRepositoryImpl implements UserRepository {
 		map.put("id", userId);
 		try{
 			user = this.namedParameterJdbcTemplate.queryForObject("SELECT * FROM user WHERE id =:id ", map, BeanPropertyRowMapper.newInstance(User.class));
+		} catch(EmptyResultDataAccessException erdae){
+			logger.error("Empty Result DAE : Error while getting user information from db {}",erdae);
 		} catch(Exception ex){
-			logger.error("Error while getting user information from db {}",ex);
+			logger.error("Exception : Error while getting user information from db {}",ex);
 		}
 		return user;
 	}

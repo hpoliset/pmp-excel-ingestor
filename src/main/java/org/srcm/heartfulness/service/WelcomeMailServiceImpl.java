@@ -325,12 +325,14 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 
 									try{
 										sendEmailNotification.sendMailNotificationToCoordinator(coordinatorEmail,session,user.getEmail(),map.getValue().get(9));
+										
 										LOGGER.debug("START        :Inserting mail log details in table");
 										PMPMailLog pmpMailLog = new PMPMailLog(map.getKey(), map.getValue().get(3),
-												EmailLogConstants.PCTPT_EMAIL_DETAILS, EmailLogConstants.STATUS_SUCCESS,
-												null);
+												EmailLogConstants.PCTPT_EMAIL_DETAILS, EmailLogConstants.STATUS_SUCCESS,null);
+												
 										mailLogRepository.createMailLog(pmpMailLog);
 										LOGGER.info("END        :Completed sending email to " + map.getValue().get(3));
+										
 									} catch (AddressException aex) {
 										PMPMailLog pmpMailLog = new PMPMailLog(map.getKey(), map.getValue().get(3),
 												EmailLogConstants.PCTPT_EMAIL_DETAILS, EmailLogConstants.STATUS_FAILED,
