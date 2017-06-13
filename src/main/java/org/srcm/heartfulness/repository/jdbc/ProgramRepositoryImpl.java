@@ -1189,7 +1189,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 				+ "p.remarks,p.auto_generated_event_id,p.auto_generated_intro_id,p.jira_issue_number, "
 				+ "p.batch_description,p.program_channel_type,p.program_address,p.program_district,p.program_zone,"
 				+ "p.program_center,p.organization_contact_name,p.organization_contact_designation,p.organization_contact_email,"
-				+ "p.organization_contact_mobile,p.coordinator_abhyasi_id,p.coordinator_name,p.coordinator_email,p.coordinator_mobile "
+				+ "p.organization_contact_mobile,p.coordinator_abhyasi_id,p.coordinator_name,p.coordinator_email,p.coordinator_mobile,p.program_name "
 				+ "FROM program p LEFT JOIN program_coordinators pc "
 				+ " ON p.program_id = pc.program_id "
 				+ (whereCondition.length() > 0 ? " WHERE " +  whereCondition : "")
