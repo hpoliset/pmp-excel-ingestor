@@ -18,6 +18,10 @@ public class DashboardConstants {
 	public static final String INVALID_SEARCH_FIELD											= 	"Invalid search field";
 	public static final String INVALID_SEARCH_TEXT											= 	"Invalid search text";
 	public static final String STATUS														= 	"status";
+	public static final String INVALID_OR_EMPTY_STATUS										=	"Status cannot be empty";
+	public static final String STATUS_SUCESS_UPDATE											=	"Status updated Successfully";
+	public static final String STATUS_ENUM_UPDATE											= 	"Invalid program status";
+	public static final String INVALID_USER													= 	"User doesn't have access to this event";
 	
 	/*Participant related*/
 	public static final String PRINT_NAME_REQUIRED											= 	"Participant name is required";
@@ -42,5 +46,7 @@ public class DashboardConstants {
 	public static final String INVALID_SS_TO_DATE											= 	"Invalid to date";
 	
 	public static final String G_CONNECT_CHANNEL											= 	"G-Connect";
+	
+	public static final String TESTIMONIAL_FOLDER											=	"Testimonial";
 
 }

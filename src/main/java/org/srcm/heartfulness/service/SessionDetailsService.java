@@ -74,6 +74,8 @@ public interface SessionDetailsService {
 	 * @return List<SessionDetails> list of session details is returned based
 	 * on search criteria. 
 	 */
-	public List<SessionDetails> getSearchSessionData(List<String> emailList, String userRole, SearchSession searchSession); 
+	public List<SessionDetails> getSearchSessionData(List<String> emailList, String userRole, SearchSession searchSession);
+
+	void saveSessionFilesWithType(SessionImageDetails sessionFiles); 
 
 }

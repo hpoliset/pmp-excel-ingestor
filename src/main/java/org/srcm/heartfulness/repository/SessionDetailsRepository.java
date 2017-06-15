@@ -101,4 +101,6 @@ public interface SessionDetailsRepository {
 	 */
 	public List<SessionDetails> searchSessionData(int programId, SearchSession searchSession);
 
+	void saveSessionFilesWithType(SessionImageDetails sessionFiles);
+
 }

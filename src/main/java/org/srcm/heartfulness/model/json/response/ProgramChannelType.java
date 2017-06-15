@@ -33,6 +33,7 @@ public class ProgramChannelType {
 	private String createdBy;
 	@JsonIgnore
 	private String updatedBy;
+	
 	public int getId() {
 		return id;
 	}

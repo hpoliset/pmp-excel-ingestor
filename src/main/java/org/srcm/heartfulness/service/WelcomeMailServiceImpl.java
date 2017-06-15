@@ -34,6 +34,7 @@ import org.srcm.heartfulness.model.CoordinatorEmail;
 import org.srcm.heartfulness.model.PMPMailLog;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.SendySubscriber;
+import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.WelcomeMailDetails;
 import org.srcm.heartfulness.repository.MailLogRepository;
 import org.srcm.heartfulness.repository.ParticipantRepository;
@@ -81,6 +82,9 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 
 	@Autowired
 	private ProgramRepository programRepository;
+	
+	@Autowired
+	private UserProfileService userProfileService;
 
 	/**
 	 * To fetch the participants from database and subscribe to the welcome mail
@@ -307,22 +311,27 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 									coordinatorEmail.setCoordinatorName(map.getValue().get(2));
 									coordinatorEmail.setEventName(map.getValue().get(1));
 									coordinatorEmail.setTotalParticipantCount(String.valueOf(pctptCount));
-									coordinatorEmail.setPctptAlreadyRcvdWlcmMailCount(String
-											.valueOf(wlcmEmailRcvdPctptCount));
+									coordinatorEmail.setPctptAlreadyRcvdWlcmMailCount(String.valueOf(wlcmEmailRcvdPctptCount));
 									coordinatorEmail.setPctptRcvdWlcmMailYstrdayCount(map.getValue().get(0));
 									SimpleDateFormat inputsdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 									coordinatorEmail.setProgramCreateDate(null != map.getValue().get(4) ?  inputsdf.parse(map.getValue().get(4)) :null);
 									coordinatorEmail.setEventPlace(map.getValue().get(5));
 									coordinatorEmail.setEventCity(map.getValue().get(6));
 									coordinatorEmail.setProgramCreationDate(null != map.getValue().get(7) ? inputsdf.parse(map.getValue().get(7)) :null);
+									
+									int userId = Integer.parseInt(map.getValue().get(8));
+									User user = userProfileService.getUserMailWithId(userId);
+
 									try{
-										sendEmailNotification.sendMailNotificationToCoordinator(coordinatorEmail,session);
+										sendEmailNotification.sendMailNotificationToCoordinator(coordinatorEmail,session,user.getEmail(),map.getValue().get(9));
+										
 										LOGGER.debug("START        :Inserting mail log details in table");
 										PMPMailLog pmpMailLog = new PMPMailLog(map.getKey(), map.getValue().get(3),
-												EmailLogConstants.PCTPT_EMAIL_DETAILS, EmailLogConstants.STATUS_SUCCESS,
-												null);
+												EmailLogConstants.PCTPT_EMAIL_DETAILS, EmailLogConstants.STATUS_SUCCESS,null);
+												
 										mailLogRepository.createMailLog(pmpMailLog);
 										LOGGER.info("END        :Completed sending email to " + map.getValue().get(3));
+										
 									} catch (AddressException aex) {
 										PMPMailLog pmpMailLog = new PMPMailLog(map.getKey(), map.getValue().get(3),
 												EmailLogConstants.PCTPT_EMAIL_DETAILS, EmailLogConstants.STATUS_FAILED,
@@ -354,7 +363,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								LOGGER.error("EXCEPTION  :Failed to sent mail to" + map.getValue().get(3)+" :Exception : {}",  ex.getMessage());
 								LOGGER.error("EXCEPTION  :Looking for next coordinator if available");
 							}
-							 Thread.sleep(5000);
+							Thread.sleep(5000);
 						}
 					}
 				}
@@ -388,10 +397,10 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 		LOGGER.info("Fetching co-ordinator details and e-welcomeID details..!");
 		sendEmailNotification.sendNotificationToInformProcessExecution(EmailLogConstants.WLCMID_EMAIL_DETAILS);
 		try {
-			LOGGER.info("Total count of coordinators available in DB with is ewelcome id informed as active - "
-					+ welcomeMailRepository.getCountofIsWelcomeIdInformedcordinators());
-			Map<CoordinatorEmail, List<Participant>> eWelcomeIdDetails = welcomeMailRepository
-					.getGeneratedEwelcomeIdDetails();
+			LOGGER.info("Total count of coordinators available in DB with is ewelcome id informed as active - "+ welcomeMailRepository.getCountofIsWelcomeIdInformedcordinators());
+
+			Map<CoordinatorEmail, List<Participant>> eWelcomeIdDetails = welcomeMailRepository.getGeneratedEwelcomeIdDetails();
+
 			LOGGER.info("Count of coordinators to send email - " + eWelcomeIdDetails.size());
 			if (!eWelcomeIdDetails.isEmpty()) {
 				Session session = sendEmailNotification.getSession();
@@ -412,25 +421,26 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								coordinatorEmail.setEventPlace(map.getKey().getEventPlace());
 								coordinatorEmail.setProgramCreateDate(map.getKey().getProgramCreateDate());
 								coordinatorEmail.setProgramCreationDate(map.getKey().getProgramCreationDate());
-								List<Participant> failedParticipants = participantRepository
-										.getEWelcomeIdGenerationFailedParticipants(map.getKey().getProgramId());
-								LOGGER.info("Failed participants : " + failedParticipants.size() + ", EventID : "
-										+ map.getKey().getEventID());
-								List<Participant> eWelcomeIDParticipants = participantRepository
-										.getEWelcomeIdGeneratedParticipants(map.getKey().getProgramId());
-								LOGGER.info("eWelcomeIDParticipants : " + eWelcomeIDParticipants.size()
-										+ ", EventID : " + map.getKey().getEventID());
+									
+								User user = userProfileService.getUserMailWithId(map.getKey().getUploaderId());
+								
+								List<Participant> failedParticipants = participantRepository.getEWelcomeIdGenerationFailedParticipants(map.getKey().getProgramId());
+								LOGGER.info("Failed participants : " + failedParticipants.size() + ", EventID : " + map.getKey().getEventID());
+										
+								List<Participant> eWelcomeIDParticipants = participantRepository.getEWelcomeIdGeneratedParticipants(map.getKey().getProgramId());
+								LOGGER.info("eWelcomeIDParticipants : " + eWelcomeIDParticipants.size() + ", EventID : " + map.getKey().getEventID());
+								
 								for (Participant failedParticipant : failedParticipants) {
 									listOfParticipantId.add(failedParticipant.getId());
-									// System.out.println("participant id "+participant.getId()+" inserted");
 								}
 								for (Participant eWelcomeIDParticipant : eWelcomeIDParticipants) {
 									listOfParticipantId.add(eWelcomeIDParticipant.getId());
-									// System.out.println("participant id "+participant.getId()+" inserted");
 								}
+								
 								try {
-									sendEmailNotification.sendGeneratedEwelcomeIdDetailslToCoordinator(coordinatorEmail,
-											eWelcomeIDParticipants, failedParticipants,session);
+									
+									sendEmailNotification.sendGeneratedEwelcomeIdDetailslToCoordinator(coordinatorEmail,eWelcomeIDParticipants, failedParticipants,session,user.getEmail(),map.getKey().getJiraNumber());
+											
 									PMPMailLog pmpMailLog = new PMPMailLog(map.getKey().getProgramId(), map.getKey()
 											.getCoordinatorEmail(), EmailLogConstants.WLCMID_EMAIL_DETAILS,
 											EmailLogConstants.STATUS_SUCCESS, null);
@@ -469,7 +479,7 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 									.getKey().getCoordinatorEmail(), ex.getMessage());
 							LOGGER.error("EXCEPTION - Looking for next coordinator if available");
 						}
-						 Thread.sleep(5000);
+						Thread.sleep(5000);
 					}
 				}
 				LOGGER.info("Completed sending eWelcome ID email notifications to the coordinator list.");

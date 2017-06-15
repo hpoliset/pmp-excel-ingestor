@@ -61,7 +61,16 @@ public interface AmazonS3RequestValidator {
 	 * @param token
 	 * @return
 	 */
-	Response validateDownloadSessionImagesRequest(String sessionId, String eventId, PMPAPIAccessLog accessLog,
-			String token);
+	Response validateDownloadSessionImagesRequest(String sessionId, String eventId, PMPAPIAccessLog accessLog,String token);
+
+
+	Response validateUploadTestimonialRequest(String eventId, MultipartFile[] multipartFiles, PMPAPIAccessLog accessLog,String token);
+
+
+	Response validateDownloadTestimonialRequest(String eventId, PMPAPIAccessLog accessLog, String token);
+
+	Response validateUploadSessionFilesRequest(String eventId, String sessionId, MultipartFile[] multipartFiles,
+			PMPAPIAccessLog accessLog, String token);
+
 
 }

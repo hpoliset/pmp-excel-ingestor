@@ -29,6 +29,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.constants.CoordinatorAccessControlConstants;
+import org.srcm.heartfulness.constants.DashboardConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.model.Coordinator;
@@ -36,6 +37,8 @@ import org.srcm.heartfulness.model.CoordinatorHistory;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.ProgramPermissionLetterdetails;
+import org.srcm.heartfulness.model.ProgramTestimonialDetails;
+import org.srcm.heartfulness.model.UploadedFiles;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.repository.ParticipantRepository;
@@ -62,6 +65,8 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	private SimpleJdbcInsert insertProgramPermissionLetter;
 
 	private SimpleJdbcInsert insertCoordinatorHistory;
+	private SimpleJdbcInsert insertUploadedFiles;
+	private SimpleJdbcInsert insertProgramTestimonial;
 
 	@Autowired
 	public ProgramRepositoryImpl(DataSource dataSource, ParticipantRepository participantRepository) {
@@ -76,8 +81,9 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		this.insertProgramPermissionLetter=new SimpleJdbcInsert(dataSource).withTableName("program_permission_letters").usingGeneratedKeyColumns("permission_letter_id");
 		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		this.insertCoordinatorHistory = new SimpleJdbcInsert(dataSource).withTableName("coordinator_history")
-				.usingGeneratedKeyColumns("id");
+		this.insertCoordinatorHistory = new SimpleJdbcInsert(dataSource).withTableName("coordinator_history").usingGeneratedKeyColumns("id");
+		this.insertUploadedFiles = new SimpleJdbcInsert(dataSource).withTableName("uploaded_files").usingGeneratedKeyColumns("id");
+		this.insertProgramTestimonial=new SimpleJdbcInsert(dataSource).withTableName("program_testimonials").usingGeneratedKeyColumns("testimonial_id");
 	}
 
 	/*
@@ -195,6 +201,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(program);
 		if (program.getProgramId() == 0) {
+			program.setProgramStatus(PMPConstants.STATUS_ACTIVE);
 			Number newId = this.insertProgram.executeAndReturnKey(parameterSource);
 			program.setProgramId(newId.intValue());
 			saveCoordinatorHistory(new CoordinatorHistory(newId.intValue(),program.getCoordinatorName(),program.getCoordinatorEmail(),null!= program.getCoordinatorAbhyasiId() ? program.getCoordinatorAbhyasiId() : null));
@@ -271,6 +278,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(program);
 		if (program.getProgramId() == 0) {
+			program.setProgramStatus(PMPConstants.STATUS_ACTIVE);
 			Number newId = this.insertProgram.executeAndReturnKey(parameterSource);
 			program.setProgramId(newId.intValue());
 			saveCoordinatorHistory(new CoordinatorHistory(newId.intValue(),program.getCoordinatorName(),program.getCoordinatorEmail(),null!= program.getCoordinatorAbhyasiId() ? program.getCoordinatorAbhyasiId() : null));
@@ -1639,6 +1647,86 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			}
 		}
 
+	}
+
+	@Override
+	public List<Integer> getProgramIdsForSQSPush() {
+		return this.jdbcTemplate
+				.queryForList(
+						"SELECT DISTINCT(pr.program_id)"
+								+ " FROM program p,participant pr"
+								+ " WHERE p.program_id = pr.program_id"
+								+ " AND pr.create_time <= CURRENT_TIMESTAMP"
+								+ " AND pr.ewelcome_id_state = 'T'",
+								//+ " AND p.sqs_push_status=0",
+								null, Integer.class);
+	}
+
+	@Override
+	public void saveUploadedFiles(UploadedFiles uploadFiles) {
+		BeanPropertySqlParameterSource source = new BeanPropertySqlParameterSource(uploadFiles);
+		if(uploadFiles.getId()==0){
+			Number id = this.insertUploadedFiles.executeAndReturnKey(source);
+			uploadFiles.setId(id.intValue());
+		}else{
+			this.namedParameterJdbcTemplate.update("UPDATE uploaded_files set status =:status where id=:id ", source);
+		}
+
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.repository.ProgramRepository#saveProgramTestimonialDetails(org.srcm.heartfulness.model.ProgramTestimonialDetails)
+	 */
+	@Override
+	public void saveProgramTestimonialDetails(ProgramTestimonialDetails testimonialDetails) {
+		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(testimonialDetails);
+		if (0 == testimonialDetails.getTestimonialId()) {
+			int testimonialId = this.jdbcTemplate.query(
+					"SELECT testimonial_id FROM program_testimonials WHERE program_id=? AND testimonial_name=? ",
+					new Object[] { testimonialDetails.getProgramId(), testimonialDetails.getTestimonialName() },
+					new ResultSetExtractor<Integer>() {
+						@Override
+						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+							if (resultSet.next()) {
+								return resultSet.getInt(1);
+							}
+							return 0;
+						}
+					});
+			testimonialDetails.setTestimonialId(testimonialId);
+		}
+
+		if (0 == testimonialDetails.getTestimonialId()) {
+			this.insertProgramTestimonial.executeAndReturnKey(parameterSource);
+		} else {
+			this.namedParameterJdbcTemplate
+					.update("UPDATE program_testimonials SET testimonial_name=:testimonialName, permission_letter_path=:testimonialPath"
+							+ ",testimonialType=:testimonialType, uploaded_by=:uploadedBy WHERE program_id=:programId AND permission_letter_id=:testimonialId",
+							parameterSource);
+		}
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.ProgramRepository#getListOfTestimonials
+	 * (int)
+	 */
+	@Override
+	public List<ProgramTestimonialDetails> getListOfTestimonials(int programId) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("programId", programId);
+		return this.namedParameterJdbcTemplate.query("SELECT * FROM program_testimonials WHERE program_id=:programId",
+				params, BeanPropertyRowMapper.newInstance(ProgramTestimonialDetails.class));
+	}
+	
+	@Override
+	public void updateProgramStatus(Program program,String programStatus) {
+		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(program);
+		this.namedParameterJdbcTemplate.update("UPDATE program set program_status =:programStatus where program_id=:programId ", parameterSource);
 	}
 
 }

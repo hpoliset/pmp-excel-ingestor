@@ -32,3 +32,19 @@ CREATE TABLE coordinator_history (
   update_time TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT program_id_foreign_key FOREIGN KEY (program_id) REFERENCES program(program_id) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+CREATE TABLE IF NOT EXISTS `program_testimonials` (
+  `testimonial_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
+  `program_id` int(4) unsigned NOT NULL,
+  `testimonial_name` varchar(150) NOT NULL,
+  `testimonial_path` varchar(150) NOT NULL,
+  `testimonial_type` varchar(150) NOT NULL,
+  `uploaded_by` varchar(150) NOT NULL,
+  `update_time` timestamp ON UPDATE CURRENT_TIMESTAMP,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`testimonial_id`),
+  CONSTRAINT `testimonial_program_fk` FOREIGN KEY (`program_id`) REFERENCES `program`(`program_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+ALTER TABLE session_images ADD COLUMN file_type VARCHAR(50) AFTER image_path;
+ALTER TABLE program ADD program_status varchar(50) DEFAULT NULL;
+

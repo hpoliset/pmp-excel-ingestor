@@ -43,6 +43,8 @@ import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.PMPMailLog;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.ProgramCoordinators;
+import org.srcm.heartfulness.model.UploadedFiles;
+import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.repository.MailLogRepository;
 import org.srcm.heartfulness.repository.OrganisationRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
@@ -95,6 +97,9 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 
 	@Autowired
 	private CoordinatorAccessControlService coordinatorAccessControlService;
+	
+	@Autowired
+	private UserProfileService userProfileService;
 
 	/**
 	 * This method is used to parse the excel file and populate the data into
@@ -107,7 +112,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	@Override
 	@Transactional
 	@SuppressWarnings("static-access")
-	public ExcelUploadResponse parseAndPersistExcelFile(String fileName, byte[] fileContent, String eWelcomeIdCheckbox,String jiraIssueNumber) {
+	public ExcelUploadResponse parseAndPersistExcelFile(String fileName, byte[] fileContent, String eWelcomeIdCheckbox,String jiraIssueNumber,String username) {
 
 		LOGGER.info("Started parsing and persisting Excel file.");
 		List<String> errorResponse = new ArrayList<String>();
@@ -140,8 +145,23 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 
 				if(errorResponse.isEmpty()){
 					try {
+						
+						UploadedFiles uploadFiles = setUploadedFiles(fileName,fileContent);
+						programRepository.saveUploadedFiles(uploadFiles);
+						
 						Program program = ExcelDataExtractorFactory.extractProgramDetails(workBook, version,eWelcomeIdCheckbox,jiraIssueNumber);
 						program.setCreatedSource(version.equals(ExcelType.M1_0)? PMPConstants.CREATED_SOURCE_EXCEL_VIA_MOBILE : PMPConstants.CREATED_SOURCE_EXCEL);
+						
+						User user = null;
+						try{
+							user = userProfileService.loadUserByEmail(username);
+						} catch(Exception ex){
+							LOGGER.error("User email "+username + "does not exist in PMP database");
+						}
+						program.setUploaderMail(null == user ? username : user.getEmail());
+						program.setUserId(null == user ? 0 : user.getId());
+						program.setUploadedFileId(uploadFiles.getId());
+						
 						programRepository.save(program);
 						validatePreceptorIdandCoordinatorEmailIdAndPersistProgram(program, response, errorResponse); // preceptor ID card number validation
 					} catch(NullPointerException npex){
@@ -254,6 +274,8 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 					coordinator.setProgramCreateDate(inputsdf.format(program.getProgramStartDate()));
 					coordinator.setCoordinatorEmail(program.getSendersEmailAddress());
 					coordinator.setProgramId(String.valueOf(program.getProgramId()));
+					coordinator.setUploaderMail(program.getUploaderMail());
+					coordinator.setJiraNumber(program.getJiraIssueNumber());
 
 					Runnable task = new Runnable() {
 						@Override
@@ -422,7 +444,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	 * @see {@link ExcelUploadResponse}
 	 */
 	@Override
-	public List<ExcelUploadResponse> parseAndPersistExcelFile(MultipartFile[] excelFiles, String eWelcomeIdCheckbox) throws IOException {
+	public List<ExcelUploadResponse> parseAndPersistExcelFile(MultipartFile[] excelFiles, String eWelcomeIdCheckbox,String username) throws IOException {
 
 		List<ExcelUploadResponse> responseList = new LinkedList<ExcelUploadResponse>();
 		// sorting the files based on excel file name
@@ -433,7 +455,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 			}
 		});
 		for (MultipartFile multipartFile : excelFiles) {
-			responseList.add(parseAndPersistExcelFile(multipartFile.getOriginalFilename(), multipartFile.getBytes(),eWelcomeIdCheckbox,""));
+			responseList.add(parseAndPersistExcelFile(multipartFile.getOriginalFilename(), multipartFile.getBytes(),eWelcomeIdCheckbox,"",username));
 		}
 		return responseList;
 	}
@@ -445,12 +467,21 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	 * @return List of ExcelUploadResponse
 	 */
 	@Override
-	public List<ExcelUploadResponse> parseAndPersistExcelFile(Map<String, MultipartFile> uploadedFileDetails, String eWelcomeIdCheckbox) throws IOException {
+	public List<ExcelUploadResponse> parseAndPersistExcelFile(Map<String, MultipartFile> uploadedFileDetails, String eWelcomeIdCheckbox,String username) throws IOException {
 		List<ExcelUploadResponse> responseList = new LinkedList<ExcelUploadResponse>();
 		for(Map.Entry<String, MultipartFile> file : uploadedFileDetails.entrySet()){
-			responseList.add(parseAndPersistExcelFile(file.getValue().getOriginalFilename(), file.getValue().getBytes(),eWelcomeIdCheckbox,file.getKey()));
+			responseList.add(parseAndPersistExcelFile(file.getValue().getOriginalFilename(), file.getValue().getBytes(),eWelcomeIdCheckbox,file.getKey(),username));
 		}
 		return responseList;
+	}
+	
+	private UploadedFiles setUploadedFiles(String fileName, byte[] fileContent){
+		UploadedFiles uploadFiles = new UploadedFiles();
+		uploadFiles.setFileName(fileName);
+		uploadFiles.setFileContent(fileContent);
+		uploadFiles.setStatus(ErrorConstants.STATUS_FAILED);
+		uploadFiles.setUploadedDate(new Date());
+		return uploadFiles;
 	}
 
 }

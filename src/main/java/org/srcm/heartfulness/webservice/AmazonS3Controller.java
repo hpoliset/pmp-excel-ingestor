@@ -200,6 +200,168 @@ public class AmazonS3Controller {
 			return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	/**
+	 * Webservice endpoint to upload the coordinator testimonial to the
+	 * event.
+	 * 
+	 * @param token
+	 * @param eventId
+	 * @param multipartFile
+	 * @param httpRequest
+	 * @return
+	 * @throws ParseException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/upload/event/testimonial", method = RequestMethod.POST)
+	public ResponseEntity<?> uploadTestimonialForEvent(@RequestHeader(value = "Authorization") String token,
+			@RequestParam String eventId, @RequestParam("file") MultipartFile multipartFiles[], 
+			@Context HttpServletRequest httpRequest) throws ParseException, IOException {
+
+		LOGGER.info("Stated uploading to S3.Event Id : {} , File Count : {}", eventId,	multipartFiles.length);
+
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
+				StackTraceUtils.convertPojoToJson("eventId : " + eventId + " , file Count : "
+						+ multipartFiles.length));
+		apiAccessLogService.createPmpAPIAccessLog(accessLog);
+
+		try {
+			Response eResponse = amazonS3RequestValidator.validateUploadTestimonialRequest(eventId, multipartFiles,
+					accessLog, token);
+			if (null != eResponse) {
+				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
+			}
+			return amazonS3Service.uploadTestimonialInAWSAndUpdateEvent(eventId, multipartFiles, accessLog);
+
+		} catch (Exception e) {
+			LOGGER.error("Intenal server error : {}", e);
+			Response response = new Response(ErrorConstants.STATUS_FAILED, e.getMessage());
+			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+
+	/**
+	 * Webservice endpoint to get the testimonial download path by
+	 * creating a presigned URL which is valid for a particular time.
+	 * 
+	 * @param token
+	 * @param eventId
+	 * @param fileName
+	 * @param httpRequest
+	 * @return
+	 * @throws ParseException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/download/event/testimonial", method = RequestMethod.POST)
+	public ResponseEntity<?> createPresignedURLForTestimonial(
+			@RequestHeader(value = "Authorization") String token, @RequestParam("eventId") String eventId,
+			@Context HttpServletRequest httpRequest) throws ParseException,
+			IOException {
+
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
+				StackTraceUtils.convertPojoToJson("eventId : " + eventId ));
+		apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		try {
+			Response eResponse = amazonS3RequestValidator.validateDownloadTestimonialRequest(eventId, accessLog,
+					token);
+			if (null != eResponse) {
+				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
+			}
+			return amazonS3Service.createPresignedURLForTestimonials(eventId, accessLog);
+		} catch (Exception e) {
+			LOGGER.error("Intenal server error : {}", e);
+			Response response = new Response(ErrorConstants.STATUS_FAILED, e.getMessage());
+			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
+			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(response));
+			apiAccessLogService.updatePmpAPIAccessLog(accessLog);
+			return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	/**
+	 * Webservice endpoint to upload multiple images to a session.
+	 * 
+	 * @param token
+	 * @param eventId
+	 * @param sessionId
+	 * @param multipartFiles
+	 * @param httpRequest
+	 * @return
+	 * @throws ParseException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/upload/session/files", method = RequestMethod.POST)
+	public ResponseEntity<?> uploadFilesForSession(@RequestHeader(value = "Authorization") String authToken,
+			@RequestParam String eventId, 
+			@RequestParam String sessionId,
+			@RequestParam("file") MultipartFile multipartFiles[], 
+			@Context HttpServletRequest httpRequest) {
+
+		//save request details in PMP
+		String requestBody = "eventId : " + eventId + " , fileCount : " + multipartFiles.length;
+		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,requestBody);
+
+		try {
+
+			Response eResponse = amazonS3RequestValidator.validateUploadSessionFilesRequest(eventId, sessionId, multipartFiles,accessLog, authToken);
+			if (null != eResponse) {
+				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
+			}
+
+			return amazonS3Service.uploadListOfFilesInAWSForSession(eventId, sessionId, multipartFiles, accessLog);
+
+		} catch (Exception e) {
+			LOGGER.error("Error while uploading files/images for session  : {}", e);
+			Response response = new Response(ErrorConstants.STATUS_FAILED, e.getMessage());
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(e), StackTraceUtils.convertPojoToJson(response));
+			return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Webservice endpoint to get the list of images of a session along with
+	 * their presigned URL which is valid for a particular time.
+	 * 
+	 * @param token
+	 * @param eventId
+	 * @param sessionId
+	 * @param httpRequest
+	 * @return
+	 * @throws ParseException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/download/session/files", method = RequestMethod.POST)
+	public ResponseEntity<?> createPresignedURLForSessionFiles(@RequestHeader(value = "Authorization") String authToken,
+			@RequestParam String eventId, @RequestParam String sessionId, @Context HttpServletRequest httpRequest)
+					throws ParseException, IOException {
+
+		//save request details in PMP
+		String requestBody = "eventId : " + eventId + " , sessionId " + sessionId;
+		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,requestBody);
+
+		try {
+
+			Response eResponse = amazonS3RequestValidator.validateDownloadSessionImagesRequest(sessionId, eventId, accessLog,authToken);
+			if (null != eResponse) {
+				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
+			}
+			return amazonS3Service.createPresignedURLForSessionFiles(eventId, sessionId, accessLog);
+
+		} catch (Exception e) {
+			LOGGER.error("Error while generating download url for session files/images : {}", e);
+			Response response = new Response(ErrorConstants.STATUS_FAILED, e.getMessage());
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(e), StackTraceUtils.convertPojoToJson(response));
+			return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 	private PMPAPIAccessLog createPMPAPIAccessLog(String username,HttpServletRequest httpRequest,String requestBody){
 

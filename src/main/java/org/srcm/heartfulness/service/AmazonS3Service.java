@@ -62,5 +62,33 @@ public interface AmazonS3Service {
 	 * @return <code>ResponseEntity<?></code>
 	 */
 	ResponseEntity<?> createPresignedURLForSessionImages(String eventId, String sessionId, PMPAPIAccessLog accessLog);
+	
+	/**
+	 * To upload testimonials to AWS S3 and update the coordinator permission details
+	 * in <code>program_testimonials</code> table with program id
+	 * reference.
+	 * 
+	 * @param eventId
+	 * @param multipartFile
+	 * @param accessLog
+	 * @return <code>ResponseEntity<Response></code>
+	 */
+	ResponseEntity<List<Response>> uploadTestimonialInAWSAndUpdateEvent(String eventId, MultipartFile[] multipartFiles,
+			PMPAPIAccessLog accessLog);
+
+	/**
+	 * To generate presigned URL's for all the available testimonials of a event and
+	 * return a map of testimonial name and objects.
+	 * 
+	 * @param eventId
+	 * @param accessLog
+	 * @return <code>ResponseEntity</code>
+	 */
+	ResponseEntity<Map<String, Object>> createPresignedURLForTestimonials(String eventId, PMPAPIAccessLog accessLog);
+
+	ResponseEntity<List<Response>> uploadListOfFilesInAWSForSession(String eventId, String sessionId,
+			MultipartFile[] multipartFiles, PMPAPIAccessLog accessLog);
+
+	ResponseEntity<?> createPresignedURLForSessionFiles(String eventId, String sessionId, PMPAPIAccessLog accessLog);
 
 }

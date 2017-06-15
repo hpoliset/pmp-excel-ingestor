@@ -9,6 +9,8 @@ import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.ProgramPermissionLetterdetails;
+import org.srcm.heartfulness.model.ProgramTestimonialDetails;
+import org.srcm.heartfulness.model.UploadedFiles;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
 
@@ -424,5 +426,38 @@ public interface ProgramRepository {
 	 * event Id's for the logged in user have conducted.
 	 */
 	LinkedHashMap<Integer,String> getListOfProgramIdsByEmail(List<String> emailList,String userRole);
+	
+	/**
+	 * This method is used to get the program ids from database and upload it
+	 * to Amazon SQS.
+	 * @return List<Integer> program Ids.
+	 */
+	public List<Integer> getProgramIdsForSQSPush();
+	
+	/**
+	 * Below method is used to store upload file
+	 * details in PMP database.
+	 * @param uploadFiles Object which contains upload file details
+	 */
+	public void saveUploadedFiles(UploadedFiles uploadFiles);
+	
+	/**
+	 * Method to save the coordinator testimonial name and path details in
+	 * the PMP with reference to the program.
+	 * 
+	 * @param testimonialDetails
+	 */
+	void saveProgramTestimonialDetails(ProgramTestimonialDetails testimonialDetails);
+
+	/**
+	 * Method to get the list of coordinator testimonials available for
+	 * the program with the given program Id.
+	 * 
+	 * @param programId
+	 * @return <code>List<TestimonialDetails></code>
+	 */
+	List<ProgramTestimonialDetails> getListOfTestimonials(int programId);
+
+	void updateProgramStatus(Program program, String programStatus);
 
 }

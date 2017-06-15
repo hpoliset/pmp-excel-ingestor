@@ -149,5 +149,10 @@ public class SessionDetailsServiceImpl implements SessionDetailsService {
 			return sessionData;
 		}
 	}
+	
+	@Override
+	public void saveSessionFilesWithType(SessionImageDetails sessionFiles) {
+		sessionDtlsRepo.saveSessionFilesWithType(sessionFiles);
+	}
 
 }

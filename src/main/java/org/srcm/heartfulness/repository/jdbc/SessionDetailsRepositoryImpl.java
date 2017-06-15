@@ -293,7 +293,6 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 			this.namedParameterJdbcTemplate.update("UPDATE session_images SET " + "image_name=:imageName, "
 					+ "image_path=:imagePath, " + "uploaded_by=:uploadedBy " + "WHERE image_id=:imageId",
 					parameterSource);
-
 		}
 
 	}
@@ -376,5 +375,41 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 				+ " ORDER BY s.session_date DESC ")
 				, params, BeanPropertyRowMapper.newInstance(SessionDetails.class));
 		return sessionList;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.srcm.heartfulness.repository.SessionDetailsRepository#saveSessionFilesV2
+	 * (org.srcm.heartfulness.model.SessionImageDetails)
+	 */
+	@Override
+	public void saveSessionFilesWithType(SessionImageDetails sessionFiles) {
+		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(sessionFiles);
+		if (sessionFiles.getImageId() == 0) {
+			int sessionImageDetailsId = this.jdbcTemplate.query(
+					"SELECT image_id from session_images where session_id=? and image_path=?", new Object[] {
+							sessionFiles.getSessionId(), sessionFiles.getImagePath() },
+					new ResultSetExtractor<Integer>() {
+						@Override
+						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+							if (resultSet.next()) {
+								return resultSet.getInt(1);
+							}
+							return 0;
+						}
+					});
+			sessionFiles.setImageId(sessionImageDetailsId);
+		}
+		if (sessionFiles.getImageId() == 0) {
+			this.saveSessionImages.executeAndReturnKey(parameterSource);
+		} else {
+			this.namedParameterJdbcTemplate.update("UPDATE session_images SET " + "image_name=:imageName, "
+					+ "image_path=:imagePath, "+ "file_type=:fileType " + "uploaded_by=:uploadedBy " + "WHERE image_id=:imageId",
+					parameterSource);
+
+		}
+
 	}
 }
