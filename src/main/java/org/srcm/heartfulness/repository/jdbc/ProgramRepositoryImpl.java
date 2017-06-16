@@ -72,12 +72,9 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	public ProgramRepositoryImpl(DataSource dataSource, ParticipantRepository participantRepository) {
 		this.participantRepository = participantRepository;
 
-		this.insertProgram = new SimpleJdbcInsert(dataSource).withTableName("program").usingGeneratedKeyColumns(
-				"program_id");
-		this.insertCoOrdinatorStatistics = new SimpleJdbcInsert(dataSource).withTableName("coordinator_statistics")
-				.usingGeneratedKeyColumns("id");
-		this.insertDeletedParticipants = new SimpleJdbcInsert(dataSource).withTableName("deleted_participants")
-				.usingGeneratedKeyColumns("id");
+		this.insertProgram = new SimpleJdbcInsert(dataSource).withTableName("program").usingGeneratedKeyColumns("program_id");
+		this.insertCoOrdinatorStatistics = new SimpleJdbcInsert(dataSource).withTableName("coordinator_statistics").usingGeneratedKeyColumns("id");
+		this.insertDeletedParticipants = new SimpleJdbcInsert(dataSource).withTableName("deleted_participants").usingGeneratedKeyColumns("id");
 		this.insertProgramPermissionLetter=new SimpleJdbcInsert(dataSource).withTableName("program_permission_letters").usingGeneratedKeyColumns("permission_letter_id");
 		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -1451,7 +1448,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	 * (non-Javadoc)
 	 * @see org.srcm.heartfulness.repository.ProgramRepository#saveProgramPermissionLetterDetails(org.srcm.heartfulness.model.ProgramPermissionLetterdetails)
 	 */
-	@Override
+	/*@Override
 	public void saveProgramPermissionLetterDetails(ProgramPermissionLetterdetails programPermissionLetterdetails) {
 		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(
 				programPermissionLetterdetails);
@@ -1479,6 +1476,40 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			this.namedParameterJdbcTemplate
 			.update("UPDATE program_permission_letters SET permission_letter_name=:permissionLetterName, permission_letter_path=:permissionLetterPath"
 					+ ", uploaded_by=:uploadedBy WHERE program_id=:programId AND permission_letter_id=:permissionLetterId", parameterSource);
+		}
+
+	}*/
+	
+	@Override
+	public void saveProgramPermissionLetterDetails(ProgramPermissionLetterdetails programPermissionLetterdetails) {
+		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(
+				programPermissionLetterdetails);
+		if (0 == programPermissionLetterdetails.getPermissionLetterId()) {
+			int permissionLetterId = this.jdbcTemplate
+					.query("SELECT permission_letter_id FROM program_permission_letters WHERE program_id=? AND permission_letter_name=? ",
+							new Object[] { programPermissionLetterdetails.getProgramId(),
+									programPermissionLetterdetails.getPermissionLetterName() },
+							new ResultSetExtractor<Integer>() {
+						@Override
+						public Integer extractData(ResultSet resultSet) throws SQLException,
+						DataAccessException {
+							if (resultSet.next()) {
+								return resultSet.getInt(1);
+							}
+							return 0;
+						}
+					});
+			programPermissionLetterdetails.setPermissionLetterId(permissionLetterId);
+		}
+
+		if (0 == programPermissionLetterdetails.getPermissionLetterId()) {
+			this.insertProgramPermissionLetter.executeAndReturnKey(parameterSource);
+		} else {
+			this.namedParameterJdbcTemplate
+			.update("UPDATE program_permission_letters SET permission_letter_name=:permissionLetterName, permission_letter_path=:permissionLetterPath"
+					+ ", uploaded_by=:uploadedBy , prms_gvn_by=:prmsGvnBy"
+					+ ", prms_gvr_designation=:prmsGvrDesignation, prms_gvr_phone=:prmsGvrPhone"
+					+ ", prms_gvr_email_id=:prmsGvrEmailId WHERE program_id=:programId AND permission_letter_id=:permissionLetterId", parameterSource);
 		}
 
 	}

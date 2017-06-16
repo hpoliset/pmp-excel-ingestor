@@ -60,7 +60,7 @@ public class AmazonS3Controller {
 	 * @return
 	 * @throws ParseException
 	 * @throws IOException
-	 */
+	 *//*
 	@RequestMapping(value = "/upload/event/permissionletter", method = RequestMethod.POST)
 	public ResponseEntity<?> uploadPermissionLetterForEvent(@RequestHeader(value = "Authorization") String authToken,
 			@RequestParam String eventId, 
@@ -79,6 +79,50 @@ public class AmazonS3Controller {
 				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
 			}
 			return amazonS3Service.uploadObjectInAWSAndUpdateEvent(eventId, multipartFiles, accessLog);
+
+		} catch (Exception e) {
+			LOGGER.error("Error while uploading permission letter : {}", e);
+			Response response = new Response(ErrorConstants.STATUS_FAILED, e.getMessage());
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(e), StackTraceUtils.convertPojoToJson(response));
+			return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}*/
+	
+	/**
+	 * Webservice endpoint to upload the coordinator permission letter to the
+	 * event.
+	 * 
+	 * @param token
+	 * @param eventId
+	 * @param multipartFile
+	 * @param httpRequest
+	 * @return
+	 * @throws ParseException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/upload/event/permissionletter", method = RequestMethod.POST)
+	public ResponseEntity<?> uploadPermissionLetterForEvent(@RequestHeader(value = "Authorization") String authToken,
+			@RequestParam String eventId, 
+			@RequestParam(required=false) String prmsGvnBy,
+			@RequestParam(required=false) String prmsGvrDesignation,
+			@RequestParam(required=false) String prmsGvrPhone,
+			@RequestParam(required=false) String prmsGvrEmailId,
+			@RequestParam("file") MultipartFile multipartFiles[], 
+			@Context HttpServletRequest httpRequest) {
+
+		LOGGER.info("Stated uploading to S3.Event Id : {} , File Count : {}", eventId,	multipartFiles.length);
+
+		//save request details in PMP
+		String requestBody = "eventId : " + eventId + " , file Count : " + multipartFiles.length;
+		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,requestBody);
+
+		try {
+			Response eResponse = amazonS3RequestValidator.validateUploadPermissionLetterRequest(eventId, prmsGvrPhone, prmsGvrEmailId, multipartFiles,accessLog, authToken);
+			if (null != eResponse) {
+				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
+			}
+			return amazonS3Service.uploadObjectInAWSAndUpdateEvent(eventId, prmsGvnBy, prmsGvrDesignation, prmsGvrPhone, prmsGvrEmailId, multipartFiles, accessLog);
 
 		} catch (Exception e) {
 			LOGGER.error("Error while uploading permission letter : {}", e);
@@ -357,6 +401,41 @@ public class AmazonS3Controller {
 
 		} catch (Exception e) {
 			LOGGER.error("Error while generating download url for session files/images : {}", e);
+			Response response = new Response(ErrorConstants.STATUS_FAILED, e.getMessage());
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(e), StackTraceUtils.convertPojoToJson(response));
+			return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	/**
+	 * Webservice endpoint to get the permission letter download path by
+	 * creating a presigned URL which is valid for a particular time.
+	 * 
+	 * @param token
+	 * @param eventId
+	 * @param fileName
+	 * @param httpRequest
+	 * @return
+	 * @throws ParseException
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/download/event/v2/permissionletter", method = RequestMethod.POST)
+	public ResponseEntity<?> createPresignedURLForPermissionLetterV2(
+			@RequestHeader(value = "Authorization") String authToken, 
+			@RequestParam("eventId") String eventId,
+			@Context HttpServletRequest httpRequest) {
+
+		//save request details in PMP
+		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,StackTraceUtils.convertPojoToJson("eventId : " + eventId ));
+
+		try {
+			Response eResponse = amazonS3RequestValidator.validateDownloadPermissionLetterRequest(eventId, accessLog,authToken);
+			if (null != eResponse) {
+				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
+			}
+			return amazonS3Service.createPresignedURLWithDetails(eventId, accessLog);
+		} catch (Exception e) {
+			LOGGER.error("Error while downloading permission letter : {}", e);
 			Response response = new Response(ErrorConstants.STATUS_FAILED, e.getMessage());
 			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,StackTraceUtils.convertStackTracetoString(e), StackTraceUtils.convertPojoToJson(response));
 			return new ResponseEntity<Response>(response, HttpStatus.INTERNAL_SERVER_ERROR);

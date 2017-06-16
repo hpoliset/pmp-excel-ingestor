@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,6 +21,7 @@ import org.srcm.heartfulness.constants.DashboardConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.User;
+import org.srcm.heartfulness.model.json.request.DashboardRequest;
 import org.srcm.heartfulness.model.json.response.DashboardResponse;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.PMPResponse;
@@ -28,6 +30,7 @@ import org.srcm.heartfulness.service.DashboardService;
 import org.srcm.heartfulness.service.UserProfileService;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
+import org.srcm.heartfulness.validator.DashboardValidator;
 import org.srcm.heartfulness.validator.impl.PMPAuthTokenValidatorImpl;
 
 /**
@@ -51,6 +54,9 @@ public class DashboardController {
 
 	@Autowired
 	DashboardService dashboardService;
+	
+	@Autowired
+	DashboardValidator dashboardValidator;
 
 
 	@RequestMapping(value = "/getcount",
@@ -58,8 +64,11 @@ public class DashboardController {
 			consumes = MediaType.APPLICATION_JSON_VALUE, 
 			produces = MediaType.APPLICATION_JSON_VALUE )
 
-	public ResponseEntity<?> getEventDetails(@RequestHeader(value = "Authorization") String authToken,@Context HttpServletRequest httpRequest) {
-		
+	public ResponseEntity<?> getEventDetails(
+			@RequestHeader(value = "Authorization") String authToken,
+			@RequestBody DashboardRequest dashboardReq,
+			@Context HttpServletRequest httpRequest) {
+
 		//need to built a new pojo to take zone,center,country,date range filters
 
 		//save request details in PMP
@@ -75,16 +84,35 @@ public class DashboardController {
 		if (null == user) {
 			LOGGER.info(DashboardConstants.USER_UNAVAILABLE_IN_PMP);
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP);
-			accessLog.setErrorMessage(DashboardConstants.USER_UNAVAILABLE_IN_PMP);
 			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP, StackTraceUtils.convertPojoToJson(eResponse));
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		}
+		
+		if(null != dashboardReq.getFromDate() && !dashboardReq.getFromDate().isEmpty()){
+			if(null == dashboardValidator.convertToSqlDate(dashboardReq.getFromDate())){
+				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_SS_FROM_DATE);
+				updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_SS_FROM_DATE, StackTraceUtils.convertPojoToJson(eResponse));
+				return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_FAILED);
+			}else{
+				dashboardReq.setSqlFromDate(dashboardValidator.convertToSqlDate(dashboardReq.getFromDate()));
+			}
+		}
+		
+		if(null != dashboardReq.getToDate() && !dashboardReq.getToDate().isEmpty()){
+			if(null == dashboardValidator.convertToSqlDate(dashboardReq.getToDate())){
+				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_SS_TO_DATE);
+				updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_SS_TO_DATE , StackTraceUtils.convertPojoToJson(eResponse));
+				return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_FAILED);
+			}else{
+				dashboardReq.setSqlTodate(dashboardValidator.convertToSqlDate(dashboardReq.getToDate()));
+			}
 		}
 
 
 		LOGGER.info("Trying to fetch dashboard data for log in user {}",accessLog.getUsername());
-		DashboardResponse dresponse = dashboardService.getDashboardDataCounts(authToken);
-		updatePMPAPIAccessLog(accessLog, ErrorConstants.STATUS_SUCCESS, null, StackTraceUtils.convertPojoToJson(dresponse));
-		return new ResponseEntity<DashboardResponse>(dresponse,HttpStatus.OK);
+		ResponseEntity<?> dashboardRsp = dashboardService.getDashboardDataCounts(authToken,dashboardReq,accessLog);
+		updatePMPAPIAccessLog(accessLog, accessLog.getStatus(), accessLog.getErrorMessage(), StackTraceUtils.convertPojoToJson(dashboardRsp));
+		return dashboardRsp;
 
 	}
 

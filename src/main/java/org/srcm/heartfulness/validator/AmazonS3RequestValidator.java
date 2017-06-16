@@ -12,18 +12,23 @@ import org.srcm.heartfulness.model.json.response.Response;
  *
  */
 public interface AmazonS3RequestValidator {
+	
 
 	/**
 	 * Method to validate the request to upload permission letter to the event.
-	 * 
 	 * @param eventId
-	 * @param multipartFile
+	 * @param prmsGvrPhone
+	 * @param prmsGvrEmailId
+	 * @param multipartFiles
 	 * @param accessLog
 	 * @param token
 	 * @return
 	 */
-	Response validateUploadPermissionLetterRequest(String eventId, MultipartFile[] multipartFile,
-			PMPAPIAccessLog accessLog, String token);
+	//Response validateUploadPermissionLetterRequest(String eventId, MultipartFile[] multipartFile,PMPAPIAccessLog accessLog, String token);
+	
+	Response validateUploadPermissionLetterRequest(String eventId, String prmsGvrPhone, String prmsGvrEmailId,
+			MultipartFile[] multipartFiles, PMPAPIAccessLog accessLog, String token);
+			
 
 	/**
 	 * Method to validate the request to download the permission letter to the
@@ -35,8 +40,8 @@ public interface AmazonS3RequestValidator {
 	 * @param token
 	 * @return
 	 */
-	Response validateDownloadPermissionLetterRequest( String eventId, PMPAPIAccessLog accessLog,
-			String token);
+	Response validateDownloadPermissionLetterRequest( String eventId, PMPAPIAccessLog accessLog,String token);
+			
 
 	/**
 	 * Method to validate the request to upload multiple images to the session.

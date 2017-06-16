@@ -46,7 +46,10 @@ public class DashboardConstants {
 	public static final String INVALID_SS_TO_DATE											= 	"Invalid to date";
 	
 	public static final String G_CONNECT_CHANNEL											= 	"G-Connect";
-	
 	public static final String TESTIMONIAL_FOLDER											=	"Testimonial";
-
+	
+	/*Dashboard related*/
+	public static final String COUNTRY_REQUIRED												=	"Country is required";
+	public static final String ZONE_REQUIRED												=	"Zone is required";
+	public static final String CENTER_REQUIRED												=	"Center is required";
 }

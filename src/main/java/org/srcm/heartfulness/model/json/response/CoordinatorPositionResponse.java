@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({"id","name","active","positionType"})
+@JsonPropertyOrder({"id","name","active","positionType","srcmGroupDetail"})
 public class CoordinatorPositionResponse {
 	
 	private int id;
@@ -24,6 +24,9 @@ public class CoordinatorPositionResponse {
 	
 	@JsonProperty("position_type")
 	private PositionType positionType;
+	
+	@JsonProperty("srcm_group_detail")
+	private SrcmGroupDetail srcmGroupDetail;
 	
 	public int getId() {
 		return id;
@@ -53,10 +56,17 @@ public class CoordinatorPositionResponse {
 		this.positionType = positionType;
 	}
 	
+	public SrcmGroupDetail getSrcmGroupDetail() {
+		return srcmGroupDetail;
+	}
+	public void setSrcmGroupDetail(SrcmGroupDetail srcmGroupDetail) {
+		this.srcmGroupDetail = srcmGroupDetail;
+	}
+	
 	@Override
 	public String toString() {
 		return "CoordinatorPositionResponse [id=" + id + ", name=" + name + ", active=" + active + ", positionType="
-				+ positionType + "]";
+				+ positionType + ", srcmGroupDetail=" + srcmGroupDetail + "]";
 	}
 	
 }
