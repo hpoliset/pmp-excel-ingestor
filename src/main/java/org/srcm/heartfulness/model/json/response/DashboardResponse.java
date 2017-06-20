@@ -4,6 +4,8 @@
 package org.srcm.heartfulness.model.json.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -30,6 +32,14 @@ public class DashboardResponse {
 
 	@JsonProperty("future_event_count")
 	private int futureEventCount;
+	
+	@JsonProperty("program_zone")
+	@JsonInclude(value = Include.NON_NULL)
+	private String programZone;
+	
+	@JsonProperty("program_center")
+	@JsonInclude(value = Include.NON_NULL)
+	private String programCenter;
 
 	public int getEventCount() {
 		return eventCount;
@@ -69,6 +79,22 @@ public class DashboardResponse {
 
 	public void setFutureEventCount(int futureEventCount) {
 		this.futureEventCount = futureEventCount;
+	}
+	
+	public String getProgramZone() {
+		return programZone;
+	}
+
+	public void setProgramZone(String programZone) {
+		this.programZone = programZone;
+	}
+
+	public String getProgramCenter() {
+		return programCenter;
+	}
+
+	public void setProgramCenter(String programCenter) {
+		this.programCenter = programCenter;
 	}
 
 	@Override

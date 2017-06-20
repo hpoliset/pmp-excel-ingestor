@@ -229,10 +229,10 @@ public class AmazonS3RequestValidatorImpl implements AmazonS3RequestValidator {
 			errors.put("file", "Files are required.");
 		}
 		if(prmsGvrPhone != null && !prmsGvrPhone.matches(ExpressionConstants.MOBILE_REGEX)){
-			errors.put("prmsGvrPhone", "Invalid Permission Giver Phone Number");
+			errors.put("prmsGvrPhone", "Invalid permission given by phone number");
 		}
 		if(prmsGvrEmailId !=null && !prmsGvrEmailId.matches(ExpressionConstants.EMAIL_REGEX)){
-			errors.put("prmsGvrEmailId", "Invalid Permission Giver EmailId");
+			errors.put("prmsGvrEmailId", "Invalid permission given by emailId");
 		}
 		if (null == eventId || eventId.isEmpty()) {
 			errors.put("eventId", "Event Id is required");

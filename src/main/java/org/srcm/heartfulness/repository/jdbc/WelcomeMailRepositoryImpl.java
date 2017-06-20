@@ -84,7 +84,6 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	 */
 	@Override
 	public void save(WelcomeMailDetails welcomeMailDetails) {
-		System.out.println(welcomeMailDetails);
 		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(welcomeMailDetails);
 		if (welcomeMailDetails.getId() == 0) {
 			Number newId = this.insertSubscriber.executeAndReturnKey(parameterSource);

@@ -6,6 +6,7 @@ package org.srcm.heartfulness.model.json.request;
 import java.sql.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Koustav Dutta
@@ -16,10 +17,13 @@ public class DashboardRequest {
 	
 	private String country;
 	private String state;
+	private String district;
 	private String city;
 	private String zone;
 	private String center;
+	@JsonProperty("from_date")
 	private String fromDate;
+	@JsonProperty("to_date")
 	private String toDate;
 	@JsonIgnore
 	private Date sqlFromDate;
@@ -39,7 +43,12 @@ public class DashboardRequest {
 	public void setState(String state) {
 		this.state = state;
 	}
-	
+	public String getDistrict() {
+		return district;
+	}
+	public void setDistrict(String district) {
+		this.district = district;
+	}
 	public String getCity() {
 		return city;
 	}

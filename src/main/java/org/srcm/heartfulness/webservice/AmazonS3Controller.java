@@ -271,8 +271,7 @@ public class AmazonS3Controller {
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 
 		try {
-			Response eResponse = amazonS3RequestValidator.validateUploadTestimonialRequest(eventId, multipartFiles,
-					accessLog, token);
+			Response eResponse = amazonS3RequestValidator.validateUploadTestimonialRequest(eventId, multipartFiles,accessLog, token);
 			if (null != eResponse) {
 				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
 			}
@@ -313,8 +312,8 @@ public class AmazonS3Controller {
 				StackTraceUtils.convertPojoToJson("eventId : " + eventId ));
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 		try {
-			Response eResponse = amazonS3RequestValidator.validateDownloadTestimonialRequest(eventId, accessLog,
-					token);
+			Response eResponse = amazonS3RequestValidator.validateDownloadTestimonialRequest(eventId, accessLog,token);
+					
 			if (null != eResponse) {
 				return new ResponseEntity<Response>(eResponse, HttpStatus.PRECONDITION_FAILED);
 			}

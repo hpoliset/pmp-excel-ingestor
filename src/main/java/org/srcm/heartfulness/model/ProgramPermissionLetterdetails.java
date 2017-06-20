@@ -1,6 +1,7 @@
 package org.srcm.heartfulness.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Class to hold the coordinator permission letter details of an Program/event.
@@ -19,9 +20,13 @@ public class ProgramPermissionLetterdetails {
 
 	private String permissionLetterName;
 	private String uploadedBy;
+	@JsonProperty("permission_given_by")
 	private String prmsGvnBy;
+	@JsonProperty("permission_given_by_designation")
 	private String prmsGvrDesignation;
+	@JsonProperty("permission_given_by_phone")
 	private String prmsGvrPhone;
+	@JsonProperty("permission_given_by_email")
 	private String prmsGvrEmailId;
 	private String presignedURL;
 

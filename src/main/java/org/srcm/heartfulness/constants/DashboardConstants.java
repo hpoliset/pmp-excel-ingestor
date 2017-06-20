@@ -52,4 +52,6 @@ public class DashboardConstants {
 	public static final String COUNTRY_REQUIRED												=	"Country is required";
 	public static final String ZONE_REQUIRED												=	"Zone is required";
 	public static final String CENTER_REQUIRED												=	"Center is required";
+	public static final String ALL_FIELD													=	"ALL";
+	
 }
