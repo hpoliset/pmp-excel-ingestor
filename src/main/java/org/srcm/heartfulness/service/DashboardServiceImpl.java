@@ -66,7 +66,7 @@ public class DashboardServiceImpl implements DashboardService {
 
 		boolean isNext = true;
 		int currentPositionValue = 0;
-		String currentPositionType =  "Zone Coordinator";
+		String currentPositionType =  "";
 		List<String> zones =  new ArrayList<String>();
 		List<String> centers =  new ArrayList<String>();
 
@@ -78,19 +78,19 @@ public class DashboardServiceImpl implements DashboardService {
 
 				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
 
-					if(crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 
 						currentPositionValue = CoordinatorPosition.COUNTRY_COORDINATOR.getPositionValue();
 						currentPositionType =  crdntrPosition.getPositionType().getName();
 
-					} else if(crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())){
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())){
 
 						if(CoordinatorPosition.ZONE_COORDINATOR.getPositionValue() > currentPositionValue){
 							currentPositionValue = CoordinatorPosition.ZONE_COORDINATOR.getPositionValue();
 							currentPositionType =  crdntrPosition.getPositionType().getName();
 						}
 
-					} else if(crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
 
 						if(CoordinatorPosition.CENTER_COORDINATOR.getPositionValue() > currentPositionValue){
 							currentPositionValue = CoordinatorPosition.CENTER_COORDINATOR.getPositionValue();
@@ -98,7 +98,7 @@ public class DashboardServiceImpl implements DashboardService {
 						}
 					}
 
-					if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 						posResult.setNext(null);
 						break;
 					}
@@ -399,15 +399,15 @@ public class DashboardServiceImpl implements DashboardService {
 				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
 
 
-					if(crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 						currentPositionType =  crdntrPosition.getPositionType().getName();
-					} else if(crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())){
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())){
 						mysrcmZones.add(crdntrPosition.getSrcmGroupDetail().getName());
-					} else if(crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
 						mysrcmCenters.add(crdntrPosition.getSrcmGroupDetail().getName());
 					}
 
-					if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 						posResult.setNext(null);
 						break;
 					}
@@ -489,14 +489,14 @@ public class DashboardServiceImpl implements DashboardService {
 			while(isNext){
 
 				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
-					if(crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 						currentPositionType =  crdntrPosition.getPositionType().getName().toLowerCase();
-					} else if(crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())){
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())){
 						mysrcmZones.add(crdntrPosition.getSrcmGroupDetail().getName().toLowerCase());
-					} else if(crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
 						mysrcmCenters.add(crdntrPosition.getSrcmGroupDetail().getName().toLowerCase());
 					}
-					if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 						posResult.setNext(null);
 						break;
 					}
@@ -579,7 +579,7 @@ public class DashboardServiceImpl implements DashboardService {
 
 				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
 
-					if(crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 						currentPositionType =  crdntrPosition.getPositionType().getName().toLowerCase();
 						posResult.setNext(null);
 						break;
@@ -646,7 +646,7 @@ public class DashboardServiceImpl implements DashboardService {
 			while(isNext){
 				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
 
-					if(crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 						currentPositionType =  crdntrPosition.getPositionType().getName();
 						posResult.setNext(null);
 						break;
@@ -704,7 +704,7 @@ public class DashboardServiceImpl implements DashboardService {
 			while(isNext){
 
 				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
-					if(crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 						currentPositionType =  crdntrPosition.getPositionType().getName().toLowerCase();
 						posResult.setNext(null);
 						break;
