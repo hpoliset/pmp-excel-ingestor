@@ -18,9 +18,15 @@ public interface DashboardService {
 	
 	public ResponseEntity<?> getDashboardDataCounts(String authToken,DashboardRequest dashboardReq,PMPAPIAccessLog accessLog,User user);
 
-	ResponseEntity<?> getZones(String authToken, DashboardRequest dashboardReq, PMPAPIAccessLog accessLog,List<String> emailList, String userRole);
+	ResponseEntity<?> getListOfZones(String authToken, DashboardRequest dashboardReq, PMPAPIAccessLog accessLog,List<String> emailList, String userRole);
 
-	ResponseEntity<?> getCenterList(String authToken, DashboardRequest dashboardReq, PMPAPIAccessLog accessLog,List<String> emailList, String userRole); 
-			
+	ResponseEntity<?> getCenterList(String authToken, DashboardRequest dashboardReq, PMPAPIAccessLog accessLog,List<String> emailList, String userRole);
+	
+	ResponseEntity<?> getStateList(String authToken, DashboardRequest dashboardReq, PMPAPIAccessLog accessLog,List<String> emailList, String userRole);
+
+	ResponseEntity<?> getCityList(String authToken, DashboardRequest dashboardReq, PMPAPIAccessLog accessLog,List<String> emailList, String userRole);
+
+	ResponseEntity<?> getDistrictList(String authToken, DashboardRequest dashboardReq, PMPAPIAccessLog accessLog,List<String> emailList, String role);
+
 
 }

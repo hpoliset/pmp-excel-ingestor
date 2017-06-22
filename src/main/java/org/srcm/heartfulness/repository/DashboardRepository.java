@@ -17,7 +17,7 @@ public interface DashboardRepository {
 
 	public List<DashboardResponse> getCountForCenterCoordinator(DashboardRequest dashboardReq, List<String> centers);
 
-	public List<DashboardResponse> getCountForZoneCoordinator(DashboardRequest dashboardReq,List<String> centers);
+	public List<DashboardResponse> getCountForZoneCoordinator(DashboardRequest dashboardReq,List<String> zones,List<String> centers);
 	
 	public List<DashboardResponse> getCountForCountryCoordinator(DashboardRequest dashboardReq,Boolean hierarchyType);
 	
@@ -25,15 +25,23 @@ public interface DashboardRepository {
 
 	List<String> getListOfZonesForCountryCoordinator(DashboardRequest dashboardReq);
 	
-	List<String> getListOfZonesForZoneAndCenterCoordinator(DashboardRequest dashboardReq, List<String> centers, List<String> zones);
+	List<String> getListOfZonesForZoneOrCenterCoordinator(DashboardRequest dashboardReq, List<String> centers, List<String> zones);
 	
-	List<String> getListOfZoneForEventCoordinator(List<String> emailList, String userRole, DashboardRequest dashboardReq);
+	List<String> getListOfZonesForEventCoordinator(List<String> emailList, String userRole, DashboardRequest dashboardReq);
 
 	List<String> getListOfCentersForCountryCoordinator(DashboardRequest dashboardReq);
 	
-	List<String> getListOfCentersForZoneAndCenterCoordinator(DashboardRequest dashboardReq, List<String> zones, List<String> centers);
+	List<String> getListOfCentersForZoneOrCenterCoordinator(DashboardRequest dashboardReq, List<String> zones, List<String> centers);
 	
 	List<String> getListOfCentersForEventCoordinator(DashboardRequest dashboardReq, List<String> emailList,String userRole);
+
+	List<String> getListOfStatesForCountryCoordinator(DashboardRequest dashboardReq);
+	
+	List<String> getListOfDistrictForCountryCoordinator(DashboardRequest dashboardReq);
+
+	List<String> getListOfCitiesForCountryCoordinator(DashboardRequest dashboardReq);
+
+	
 	
 
 }

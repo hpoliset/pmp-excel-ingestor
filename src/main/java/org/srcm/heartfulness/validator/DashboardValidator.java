@@ -20,9 +20,11 @@ public interface DashboardValidator {
 	public ErrorResponse validateZoneField(String zone);
 	
 	public ErrorResponse validateCenterField(String center);
+
+	ErrorResponse validateStateField(String state);
 	
-	
-	
-	
+	ErrorResponse validateCityField(String city);
+
+	ErrorResponse validateDistrictField(String district);
 
 }

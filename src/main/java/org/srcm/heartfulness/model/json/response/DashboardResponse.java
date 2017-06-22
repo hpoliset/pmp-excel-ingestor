@@ -40,6 +40,19 @@ public class DashboardResponse {
 	@JsonProperty("program_center")
 	@JsonInclude(value = Include.NON_NULL)
 	private String programCenter;
+	
+	@JsonProperty("event_state")
+	@JsonInclude(value = Include.NON_NULL)
+	private String eventState;
+	
+	@JsonProperty("program_district")
+	@JsonInclude(value = Include.NON_NULL)
+	private String programDistrict;
+	
+	@JsonProperty("event_city")
+	@JsonInclude(value = Include.NON_NULL)
+	private String eventCity;
+	
 
 	public int getEventCount() {
 		return eventCount;
@@ -96,12 +109,38 @@ public class DashboardResponse {
 	public void setProgramCenter(String programCenter) {
 		this.programCenter = programCenter;
 	}
+	
+	public String getEventState() {
+		return eventState;
+	}
+
+	public void setEventState(String eventState) {
+		this.eventState = eventState;
+	}
+
+	public String getProgramDistrict() {
+		return programDistrict;
+	}
+
+	public void setProgramDistrict(String programDistrict) {
+		this.programDistrict = programDistrict;
+	}
+
+	public String getEventCity() {
+		return eventCity;
+	}
+
+	public void setEventCity(String eventCity) {
+		this.eventCity = eventCity;
+	}
 
 	@Override
 	public String toString() {
 		return "DashboardResponse [eventCount=" + eventCount + ", participantCount=" + participantCount
 				+ ", sessionCount=" + sessionCount + ", locationCount=" + locationCount + ", futureEventCount="
-				+ futureEventCount + "]";
+				+ futureEventCount + ", programZone=" + programZone + ", programCenter=" + programCenter
+				+ ", eventState=" + eventState + ", programDistrict=" + programDistrict + ", eventCity=" + eventCity
+				+ "]";
 	}
-
+	
 }

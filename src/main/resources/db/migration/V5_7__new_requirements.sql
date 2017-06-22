@@ -47,4 +47,9 @@ CREATE TABLE IF NOT EXISTS `program_testimonials` (
 
 ALTER TABLE session_images ADD COLUMN file_type VARCHAR(50) AFTER image_path;
 ALTER TABLE program ADD program_status varchar(50) DEFAULT NULL;
+ALTER TABLE `program_permission_letters`
+ADD `prms_gvn_by` VARCHAR(250) NULL AFTER `permission_letter_path`,
+ADD `prms_gvr_designation` VARCHAR(250) NULL AFTER `prms_gvn_by`,
+ADD `prms_gvr_phone` VARCHAR(50) NULL AFTER `prms_gvr_designation`,
+ADD `prms_gvr_email_id` VARCHAR(250) NULL AFTER `prms_gvr_phone`;
 

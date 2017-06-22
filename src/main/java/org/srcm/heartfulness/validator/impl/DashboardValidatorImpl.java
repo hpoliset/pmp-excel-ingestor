@@ -66,7 +66,27 @@ public class DashboardValidatorImpl implements DashboardValidator{
 		return null;
 	}
 
+	@Override
+	public ErrorResponse validateStateField(String state) {
+		if(null == state || state.isEmpty()){
+			return new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.STATE_REQUIRED);
+		}
+		return null;
+	}
 	
+	@Override
+	public ErrorResponse validateDistrictField(String district) {
+		if(null == district || district.isEmpty()){
+			return new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.DISTRICT_REQUIRED);
+		}
+		return null;
+	}
 	
-
+	@Override
+	public ErrorResponse validateCityField(String city) {
+		if(null == city || city.isEmpty()){
+			return new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.CITY_REQUIRED);
+		}
+		return null;
+	}
 }

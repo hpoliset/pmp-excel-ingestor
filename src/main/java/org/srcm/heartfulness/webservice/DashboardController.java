@@ -25,7 +25,6 @@ import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.model.json.request.DashboardRequest;
-import org.srcm.heartfulness.model.json.response.DashboardResponse;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.PMPResponse;
 import org.srcm.heartfulness.service.APIAccessLogService;
@@ -57,7 +56,7 @@ public class DashboardController {
 
 	@Autowired
 	DashboardService dashboardService;
-	
+
 	@Autowired
 	DashboardValidator dashboardValidator;
 
@@ -88,8 +87,9 @@ public class DashboardController {
 			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP, StackTraceUtils.convertPojoToJson(eResponse));
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		}
-		
+
 		if(null != dashboardReq.getFromDate() && !dashboardReq.getFromDate().isEmpty()){
+
 			if(null == dashboardValidator.convertToSqlDate(dashboardReq.getFromDate())){
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_SS_FROM_DATE);
 				updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_SS_FROM_DATE, StackTraceUtils.convertPojoToJson(eResponse));
@@ -98,7 +98,7 @@ public class DashboardController {
 				dashboardReq.setSqlFromDate(dashboardValidator.convertToSqlDate(dashboardReq.getFromDate()));
 			}
 		}
-		
+
 		if(null != dashboardReq.getToDate() && !dashboardReq.getToDate().isEmpty()){
 			if(null == dashboardValidator.convertToSqlDate(dashboardReq.getToDate())){
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_SS_TO_DATE);
@@ -116,12 +116,13 @@ public class DashboardController {
 		return dashboardRsp;
 
 	}
-	
+
 	@RequestMapping(value = "/getzones",
 			method = RequestMethod.POST, 
 			consumes = MediaType.APPLICATION_JSON_VALUE, 
 			produces = MediaType.APPLICATION_JSON_VALUE )
-	public ResponseEntity<?> getZoneDetails(@RequestHeader(value = "Authorization") String authToken, @RequestBody DashboardRequest dashboardReq, @Context HttpServletRequest httpRequest) {
+	public ResponseEntity<?> getZoneDetails(@RequestHeader(value = "Authorization") String authToken, 
+			@RequestBody DashboardRequest dashboardReq, @Context HttpServletRequest httpRequest) {
 
 		//save request details in PMP
 		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,authToken);
@@ -131,7 +132,7 @@ public class DashboardController {
 		if(pmpResponse instanceof ErrorResponse){
 			return new ResponseEntity<PMPResponse>(pmpResponse, HttpStatus.OK);
 		}
-		
+
 		User user = userProfileService.loadUserByEmail(accessLog.getUsername());
 		if (null == user) {
 			LOGGER.info(DashboardConstants.USER_UNAVAILABLE_IN_PMP);
@@ -139,7 +140,7 @@ public class DashboardController {
 			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP, StackTraceUtils.convertPojoToJson(eResponse));
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		}
-		
+
 		List<String> emailList = new ArrayList<String>();
 		if(null != user.getAbyasiId()){
 			emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
@@ -147,20 +148,159 @@ public class DashboardController {
 		if(emailList.size() == 0){
 			emailList.add(accessLog.getUsername());
 		}
-		
-		LOGGER.info("Trying to fetch dashboard data for log in user {}",accessLog.getUsername());
-		ResponseEntity<?> dashboardRsp = dashboardService.getZones(authToken,dashboardReq,accessLog,emailList,user.getRole());
+
+		LOGGER.info("Trying to fetch list of zones for log in user {}",accessLog.getUsername());
+		ResponseEntity<?> dashboardRsp = dashboardService.getListOfZones(authToken,dashboardReq,accessLog,emailList,user.getRole());
 		updatePMPAPIAccessLog(accessLog, accessLog.getStatus(), accessLog.getErrorMessage(), StackTraceUtils.convertPojoToJson(dashboardRsp));
 		return dashboardRsp;
 	}
-	
+
 	@RequestMapping(value = "/getcenters", 
 			method = RequestMethod.POST,
 			consumes = MediaType.APPLICATION_JSON_VALUE, 
 			produces = MediaType.APPLICATION_JSON_VALUE )
 	public ResponseEntity<?> getCenters(@RequestHeader(value = "Authorization") String authToken,
 			@RequestBody DashboardRequest dashboardReq, @Context HttpServletRequest httpRequest) {
-		
+
+		List<String> emailList = new ArrayList<String>();
+		//save request details in PMP
+		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,authToken);
+
+		//validate token details
+		PMPResponse pmpResponse = authTokenVldtr.validateAuthToken(authToken, accessLog);
+		if(pmpResponse instanceof ErrorResponse){
+			return new ResponseEntity<PMPResponse>(pmpResponse, HttpStatus.OK);
+		}
+
+		User user = userProfileService.loadUserByEmail(accessLog.getUsername());
+		if (null == user) {
+			LOGGER.info(DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP, StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		}
+
+		ErrorResponse errResopnse = dashboardValidator.validateCountryField(dashboardReq.getCountry());
+		if(null != errResopnse){
+			LOGGER.info("{} for log in user {}",errResopnse.getError_description(),accessLog.getUsername());
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,errResopnse.getError_description(), StackTraceUtils.convertPojoToJson(errResopnse));
+			return new ResponseEntity<ErrorResponse>(errResopnse, HttpStatus.PRECONDITION_REQUIRED);
+		}
+
+		errResopnse = dashboardValidator.validateZoneField(dashboardReq.getZone());
+		if(null != errResopnse){
+			LOGGER.info("{} for log in user {}",errResopnse.getError_description(),accessLog.getUsername());
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,errResopnse.getError_description(), StackTraceUtils.convertPojoToJson(errResopnse));
+			return new ResponseEntity<ErrorResponse>(errResopnse, HttpStatus.PRECONDITION_REQUIRED);
+		}
+
+		if(null != user.getAbyasiId()){
+			emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
+		}
+		if(emailList.size() == 0){
+			emailList.add(accessLog.getUsername());
+		}
+
+		LOGGER.info("Trying to fetch list of centers for log in user {}",accessLog.getUsername());
+		ResponseEntity<?> dashboardRsp = dashboardService.getCenterList(authToken, dashboardReq, accessLog, emailList, user.getRole());
+		updatePMPAPIAccessLog(accessLog, accessLog.getStatus(), accessLog.getErrorMessage(), StackTraceUtils.convertPojoToJson(dashboardRsp));
+		return dashboardRsp;
+
+	}
+
+	@RequestMapping(value = "/getstates",
+			method = RequestMethod.POST,
+			consumes = MediaType.APPLICATION_JSON_VALUE, 
+			produces = MediaType.APPLICATION_JSON_VALUE )
+	public ResponseEntity<?> getStates(@RequestHeader(value = "Authorization") String authToken,
+			@RequestBody DashboardRequest dashboardReq, @Context HttpServletRequest httpRequest) {
+
+		List<String> emailList = new ArrayList<String>();
+		//save request details in PMP
+		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,authToken);
+
+		//validate token details
+		PMPResponse pmpResponse = authTokenVldtr.validateAuthToken(authToken, accessLog);
+		if(pmpResponse instanceof ErrorResponse){
+			return new ResponseEntity<PMPResponse>(pmpResponse, HttpStatus.OK);
+		}
+
+		User user = userProfileService.loadUserByEmail(accessLog.getUsername());
+		if (null == user) {
+			LOGGER.info(DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP, StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		}
+
+		ErrorResponse errResopnse = dashboardValidator.validateCountryField(dashboardReq.getCountry());
+		if(null != errResopnse){
+			LOGGER.info("{} for log in user {}",errResopnse.getError_description(),accessLog.getUsername());
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,errResopnse.getError_description(), StackTraceUtils.convertPojoToJson(errResopnse));
+			return new ResponseEntity<ErrorResponse>(errResopnse, HttpStatus.PRECONDITION_REQUIRED);
+		}
+
+		if(null != user.getAbyasiId()){
+			emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
+		}
+		if(emailList.size() == 0){
+			emailList.add(accessLog.getUsername());
+		}
+
+		LOGGER.info("Trying to fetch list of states for log in user {}",accessLog.getUsername());
+		ResponseEntity<?> dashboardRsp = dashboardService.getStateList(authToken, dashboardReq, accessLog, emailList, user.getRole());
+		updatePMPAPIAccessLog(accessLog, accessLog.getStatus(), accessLog.getErrorMessage(), StackTraceUtils.convertPojoToJson(dashboardRsp.getBody()));
+		return dashboardRsp;
+
+	}
+
+	@RequestMapping(value = "/getdistricts",
+			method = RequestMethod.POST, 
+			consumes = MediaType.APPLICATION_JSON_VALUE, 
+			produces = MediaType.APPLICATION_JSON_VALUE )
+	public ResponseEntity<?> getListOfDistrict(@RequestHeader(value = "Authorization") String authToken, 
+			@RequestBody DashboardRequest dashboardReq, @Context HttpServletRequest httpRequest) {
+
+		//save request details in PMP
+		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,authToken);
+
+		//validate token details
+		PMPResponse pmpResponse = authTokenVldtr.validateAuthToken(authToken, accessLog);
+		if(pmpResponse instanceof ErrorResponse){
+			return new ResponseEntity<PMPResponse>(pmpResponse, HttpStatus.OK);
+		}
+
+		//validate user
+		User user = userProfileService.loadUserByEmail(accessLog.getUsername());
+		if (null == user) {
+			LOGGER.info(DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP, StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		}
+
+		//list of mails for the user
+		List<String> emailList = new ArrayList<String>();
+		if(null != user.getAbyasiId()){
+			emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
+		}
+		if(emailList.size() == 0){
+			emailList.add(accessLog.getUsername());
+		}
+
+		LOGGER.info("Trying to fetch list of district for the state {} for log in user {}",dashboardReq.getState(),accessLog.getUsername());
+		ResponseEntity<?> dashboardRsp = dashboardService.getDistrictList(authToken, dashboardReq, accessLog, emailList, user.getRole());
+		updatePMPAPIAccessLog(accessLog, accessLog.getStatus(), accessLog.getErrorMessage(), StackTraceUtils.convertPojoToJson(dashboardRsp.getBody()));
+		return dashboardRsp;
+	}
+
+	@RequestMapping(value = "/getcities", 
+			method = RequestMethod.POST,
+			consumes = MediaType.APPLICATION_JSON_VALUE, 
+			produces = MediaType.APPLICATION_JSON_VALUE )
+	public ResponseEntity<?> getCities(@RequestHeader(value = "Authorization") String authToken,
+			@RequestBody DashboardRequest dashboardReq, @Context HttpServletRequest httpRequest) {
+
 		List<String> emailList = new ArrayList<String>();
 		//save request details in PMP
 		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,authToken);
@@ -184,27 +324,32 @@ public class DashboardController {
 			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,errResopnse.getError_description(), StackTraceUtils.convertPojoToJson(errResopnse));
 			return new ResponseEntity<ErrorResponse>(errResopnse, HttpStatus.PRECONDITION_REQUIRED);
 		}
-		errResopnse = dashboardValidator.validateZoneField(dashboardReq.getZone());
+		errResopnse = dashboardValidator.validateStateField(dashboardReq.getState());
 		if(errResopnse != null){
 			LOGGER.info("{} for log in user {}",errResopnse.getError_description(),accessLog.getUsername());
 			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,errResopnse.getError_description(), StackTraceUtils.convertPojoToJson(errResopnse));
 			return new ResponseEntity<ErrorResponse>(errResopnse, HttpStatus.PRECONDITION_REQUIRED);
 		}
-		
+		errResopnse = dashboardValidator.validateDistrictField(dashboardReq.getDistrict());
+		if(errResopnse != null){
+			LOGGER.info("{} for log in user {}",errResopnse.getError_description(),accessLog.getUsername());
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,errResopnse.getError_description(), StackTraceUtils.convertPojoToJson(errResopnse));
+			return new ResponseEntity<ErrorResponse>(errResopnse, HttpStatus.PRECONDITION_REQUIRED);
+		}
+
 		if(null != user.getAbyasiId()){
 			emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
 		}
 		if(emailList.size() == 0){
 			emailList.add(accessLog.getUsername());
 		}
-		
-		LOGGER.info("Trying to fetch dashboard data for log in user {}",accessLog.getUsername());
-		ResponseEntity<?> dashboardRsp = dashboardService.getCenterList(authToken, dashboardReq, accessLog, emailList, user.getRole());
-		updatePMPAPIAccessLog(accessLog, accessLog.getStatus(), accessLog.getErrorMessage(), StackTraceUtils.convertPojoToJson(dashboardRsp));
+
+		LOGGER.info("Trying to fetch list of cities for log in user {}",accessLog.getUsername());
+		ResponseEntity<?> dashboardRsp = dashboardService.getCityList(authToken, dashboardReq, accessLog, emailList, user.getRole());
+		updatePMPAPIAccessLog(accessLog, accessLog.getStatus(), accessLog.getErrorMessage(), StackTraceUtils.convertPojoToJson(dashboardRsp.getBody()));
 		return dashboardRsp;
 
 	}
-
 
 	private PMPAPIAccessLog createPMPAPIAccessLog(String username,HttpServletRequest httpRequest,String requestBody){
 
