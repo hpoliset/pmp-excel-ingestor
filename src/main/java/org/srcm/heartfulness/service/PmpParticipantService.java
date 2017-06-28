@@ -44,7 +44,7 @@ public interface PmpParticipantService {
 	 *            contains seqId and event Id
 	 * @return participant details
 	 */
-	public ParticipantRequest getParticipantBySeqId(ParticipantRequest participantRequest,List<String> mail,String role);
+	//public ParticipantRequest getParticipantBySeqId(ParticipantRequest participantRequest,List<String> mail,String role);
 
 	/**
 	 * Service to get the participant details depending on the values given in
@@ -111,6 +111,9 @@ public interface PmpParticipantService {
      * @return SuccessResponse or FailureResponse depending on the validations.
      */
     public ResponseEntity<?> validateExcelAndPersistParticipantData(String originalFilename, byte[] bytes,PMPAPIAccessLog accessLog,List<String> details);
+
+	public ResponseEntity<?> getParticipantBySeqId(ParticipantRequest request, List<String> emailList, String role,
+			PMPAPIAccessLog accessLog, String authToken);
 
 
 }

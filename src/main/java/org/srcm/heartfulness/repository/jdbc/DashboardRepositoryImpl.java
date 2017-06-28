@@ -50,165 +50,13 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 	}
 
-	@Override
-	public List<DashboardResponse> getCountForCenterCoordinator(DashboardRequest dashboardReq, List<String> centers) {
-
-		StringBuilder baseQuery = new StringBuilder("SELECT count(DISTINCT pgrm.program_id),"
-				+ "count(DISTINCT pctpt.id),count(DISTINCT sd.session_id),count(DISTINCT pgrm.event_place) ");
-
-
-		if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,pgrm.program_center ");
-		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,pgrm.program_center ");
-		}
-
-		baseQuery.append(" FROM program pgrm LEFT OUTER JOIN participant pctpt ON pgrm.program_id = pctpt.program_id  "
-				+ "LEFT OUTER JOIN session_details sd ON pgrm.program_id = sd.program_id "
-				+ "LEFT OUTER JOIN program_coordinators pc ON pgrm.program_id = pc.program_id "
-				+ "WHERE pgrm.event_country=?");
-
-		StringBuilder centerList = new StringBuilder("");
-		if(centers.size() == 0){
-			centerList.append("''");
-		}else if(centers.size() == 1){
-			centerList.append("'"+centers.get(0)+"'");
-		}else{
-			for(int i = 0; i < centers.size(); i++){
-				centerList.append( i != (centers.size() -1 ) ? "'"+centers.get(i)+"'" + ",": "'"+centers.get(i)+"'");
-			}
-		}
-
-		if(null != dashboardReq.getSqlFromDate()){
-			baseQuery.append(" AND pgrm.program_start_date >= '"+dashboardReq.getSqlFromDate()+"'");
-		}
-
-		if(null != dashboardReq.getSqlTodate()){
-			baseQuery.append(" AND pgrm.program_start_date <= '"+dashboardReq.getSqlTodate()+"'");
-		}
-
-		if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" AND pgrm.program_center IN("+centerList+") GROUP BY pgrm.program_center ");
-		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" AND pgrm.program_zone='"+dashboardReq.getZone() + "' AND pgrm.program_center IN("+centerList+") GROUP BY pgrm.program_center ");
-		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" AND pgrm.program_zone='"+dashboardReq.getZone() + "' AND pgrm.program_center='"+dashboardReq.getCenter() + "' AND pgrm.program_center IN("+centerList+") ");
-		}else{
-			return new ArrayList<DashboardResponse>();
-		}
-
-		List<DashboardResponse> countResponse = this.jdbcTemplate.query( baseQuery.toString(),
-				new Object[] {dashboardReq.getCountry()}, new ResultSetExtractor<List<DashboardResponse>>() {
-			@Override
-			public List<DashboardResponse> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-				List<DashboardResponse> listOfCounts = new ArrayList<DashboardResponse>();
-				while (resultSet.next()) {
-					DashboardResponse counts = new DashboardResponse();
-					counts.setEventCount(resultSet.getInt(1));
-					counts.setParticipantCount(resultSet.getInt(2));
-					counts.setSessionCount(resultSet.getInt(3));
-					counts.setLocationCount(resultSet.getInt(4));
-
-					if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						counts.setProgramCenter(resultSet.getString(5));
-					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						counts.setProgramCenter(resultSet.getString(5));
-					}
-					listOfCounts.add(counts);
-				}
-				return listOfCounts;
-			}
-		});
-
-		return countResponse;
-	}
-
-	@Override
-	public List<DashboardResponse> getCountForZoneCoordinator(DashboardRequest dashboardReq,List<String> zones,List<String> centers) {
-
-		StringBuilder baseQuery = new StringBuilder("SELECT count(DISTINCT pgrm.program_id),"
-				+ "count(DISTINCT pctpt.id),count(DISTINCT sd.session_id),count(DISTINCT pgrm.event_place) ");
-
-		if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,pgrm.program_zone ");
-		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,pgrm.program_zone,pgrm.program_center ");
-		}
-
-		baseQuery.append(" FROM program pgrm LEFT OUTER JOIN participant pctpt ON pgrm.program_id = pctpt.program_id  "
-				+ "LEFT OUTER JOIN session_details sd ON pgrm.program_id = sd.program_id "
-				+ "LEFT OUTER JOIN program_coordinators pc ON pgrm.program_id = pc.program_id "
-				+ "WHERE pgrm.event_country=?");
-
-		StringBuilder zoneList = new StringBuilder("");
-		if(zones.size() == 0){
-			zoneList.append("''");
-		}else if(zones.size() == 1){
-			zoneList.append("'"+zones.get(0)+"'");
-		}else{
-			for(int i = 0; i < zones.size(); i++){
-				zoneList.append( i != (zones.size() -1 ) ? "'"+zones.get(i)+"'" + ",": "'"+zones.get(i)+"'");
-			}
-		}
-
-		StringBuilder centerList = new StringBuilder("");
-		if(centers.size() == 0){
-			centerList.append("''");
-		}else if(centers.size() == 1){
-			centerList.append("'"+centers.get(0)+"'");
-		}else{
-			for(int i = 0; i < centers.size(); i++){
-				centerList.append( i != (centers.size() -1 ) ? "'"+centers.get(i)+"'" + ",": "'"+centers.get(i)+"'");
-			}
-		}
-
-		if(null != dashboardReq.getSqlFromDate()){
-			baseQuery.append(" AND pgrm.program_start_date >= '"+dashboardReq.getSqlFromDate()+"'");
-		}
-
-		if(null != dashboardReq.getSqlTodate()){
-			baseQuery.append(" AND pgrm.program_start_date <= '"+dashboardReq.getSqlTodate()+"'");
-		}
-
-		if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" AND (pgrm.program_zone IN("+zoneList+") AND pgrm.program_center IN("+centerList+")) GROUP BY pgrm.program_zone ");
-		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" AND pgrm.program_zone='"+dashboardReq.getZone() + "' AND pgrm.program_center IN("+centerList+") GROUP BY pgrm.program_center ");
-		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" AND pgrm.program_zone='"+dashboardReq.getZone() + "' AND pgrm.program_center='"+dashboardReq.getCenter() + "' AND pgrm.program_zone IN("+zoneList+") ");
-		}else{
-			return new ArrayList<DashboardResponse>();
-		}
-
-		List<DashboardResponse> countResponse = this.jdbcTemplate.query( baseQuery.toString(),
-				new Object[] {dashboardReq.getCountry()}, new ResultSetExtractor<List<DashboardResponse>>() {
-			@Override
-			public List<DashboardResponse> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-				List<DashboardResponse> listOfCounts = new ArrayList<DashboardResponse>();
-				while (resultSet.next()) {
-					DashboardResponse counts = new DashboardResponse();
-					counts.setEventCount(resultSet.getInt(1));
-					counts.setParticipantCount(resultSet.getInt(2));
-					counts.setSessionCount(resultSet.getInt(3));
-					counts.setLocationCount(resultSet.getInt(4));
-
-					if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						counts.setProgramZone(resultSet.getString(5));
-					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						counts.setProgramZone(resultSet.getString(5));
-						counts.setProgramCenter(resultSet.getString(6));
-					}
-
-					listOfCounts.add(counts);
-				}
-				return listOfCounts;
-			}
-		});
-
-		return countResponse;
-	}
-
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.DashboardRepository#
+	 * getCountForCountryCoordinator(org.srcm.heartfulness.model.json.request.
+	 * DashboardRequest, java.lang.Boolean)
+	 */
 	@Override
 	public List<DashboardResponse> getCountForCountryCoordinator(DashboardRequest dashboardReq,Boolean hierarchyType) {
 
@@ -219,19 +67,19 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 				if(hierarchyType){
 
 					if(dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						baseQuery.append(" ,pgrm.event_state ");
+						baseQuery.append(" ,IFNULL(pgrm.event_state,'Others') ");
 					}else if(!dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getDistrict().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						baseQuery.append(" ,pgrm.event_state,pgrm.program_district ");
+						baseQuery.append(" ,pgrm.event_state,IFNULL(pgrm.program_district,'Others') ");
 					}else if(!dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getDistrict().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
 							&& dashboardReq.getCity().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						baseQuery.append(" ,pgrm.event_state,pgrm.program_district,pgrm.event_city ");
+						baseQuery.append(" ,pgrm.event_state,pgrm.program_district,IFNULL(pgrm.event_city,'Others') ");
 					}
 				}else{
 
 					if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						baseQuery.append(" ,IFNULL(pgrm.program_zone,'Others' )");
+						baseQuery.append(" ,IFNULL(pgrm.program_zone,'Others')");
 					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						baseQuery.append(" ,IFNULL(pgrm.program_zone,'Others'),IFNULL(pgrm.program_center,'Others') ");
+						baseQuery.append(" ,pgrm.program_zone,IFNULL(pgrm.program_center,'Others') ");
 					}
 					
 				}
@@ -324,7 +172,186 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 
 				return countResponse;
 	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.DashboardRepository#
+	 * getCountForZoneCoordinator(org.srcm.heartfulness.model.json.request.
+	 * DashboardRequest, java.util.List, java.util.List)
+	 */
+	@Override
+	public List<DashboardResponse> getCountForZoneCoordinator(DashboardRequest dashboardReq,List<String> zones,List<String> centers) {
 
+		StringBuilder baseQuery = new StringBuilder("SELECT count(DISTINCT pgrm.program_id),"
+				+ "count(DISTINCT pctpt.id),count(DISTINCT sd.session_id),count(DISTINCT pgrm.event_place) ");
+
+		if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+			baseQuery.append(" ,IFNULL(pgrm.program_zone,'Others') ");
+		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+			baseQuery.append(" ,pgrm.program_zone,IFNULL(pgrm.program_center,'Others') ");
+		}
+
+		baseQuery.append(" FROM program pgrm LEFT OUTER JOIN participant pctpt ON pgrm.program_id = pctpt.program_id  "
+				+ "LEFT OUTER JOIN session_details sd ON pgrm.program_id = sd.program_id "
+				+ "LEFT OUTER JOIN program_coordinators pc ON pgrm.program_id = pc.program_id "
+				+ "WHERE pgrm.event_country=?");
+
+		StringBuilder zoneList = new StringBuilder("");
+		if(zones.size() == 0){
+			zoneList.append("''");
+		}else if(zones.size() == 1){
+			zoneList.append("'"+zones.get(0)+"'");
+		}else{
+			for(int i = 0; i < zones.size(); i++){
+				zoneList.append( i != (zones.size() -1 ) ? "'"+zones.get(i)+"'" + ",": "'"+zones.get(i)+"'");
+			}
+		}
+
+		StringBuilder centerList = new StringBuilder("");
+		if(centers.size() == 0){
+			centerList.append("''");
+		}else if(centers.size() == 1){
+			centerList.append("'"+centers.get(0)+"'");
+		}else{
+			for(int i = 0; i < centers.size(); i++){
+				centerList.append( i != (centers.size() -1 ) ? "'"+centers.get(i)+"'" + ",": "'"+centers.get(i)+"'");
+			}
+		}
+
+		if(null != dashboardReq.getSqlFromDate()){
+			baseQuery.append(" AND pgrm.program_start_date >= '"+dashboardReq.getSqlFromDate()+"'");
+		}
+
+		if(null != dashboardReq.getSqlTodate()){
+			baseQuery.append(" AND pgrm.program_start_date <= '"+dashboardReq.getSqlTodate()+"'");
+		}
+
+		if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+			baseQuery.append(" AND (pgrm.program_zone IN("+zoneList+") AND pgrm.program_center IN("+centerList+")) GROUP BY pgrm.program_zone ");
+		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+			baseQuery.append(" AND pgrm.program_zone='"+dashboardReq.getZone() + "' AND pgrm.program_center IN("+centerList+") GROUP BY pgrm.program_center ");
+		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+			baseQuery.append(" AND pgrm.program_zone='"+dashboardReq.getZone() + "' AND pgrm.program_center='"+dashboardReq.getCenter() + "' AND pgrm.program_zone IN("+zoneList+") ");
+		}else{
+			return new ArrayList<DashboardResponse>();
+		}
+
+		List<DashboardResponse> countResponse = this.jdbcTemplate.query( baseQuery.toString(),
+				new Object[] {dashboardReq.getCountry()}, new ResultSetExtractor<List<DashboardResponse>>() {
+			@Override
+			public List<DashboardResponse> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+				List<DashboardResponse> listOfCounts = new ArrayList<DashboardResponse>();
+				while (resultSet.next()) {
+					DashboardResponse counts = new DashboardResponse();
+					counts.setEventCount(resultSet.getInt(1));
+					counts.setParticipantCount(resultSet.getInt(2));
+					counts.setSessionCount(resultSet.getInt(3));
+					counts.setLocationCount(resultSet.getInt(4));
+
+					if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+						counts.setProgramZone(resultSet.getString(5));
+					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+						counts.setProgramZone(resultSet.getString(5));
+						counts.setProgramCenter(resultSet.getString(6));
+					}
+
+					listOfCounts.add(counts);
+				}
+				return listOfCounts;
+			}
+		});
+
+		return countResponse;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.DashboardRepository#
+	 * getCountForCenterCoordinator(org.srcm.heartfulness.model.json.request.
+	 * DashboardRequest, java.util.List)
+	 */
+	@Override
+	public List<DashboardResponse> getCountForCenterCoordinator(DashboardRequest dashboardReq, List<String> centers) {
+
+		StringBuilder baseQuery = new StringBuilder("SELECT count(DISTINCT pgrm.program_id),"
+				+ "count(DISTINCT pctpt.id),count(DISTINCT sd.session_id),count(DISTINCT pgrm.event_place) ");
+
+
+		if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+			baseQuery.append(" ,IFNULL(pgrm.program_center,'Others') ");
+		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+			baseQuery.append(" ,IFNULL(pgrm.program_center,'Others') ");
+		}
+
+		baseQuery.append(" FROM program pgrm LEFT OUTER JOIN participant pctpt ON pgrm.program_id = pctpt.program_id  "
+				+ "LEFT OUTER JOIN session_details sd ON pgrm.program_id = sd.program_id "
+				+ "LEFT OUTER JOIN program_coordinators pc ON pgrm.program_id = pc.program_id "
+				+ "WHERE pgrm.event_country=?");
+
+		StringBuilder centerList = new StringBuilder("");
+		if(centers.size() == 0){
+			centerList.append("''");
+		}else if(centers.size() == 1){
+			centerList.append("'"+centers.get(0)+"'");
+		}else{
+			for(int i = 0; i < centers.size(); i++){
+				centerList.append( i != (centers.size() -1 ) ? "'"+centers.get(i)+"'" + ",": "'"+centers.get(i)+"'");
+			}
+		}
+
+		if(null != dashboardReq.getSqlFromDate()){
+			baseQuery.append(" AND pgrm.program_start_date >= '"+dashboardReq.getSqlFromDate()+"'");
+		}
+
+		if(null != dashboardReq.getSqlTodate()){
+			baseQuery.append(" AND pgrm.program_start_date <= '"+dashboardReq.getSqlTodate()+"'");
+		}
+
+		if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+			baseQuery.append(" AND pgrm.program_center IN("+centerList+") GROUP BY pgrm.program_center ");
+		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+			baseQuery.append(" AND pgrm.program_zone='"+dashboardReq.getZone() + "' AND pgrm.program_center IN("+centerList+") GROUP BY pgrm.program_center ");
+		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+			baseQuery.append(" AND pgrm.program_zone='"+dashboardReq.getZone() + "' AND pgrm.program_center='"+dashboardReq.getCenter() + "' AND pgrm.program_center IN("+centerList+") ");
+		}else{
+			return new ArrayList<DashboardResponse>();
+		}
+
+		List<DashboardResponse> countResponse = this.jdbcTemplate.query( baseQuery.toString(),
+				new Object[] {dashboardReq.getCountry()}, new ResultSetExtractor<List<DashboardResponse>>() {
+			@Override
+			public List<DashboardResponse> extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+				List<DashboardResponse> listOfCounts = new ArrayList<DashboardResponse>();
+				while (resultSet.next()) {
+					DashboardResponse counts = new DashboardResponse();
+					counts.setEventCount(resultSet.getInt(1));
+					counts.setParticipantCount(resultSet.getInt(2));
+					counts.setSessionCount(resultSet.getInt(3));
+					counts.setLocationCount(resultSet.getInt(4));
+
+					if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+						counts.setProgramCenter(resultSet.getString(5));
+					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+						counts.setProgramCenter(resultSet.getString(5));
+					}
+					listOfCounts.add(counts);
+				}
+				return listOfCounts;
+			}
+		});
+
+		return countResponse;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.DashboardRepository#
+	 * getCountForEventCoordinator(org.srcm.heartfulness.model.json.request.
+	 * DashboardRequest, org.srcm.heartfulness.model.User, java.util.List)
+	 */
 	@Override
 	public List<DashboardResponse> getCountForEventCoordinator(DashboardRequest dashboardReq, User user, List<String> emailList) {
 
@@ -333,9 +360,9 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 
 
 		if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,IFNULL(pgrm.program_zone,'Others' )");
+			baseQuery.append(" ,IFNULL(pgrm.program_zone,'Others') ");
 		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,pgrm.program_zone,IFNULL(pgrm.program_center,'Others' ) ");
+			baseQuery.append(" ,pgrm.program_zone,IFNULL(pgrm.program_center,'Others') ");
 		}
 
 		baseQuery.append("FROM program pgrm LEFT OUTER JOIN participant pctpt ON pgrm.program_id = pctpt.program_id  "
@@ -410,6 +437,13 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 		return countResponse;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.DashboardRepository#
+	 * getListOfZonesForCountryCoordinator(org.srcm.heartfulness.model.json.
+	 * request.DashboardRequest)
+	 */
 	@Override
 	public List<String> getListOfZonesForCountryCoordinator(DashboardRequest dashboardReq) {
 		MapSqlParameterSource parameteres = new MapSqlParameterSource();
@@ -426,7 +460,13 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 		return listOfZones ;
 	}
 
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.DashboardRepository#
+	 * getListOfZonesForZoneOrCenterCoordinator(org.srcm.heartfulness.model.json
+	 * .request.DashboardRequest, java.util.List, java.util.List)
+	 */
 	@Override
 	public List<String> getListOfZonesForZoneOrCenterCoordinator(DashboardRequest dashboardReq, List<String> mysrcmCenters, List<String> mysrcmZones) {
 		MapSqlParameterSource parameteres = new MapSqlParameterSource();
@@ -457,6 +497,13 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 		return listOfZones ;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.DashboardRepository#
+	 * getListOfZonesForEventCoordinator(java.util.List, java.lang.String,
+	 * org.srcm.heartfulness.model.json.request.DashboardRequest)
+	 */
 	@Override
 	public List<String> getListOfZonesForEventCoordinator (List<String> emailList, String userRole,DashboardRequest dashboardReq) {
 		
@@ -498,6 +545,13 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 
 	} 
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.DashboardRepository#
+	 * getListOfCentersForCountryCoordinator(org.srcm.heartfulness.model.json.
+	 * request.DashboardRequest)
+	 */
 	@Override
 	public List<String> getListOfCentersForCountryCoordinator(DashboardRequest dashboardReq) {
 		Map<String, Object> params = new HashMap<>();
@@ -518,6 +572,13 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 				});
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.DashboardRepository#
+	 * getListOfCentersForZoneOrCenterCoordinator(org.srcm.heartfulness.model.
+	 * json.request.DashboardRequest, java.util.List, java.util.List)
+	 */
 	@Override
 	public List<String> getListOfCentersForZoneOrCenterCoordinator(DashboardRequest dashboardReq, List<String> zones, List<String> centers) {
 		Map<String, Object> params = new HashMap<>();
@@ -554,6 +615,13 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 				});
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.DashboardRepository#
+	 * getListOfCentersForEventCoordinator(org.srcm.heartfulness.model.json.
+	 * request.DashboardRequest, java.util.List, java.lang.String)
+	 */
 	@Override
 	public List<String> getListOfCentersForEventCoordinator(DashboardRequest dashboardReq, List<String> emailList, String userRole) {
 		
@@ -592,7 +660,14 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 					}
 				});
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.DashboardRepository#
+	 * getListOfStatesForCountryCoordinator(org.srcm.heartfulness.model.json.
+	 * request.DashboardRequest)
+	 */
 	@Override
 	public List<String> getListOfStatesForCountryCoordinator(DashboardRequest dashboardReq) {
 		
@@ -609,7 +684,14 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 					}
 				});
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.DashboardRepository#
+	 * getListOfDistrictForCountryCoordinator(org.srcm.heartfulness.model.json.
+	 * request.DashboardRequest)
+	 */
 	@Override
 	public List<String> getListOfDistrictForCountryCoordinator(DashboardRequest dashboardReq) {
 		MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
@@ -629,7 +711,14 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 		
 		return listOfDistrict;
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.srcm.heartfulness.repository.DashboardRepository#
+	 * getListOfCitiesForCountryCoordinator(org.srcm.heartfulness.model.json.
+	 * request.DashboardRequest)
+	 */
 	@Override
 	public List<String> getListOfCitiesForCountryCoordinator(DashboardRequest dashboardReq) {
 		

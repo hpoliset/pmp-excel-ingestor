@@ -2,6 +2,7 @@ package org.srcm.heartfulness.repository.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -114,7 +115,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	 * org.srcm.heartfulness.repository.ParticipantRepository#findByProgramIdAndRole
 	 * (java.lang.Integer)
 	 */
-	@Override
+	/*@Override
 	public List<Participant> findByProgramIdAndRole(int programId, List<String> emailList,String userRole) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("programId", programId);
@@ -122,7 +123,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 		StringBuilder whereCondition = new StringBuilder("");
 		StringBuilder emailString = new StringBuilder("");
 
-		/*String userRole = this.jdbcTemplate.query("SELECT role from user WHERE email=? ", new Object[] { mail },
+		String userRole = this.jdbcTemplate.query("SELECT role from user WHERE email=? ", new Object[] { mail },
 				new ResultSetExtractor<String>() {
 					@Override
 					public String extractData(ResultSet resultSet) throws SQLException, DataAccessException {
@@ -131,7 +132,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 						}
 						return null;
 					}
-				});*/
+				});
 		if(null != emailList && emailList.size() == 1){
 			emailString.append("'"+emailList.get(0)+"'");
 		}else{
@@ -158,6 +159,39 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 				.query("SELECT DISTINCT pr.* FROM participant pr,program p LEFT JOIN program_coordinators pc ON p.program_id = pc.program_id WHERE "
 						+ whereCondition, sqlParameterSource, BeanPropertyRowMapper.newInstance(Participant.class));
 
+		return participants;
+	}*/
+	
+	@Override
+	public List<Participant> findByProgramIdAndRole(int programId, List<String> emailList,String userRole) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("programId", programId);
+		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+		StringBuilder whereCondition = new StringBuilder("");
+		StringBuilder emailString = new StringBuilder("");
+		List<Participant> participants = new ArrayList<Participant>();
+		
+		if(null != emailList && emailList.size() == 1){
+			emailString.append("'"+emailList.get(0)+"'");
+		}else{
+			for(int i = 0; i < emailList.size(); i++){
+				emailString.append( i != (emailList.size() -1 ) ? "'"+emailList.get(i)+"'" + ",": "'"+emailList.get(i)+"'");
+			}
+		}
+		if (null != userRole && !userRole.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
+			if (!userRole.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)) {
+				whereCondition.append(" (p.coordinator_email IN(" + emailString + ") OR pc.email IN(" + emailString + ")) ");
+			}
+		}
+		if((null != userRole && userRole.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) || whereCondition.length() > 0 ){
+			whereCondition
+			.append((whereCondition.length() > 0) ? " AND pr.program_id=:programId AND pr.program_id=p.program_id "
+					: " pr.program_id=:programId AND pr.program_id=p.program_id ");
+
+			participants = this.namedParameterJdbcTemplate
+					.query("SELECT DISTINCT pr.* FROM participant pr,program p LEFT JOIN program_coordinators pc ON p.program_id = pc.program_id WHERE "
+							+ whereCondition, sqlParameterSource, BeanPropertyRowMapper.newInstance(Participant.class));
+		}
 		return participants;
 	}
 

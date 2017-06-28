@@ -16,22 +16,29 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.DashboardConstants;
+import org.srcm.heartfulness.constants.EndpointConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
+import org.srcm.heartfulness.enumeration.CoordinatorPosition;
 import org.srcm.heartfulness.enumeration.ParticipantSearchField;
 import org.srcm.heartfulness.excelupload.transformer.impl.ExcelDataExtractorV2Impl;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
+import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
+import org.srcm.heartfulness.model.json.response.CoordinatorPositionResponse;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
+import org.srcm.heartfulness.model.json.response.PositionAPIResult;
 import org.srcm.heartfulness.model.json.response.UpdateIntroductionResponse;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
+import org.srcm.heartfulness.rest.template.DashboardRestTemplate;
 import org.srcm.heartfulness.service.response.ExcelUploadResponse;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.ExcelParserUtils;
@@ -65,6 +72,12 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 
 	@Autowired
 	EventDashboardValidator eventDashboardValidator;
+
+	@Autowired
+	DashboardRestTemplate dashboardRestTemplate;
+	
+	@Autowired
+	APIAccessLogService apiAccessLogService;
 
 	/**
 	 * Service to create new participant or to update the existing participant
@@ -246,7 +259,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 		}*/
 
 		//participantRequest.setDateOfBirth((null != participant.getDateOfBirth() && !participantRequest.getDateOfBirth()
-				//.isEmpty()) ? sdf.format(participant.getDateOfBirth()) : null);
+		//.isEmpty()) ? sdf.format(participant.getDateOfBirth()) : null);
 		//participantRequest.setAddressLine1(participant.getAddressLine1());
 		//participantRequest.setAddressLine2(participant.getAddressLine2());
 		//participantRequest.setCity(participant.getCity());
@@ -306,7 +319,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	 *            contains seqId and event Id
 	 * @return participant details
 	 */
-	@Override
+	/*@Override
 	public ParticipantRequest getParticipantBySeqId(ParticipantRequest participantRequest,List<String> mail,String role) {
 		SimpleDateFormat convertedsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
 		Participant participant = findBySeqIdAndRole(participantRequest, mail,role);
@@ -381,6 +394,99 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			return null;
 		}
 
+	}*/
+
+	@Override
+	public ResponseEntity<?> getParticipantBySeqId(ParticipantRequest participantRequest,List<String> mail,String role, PMPAPIAccessLog accessLog, String authToken) {
+
+		LOGGER.info("Trying to get participant details for log in user {}",accessLog.getUsername());
+
+		boolean isNext = true;
+		int currentPositionValue = 0;
+		String currentPositionType =  "";
+
+		PMPAPIAccessLogDetails accessLogDetails = new 
+				PMPAPIAccessLogDetails(accessLog.getId(), EndpointConstants.POSITIONS_API, 
+						DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null, authToken);
+		apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);		
+		PositionAPIResult posResult = null;
+
+		try {
+
+			posResult = dashboardRestTemplate.findCoordinatorPosition(authToken);
+
+			while(isNext){
+
+				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
+
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+						currentPositionValue = CoordinatorPosition.COUNTRY_COORDINATOR.getPositionValue();
+						currentPositionType =  crdntrPosition.getPositionType().getName();
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())){
+
+						if(CoordinatorPosition.ZONE_COORDINATOR.getPositionValue() > currentPositionValue){
+							currentPositionValue = CoordinatorPosition.ZONE_COORDINATOR.getPositionValue();
+							currentPositionType =  crdntrPosition.getPositionType().getName();
+						}
+
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
+
+						if(CoordinatorPosition.CENTER_COORDINATOR.getPositionValue() > currentPositionValue){
+							currentPositionValue = CoordinatorPosition.CENTER_COORDINATOR.getPositionValue();
+							currentPositionType =  crdntrPosition.getPositionType().getName();
+						}
+
+					}
+
+					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+						posResult.setNext(null);
+						break;
+					}
+
+				}
+
+				if(null == posResult.getNext()){
+					isNext = false;
+				}else{
+					posResult =  dashboardRestTemplate.findCoordinatorPosition(authToken,posResult.getNext());
+				}
+			}
+
+		} catch (JsonParseException jpe) {
+			LOGGER.error("JPE : Unable to fetch coordinator position type from MYSRCM {}",jpe.getMessage());
+		} catch (JsonMappingException jme) {
+			LOGGER.error("JME : Unable to fetch coordinator position type from MYSRCM {}",jme.getMessage());
+		} catch (IOException ioe) {
+			LOGGER.error("IOE : Unable to fetch coordinator position type from MYSRCM {}",ioe.getMessage());
+		} catch(Exception ex){
+			LOGGER.error("EX : Unable to fetch coordinator position type from MYSRCM {}",ex.getMessage());
+		}
+		
+		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
+		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+
+		if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())
+				|| currentPositionType.equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType()) || currentPositionType.equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType()) ) {
+			LOGGER.info("Logged in user {} is a country/zone/center coordinator ", accessLog.getUsername());
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.PROCESSING_FAILED);
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage(DashboardConstants.PROCESSING_FAILED);
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_FAILED);
+		}else{
+			Participant participant = findBySeqIdAndRole(participantRequest, mail,role);
+			ParticipantRequest response = getParticipantRequestFromParticipant(participantRequest, participant);
+			if (null != response) {
+				accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+				accessLog.setErrorMessage(null);
+				return new ResponseEntity<ParticipantRequest>(response, HttpStatus.OK);
+			} else {
+				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_SEQ_ID);
+				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+				accessLog.setErrorMessage(DashboardConstants.INVALID_SEQ_ID);
+				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
+			}
+		}
 	}
 
 	/**
@@ -483,10 +589,11 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 
 	@Override
 	public Participant findBySeqIdAndRole(ParticipantRequest participantRequest,List<String> mail,String role) {
-		if (0 != programrepository.getProgramIdByEventId(participantRequest.getEventId())) {
-			participantRequest.setProgramId(programrepository.getProgramIdByEventId(participantRequest.getEventId()));
-			Participant newParticipant = programrepository.findParticipantBySeqIdAndRole(participantRequest.getSeqId(),
-					participantRequest.getProgramId(),mail,role);
+
+		int programId = programrepository.getProgramIdByEventId(participantRequest.getEventId());
+		if (0 != programId) {
+			participantRequest.setProgramId(programId/*programrepository.getProgramIdByEventId(participantRequest.getEventId())*/);
+			Participant newParticipant = programrepository.findParticipantBySeqIdAndRole(participantRequest.getSeqId(),participantRequest.getProgramId(),mail,role);
 			return newParticipant;
 		} else {
 			return null;
@@ -764,6 +871,81 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 		accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 		accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(excelUploadResponse));
 		return new ResponseEntity<ExcelUploadResponse>(excelUploadResponse,HttpStatus.OK);
+	}
+
+	private ParticipantRequest getParticipantRequestFromParticipant(ParticipantRequest participantRequest, Participant participant){
+		SimpleDateFormat convertedsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
+		if (null != participant) {
+			participantRequest.setPrintName(participant.getPrintName());
+			participantRequest.setEmail(participant.getEmail());
+			participantRequest.setMobilePhone(participant.getMobilePhone());
+			if (participant.getGender() != null && !participant.getGender().isEmpty()) {
+				if ((participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_FEMALE) || participant.getGender()
+						.equalsIgnoreCase(PMPConstants.GENDER_MALE)))
+					participant
+					.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) ? PMPConstants.MALE
+							: PMPConstants.FEMALE);
+			}
+
+			participantRequest.setGender(participant.getGender());
+			participantRequest.setDateOfBirth((null != participant.getDateOfBirth()) ? convertedsdf.format(participant
+					.getDateOfBirth()) : null);
+			participantRequest.setAddressLine1(participant.getAddressLine1());
+			participantRequest.setAddressLine2(participant.getAddressLine2());
+			participantRequest.setCity(participant.getCity());
+			participantRequest.setState(participant.getState());
+			participantRequest.setCountry(participant.getCountry());
+			participantRequest.setIntroducedStatus(0 != participant.getIntroduced() ? PMPConstants.REQUIRED_YES
+					: PMPConstants.REQUIRED_NO);
+			participantRequest.setIntroductionDate((null != participant.getIntroductionDate()) ? convertedsdf
+					.format(participant.getIntroductionDate()) : null);
+			participantRequest.setAbhyasiId(participant.getAbhyasiId());
+			participantRequest.setIntroducedBy(participant.getIntroducedBy());
+			if (null == participant.getFirstSittingDate()) {
+				participantRequest.setFirstSittingDate("");
+			} else {
+				try {
+					participantRequest.setFirstSittingDate(convertedsdf.format(participant.getFirstSittingDate()));
+				} catch (Exception e) {
+					participantRequest.setFirstSittingDate("");
+				}
+			}
+			if (null == participant.getSecondSittingDate()) {
+				participantRequest.setSecondSittingDate("");
+			} else {
+				try {
+					participantRequest.setSecondSittingDate(convertedsdf.format(participant.getSecondSittingDate()));
+				} catch (Exception e) {
+					participantRequest.setSecondSittingDate("");
+				}
+			}
+			if (null == participant.getThirdSittingDate()) {
+				participantRequest.setThirdSittingDate("");
+			} else {
+				try {
+					participantRequest.setThirdSittingDate(convertedsdf.format(participant.getThirdSittingDate()));
+				} catch (Exception e) {
+					participantRequest.setThirdSittingDate("");
+				}
+			}
+			participantRequest.setFirstSitting((null != participant.getFirstSitting() && 1 == participant
+					.getFirstSitting()) ? PMPConstants.REQUIRED_YES : PMPConstants.REQUIRED_NO);
+			participantRequest.setSecondSitting((null != participant.getSecondSitting() && 1 == participant
+					.getSecondSitting()) ? PMPConstants.REQUIRED_YES : PMPConstants.REQUIRED_NO);
+			participantRequest.setThirdSitting((null != participant.getThirdSitting() && 1 == participant
+					.getThirdSitting()) ? PMPConstants.REQUIRED_YES : PMPConstants.REQUIRED_NO);
+
+			participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
+					.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
+			participantRequest.setEwelcomeIdRemarks(participant.getEwelcomeIdRemarks());
+			participantRequest.setPhone(participant.getPhone());
+			participantRequest.setAgeGroup(participant.getAgeGroup());
+			participantRequest.setDistrict(participant.getDistrict());
+			return participantRequest;
+		} else {
+			return null;
+		}
+
 	}
 
 

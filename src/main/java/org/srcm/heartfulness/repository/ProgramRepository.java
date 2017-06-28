@@ -122,6 +122,8 @@ public interface ProgramRepository {
 	 * Fetch the list of participants for the given program ID
 	 * 
 	 * @param decryptedProgramId
+	 * @param mail
+	 * @param role
 	 * @return List<Participant>
 	 */
 	List<Participant> getParticipantList(int decryptedProgramId,List<String> mail,String role);
@@ -189,7 +191,8 @@ public interface ProgramRepository {
 	 * @param seqId
 	 * @param programId
 	 * @param mail
-	 * @return
+	 * @param role
+	 * @return Participant
 	 */
 	Participant findParticipantBySeqIdAndRole(String seqId, int programId,List<String> mail,String role);
 
@@ -325,7 +328,7 @@ public interface ProgramRepository {
 	 * @param role
 	 * @return
 	 */
-	int getProgramCountWithUserRoleAndEmailId(/*String email*/List<String> emailList, String role);
+	//int getProgramCountWithUserRoleAndEmailId(/*String email*/List<String> emailList, String role);
 
 	/**
 	 * Get the list of programs depending on the coordinator email and role.
@@ -336,7 +339,7 @@ public interface ProgramRepository {
 	 * @param pageSize
 	 * @return
 	 */
-	List<Program> getEventsByEmailAndRole(/*String email*/List<String> emailList, String role, int offset, int pageSize);
+	//List<Program> getEventsByEmailAndRole(List<String> emailList, String role, int offset, int pageSize);
 
 	/**
 	 * Method to get the program count w.r.t the search params provided and with
@@ -347,7 +350,7 @@ public interface ProgramRepository {
 	 * @param role
 	 * @return
 	 */
-	int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList/*String email*/, String role);
+	//int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList/*String email*/, String role);
 
 	/**
 	 * Method to search the events from the HFN Backend using few params.
@@ -358,7 +361,7 @@ public interface ProgramRepository {
 	 * @param offset
 	 * @return
 	 */
-	List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList/*String email*/, String role, int offset);
+	//List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList/*String email*/, String role, int offset);
 
 	/**
 	 * Method to check whether the auto generated event id already exists or
@@ -459,5 +462,15 @@ public interface ProgramRepository {
 	List<ProgramTestimonialDetails> getListOfTestimonials(int programId);
 
 	void updateProgramStatus(Program program, String programStatus);
+	
+	Program getProgramByEmailAndRole(List<String> emailList,String userRole,String agEventId,String coordinatorType,List<String> mysrcmCenters);
+	
+	public int getProgramCountForLogInCoordinator(List<String> emailList, String role,String coordinatorType,List<String> centers);
+	
+	public List<Program> getEventsByEmailAndRole(List<String> emailList, String role, int offset, int pageSize,String coordinatorType,List<String> mysrcmCenters);
+	
+	int getPgrmCountBySrchParamsForLogInCoordinator(SearchRequest searchRequest, List<String> emailList, String role,String coordinatorType,List<String> centers);
+	
+	List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList, String role, int offset,String coordinatorType,List<String> mysrcmCenters);
 
 }
