@@ -52,4 +52,5 @@ ADD `prms_gvn_by` VARCHAR(250) NULL AFTER `permission_letter_path`,
 ADD `prms_gvr_designation` VARCHAR(250) NULL AFTER `prms_gvn_by`,
 ADD `prms_gvr_phone` VARCHAR(50) NULL AFTER `prms_gvr_designation`,
 ADD `prms_gvr_email_id` VARCHAR(250) NULL AFTER `prms_gvr_phone`;
-
+ALTER TABLE program ADD is_zone_coordinator_informed tinyint(1) DEFAULT '0' COMMENT '0 means uninformed and 1 means informed';
+ALTER TABLE program ADD is_center_coordinator_informed tinyint(1) DEFAULT '0' COMMENT '0 means uninformed and 1 means informed';

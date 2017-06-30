@@ -64,5 +64,7 @@ public class EmailLogConstants {
 	public static final String SECONDARY_COORDINATOR_ABHYASIID_PARAMETER			=	"SECONDARY_COORDINATOR_ABHYASIID";
 	public static final String SECONDARY_COORDINATOR_NOTES							=	"SECONDARY_COORDINATOR_NOTES";
 	public static final String HFN_JIRA_EMAIL										=	"introductions@heartfulness.org";
+	public static final String PROGRAM_DETAILS_PARAMETER                 			=    "PROGRAM_DETAILS";
+	public static final String NOTIFICATION_MAIL_TO_ZONE_CENTER_COORDINATOR         =    "NOTIFICATION_MAIL_TO_ZONE_CENTER_COORDINATOR";
 
 }

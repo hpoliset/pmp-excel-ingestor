@@ -334,12 +334,14 @@ public class CoordinatorAccessControlMail {
 
 		if(null != coordinator.getJiraNumber() && !coordinator.getJiraNumber().isEmpty()){
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+			message.setSubject("Jira Issue - "+ coordinator.getJiraNumber() +" "+ coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
+		}else{
+			message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
 		}
 		if(null != coordinator.getUploaderMail() && !coordinator.getUploaderMail().isEmpty()){
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(coordinator.getUploaderMail()));	
 		}
 
-		message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
 		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent),EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
@@ -379,12 +381,14 @@ public class CoordinatorAccessControlMail {
 
 			if(null != coordinator.getJiraNumber() && !coordinator.getJiraNumber().isEmpty()){
 				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+				message.setSubject("Jira Issue - "+ coordinator.getJiraNumber() +" "+ coordinatormailsubjecttocreateaccount + " - " + coordinator.getEventName());
+			}else{
+				message.setSubject(coordinatormailsubjecttocreateaccount + " - " + coordinator.getEventName());
 			}
 			if(null != coordinator.getUploaderMail() && !coordinator.getUploaderMail().isEmpty()){
 				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(coordinator.getUploaderMail()));
 			}
 
-			message.setSubject(coordinatormailsubjecttocreateaccount + " - " + coordinator.getEventName());
 			message.setContent(getMessageContentbyTemplateName(coordinatormailtemplatetocreateaccount),
 					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 			message.setAllow8bitMIME(true);
@@ -435,12 +439,14 @@ public class CoordinatorAccessControlMail {
 
 			if(null != program.getJiraIssueNumber() && !program.getJiraIssueNumber().isEmpty()){
 				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+				message.setSubject("Jira Issue - "+ program.getJiraIssueNumber() +" "+ requestMailSubject + eventId);
+			}else{
+				message.setSubject(requestMailSubject + eventId);
 			}
 			if(null != uploaderEmail && !uploaderEmail.isEmpty()){
 				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(uploaderEmail));
 			}
 
-			message.setSubject(requestMailSubject + eventId);
 			message.setContent(getMessageContentbyTemplateName(approvalMailTemplate),
 					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 			message.setAllow8bitMIME(true);

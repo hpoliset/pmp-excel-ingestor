@@ -50,7 +50,7 @@ import com.sun.mail.smtp.SMTPMessage;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:dev.mail.api.properties", ignoreUnknownFields = false, prefix = "mail.api")
+@ConfigurationProperties(locations = "classpath:dev.mail.api.properties", ignoreUnknownFields = true, prefix = "mail.api")
 public class SendMail {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendMail.class);
@@ -491,6 +491,7 @@ public class SendMail {
 			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), toIds[0], EmailLogConstants.FTP_UPLOAD_DETAILS,
 					EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e));
 			mailLogRepository.createMailLog(pmpMailLog);
+			
 		}
 	}
 
@@ -636,8 +637,13 @@ public class SendMail {
 		}
 		if(null != jiraIssueNumber && !jiraIssueNumber.isEmpty()){
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+			message.setSubject("Jira Issue - "+ jiraIssueNumber +" "+ crdntrmailsubject + outputsdf.format(cal.getTime()));
+
+		}else{
+			message.setSubject(crdntrmailsubject + outputsdf.format(cal.getTime()));
+
 		}
-		message.setSubject(crdntrmailsubject + outputsdf.format(cal.getTime()));
+		
 		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename),
 				EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 		message.setAllow8bitMIME(true);
@@ -773,8 +779,7 @@ public class SendMail {
 		addParameter(EmailLogConstants.EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id="
 				+ coordinatorEmail.getEventID());
 		addParameter(EmailLogConstants.PARTICIPANTS_DETAILS_PARAMETER, sb.toString());
-		System.out.println(" co ord details - " + coordinatorEmail.getEventName() + "--"
-				+ coordinatorEmail.getCoordinatorEmail());
+		
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinatorEmail.getCoordinatorEmail()));
@@ -782,13 +787,16 @@ public class SendMail {
 		if(null != uploaderEmail && !uploaderEmail.isEmpty()){
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(uploaderEmail));
 		}
-		if(null != jiraIssueNumber && !jiraIssueNumber.isEmpty())
+		
+		if(null != jiraIssueNumber && !jiraIssueNumber.isEmpty()){
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
-
-		message.setSubject(crdntrmailforewlcmidsubject
-				+ (null != coordinatorEmail.getEventName() ? " - " + coordinatorEmail.getEventName() : ""));
-		message.setContent(getMessageContentbyTemplateName(crdntrewlcomeidmailtemplatename),
-				EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
+			message.setSubject("Jira Issue - "+ jiraIssueNumber +" "+ crdntrmailforewlcmidsubject + (null != coordinatorEmail.getEventName() ? " - " + coordinatorEmail.getEventName() : ""));
+		}
+		else{
+			message.setSubject(crdntrmailforewlcmidsubject+ (null != coordinatorEmail.getEventName() ? " - " + coordinatorEmail.getEventName() : ""));
+					
+		}
+		message.setContent(getMessageContentbyTemplateName(crdntrewlcomeidmailtemplatename),EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);

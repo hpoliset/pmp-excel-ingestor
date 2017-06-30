@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -30,7 +29,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.srcm.heartfulness.constants.CoordinatorAccessControlConstants;
-import org.srcm.heartfulness.constants.DashboardConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.enumeration.CoordinatorPosition;
@@ -41,7 +39,6 @@ import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.ProgramPermissionLetterdetails;
 import org.srcm.heartfulness.model.ProgramTestimonialDetails;
 import org.srcm.heartfulness.model.UploadedFiles;
-import org.srcm.heartfulness.model.json.request.DashboardRequest;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.repository.ParticipantRepository;
@@ -58,8 +55,8 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 	private static Logger LOGGER = LoggerFactory.getLogger(ProgramRepositoryImpl.class);
 
 	private final JdbcTemplate jdbcTemplate;
-	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	private SimpleJdbcInsert insertProgram;
 	private ParticipantRepository participantRepository;
 
@@ -2285,6 +2282,30 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 				params, BeanPropertyRowMapper.newInstance(Program.class));
 		return programs;
 
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.srcm.heartfulness.repository.SessionDetailsRepository#getSessionAndProgramDateByProgramId(int)
+	 */
+	@Override
+	public HashMap<String, String> getSessionAndProgramDateByProgramId(int programId) {
+		
+		HashMap<String, String> date = this.jdbcTemplate.query("SELECT p.program_start_date, max(s.session_date) FROM program p "
+																+"LEFT OUTER JOIN session_details s "
+																+"ON p.program_id = s.program_id  WHERE p.program_id = ?",
+				new Object[]{programId},new ResultSetExtractor<HashMap<String, String>>(){
+					@Override
+					public HashMap<String, String>  extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+						HashMap<String, String> param = new HashMap<String, String>();
+						while(resultSet.next()){
+							param.put(resultSet.getString(1), resultSet.getString(2));
+						}
+						return param;
+					}
+			
+		});
+		return date;
 	}
 
 }

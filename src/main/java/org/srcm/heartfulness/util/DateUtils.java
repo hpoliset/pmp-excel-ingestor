@@ -88,6 +88,7 @@ public class DateUtils {
 		}
 
 		SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+		sdf.setLenient(false);
 		return sdf.parse(dateString);
 	}
 

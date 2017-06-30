@@ -57,4 +57,12 @@ public class DashboardConstants {
 	public static final String DISTRICT_REQUIRED											=	"District is required";
 	public static final String CITY_REQUIRED												=	"City is required";
 	
+	
+	public static final String ZONE_CENTER_COORDINATOR_NOTIFICATION_CRON					=	"ZONE_CENTER_COORDINATOR_NOTIFICATION_CRON";
+	public static final String ZONE_GROUP_TYPE												=	"zone";
+	public static final String CENTER_GROUP_TYPE											=	"center";
+	
+	public static final String ZONE_COORDINATOR_INFORMED_COLUMN								=	"is_zone_coordinator_informed";
+	public static final String CENTER_COORDINATOR_INFORMED_COLUMN							=	"is_center_coordinator_informed";
+	
 }

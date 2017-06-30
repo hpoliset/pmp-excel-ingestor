@@ -47,4 +47,6 @@ public class ErrorConstants {
 	public static final String USER_DOESNOT_EXISTS 									= 	"User doesnot exists";
 	public static final String ERROR_WHILE_FETCHING_PROFILE_FROM_MYSRCM 			= 	"Error while fetching profile from MySRCM";
 	public static final String ACCESS_DENIED_TO_VIEW_THIS_PAGE 						= 	"You are not having enough permission to perform this operation";
+	public static final String SESSION_DATE_WITH_PROGRAM_DATE 					 	= 	"Session date should be after program start date";
+	public static final String SESSION_DATE_WITH_MAX_SESSION_DATE 					= 	"Current session date should be greater than previous session date";
 }

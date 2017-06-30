@@ -17,6 +17,8 @@ public class EndpointConstants {
 	public static final String  MOBILE_AUTHENTICATION_ENDPOINT 	= 	"/pmp/api/mobile/authenticate";
 	public static final String  MOBILE_CREATE_USER_ENDPOINT 	= 	"/pmp/api/v1/mobile/users";
 	public static final String CREATE_USER_PROFILE 				= 	"https://profile.sahajmarg.org/api/users/?format=json";
-	public static final String POSITIONS_API 					= 	"http://profile.srcm.net/api/v2/positions?format=json";
+	public static final String POSITIONS_API 					= 	"https://profile.sahajmarg.org/api/v2/positions?format=json";
+	public static final String GET_POSITIONS_TYPE_API 			= 	"https://profile.sahajmarg.org/api/v2/positions-type?format=json";
+	public static final String GROUPS_API 						= 	"https://profile.sahajmarg.org/api/v2/groups?group_type=zone&format=json&name__iexact=";
 	
 }

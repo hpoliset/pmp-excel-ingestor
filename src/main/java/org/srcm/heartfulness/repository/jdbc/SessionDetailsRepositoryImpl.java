@@ -171,7 +171,7 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 		int sessionId = 0;
 		try{
 			sessionId = this.jdbcTemplate.query(
-					"SELECT session_id from session_details where auto_generated_session_id=?", new Object[] {autoGnrtdSessionId},
+					"SELECT session_id from session_details where auto_generated_session_id=? AND is_deleted = 0", new Object[] {autoGnrtdSessionId},
 					new ResultSetExtractor<Integer>() {
 						@Override
 						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
@@ -247,7 +247,7 @@ public class SessionDetailsRepositoryImpl implements SessionDetailsRepository {
 	@Override
 	public int getSessionDetailsIdBySessionIdandProgramId(String sessionId, int programId) {
 		int sessionDetailsId = this.jdbcTemplate.query(
-				"SELECT session_id from session_details where program_id=? AND auto_generated_session_id=?",
+				"SELECT session_id from session_details where program_id=? AND auto_generated_session_id=? AND is_deleted = 0",
 				new Object[] { programId, sessionId }, new ResultSetExtractor<Integer>() {
 					@Override
 					public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {

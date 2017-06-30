@@ -2,6 +2,7 @@ package org.srcm.heartfulness.repository;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import org.springframework.dao.DataAccessException;
@@ -469,8 +470,10 @@ public interface ProgramRepository {
 	
 	public List<Program> getEventsByEmailAndRole(List<String> emailList, String role, int offset, int pageSize,String coordinatorType,List<String> mysrcmCenters);
 	
-	int getPgrmCountBySrchParamsForLogInCoordinator(SearchRequest searchRequest, List<String> emailList, String role,String coordinatorType,List<String> centers);
+	public int getPgrmCountBySrchParamsForLogInCoordinator(SearchRequest searchRequest, List<String> emailList, String role,String coordinatorType,List<String> centers);
 	
-	List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList, String role, int offset,String coordinatorType,List<String> mysrcmCenters);
+	public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList, String role, int offset,String coordinatorType,List<String> mysrcmCenters);
+
+	public HashMap<String, String> getSessionAndProgramDateByProgramId(int programId);
 
 }

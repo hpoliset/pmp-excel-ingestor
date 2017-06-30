@@ -3,6 +3,9 @@ package org.srcm.heartfulness.validator.impl;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +25,7 @@ import org.srcm.heartfulness.model.json.response.AbhyasiUserProfile;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.PMPResponse;
 import org.srcm.heartfulness.model.json.response.SuccessResponse;
+import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
 import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.ProgramService;
@@ -57,6 +61,9 @@ public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 
 	@Autowired
 	SessionDetailsService sessionDetailsService;
+
+	@Autowired
+	ProgramRepository programRepository;
 
 	/**
 	 * This method is used to validate the authentication token against
@@ -180,6 +187,38 @@ public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 				setPMPAccessLogAndPersist(accessLog, eResponse);
 				return eResponse;
 			} else {
+
+				String programStartDate = "";
+				String sessionDate ="";
+				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+				HashMap<String, String> dates = programRepository.getSessionAndProgramDateByProgramId(programId);
+				for(Map.Entry<String, String> date : dates.entrySet()){
+					programStartDate = date.getKey();
+					sessionDate = date.getValue();
+				}
+
+				try{
+					
+					if(null == sessionDate || sessionDate.isEmpty()){
+						if(!sdf.parse(programStartDate).equals(sdf.parse(sessionDetails.getSessionStringDate())) ? !sdf.parse(programStartDate).before(sdf.parse(sessionDetails.getSessionStringDate())) : false){
+							eResponse.setError_description(ErrorConstants.SESSION_DATE_WITH_PROGRAM_DATE);
+							accessLog.setErrorMessage(ErrorConstants.SESSION_DATE_WITH_PROGRAM_DATE);
+							setPMPAccessLogAndPersist(accessLog, eResponse);
+							return eResponse;
+						}
+					}
+					else if ( !sdf.parse(sessionDate).equals(sdf.parse(sessionDetails.getSessionStringDate())) ?  ! sdf.parse(sessionDate).before(sdf.parse(sessionDetails.getSessionStringDate())) : false){
+						eResponse.setError_description(ErrorConstants.SESSION_DATE_WITH_MAX_SESSION_DATE);
+						accessLog.setErrorMessage(ErrorConstants.SESSION_DATE_WITH_MAX_SESSION_DATE);
+						setPMPAccessLogAndPersist(accessLog, eResponse);
+						return eResponse;
+					}
+				}catch (Exception e) {
+					eResponse.setError_description(ErrorConstants.INVALID_DATE_FORMAT);
+					accessLog.setErrorMessage(ErrorConstants.INVALID_DATE_FORMAT);
+					setPMPAccessLogAndPersist(accessLog, eResponse);
+					return eResponse;
+				}
 				sessionDetails.setProgramId(programId);
 			}
 		}

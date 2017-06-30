@@ -454,7 +454,9 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 					break;
 				}
 			}
-		} else if (!(null == participantInput.getThirdSittingDate()	&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting()))) {
+		} else if (!(null == participantInput.getThirdSittingDate()	&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting()))
+				&& !(null == participantInput.getFirstSittingDate() && (null == participantInput.getFirstSitting() || 0 == participantInput.getFirstSitting()))
+                && !(null == participantInput.getSecondSittingDate() && (null == participantInput.getSecondSitting() || 0 == participantInput.getSecondSitting()))) {
 			isValid=true;
 		}else if( null != participantInput.getTotalDays() ? participantInput.getTotalDays() > 2 : false  ){
 			isValid = true;
