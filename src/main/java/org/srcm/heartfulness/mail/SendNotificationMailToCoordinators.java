@@ -210,7 +210,7 @@ public class SendNotificationMailToCoordinators {
 					sb.append("</td><td>");
 					sb.append(program.getAbyasiRefNo() != null ? program.getAbyasiRefNo() : "");
 					sb.append("</td></td>");
-					sb.append(program.getJiraIssueNumber() != null ? outputsdf.format(program.getJiraIssueNumber()) : "");
+					sb.append(program.getJiraIssueNumber() != null ? program.getJiraIssueNumber() : "");
 					sb.append("</td></tr>");
 				}
 				sb.append("</table>");
