@@ -243,6 +243,20 @@ public class DashboardRestTemplate extends RestTemplate{
 
 	}
 	
+	public MysrcmPositionType getPositionType(String nextUrl) throws JsonParseException, JsonMappingException, IOException {
+
+		setProxy();
+
+		MultiValueMap<String, String> bodyParams = new LinkedMultiValueMap<String, String>();
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.clear();
+		bodyParams.clear();
+		HttpEntity<?> httpEntity = new HttpEntity<Object>(bodyParams, httpHeaders);
+		ResponseEntity<String> response = this.exchange(nextUrl, HttpMethod.GET, httpEntity, String.class);
+		return mapper.readValue(response.getBody(), MysrcmPositionType.class);
+
+	}
+	
 	public MysrcmGroup getMysrcmGroupType(String type, String zoneOrCenterValue ) throws JsonParseException, JsonMappingException, IOException{
 		
 		setProxy();

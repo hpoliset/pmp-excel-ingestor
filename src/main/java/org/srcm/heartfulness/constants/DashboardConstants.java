@@ -64,5 +64,6 @@ public class DashboardConstants {
 	
 	public static final String ZONE_COORDINATOR_INFORMED_COLUMN								=	"is_zone_coordinator_informed";
 	public static final String CENTER_COORDINATOR_INFORMED_COLUMN							=	"is_center_coordinator_informed";
+	public static final String EVENT_STATUS_COMPLETED								    	=	"Event is already completed";
 	
 }

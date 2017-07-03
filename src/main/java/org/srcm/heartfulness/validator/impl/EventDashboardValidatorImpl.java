@@ -65,13 +65,13 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 
 	@Autowired
 	Environment env;
-	
+
 	@Autowired
 	ProgramRepository programrepository;
-	
+
 	@Autowired
 	ParticipantRepository participantRepository;
-	
+
 	@Autowired
 	private ChannelRepository channelRepository;
 
@@ -116,7 +116,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if(null == participant.getDistrict() || participant.getDistrict().isEmpty()){
 			errors.put("district", DashboardConstants.PARTICIPANT_DISTRICT_REQ);
 		}
-		
+
 		if (null != participant.getEmail()) {
 			if (!participant.getEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
 				errors.put("email", DashboardConstants.INVALID_PARTICIPANT_EMAIL);
@@ -218,7 +218,8 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	@Override
 	public Map<String, String> checkMandatoryEventFields(Event event) {
 		Map<String, String> errors = new HashMap<>();
-		
+		Date startDate = null;
+
 		if (null == event.getBatchDescription() || event.getBatchDescription().isEmpty()) {
 			errors.put("batchDescription", "Batch description is required");
 		}
@@ -235,7 +236,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		}else{
 			event.setProgramChannelType(0);
 		}
-		
+
 		if (null == event.getOrganizationName() || event.getOrganizationName().isEmpty()) {
 			errors.put("organizationName", "Organization name is required");
 		}
@@ -260,14 +261,54 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if(null == event.getProgramCenter() || event.getProgramCenter().isEmpty()){
 			errors.put("programCenter", "Program center is required");
 		}
+
 		if (null == event.getProgramStartDate()) {
 			errors.put("programStartDate", "Program start date is required");
 		} else {
-			
+
+			if (!event.getProgramStartDate().matches(ExpressionConstants.DATE_REGEX)) {
+				errors.put("programStartDate", "Invalid date format,correct format is dd-MM-yyyy");
+			}else{
+				try {
+					SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+					startDate = sdf.parse(event.getProgramStartDate());
+					if(startDate.after(new Date())){
+						errors.put("programStartDate", "Program start date cannot be a future date");
+					}
+				} catch (ParseException e) {
+					errors.put("programStartDate", "Invalid date format,correct format is dd-MM-yyyy");
+				}
+			}
+
+		}
+		if (null != event.getProgramEndDate()) {
+
+			if (!event.getProgramEndDate().matches(ExpressionConstants.DATE_REGEX)) {
+				errors.put("programEndDate", "Invalid date format,correct format is dd-MM-yyyy");
+			}else{
+				try {
+					SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+					Date endDate = sdf.parse(event.getProgramEndDate());
+					if (startDate != null) {
+						if(!endDate.after(startDate)){
+							errors.put("programEndDate", "Program end date should be after program start date");
+						}
+					}
+				} catch (ParseException e) {
+					errors.put("programEndDate", "Invalid date format,correct format is dd-MM-yyyy");
+				}
+			}
+
+		} 
+
+		/*if (null == event.getProgramStartDate()) {
+			errors.put("programStartDate", "Program start date is required");
+		} else {
+
 			if (!event.getProgramStartDate().matches(ExpressionConstants.DATE_REGEX)) {
 				errors.put("programStartDate", "Invalid date format,correct format is dd-MM-yyyy");
 			}
-			
+
 			try {
 				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 				if(sdf.parse(event.getProgramStartDate()).after(new Date())){
@@ -288,7 +329,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			if (!event.getProgramEndDate().matches(ExpressionConstants.DATE_REGEX)) {
 				errors.put("programEndDate", "Invalid date format,correct format is dd-MM-yyyy");
 			}
-		}
+		}*/
 		if (null == event.getOrganizationContactName() || event.getOrganizationContactName().isEmpty()) {
 			errors.put("organizationContactName", "Organization contact name is required");
 		}
@@ -322,10 +363,10 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			errors.put("preceptorIdCardNumber", "Preceptor Id card number is required");
 		}
 		if(null == event.getIsEwelcomeIdGenerationDisabled() || event.getIsEwelcomeIdGenerationDisabled().isEmpty()){
-			errors.put("isEwelcomeIdgenerationDisabled", "eWelcome Id generation status is required");
+			errors.put("isEwelcomeIdGenerationDisabled", "eWelcome Id generation status is required");
 		}else if(!event.getIsEwelcomeIdGenerationDisabled().equals(EventDetailsUploadConstants.EWELCOME_ID_ENABLED_STATE)){
 			if(!event.getIsEwelcomeIdGenerationDisabled().equals(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE)){
-				errors.put("isEwelcomeIdgenerationDisabled", "eWelcome Id generation status can only be E or D ");
+				errors.put("isEwelcomeIdGenerationDisabled", "eWelcome Id generation status can only be E or D ");
 			}
 		}
 
@@ -357,8 +398,8 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	 */
 	@Override
 	public UserProfile validateToken(String token, int id) throws HttpClientErrorException, JsonParseException,
-			JsonMappingException, IOException, IllegalBlockSizeException, NumberFormatException, BadPaddingException,
-			ParseException {
+	JsonMappingException, IOException, IllegalBlockSizeException, NumberFormatException, BadPaddingException,
+	ParseException {
 		Result result = userProfileService.getUserProfile(token, id);
 		return result.getUserProfile()[0];
 	}
@@ -444,8 +485,8 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	public boolean validateParticipantCompletedPreliminarySittings(Participant participantInput) {
 		boolean isValid=false;
 		if (1 == participantInput.getIntroduced()
-				&& (null == participantInput.getWelcomeCardNumber() || participantInput.getWelcomeCardNumber()
-						.isEmpty())) {
+				&& (null == participantInput.getWelcomeCardNumber() || participantInput.getWelcomeCardNumber().isEmpty())) {
+
 			isValid=true;
 		} else if (null != participantInput.getWelcomeCardNumber() && !participantInput.getWelcomeCardNumber() .isEmpty() ){
 			for (IssueeWelcomeId field : IssueeWelcomeId.values()) {
@@ -456,12 +497,12 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			}
 		} else if (!(null == participantInput.getThirdSittingDate()	&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting()))
 				&& !(null == participantInput.getFirstSittingDate() && (null == participantInput.getFirstSitting() || 0 == participantInput.getFirstSitting()))
-                && !(null == participantInput.getSecondSittingDate() && (null == participantInput.getSecondSitting() || 0 == participantInput.getSecondSitting()))) {
+				&& !(null == participantInput.getSecondSittingDate() && (null == participantInput.getSecondSitting() || 0 == participantInput.getSecondSitting()))) {
 			isValid=true;
 		}else if( null != participantInput.getTotalDays() ? participantInput.getTotalDays() > 2 : false  ){
 			isValid = true;
 		}
-		
+
 		return isValid;
 	}
 
@@ -483,11 +524,11 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		}else {
 			int programId = programrepository.getProgramIdByEventId(participant.getEventId());
 			if(programId <= 0 )
-			errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_EVENTID);
+				errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_EVENTID);
 			else
 				participant.setProgramId(programId);
 		}
-		
+
 		if (null == participant.getSeqId() || participant.getSeqId().isEmpty()) {
 			errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.SEQ_ID_REQUIRED);
 		}else if(0 == participantRepository.getParticipantCountByProgIdAndSeqId(participant.getProgramId(),participant.getSeqId())){
@@ -520,7 +561,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			return DashboardConstants.INVALID_SEARCH_FIELD;
 		if(null == searchRequest.getSearchText())
 			return DashboardConstants.INVALID_SEARCH_TEXT;
-		
+
 		return "";
 	}
 

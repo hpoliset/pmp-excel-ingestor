@@ -70,6 +70,7 @@ public class SendMailToZonalAndCenterCoodinator {
 	private MailLogRepository mailLogRepository;
 
 
+	@SuppressWarnings("unused")
 	@RequestMapping(value = "/api/mail/notify",method=RequestMethod.GET)
 	/*@Scheduled(cron = "${zone.center.coordinator.mail.notification.cron.time}")*/
 	private void sendNotificationMailToZoneAndCenterCoordinator(){
@@ -82,10 +83,14 @@ public class SendMailToZonalAndCenterCoodinator {
 		List<Program> listOfProgramsZoneWise = notificationMailRepo.getListOfProgramsToSendEmailToZoneAndCenterCoordinator(DashboardConstants.ZONE_COORDINATOR_INFORMED_COLUMN);
 		updatePMPAPIAccessLog(accessLogZoneWise, ErrorConstants.STATUS_FAILED, null, listOfProgramsZoneWise.toString());
 
+		LOGGER.info("ZONE:Size of the program List where mail sent to zonal coordinator is 0 {}",listOfProgramsZoneWise.size());
 
 		if(!listOfProgramsZoneWise.isEmpty()){
 
 			Map<String, List<Program>> zoneWiseDetails = getZoneWiseDetailsFromProgramList(listOfProgramsZoneWise);
+
+			LOGGER.info("ZONE:List of programs zone wise where mail sent to zonal coordinator is 0 ");
+			zoneWiseDetails.forEach((zone,pgrmListZoneWise)->LOGGER.info("Zone : {} List of programs : {}",zone,pgrmListZoneWise));
 
 			//get access token one time
 			PMPAPIAccessLogDetails accessLogtokenDetails = createPMPAPIAccessLogDetails(accessLogZoneWise.getId(), EndpointConstants.AUTHENTICATION_TOKEN_URL, null);
@@ -98,34 +103,54 @@ public class SendMailToZonalAndCenterCoodinator {
 				LOGGER.error("Unable to get token response while calling MYSRCM token API");
 				updatePMPAPIAccessLogDetails(accessLogtokenDetails, ErrorConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex), StackTraceUtils.convertPojoToJson(tokenResponse));
 			}
+			LOGGER.info("ZONE:Got access token from MYSRCM which expires in {}",tokenResponse.getExpires_in());
 
 			//get position type
 			MysrcmPositionType positionType = null;
 			PMPAPIAccessLogDetails accessLogGetPositionTypeDetails = createPMPAPIAccessLogDetails(accessLogZoneWise.getId(), EndpointConstants.GET_POSITIONS_TYPE_API, null);
-
+			boolean isNext = true;
+			
+			
 			try {
 				positionType = dashboardRestTemplate.getPositionType();
 
-				for(PositionType type : positionType.getPositionType()){
-					if(type.getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())){
-						zonePositionTypeId = type.getId();
-					}else if(type.getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
-						centerPositionTypeId = type.getId();
+				while (isNext) {
+
+					for (PositionType type : positionType.getPositionType()) {
+						if (type.getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())) {
+							zonePositionTypeId = type.getId();
+						} else if (type.getName()
+								.equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())) {
+							centerPositionTypeId = type.getId();
+						}
+					}
+
+					if (null == positionType.getNext()) {
+						isNext = false;
+					} else {
+						positionType = dashboardRestTemplate.getPositionType(positionType.getNext());
 					}
 				}
-
-				updatePMPAPIAccessLogDetails(accessLogGetPositionTypeDetails, ErrorConstants.STATUS_SUCCESS, null,StackTraceUtils.convertPojoToJson(positionType));
+				
+				updatePMPAPIAccessLogDetails(accessLogGetPositionTypeDetails, ErrorConstants.STATUS_SUCCESS, null,
+						StackTraceUtils.convertPojoToJson(positionType));
 
 			} catch (Exception ex) {
-				LOGGER.error("Unable to get zone coordinator position type Id while calling MYSRCM position-type API {}",ex);
-				updatePMPAPIAccessLogDetails(accessLogGetPositionTypeDetails, ErrorConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex),StackTraceUtils.convertPojoToJson(positionType));
+				LOGGER.error("ZONE:Unable to get zone coordinator position type Id while calling MYSRCM position-type API {}",ex);
+				updatePMPAPIAccessLogDetails(accessLogGetPositionTypeDetails, ErrorConstants.STATUS_FAILED,
+						StackTraceUtils.convertStackTracetoString(ex), StackTraceUtils.convertPojoToJson(positionType));
 			}
+			
+			
+
+			LOGGER.info("ZONE:Position type response from MYSRCM with zone coordinator id {} and center coordinator Id {}",zonePositionTypeId,centerPositionTypeId);
 
 			//Looking for zone coordinators
 			if(!zoneWiseDetails.isEmpty()){
 
 				for(Map.Entry<String, List<Program>> zonesDetails : zoneWiseDetails.entrySet()){
 
+					LOGGER.info("ZONE: For zone ={}",zonesDetails.getKey());
 					if(zonePositionTypeId > 0){
 
 						//get group
@@ -139,9 +164,11 @@ public class SendMailToZonalAndCenterCoodinator {
 							updatePMPAPIAccessLogDetails(accessLogGroupAPIDetails, ErrorConstants.STATUS_SUCCESS, null, StackTraceUtils.convertPojoToJson(mysrcmGroup));
 
 						} catch(Exception ex){
-							LOGGER.error("Unable to get group for group type = zone while calling MYSRCM group API {}",ex);
+							LOGGER.error("ZONE:Unable to get group for group type = zone while calling MYSRCM group API {}",ex);
 							updatePMPAPIAccessLogDetails(accessLogGroupAPIDetails, ErrorConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex), StackTraceUtils.convertPojoToJson(mysrcmGroup));
 						}
+
+						LOGGER.info("ZONE:Group response from MYSRCM with id={},name={},group type={}",group.getId(),group.getName(),group.getGrouptype());
 
 						if(null != group){
 
@@ -160,6 +187,10 @@ public class SendMailToZonalAndCenterCoodinator {
 								updatePMPAPIAccessLogDetails(accessLogPositionDetails, ErrorConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex), StackTraceUtils.convertPojoToJson(positionAPIResult));
 							}
 
+							LOGGER.info("ZONE:Position API response from MYSRCM with Id={},Name={},isactive={}",coordinatorPosition.getId(),coordinatorPosition.getName(),coordinatorPosition.isActive());
+							LOGGER.info("ZONE:Assigned partner response from  from MYSRCM with assigned partner Id={},Name={},ref={}",coordinatorPosition.getAssignedpartner().getId(),
+									coordinatorPosition.getAssignedpartner().getName(),coordinatorPosition.getAssignedpartner().getRef());
+
 							if(null != coordinatorPosition){
 
 								//call abhyasi api to get coordinator email
@@ -170,33 +201,38 @@ public class SendMailToZonalAndCenterCoodinator {
 									updatePMPAPIAccessLogDetails(accessLogAbhyasiProfileDetails, ErrorConstants.STATUS_SUCCESS, null, StackTraceUtils.convertPojoToJson(abhyasiUserProfile));
 
 								} catch (Exception ex) {
-									LOGGER.error("Unable to get abhyasi profile for id {} while calling MYSRCM Abhyasi API {}",coordinatorPosition.getAssignedpartner().getId(),ex);
+									LOGGER.error("ZONE:Unable to get abhyasi profile for id {} while calling MYSRCM Abhyasi API {}",coordinatorPosition.getAssignedpartner().getId(),ex);
 									updatePMPAPIAccessLogDetails(accessLogAbhyasiProfileDetails, ErrorConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex), StackTraceUtils.convertPojoToJson(abhyasiUserProfile));
 								}
+
+								LOGGER.info("ZONE: Abhyasi user profile response from MYSRCM with assigned partner Name={},Email id= {}",abhyasiUserProfile.getFirst_name(),abhyasiUserProfile.getEmail());
 
 								if(null != abhyasiUserProfile){
 
 									//send mail to zone coordinator
 									try{
-										
+
 										notificationMailToCoordinators.sendNotificationMailToCoordinators(abhyasiUserProfile.getFirst_name(),/*abhyasiUserProfile.getEmail()*/"koustav.dipak@htcindia.com",zonesDetails.getValue());
 										notificationMailRepo.updateZoneOrCenterCoordinatorInformedStatus(DashboardConstants.ZONE_COORDINATOR_INFORMED_COLUMN,zonesDetails.getValue());
 
 									} catch(AddressException aex){
 
+										LOGGER.error("ZONE: Address Exception while sending mail to zone coordinator {}",abhyasiUserProfile.getEmail());
 										PMPMailLog pmpMailLog = new PMPMailLog("0", abhyasiUserProfile.getEmail(), 
 												EmailLogConstants.NOTIFICATION_MAIL_TO_ZONE_CENTER_COORDINATOR,EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(aex));
 										mailLogRepository.createMailLog(pmpMailLog);
 										notificationMailRepo.updateZoneOrCenterCoordinatorInformedStatus(DashboardConstants.ZONE_COORDINATOR_INFORMED_COLUMN,zonesDetails.getValue());
 
 									} catch(MessagingException mex){
-
+										
+										LOGGER.error("ZONE: Messaging Exception while sending mail to zone coordinator {}",abhyasiUserProfile.getEmail());
 										PMPMailLog pmpMailLog = new PMPMailLog("0", abhyasiUserProfile.getEmail(), 
 												EmailLogConstants.NOTIFICATION_MAIL_TO_ZONE_CENTER_COORDINATOR,EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(mex));
 										mailLogRepository.createMailLog(pmpMailLog);
 
 									} catch(Exception ex){
 
+										LOGGER.error("ZONE: Exception while sending mail to zone coordinator {}",abhyasiUserProfile.getEmail());
 										PMPMailLog pmpMailLog = new PMPMailLog("0", abhyasiUserProfile.getEmail(), 
 												EmailLogConstants.NOTIFICATION_MAIL_TO_ZONE_CENTER_COORDINATOR,EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex));
 										mailLogRepository.createMailLog(pmpMailLog);
@@ -204,30 +240,28 @@ public class SendMailToZonalAndCenterCoodinator {
 									}
 
 								}else{
-									LOGGER.error("Unable to get abhyasi profile for id {} while calling MYSRCM Abhyasi API",coordinatorPosition.getAssignedpartner().getId());
+									LOGGER.info("ZONE:Unable to get abhyasi profile for id {} while calling MYSRCM Abhyasi API",coordinatorPosition.getAssignedpartner().getId());
 								}
 
 							}else{
-								LOGGER.info("Unable to get coordinator position while calling MYSRCM position API for zone {}",zonesDetails.getKey());
+								LOGGER.info("ZONE:Unable to get coordinator position while calling MYSRCM position API for zone {}",zonesDetails.getKey());
 							}
 
 						}else{
-							LOGGER.info("Unable to get group for group type = zone while calling MYSRCM group API with zone {}",zonesDetails.getKey());
+							LOGGER.info("ZONE:Unable to get group for group type = zone while calling MYSRCM group API with zone {}",zonesDetails.getKey());
 						}
 
 					}else{
-						LOGGER.info("Unable to get zone coordinator position type Id while calling MYSRCM position-type API.");
+						LOGGER.info("ZONE:Unable to get zone coordinator position type Id while calling MYSRCM position-type API.");
 					}
-
-
 
 				}
 
 			}else{
-				LOGGER.info("No zone wise programs were found where no activity is done within last 14 days ");
+				LOGGER.info("ZONE:No zone wise programs were found where no activity is done within last 14 days ");
 			}
 		}else{
-			LOGGER.info("No zone wise events were found for which no activity is done within last 14 days");
+			LOGGER.info("ZONE:No zone wise events were found for which no activity is done within last 14 days");
 		}
 		updatePMPAPIAccessLog(accessLogZoneWise, ErrorConstants.STATUS_SUCCESS, null, listOfProgramsZoneWise.toString());
 
@@ -235,11 +269,15 @@ public class SendMailToZonalAndCenterCoodinator {
 		PMPAPIAccessLog accessLogCenterWise = createPMPAPIAccessLog(DashboardConstants.CENTER_GROUP_TYPE.toUpperCase(),null);
 		List<Program> listOfProgramsCenterWise = notificationMailRepo.getListOfProgramsToSendEmailToZoneAndCenterCoordinator(DashboardConstants.CENTER_COORDINATOR_INFORMED_COLUMN);
 		updatePMPAPIAccessLog(accessLogCenterWise, ErrorConstants.STATUS_FAILED, null, listOfProgramsCenterWise.toString());
+		
+		LOGGER.info("CENTER:Size of the program List where mail sent to center coordinator is 0 {}",listOfProgramsCenterWise.size());
 
 		if(!listOfProgramsCenterWise.isEmpty()){
 
 			//if token not available
 			if(null == tokenResponse){
+				
+				LOGGER.info("CENTER: Trying to fetch token from MYSRCM as token was not fetched for zone coordinator");
 				PMPAPIAccessLogDetails accessLogtokenDetails = createPMPAPIAccessLogDetails(accessLogCenterWise.getId(), EndpointConstants.AUTHENTICATION_TOKEN_URL, null);
 
 				try {
@@ -247,41 +285,57 @@ public class SendMailToZonalAndCenterCoodinator {
 					tokenResponse = dashboardRestTemplate.getAccessToken();
 					updatePMPAPIAccessLogDetails(accessLogtokenDetails, ErrorConstants.STATUS_SUCCESS, null, StackTraceUtils.convertPojoToJson(tokenResponse));
 				} catch (Exception ex) {
-					LOGGER.error("Unable to get token response while calling MYSRCM token API");
+					LOGGER.error("CENTER:Unable to get token response while calling MYSRCM token API");
 					updatePMPAPIAccessLogDetails(accessLogtokenDetails, ErrorConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex), StackTraceUtils.convertPojoToJson(tokenResponse));
 				}
+				LOGGER.info("CENTER:Got access token from MYSRCM which expires in {}",tokenResponse.getExpires_in());
 			}
 
 
 			if(centerPositionTypeId == 0){
 				//get position type
+				boolean isNext = true;
 				MysrcmPositionType positionType = null;
+				
 				PMPAPIAccessLogDetails accessLogGetPositionTypeDetails = createPMPAPIAccessLogDetails(accessLogCenterWise.getId(), EndpointConstants.GET_POSITIONS_TYPE_API, null);
-
+				LOGGER.info("CENTER: Trying to position type from MYSRCM as position type was not fetched for zone coordinator");
 				try {
 					positionType = dashboardRestTemplate.getPositionType();
-
-					for(PositionType type : positionType.getPositionType()){
-
-						if(type.getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
-							centerPositionTypeId = type.getId();
+					while(isNext){
+						for(PositionType type : positionType.getPositionType()){
+							if(type.getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
+								centerPositionTypeId = type.getId();
+							}
+						}
+						
+						if (null == positionType.getNext()) {
+							isNext = false;
+						} else {
+							positionType = dashboardRestTemplate.getPositionType(positionType.getNext());
 						}
 					}
 
 					updatePMPAPIAccessLogDetails(accessLogGetPositionTypeDetails, ErrorConstants.STATUS_SUCCESS, null,StackTraceUtils.convertPojoToJson(positionType));
 
 				} catch (Exception ex) {
-					LOGGER.error("Unable to get zone coordinator position type Id while calling MYSRCM position-type API {}",ex);
+					LOGGER.error("CENTER:Unable to get zone coordinator position type Id while calling MYSRCM position-type API {}",ex);
 					updatePMPAPIAccessLogDetails(accessLogGetPositionTypeDetails, ErrorConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex),StackTraceUtils.convertPojoToJson(positionType));
 				}
+				
+				LOGGER.info("CENTER:Position type response from MYSRCM with zone coordinator id {} and center coordinator Id {}",zonePositionTypeId,centerPositionTypeId);
 			}
 
 			//Looking for center coordinators
 			Map<String, List<Program>> centerWiseDetails = getCenterWiseDetailsFromProgramList(listOfProgramsCenterWise);
+			
+			LOGGER.info("CENTER:List of programs center wise where mail sent to center coordinator is 0 ");
+			centerWiseDetails.forEach((center,pgrmListCenterWise)->LOGGER.info("Zone : {} List of programs : {}",center,pgrmListCenterWise));
+			
 			if(!centerWiseDetails.isEmpty()){
 
 				for(Map.Entry<String, List<Program>> centerDetails : centerWiseDetails.entrySet()){
 
+					LOGGER.info("CENTER: For zone ={}",centerDetails.getKey());
 					if(centerPositionTypeId > 0){
 
 						//get group
@@ -295,10 +349,12 @@ public class SendMailToZonalAndCenterCoodinator {
 							updatePMPAPIAccessLogDetails(accessLogGroupAPIDetails, ErrorConstants.STATUS_SUCCESS, null, StackTraceUtils.convertPojoToJson(mysrcmGroup));
 
 						} catch(Exception ex){
-							LOGGER.error("Unable to get group for group type = center while calling MYSRCM group API {}",ex);
+							LOGGER.error("CENTER:Unable to get group for group type = center while calling MYSRCM group API {}",ex);
 							updatePMPAPIAccessLogDetails(accessLogGroupAPIDetails, ErrorConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex), StackTraceUtils.convertPojoToJson(mysrcmGroup));
 						}
 
+						LOGGER.info("CENTER:Group response from MYSRCM with id={},name={},group type={}",group.getId(),group.getName(),group.getGrouptype());
+						
 						if(null != group){
 
 							//get Coordinator position
@@ -312,10 +368,14 @@ public class SendMailToZonalAndCenterCoodinator {
 								updatePMPAPIAccessLogDetails(accessLogPositionDetails, ErrorConstants.STATUS_SUCCESS, null, StackTraceUtils.convertPojoToJson(positionAPIResult));
 
 							} catch (Exception ex) {
-								LOGGER.error("Unable to get coordinator  for group type = center while calling MYSRCM group API {}",ex);
+								LOGGER.error("CENTER:Unable to get coordinator  for group type = center while calling MYSRCM group API {}",ex);
 								updatePMPAPIAccessLogDetails(accessLogPositionDetails, ErrorConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex), StackTraceUtils.convertPojoToJson(positionAPIResult));
 							}
 
+							LOGGER.info("CENTER:Position API response from MYSRCM with Id={},Name={},isactive={}",coordinatorPosition.getId(),coordinatorPosition.getName(),coordinatorPosition.isActive());
+							LOGGER.info("CENTER:Assigned partner response from  from MYSRCM with assigned partner Id={},Name={},ref={}",coordinatorPosition.getAssignedpartner().getId(),
+									coordinatorPosition.getAssignedpartner().getName(),coordinatorPosition.getAssignedpartner().getRef());
+							
 							if(null != coordinatorPosition){
 
 								//call abhyasi api to get coordinator email
@@ -326,9 +386,11 @@ public class SendMailToZonalAndCenterCoodinator {
 									updatePMPAPIAccessLogDetails(accessLogAbhyasiProfileDetails, ErrorConstants.STATUS_SUCCESS, null, StackTraceUtils.convertPojoToJson(abhyasiUserProfile));
 
 								} catch (Exception ex) {
-									LOGGER.error("Unable to get abhyasi profile for id {} while calling MYSRCM Abhyasi API {}",coordinatorPosition.getAssignedpartner().getId(),ex);
+									LOGGER.error("CENTER:Unable to get abhyasi profile for id {} while calling MYSRCM Abhyasi API {}",coordinatorPosition.getAssignedpartner().getId(),ex);
 									updatePMPAPIAccessLogDetails(accessLogAbhyasiProfileDetails, ErrorConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex), StackTraceUtils.convertPojoToJson(abhyasiUserProfile));
 								}
+								
+								LOGGER.info("CENTER: Abhyasi user profile response from MYSRCM with assigned partner Name={},Email id= {}",abhyasiUserProfile.getFirst_name(),abhyasiUserProfile.getEmail());
 
 								if(null != abhyasiUserProfile){
 
@@ -339,51 +401,53 @@ public class SendMailToZonalAndCenterCoodinator {
 										notificationMailRepo.updateZoneOrCenterCoordinatorInformedStatus(DashboardConstants.CENTER_COORDINATOR_INFORMED_COLUMN,centerDetails.getValue());
 
 									} catch(AddressException aex){
-
+										
+										LOGGER.error("CENTER: Address Exception while sending mail to center coordinator {}",abhyasiUserProfile.getEmail());
 										PMPMailLog pmpMailLog = new PMPMailLog("0", abhyasiUserProfile.getEmail(), 
 												EmailLogConstants.NOTIFICATION_MAIL_TO_ZONE_CENTER_COORDINATOR,EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(aex));
 										mailLogRepository.createMailLog(pmpMailLog);
 										notificationMailRepo.updateZoneOrCenterCoordinatorInformedStatus(DashboardConstants.CENTER_COORDINATOR_INFORMED_COLUMN,centerDetails.getValue());
 
 									} catch(MessagingException mex){
-
+										
+										LOGGER.error("CENTER: Messaging Exception while sending mail to center coordinator {}",abhyasiUserProfile.getEmail());
 										PMPMailLog pmpMailLog = new PMPMailLog("0", abhyasiUserProfile.getEmail(), 
 												EmailLogConstants.NOTIFICATION_MAIL_TO_ZONE_CENTER_COORDINATOR,EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(mex));
 										mailLogRepository.createMailLog(pmpMailLog);
 
 									} catch(Exception ex){
 
+										LOGGER.error("CENTER: Exception while sending mail to center coordinator {}",abhyasiUserProfile.getEmail());
 										PMPMailLog pmpMailLog = new PMPMailLog("0", abhyasiUserProfile.getEmail(), 
 												EmailLogConstants.NOTIFICATION_MAIL_TO_ZONE_CENTER_COORDINATOR,EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex));
 										mailLogRepository.createMailLog(pmpMailLog);
 
 									}
-									
+
 								}else{
-									LOGGER.error("Unable to get abhyasi profile for id {} while calling MYSRCM Abhyasi API",coordinatorPosition.getAssignedpartner().getId());
+									LOGGER.error("CENTER:Unable to get abhyasi profile for id {} while calling MYSRCM Abhyasi API",coordinatorPosition.getAssignedpartner().getId());
 								}
 
 							}else{
-								LOGGER.info("Unable to get coordinator position while calling MYSRCM position API for center {}",centerDetails.getKey());
+								LOGGER.info("CENTER:Unable to get coordinator position while calling MYSRCM position API for center {}",centerDetails.getKey());
 							}
 
 						}else{
-							LOGGER.info("Unable to get group for group type = center while calling MYSRCM group API with center {}",centerDetails.getKey());
+							LOGGER.info("CENTER:Unable to get group for group type = center while calling MYSRCM group API with center {}",centerDetails.getKey());
 						}
 
 					}else{
-						LOGGER.info("Unable to get center coordinator position type Id while calling MYSRCM position-type API.");
+						LOGGER.info("CENTER:Unable to get center coordinator position type Id while calling MYSRCM position-type API.");
 					}
 				}
 
 			}else{
-				LOGGER.info("No center wise programs were found where no activity is done within last 14 days ");
+				LOGGER.info("CENTER:No center wise programs were found where no activity is done within last 14 days ");
 			}
 
 		}else{
-			LOGGER.info("No center wise events were found for which no activity is done within last 14 days");
+			LOGGER.info("CENTER:No center wise events were found for which no activity is done within last 14 days");
 		}
-
 		updatePMPAPIAccessLog(accessLogCenterWise, ErrorConstants.STATUS_SUCCESS, null, listOfProgramsCenterWise.toString());
 
 	}
