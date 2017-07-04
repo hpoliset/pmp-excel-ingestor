@@ -159,7 +159,7 @@ public class SendMailToZonalAndCenterCoodinator {
 					if(zonePositionTypeId > 0){
 
 						//get group
-						PMPAPIAccessLogDetails accessLogGroupAPIDetails = createPMPAPIAccessLogDetails(accessLogZoneWise.getId(), EndpointConstants.GROUPS_API + zonesDetails.getKey(), null);
+						PMPAPIAccessLogDetails accessLogGroupAPIDetails = createPMPAPIAccessLogDetails(accessLogZoneWise.getId(), EndpointConstants.GROUPS_API_WITH_ZONE_PARAMETER + zonesDetails.getKey(), null);
 						MysrcmGroup mysrcmGroup = null;
 						Group group = null;
 						try{
@@ -347,7 +347,7 @@ public class SendMailToZonalAndCenterCoodinator {
 					if(centerPositionTypeId > 0){
 
 						//get group
-						PMPAPIAccessLogDetails accessLogGroupAPIDetails = createPMPAPIAccessLogDetails(accessLogCenterWise.getId(), EndpointConstants.GROUPS_API + centerDetails.getKey(), null);
+						PMPAPIAccessLogDetails accessLogGroupAPIDetails = createPMPAPIAccessLogDetails(accessLogCenterWise.getId(), EndpointConstants.GROUPS_API_WITH_CENTER_PARAMETER + centerDetails.getKey(), null);
 						MysrcmGroup mysrcmGroup = null;
 						Group group = null;
 						try{

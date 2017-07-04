@@ -9,7 +9,7 @@ Dear ${COORDINATOR_NAME},
 <div style="padding-left: 10px;">
 <p>We would like to bring to your attention that for the following events no sessions were conducted in the last 14 days.</p>
 ${PROGRAM_DETAILS}
-<p><i><u><b>Note:</b></u> You can now manage the event details by clicking on the corresponding event Id. Through this interface, you can view/edit participant details and also generate eWelcomeIds for newer participants as well.  
+<p><i><u><b>Note:</b></u> You can now manage the event details by clicking on the corresponding batch Id. Through this interface, you can view/edit participant details and also generate eWelcomeIds for newer participants as well.  
 You will need a valid MYSRCM ID associated with the email address on record to manage this event. 
 MYSRCM accounts can be managed by visiting the link <u><a href="https://profile.sahajmarg.org">https://profile.sahajmarg.org</a></u>. 
 For specific questions about the dashboard, please write to introductions@heartfulness.org .<i></p>

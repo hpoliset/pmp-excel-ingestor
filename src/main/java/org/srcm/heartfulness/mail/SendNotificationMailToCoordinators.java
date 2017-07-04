@@ -209,7 +209,7 @@ public class SendNotificationMailToCoordinators {
 					sb.append(program.getCoordinatorEmail() != null ? program.getCoordinatorEmail() : "");
 					sb.append("</td><td>");
 					sb.append(program.getAbyasiRefNo() != null ? program.getAbyasiRefNo() : "");
-					sb.append("</td></td>");
+					sb.append("</td><td>");
 					sb.append(program.getJiraIssueNumber() != null ? program.getJiraIssueNumber() : "");
 					sb.append("</td></tr>");
 				}
