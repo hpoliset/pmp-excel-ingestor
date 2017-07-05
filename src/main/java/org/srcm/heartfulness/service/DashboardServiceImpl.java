@@ -40,10 +40,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
  *
  */
 
-/**
- * @author Koustav Dutta
- *
- */
 @Service
 public class DashboardServiceImpl implements DashboardService {
 
@@ -175,8 +171,12 @@ public class DashboardServiceImpl implements DashboardService {
 				if (null != dashboardReq.getState()) {
 
 					LOGGER.info("Trying to get dashboard count by Geographical heirarchy ");
+					eResponse = validateCountryStateDistrictAndCity(dashboardReq,accessLog);
+					if (null != eResponse) {
+						return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
+					} 
 
-					eResponse = dashboardValidator.validateStateField(dashboardReq.getState());
+				/*	eResponse = dashboardValidator.validateStateField(dashboardReq.getState());
 					if (null != eResponse) {
 						return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
 					} else if (null == dashboardReq.getDistrict()) {
@@ -186,9 +186,9 @@ public class DashboardServiceImpl implements DashboardService {
 					} else if (null == dashboardReq.getCity()) {
 						eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.CITY_REQUIRED);
 						return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-					}
+					}*/
 
-					if (dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD)) {
+					/*if (dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD)) {
 						eResponse = validateCountry(dashboardReq, accessLog);
 						if (null != eResponse) {
 							return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
@@ -215,14 +215,19 @@ public class DashboardServiceImpl implements DashboardService {
 						if (null != eResponse) {
 							return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
 						}
-					}
+					}*/
 
 					countResponse = dashboardRepository.getCountForCountryCoordinator(dashboardReq, true);
 
 				} else {
 
 					LOGGER.info("Trying to get dashboard count by Heartfulness heirarchy ");
-					eResponse = dashboardValidator.validateZoneField(dashboardReq.getZone());
+					
+					eResponse = validateCountryAndZoneAndCenter(dashboardReq,accessLog);
+					if (null != eResponse) {
+						return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
+					} 
+					/*eResponse = dashboardValidator.validateZoneField(dashboardReq.getZone());
 					if (null != eResponse) {
 						return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
 					} else if (null == dashboardReq.getCenter()) {
@@ -253,7 +258,7 @@ public class DashboardServiceImpl implements DashboardService {
 							return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
 						}
 
-					}
+					}*/
 
 					countResponse = dashboardRepository.getCountForCountryCoordinator(dashboardReq, false);
 				}
@@ -273,8 +278,13 @@ public class DashboardServiceImpl implements DashboardService {
 
 			LOGGER.info("Logged in user {} is a zone coordinator ", accessLog.getUsername());
 			ErrorResponse eResponse = null;
+			
+			eResponse = validateCountryAndZoneAndCenter(dashboardReq, accessLog);
+			if (null != eResponse) {
+				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
+			}
 
-			if (null == dashboardReq.getCountry()) {
+			/*if (null == dashboardReq.getCountry()) {
 				eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.COUNTRY_REQUIRED);
 				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
 			} else if (null == dashboardReq.getZone()) {
@@ -283,9 +293,9 @@ public class DashboardServiceImpl implements DashboardService {
 			} else if (null == dashboardReq.getCenter()) {
 				eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.CENTER_REQUIRED);
 				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-			}
+			}*/
 
-			if (dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)) {
+			/*if (dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)) {
 
 				eResponse = validateCountry(dashboardReq, accessLog);
 				if (null != eResponse) {
@@ -307,7 +317,7 @@ public class DashboardServiceImpl implements DashboardService {
 				if (null != eResponse) {
 					return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
 				}
-			}
+			}*/
 
 			ResponseEntity<List<String>> getZones = (ResponseEntity<List<String>>) getListOfZones(authToken,
 					dashboardReq, accessLog, new ArrayList<String>(), "");
@@ -342,8 +352,13 @@ public class DashboardServiceImpl implements DashboardService {
 
 			LOGGER.info("Logged in user {} is a center coordinator ", accessLog.getUsername());
 			ErrorResponse eResponse = null;
+			
+			eResponse = validateCountryAndZoneAndCenter(dashboardReq, accessLog);
+			if (null != eResponse) {
+				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
+			}
 
-			if (dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)) {
+			/*if (dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)) {
 
 				eResponse = validateCountry(dashboardReq, accessLog);
 				if (null != eResponse) {
@@ -365,7 +380,7 @@ public class DashboardServiceImpl implements DashboardService {
 				if (null != eResponse) {
 					return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
 				}
-			}
+			}*/
 
 			ResponseEntity<List<String>> getZones = (ResponseEntity<List<String>>) getListOfZones(authToken,
 					dashboardReq, accessLog, new ArrayList<String>(), "");
@@ -399,7 +414,13 @@ public class DashboardServiceImpl implements DashboardService {
 		}
 
 		LOGGER.info("Logged in user {} is an event coordinator ", accessLog.getUsername());
+		ErrorResponse eResponse = null;
 
+		eResponse = validateCountryAndZoneAndCenter(dashboardReq, accessLog);
+		if (null != eResponse) {
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
+		}
+		
 		List<String> emailList = new ArrayList<String>();
 		if (null != user.getAbyasiId()) {
 			emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
@@ -408,15 +429,8 @@ public class DashboardServiceImpl implements DashboardService {
 			emailList.add(accessLog.getUsername());
 		}
 
-		ErrorResponse eResponse = validateCountry(dashboardReq, accessLog);
-
-		if (null != eResponse) {
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-		}
-
 		try {
-			List<DashboardResponse> countResponse = dashboardRepository.getCountForEventCoordinator(dashboardReq, user,
-					emailList);
+			List<DashboardResponse> countResponse = dashboardRepository.getCountForEventCoordinator(dashboardReq, user,emailList);
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 			accessLog.setErrorMessage(null);
 			return new ResponseEntity<List<DashboardResponse>>(countResponse, HttpStatus.OK);
@@ -1100,8 +1114,8 @@ public class DashboardServiceImpl implements DashboardService {
 	 *            access
 	 * @return
 	 */
-	private ErrorResponse validateCountryStateDistrictAndCity(DashboardRequest dashboardReq,
-			PMPAPIAccessLog accessLog) {
+	private ErrorResponse validateCountryStateDistrictAndCity(DashboardRequest dashboardReq,PMPAPIAccessLog accessLog) {
+			
 		ErrorResponse eResponse = null;
 
 		eResponse = dashboardValidator.validateCountryField(dashboardReq.getCountry());
@@ -1125,7 +1139,7 @@ public class DashboardServiceImpl implements DashboardService {
 			return eResponse;
 		}
 
-		eResponse = dashboardValidator.validateCityField(dashboardReq.getDistrict());
+		eResponse = dashboardValidator.validateCityField(dashboardReq.getCity());
 		if (null != eResponse) {
 			accessLog.setStatus(eResponse.getError());
 			accessLog.setErrorMessage(eResponse.getError_description());
