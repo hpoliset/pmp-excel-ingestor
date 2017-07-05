@@ -85,9 +85,9 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 				}
 
 				baseQuery.append(" FROM program pgrm LEFT OUTER JOIN participant pctpt ON pgrm.program_id = pctpt.program_id  "
-						+ "LEFT OUTER JOIN session_details sd ON pgrm.program_id = sd.program_id "
-						+ "LEFT OUTER JOIN program_coordinators pc ON pgrm.program_id = pc.program_id "
-						+ "WHERE pgrm.event_country=? ");
+						+ " LEFT OUTER JOIN session_details sd ON pgrm.program_id = sd.program_id AND  sd.is_deleted = 0"
+						+ " LEFT OUTER JOIN program_coordinators pc ON pgrm.program_id = pc.program_id "
+						+ " WHERE pgrm.event_country=? ");
 
 				if(null != dashboardReq.getSqlFromDate()){
 					baseQuery.append(" AND pgrm.program_start_date >= '"+dashboardReq.getSqlFromDate()+"'");
@@ -193,9 +193,9 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 		}
 
 		baseQuery.append(" FROM program pgrm LEFT OUTER JOIN participant pctpt ON pgrm.program_id = pctpt.program_id  "
-				+ "LEFT OUTER JOIN session_details sd ON pgrm.program_id = sd.program_id "
-				+ "LEFT OUTER JOIN program_coordinators pc ON pgrm.program_id = pc.program_id "
-				+ "WHERE pgrm.event_country=?");
+				+ " LEFT OUTER JOIN session_details sd ON pgrm.program_id = sd.program_id AND  sd.is_deleted = 0 "
+				+ " LEFT OUTER JOIN program_coordinators pc ON pgrm.program_id = pc.program_id "
+				+ " WHERE pgrm.event_country=?");
 
 		StringBuilder zoneList = new StringBuilder("");
 		if(zones.size() == 0){
@@ -286,9 +286,9 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 		}
 
 		baseQuery.append(" FROM program pgrm LEFT OUTER JOIN participant pctpt ON pgrm.program_id = pctpt.program_id  "
-				+ "LEFT OUTER JOIN session_details sd ON pgrm.program_id = sd.program_id "
-				+ "LEFT OUTER JOIN program_coordinators pc ON pgrm.program_id = pc.program_id "
-				+ "WHERE pgrm.event_country=?");
+				+ " LEFT OUTER JOIN session_details sd ON pgrm.program_id = sd.program_id AND  sd.is_deleted = 0 "
+				+ " LEFT OUTER JOIN program_coordinators pc ON pgrm.program_id = pc.program_id "
+				+ " WHERE pgrm.event_country=?");
 
 		StringBuilder centerList = new StringBuilder("");
 		if(centers.size() == 0){
@@ -366,9 +366,9 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 		}
 
 		baseQuery.append("FROM program pgrm LEFT OUTER JOIN participant pctpt ON pgrm.program_id = pctpt.program_id  "
-				+ "LEFT OUTER JOIN session_details sd ON pgrm.program_id = sd.program_id "
-				+ "LEFT OUTER JOIN program_coordinators pc ON pgrm.program_id = pc.program_id "
-				+ "WHERE pgrm.event_country=?");
+				+ " LEFT OUTER JOIN session_details sd ON pgrm.program_id = sd.program_id AND  sd.is_deleted = 0 "
+				+ " LEFT OUTER JOIN program_coordinators pc ON pgrm.program_id = pc.program_id "
+				+ " WHERE pgrm.event_country=?");
 
 
 

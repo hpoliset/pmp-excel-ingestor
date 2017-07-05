@@ -864,7 +864,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 
 		}
 
-		excelUploadResponse.setStatus(ErrorConstants.STATUS_SUCCESS);
+		excelUploadResponse.setStatus(errorList.size() > 0 ?ErrorConstants.STATUS_FAILED : ErrorConstants.STATUS_SUCCESS);
 		excelUploadResponse.setErrorMsg(errorList);
 
 		accessLog.setErrorMessage("");
