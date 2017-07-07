@@ -60,7 +60,22 @@ public class DashboardController {
 	@Autowired
 	DashboardValidator dashboardValidator;
 
-
+	
+	/**
+	 * Web service endpoint to get the counts of event,
+	 * participant,session,event location and future event counts.
+	 * 
+	 * If counts are fetched successfully then success response 
+	 *  with counts is returned and HTTP status is 200.
+	 * 
+	 * If some exception is raised while processing the request, error response
+	 * is returned with respective HttpStatus code.
+	 * 
+	 * @param authToken,Token to be validated against MySRCM endpoint.
+	 * @param dashboardReq, Request object to get input params.
+	 * @param httpRequest, to fetch ipAddess of the request.
+	 * @return DashboardResponse if successfully fetched count information.
+	 */
 	@RequestMapping(value = "/getcount",
 			method = RequestMethod.POST, 
 			consumes = MediaType.APPLICATION_JSON_VALUE, 

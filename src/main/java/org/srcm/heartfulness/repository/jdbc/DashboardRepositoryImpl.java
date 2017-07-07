@@ -73,6 +73,9 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 					}else if(!dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getDistrict().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
 							&& dashboardReq.getCity().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
 						baseQuery.append(" ,pgrm.event_state,pgrm.program_district,IFNULL(pgrm.event_city,'Others') ");
+					}else if(!dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getDistrict().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
+							&& !dashboardReq.getCity().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+						baseQuery.append(" ,pgrm.event_state,pgrm.program_district,pgrm.event_city ");
 					}
 				}else{
 
@@ -80,6 +83,8 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 						baseQuery.append(" ,IFNULL(pgrm.program_zone,'Others')");
 					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
 						baseQuery.append(" ,pgrm.program_zone,IFNULL(pgrm.program_center,'Others') ");
+					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+						baseQuery.append(" ,pgrm.program_zone,pgrm.program_center ");
 					}
 					
 				}
@@ -153,6 +158,11 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 									counts.setEventState(resultSet.getString(5));
 									counts.setProgramDistrict(resultSet.getString(6));
 									counts.setEventCity(resultSet.getString(7));
+								}else if(!dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getDistrict().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
+										&& !dashboardReq.getCity().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+									counts.setEventState(resultSet.getString(5));
+									counts.setProgramDistrict(resultSet.getString(6));
+									counts.setEventCity(resultSet.getString(7));
 								}
 							}else{
 
@@ -161,6 +171,10 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 								}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
 									counts.setProgramZone(resultSet.getString(5));
 									counts.setProgramCenter(resultSet.getString(6));
+								}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+									counts.setProgramZone(resultSet.getString(5));
+									counts.setProgramCenter(resultSet.getString(6));
+									
 								}
 								
 							}
@@ -535,7 +549,7 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 				+ " ON p.program_id = pc.program_id "
 				+ " WHERE "
 				+ " p.event_country=:programCountry AND p.program_zone IS NOT NULL "
-				+ (whereCondition.length() > 0 ? " AND "+whereCondition : "") ,
+				+ (whereCondition.length() > 0 ? " AND "+ whereCondition : "") ,
 				params,
 				new RowMapper<String>(){
 					public String mapRow(ResultSet rs, int rowNum)throws SQLException {

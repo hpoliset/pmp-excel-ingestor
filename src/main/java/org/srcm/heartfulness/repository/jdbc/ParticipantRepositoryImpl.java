@@ -18,12 +18,15 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.model.Participant;
@@ -161,7 +164,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 		return participants;
 	}*/
-	
+
 	@Override
 	public List<Participant> findByProgramIdAndRole(int programId, List<String> emailList,String userRole) {
 		Map<String, Object> params = new HashMap<>();
@@ -170,7 +173,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 		StringBuilder whereCondition = new StringBuilder("");
 		StringBuilder emailString = new StringBuilder("");
 		List<Participant> participants = new ArrayList<Participant>();
-		
+
 		if(null != emailList && emailList.size() == 1){
 			emailString.append("'"+emailList.get(0)+"'");
 		}else{
@@ -531,8 +534,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 				return generatedSeqId;
 			}
 		}catch(Exception e){
-			LOGGER.error("Exception while checking the existance of the seqId for the particpant seqId : {} , programId : {} , Exception : {} ",
-					generatedSeqId,programId,e);
+			LOGGER.error("Exception while checking the existance of the seqId for the particpant seqId : {} , programId : {} , Exception : {} ",generatedSeqId,programId,e);
 			return generatedSeqId;
 		}
 	}
@@ -551,5 +553,138 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 			}
 		});
 		return pctptCount;
+	}
+
+	@Override
+	@Transactional
+	public void save(List<Participant> participants, Program program) {
+		LOGGER.info("Started persisting Participants");
+		List<Participant> insertList = new ArrayList<Participant>();
+		List<Participant> updateList = new ArrayList<Participant>();
+
+		for (Participant participant : participants) {
+
+			Map<String, Object> params = new HashMap<>();
+			participant.setCreatedSource(program.getCreatedSource());
+			participant.setProgramId(program.getProgramId());
+
+			params.put("printName", participant.getPrintName());
+			params.put("programId", participant.getProgramId());
+			params.put("email", participant.getEmail());
+			params.put("mobilePhone", participant.getMobilePhone());
+			params.put("excelSheetSequenceNumber", participant.getExcelSheetSequenceNumber());
+
+			// See if this participant already exists or not
+			int participantId = 0;
+			try{
+
+				participantId = this.namedParameterJdbcTemplate
+						.queryForObject("SELECT id "
+								+ " FROM participant"
+								+ " WHERE print_name=:printName AND program_id=:programId AND "
+								+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (email=:email) OR (mobile_phone=:mobilePhone))",
+								params,Integer.class);
+
+			} catch(Exception ex) {
+			}
+			
+			/*List<Integer> participantIds = this.namedParameterJdbcTemplate
+					.query("SELECT id "
+							+ " FROM participant"
+							+ " WHERE print_name=:printName AND program_id=:programId AND "
+							+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (email=:email) OR (mobile_phone=:mobilePhone))",
+							params, new RowMapper<Integer>() {
+								public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+									return rs.getInt(1);
+								}
+							});*/
+
+			if (participantId > 0) {
+				participant.setId(participantId);
+				String seqId = this.jdbcTemplate.query("SELECT seqId from participant where id=?",
+						new Object[] { participantId }, new ResultSetExtractor<String>() {
+					@Override
+					public String extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+						if (resultSet.next()) {
+							return resultSet.getString(1);
+						}
+						return "";
+					}
+				});
+
+				if (null != seqId && !seqId.isEmpty()) {
+					participant.setSeqId(seqId);
+					
+					Map<String, Object> parameters = new HashMap<>();
+					parameters.put("participantId", participantId);
+					
+					Participant oldParticipantDetails = this.namedParameterJdbcTemplate.queryForObject(
+							"SELECT * FROM participant WHERE id=:participantId", parameters,
+							BeanPropertyRowMapper.newInstance(Participant.class));
+					
+					if (null != oldParticipantDetails) {
+						if (null != oldParticipantDetails.getWelcomeCardNumber()
+								&& !oldParticipantDetails.getWelcomeCardNumber().isEmpty()
+								&& oldParticipantDetails.getWelcomeCardNumber().matches(
+										ExpressionConstants.EWELCOME_ID_REGEX)) {
+							participant.setWelcomeCardNumber(oldParticipantDetails.getWelcomeCardNumber());
+							participant.setEwelcomeIdState(oldParticipantDetails.getEwelcomeIdState());
+							participant.setIntroduced(oldParticipantDetails.getIntroduced());
+							participant.setIntroducedBy(oldParticipantDetails.getIntroducedBy());
+							participant.setIsEwelcomeIdInformed(oldParticipantDetails.getIsEwelcomeIdInformed());
+							participant.setWelcomeCardDate(oldParticipantDetails.getWelcomeCardDate());
+							participant.setIntroductionDate(oldParticipantDetails.getIntroductionDate());
+						}
+					}
+				} else {
+					participant.setSeqId(checkExistanceOfAutoGeneratedSeqId(SmsUtil.generateFourDigitPIN(),
+							participant.getProgramId()));
+				}
+			} else {
+				participant.setSeqId(checkExistanceOfAutoGeneratedSeqId(SmsUtil.generateFourDigitPIN(),participant.getProgramId()));
+			}
+
+			if (participant.getId() == 0) {
+				insertList.add(participant);
+			} else {
+				updateList.add(participant);
+			}
+		}
+		
+		if (!insertList.isEmpty()) {
+			LOGGER.info("Participant: Batch Insert Start");
+			SqlParameterSource[] insertBatch = SqlParameterSourceUtils.createBatch(insertList.toArray());
+			this.insertParticipant.executeBatch(insertBatch);
+			LOGGER.info("Participant: Batch Insert Complete");
+		}
+		if (!updateList.isEmpty()) {
+			LOGGER.info("Participant: Batch Update Start");
+			SqlParameterSource[] updateBatch = SqlParameterSourceUtils.createBatch(updateList.toArray());
+			String updateQuery = "UPDATE participant SET " + "print_name=:printName, " + "first_name=:firstName, "
+					+ "last_name=:lastName, " + "middle_name=:middleName, " + "email=:email, "
+					+ "mobile_phone=:mobilePhone," + "gender=:gender," + "date_of_birth=:dateOfBirth,"
+					+ "date_of_registration=:dateOfRegistration," + "abhyasi_id=:abhyasiId," + "status=:status,"
+					+ "address_line1=:addressLine1," + "address_line2=:addressLine2," + "city=:city," + "state=:state,"
+					+ "country=:country," + "program_id=:programId," + "profession=:profession," + "remarks=:remarks,"
+					+ "id_card_number=:idCardNumber," + "language=:language," + "introduction_date=:introductionDate,"
+					+ "introduced_by=:introducedBy," + "welcome_card_number=:welcomeCardNumber,"
+					+ "welcome_card_date=:welcomeCardDate," + "age_group=:ageGroup," + "upload_status=:uploadStatus,"
+					+ "first_sitting=:firstSitting," + "second_sitting=:secondSitting,"
+					+ "third_sitting=:thirdSitting," + "first_sitting_date=:firstSittingDate, "
+					+ "second_sitting_date=:secondSittingDate, " + "third_sitting_date=:thirdSittingDate, "
+					+ "is_ewelcome_id_informed=:isEwelcomeIdInformed, " + "batch=:batch, "
+					+ "receive_updates=:receiveUpdates, " + "introduced=:introduced, " + "seqId=:seqId, "
+					+ "ewelcome_id_state=:ewelcomeIdState, " + "ewelcome_id_remarks=:ewelcomeIdRemarks, "
+					+ "total_days=:totalDays, " + "phone=:phone,district=:district " + "WHERE id=:id";
+			runBatchUpdate(updateQuery, updateBatch);
+			LOGGER.info("Participant: Batch Update Complete");
+		}
+
+	}
+
+	@Transactional
+	private int[] runBatchUpdate(String sql, SqlParameterSource[] batch) {
+		int[] updateCounts = this.namedParameterJdbcTemplate.batchUpdate(sql, batch);
+		return updateCounts;
 	}
 }

@@ -47,6 +47,7 @@ import org.srcm.heartfulness.model.UploadedFiles;
 import org.srcm.heartfulness.model.User;
 import org.srcm.heartfulness.repository.MailLogRepository;
 import org.srcm.heartfulness.repository.OrganisationRepository;
+import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
 import org.srcm.heartfulness.service.response.ExcelUploadResponse;
@@ -100,6 +101,9 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 	
 	@Autowired
 	private UserProfileService userProfileService;
+	
+	@Autowired
+	private ParticipantRepository participantRepository;
 
 	/**
 	 * This method is used to parse the excel file and populate the data into
@@ -163,6 +167,7 @@ public class PmpIngestionServiceImpl implements PmpIngestionService {
 						program.setUploadedFileId(uploadFiles.getId());
 						
 						programRepository.save(program);
+						participantRepository.save(program.getParticipantList(), program);
 						validatePreceptorIdandCoordinatorEmailIdAndPersistProgram(program, response, errorResponse); // preceptor ID card number validation
 					} catch(NullPointerException npex){
 						errorResponse.add("Excel file you are trying to upload seems to be corrupted. "

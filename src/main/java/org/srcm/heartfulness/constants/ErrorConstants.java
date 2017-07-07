@@ -30,6 +30,7 @@ public class ErrorConstants {
 	public static final String INVALID_DATE_FORMAT 									= 	"Please enter session date in dd-MM-yyyy format";
 	public static final String INVALID_PCTPT_COUNT 									= 	"There should be atleast a single participant for an event";
 	public static final String INVALID_NEW_PCTPT_COUNT 								= 	"Please enter a valid count for new participants";
+	public static final String EMPTY_PRECEPTOR_NAME									= 	"Preceptor name cannot be empty";
 	public static final String EMPTY_PRECEPTOR_ID_CARD_NO 							= 	"Preceptor Id card number cannot be empty";
 	public static final String INVALID_PRECEPTOR_ID_CARD_NO 						= 	"Please enter a valid Preceptor Id card number";
 	public static final String EMPTY_PRECEPTOR_EMAIL 								= 	"Preceptor email address cannot be empty";

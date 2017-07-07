@@ -98,8 +98,8 @@ public class EventsController {
 	 * If some exception is raised while processing the request, error response
 	 * is returned with respective HttpStatus code.
 	 * 
-	 * @param token
-	 *            ,Token to be validated against MySRCM endpoint.
+	 * @param token ,Token to be validated against MySRCM endpoint.
+	 *           
 	 * @param event
 	 * @return A ResponseEntity containing success message, if created
 	 *         successfully, and a HTTP status code as described in the method
@@ -399,6 +399,62 @@ public class EventsController {
 		}
 
 		try{
+			event.setCreatedSource(PMPConstants.CREATED_SOURCE_DASHBOARD);
+			programService.createOrUpdateProgram(event, accessLog.getId());
+		} catch (Exception e) {
+
+			LOGGER.error("Exception while saving/creating event   : {}", e);
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.PROCESSING_FAILED);
+			updatePMPAPIAccessLog(accessLog, ErrorConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e), StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		//update response details in PMP
+		updatePMPAPIAccessLog(accessLog,event.getStatus(), null != event.getErrors() ? event.getErrors().toString() : null, StackTraceUtils.convertPojoToJson(event));
+		return new ResponseEntity<Event>(event, HttpStatus.OK);
+
+	}
+	
+	/**
+	 * Web service endpoint to create an event.
+	 * 
+	 * If event is created successfully, the service returns an event with
+	 * eventId in response body with HTTP status 200.
+	 * 
+	 * If some exception is raised while processing the request, error response
+	 * is returned with respective HttpStatus code.
+	 * 
+	 * @param Event
+	 *            to create an event in the pmp database.
+	 * @param token
+	 *            Token to be validated against MySRCM endpoint.
+	 * @return A ResponseEntity containing success message if found, and a HTTP
+	 *         status code as described in the method comment.
+	 * @param program
+	 * @param token
+	 * @return
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/v2/save", 
+			method = RequestMethod.POST, 
+			consumes = MediaType.APPLICATION_JSON_VALUE, 
+			produces = MediaType.APPLICATION_JSON_VALUE)
+
+	public ResponseEntity<?> savePMPEvent(@RequestBody Event event,
+			@RequestHeader(value = "Authorization") String authToken,
+			@Context HttpServletRequest httpRequest) {
+
+		//save request details in PMP
+		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,StackTraceUtils.convertPojoToJson(event));
+
+		//validate token details
+		PMPResponse pmpResponse = authTokenVldtr.validateAuthToken(authToken, accessLog);
+		if(pmpResponse instanceof ErrorResponse){
+			return new ResponseEntity<PMPResponse>(pmpResponse, HttpStatus.OK);
+		}
+
+		try{
+			event.setCreatedSource(PMPConstants.CREATED_SOURCE_DASHBOARD_v2);
 			programService.createOrUpdateProgram(event, accessLog.getId());
 		} catch (Exception e) {
 

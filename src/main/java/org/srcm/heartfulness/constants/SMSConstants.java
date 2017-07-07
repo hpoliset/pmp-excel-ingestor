@@ -27,6 +27,7 @@ public class SMSConstants {
 	public static final String SMS_HEARTFULNESS_HOMEPAGE_URL 									= 	"http://en.heartfulness.org/";
 	/** Holds the Heartfulness home page URL */
 	public static final String SMS_HEARTFULNESS_UPDATEEVENT_URL 								= 	"https://en.heartfulness.org/eventcentral/#/login";
+	public static final String DASHBOARD_v2_HEARTFULNESS_UPDATEEVENT_URL 						= 	"http://en.staging.heartfulness.org/eventcentral/#/login";
 	public static final String SMS_CREATE_EVENT_RESPONSE_DUPLICATE_EVENT1 						= 	"Specified Event with the name( ";
 	public static final String SMS_CREATE_EVENT_RESPONSE_DUPLICATE_EVENT2 						= 	" ) is already available. Please check";
 	public static final String SMS_CREATE_EVENT_RESPONSE_SUCCESS_1 								= 	"Event creation success: Event ID - ";

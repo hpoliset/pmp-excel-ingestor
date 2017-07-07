@@ -461,6 +461,7 @@ public class SendMail {
 			for (String ccId : ccIds) {
 				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(ccId));
 			}
+			message.setReplyTo(InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
 			SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
 			message.setSubject(subject + " " + sdf.format(new Date()));
 			addParameter(EmailLogConstants.DATE_PARAMETER, sdf.format(new Date()));
@@ -491,7 +492,7 @@ public class SendMail {
 			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf("0"), toIds[0], EmailLogConstants.FTP_UPLOAD_DETAILS,
 					EmailLogConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e));
 			mailLogRepository.createMailLog(pmpMailLog);
-			
+
 		}
 	}
 
@@ -552,6 +553,7 @@ public class SendMail {
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(ccemailID));
 		}
 		message.setSubject(subject);
+		message.setReplyTo(InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
 		message.setContent(messageContent, EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
@@ -631,19 +633,20 @@ public class SendMail {
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(crdntrEmail.getCoordinatorEmail()));
-
+		message.setReplyTo(InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+		
 		if(null != uploaderEmail && !uploaderEmail.isEmpty()){
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(uploaderEmail));
 		}
 		if(null != jiraIssueNumber && !jiraIssueNumber.isEmpty()){
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
-			message.setSubject("Jira Issue - "+ jiraIssueNumber +" "+ crdntrmailsubject + outputsdf.format(cal.getTime()));
+			message.setSubject(EmailLogConstants.JIRA_NO_PREFIX_SUBJECT + jiraIssueNumber +") "+ crdntrmailsubject + outputsdf.format(cal.getTime()));
 
 		}else{
 			message.setSubject(crdntrmailsubject + outputsdf.format(cal.getTime()));
 
 		}
-		
+
 		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename),
 				EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 		message.setAllow8bitMIME(true);
@@ -779,22 +782,25 @@ public class SendMail {
 		addParameter(EmailLogConstants.EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id="
 				+ coordinatorEmail.getEventID());
 		addParameter(EmailLogConstants.PARTICIPANTS_DETAILS_PARAMETER, sb.toString());
-		
+
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinatorEmail.getCoordinatorEmail()));
-
+		message.setReplyTo(InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+		
 		if(null != uploaderEmail && !uploaderEmail.isEmpty()){
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(uploaderEmail));
 		}
-		
+
 		if(null != jiraIssueNumber && !jiraIssueNumber.isEmpty()){
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
-			message.setSubject("Jira Issue - "+ jiraIssueNumber +" "+ crdntrmailforewlcmidsubject + (null != coordinatorEmail.getEventName() ? " - " + coordinatorEmail.getEventName() : ""));
+			message.setSubject(EmailLogConstants.JIRA_NO_PREFIX_SUBJECT + jiraIssueNumber +") "
+					+ crdntrmailforewlcmidsubject + (null != coordinatorEmail.getEventName() ? " - " 
+							+ coordinatorEmail.getEventName() : ""));
 		}
 		else{
 			message.setSubject(crdntrmailforewlcmidsubject+ (null != coordinatorEmail.getEventName() ? " - " + coordinatorEmail.getEventName() : ""));
-					
+
 		}
 		message.setContent(getMessageContentbyTemplateName(crdntrewlcomeidmailtemplatename),EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 		message.setAllow8bitMIME(true);
@@ -820,6 +826,7 @@ public class SendMail {
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(welcomemailto));
 			message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc));
 			message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(welcomemailbcc2));
+			message.setReplyTo(InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
 			message.setSubject(welcomemailsubject);
 			message.setContent(getMessageContentbyTemplateName(welcomemailtemplatename),
 					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
@@ -851,6 +858,7 @@ public class SendMail {
 			for (String toId : toIds) {
 				message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(toId));
 			}
+			message.setReplyTo(InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
 			SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
 			addParameter(EmailLogConstants.DATE_PARAMETER, sdf.format(new Date()));
 
@@ -954,5 +962,5 @@ public class SendMail {
 		transport.send(message);
 		transport.close();
 	}
-	
+
 }

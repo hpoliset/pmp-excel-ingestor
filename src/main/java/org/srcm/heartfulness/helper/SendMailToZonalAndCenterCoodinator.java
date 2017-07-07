@@ -405,7 +405,7 @@ public class SendMailToZonalAndCenterCoodinator {
 									//send mail to center coordinator
 									try{
 
-										notificationMailToCoordinators.sendNotificationMailToCoordinators(abhyasiUserProfile.getFirst_name(),/*abhyasiUserProfile.getEmail()*/"koustav.dipak@htcindia.com",centerDetails.getValue());
+										notificationMailToCoordinators.sendNotificationMailToCoordinators(abhyasiUserProfile.getFirst_name(),"koustav.dipak@htcindia.com",centerDetails.getValue());
 										notificationMailRepo.updateZoneOrCenterCoordinatorInformedStatus(DashboardConstants.CENTER_COORDINATOR_INFORMED_COLUMN,centerDetails.getValue());
 
 									} catch(AddressException aex){

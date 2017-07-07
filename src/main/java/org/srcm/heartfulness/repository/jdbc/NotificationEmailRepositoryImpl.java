@@ -48,7 +48,7 @@ public class NotificationEmailRepositoryImpl implements NotificationEmailReposit
 		StringBuilder baseQuery = new StringBuilder(" SELECT  distinct p.program_id,"
 				+ " p.auto_generated_event_id,p.program_channel,p.program_start_date,"
 				+ " p.event_place,p.coordinator_name,p.coordinator_email,"
-				+ " p.coordinator_abhyasi_id,p.program_zone,p.program_center,p.user_id,p.jira_issue_number"
+				+ " p.coordinator_abhyasi_id,p.program_zone,p.program_center,p.user_id,p.jira_issue_number,p.created_source"
 				+ " FROM program p "
 				+ " LEFT OUTER JOIN session_details s "
 				+ " ON p.program_id = s.program_id "

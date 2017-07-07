@@ -16,14 +16,14 @@ import org.srcm.heartfulness.model.json.response.DashboardResponse;
 public interface DashboardRepository {
 	/**
 	 * Method to get count for country coordinator
-	 * @param dashboardReq
-	 * @param hierarchyType
-	 * @return
+	 * @param dashboardReq,Request object to get input params.
+	 * @param hierarchyType,To validate coordinator type
+	 * @return List<DashboardResponse> based on DashboardRequest object.
 	 */
 	public List<DashboardResponse> getCountForCountryCoordinator(DashboardRequest dashboardReq,Boolean hierarchyType);
 	/**
 	 * Method to get count for zone coordinator
-	 * @param dashboardReq
+	 * @param dashboardReq,Request object to get input params.
 	 * @param zones
 	 * @param centers
 	 * @return
@@ -31,14 +31,14 @@ public interface DashboardRepository {
 	public List<DashboardResponse> getCountForZoneCoordinator(DashboardRequest dashboardReq,List<String> zones,List<String> centers);
 	/**
 	 * Method to get count for center coordinator
-	 * @param dashboardReq
+	 * @param dashboardReq,Request object to get input params.
 	 * @param centers
 	 * @return
 	 */
 	public List<DashboardResponse> getCountForCenterCoordinator(DashboardRequest dashboardReq, List<String> centers);
 	/**
 	 * Method to get count for Event coordinator
-	 * @param dashboardReq
+	 * @param dashboardReq,Request object to get input params.
 	 * @param user
 	 * @param emailList
 	 * @return
@@ -46,13 +46,13 @@ public interface DashboardRepository {
 	public List<DashboardResponse> getCountForEventCoordinator(DashboardRequest dashboardReq,User user,List<String> emailList);
 	/**
 	 * Method to get list of zones for country coordinator
-	 * @param dashboardReq
+	 * @param dashboardReq,Request object to get input params.
 	 * @return
 	 */
 	public List<String> getListOfZonesForCountryCoordinator(DashboardRequest dashboardReq);
 	/**
 	 * Method to get list of zones for zone/center coordinator
-	 * @param dashboardReq
+	 * @param dashboardReq,Request object to get input params.
 	 * @param centers
 	 * @param zones
 	 * @return
@@ -62,19 +62,19 @@ public interface DashboardRepository {
 	 * Method to get list of zones for event coordinator
 	 * @param emailList
 	 * @param userRole
-	 * @param dashboardReq
+	 * @param dashboardReq,Request object to get input params.
 	 * @return
 	 */
 	public List<String> getListOfZonesForEventCoordinator(List<String> emailList, String userRole, DashboardRequest dashboardReq);
 	/**
 	 * Method to get list of centers for country coordinator
-	 * @param dashboardReq
+	 * @param dashboardReq,Request object to get input params.
 	 * @return
 	 */
 	public List<String> getListOfCentersForCountryCoordinator(DashboardRequest dashboardReq);
 	/**
 	 * Method to get list of centers for zone/center coordinator
-	 * @param dashboardReq
+	 * @param dashboardReq,Request object to get input params.
 	 * @param zones
 	 * @param centers
 	 * @return
@@ -82,7 +82,7 @@ public interface DashboardRepository {
 	public List<String> getListOfCentersForZoneOrCenterCoordinator(DashboardRequest dashboardReq, List<String> zones, List<String> centers);
 	/**
 	 * Method to get list of centers for event coordinator
-	 * @param dashboardReq
+	 * @param dashboardReq,Request object to get input params.
 	 * @param emailList
 	 * @param userRole
 	 * @return
@@ -90,19 +90,19 @@ public interface DashboardRepository {
 	public List<String> getListOfCentersForEventCoordinator(DashboardRequest dashboardReq, List<String> emailList,String userRole);
 	/**
 	 * Method to get list of states for country coordinator
-	 * @param dashboardReq
+	 * @param dashboardReq,Request object to get input params.
 	 * @return
 	 */
 	public List<String> getListOfStatesForCountryCoordinator(DashboardRequest dashboardReq);
 	/**
 	 * Method to get list of districts for country coordinator
-	 * @param dashboardReq
+	 * @param dashboardReq,Request object to get input params.
 	 * @return
 	 */
 	public List<String> getListOfDistrictForCountryCoordinator(DashboardRequest dashboardReq);
 	/**
 	 * Method to get list of cities for country coordinator
-	 * @param dashboardReq
+	 * @param dashboardReq,Request object to get input params.
 	 * @return
 	 */
 	public List<String> getListOfCitiesForCountryCoordinator(DashboardRequest dashboardReq);

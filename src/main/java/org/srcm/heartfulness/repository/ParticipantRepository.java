@@ -135,4 +135,6 @@ public interface ParticipantRepository {
 	
 	public int getParticipantCountByProgIdAndSeqId(int programId,String seqId);
 
+	void save(List<Participant> participants, Program program);
+
 }

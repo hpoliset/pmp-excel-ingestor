@@ -156,6 +156,13 @@ public interface ProgramRepository {
 	 * @return
 	 */
 	int getProgramIdByEventId(String eventID);
+	
+	/**
+	 * Fetch program id and created Source by auto generated event Id.
+	 * @param eventId, input param to fetch program id and created Source.
+	 * @return List<String> with program Id and created Source details
+	 */
+	public List<String> getProgramIdAndCreatedSourceByEventId(String eventId);
 
 	/**
 	 * Fetch the count of the events available for the given mail and based on

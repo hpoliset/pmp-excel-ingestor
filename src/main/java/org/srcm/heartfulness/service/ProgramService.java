@@ -155,6 +155,13 @@ public interface ProgramService {
 	 * @return programId
 	 */
 	public int getProgramIdByEventId(String eventId);
+	
+	/**
+	 * Fetch program id and created Source by auto generated event Id.
+	 * @param eventId, input param to fetch program id and created Source.
+	 * @return List<String> with program Id and created Source details
+	 */
+	public List<String> getProgramIdAndCreatedSourceByEventId(String eventId);
 
 	/**
 	 * Service to update the participant introduced status for the given

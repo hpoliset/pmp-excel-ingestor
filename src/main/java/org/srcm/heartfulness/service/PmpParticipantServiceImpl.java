@@ -852,16 +852,19 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 		Program pgrm = new Program();
 		pgrm.setIsEwelcomeIdGenerationDisabled(details.get(1));
 		pgrm.setCoordinatorEmail(details.get(2));
+		pgrm.setProgramId(Integer.parseInt(details.get(0)));
+		pgrm.setCreatedSource(PMPConstants.CREATED_SOURCE_EXCEL_VIA_DASHBOARD);
 		for (Participant participant : participantList) {
-			participant.setProgramId(Integer.parseInt(details.get(0)));
-			participant.setCreatedSource(PMPConstants.CREATED_SOURCE_EXCEL_VIA_DASHBOARD);
+			//participant.setProgramId(Integer.parseInt(details.get(0)));
+			//participant.setCreatedSource(PMPConstants.CREATED_SOURCE_EXCEL_VIA_DASHBOARD);
 			setParticipantEWelcomeIDStatus(pgrm,participant,PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE,null);
-			try{
-				participantRepository.save(participant);
-			}catch(Exception ex){
-				errorList.add("Failed to persist participant "+participant.getPrintName());
-			}
-
+		}
+		
+		try{
+			participantRepository.save(participantList,pgrm);
+		}catch(Exception ex){
+			//errorList.add("Failed to persist participant "+participant.getPrintName());
+			errorList.add("Failed to persist participant data");
 		}
 
 		excelUploadResponse.setStatus(errorList.size() > 0 ?ErrorConstants.STATUS_FAILED : ErrorConstants.STATUS_SUCCESS);

@@ -17,13 +17,13 @@ import org.srcm.heartfulness.model.json.request.DashboardRequest;
 public interface DashboardService {
 	
 	/**
-	 * Method to get date counts
+	 * Method to get event,participant,session,event location,future event counts
 	 * 
-	 * @param authToken This parameter is used to verify user in srcm 
+	 * @param authToken This parameter is used to verify user against MYSRCM 
 	 * @param dashboardReq This parameter contains the values required(zone,country,state,etc.)
-	 * @param accessLog This parameter is used by the method create log details of access
-	 * @param user This parameter contains the properties of the user
-	 * @return
+	 * @param accessLog This parameter is used by the method to create log details
+	 * @param user This parameter contains user profile information.
+	 * @return ResponseEntity<?> SuccessResponse,ErrorResponse or DashboardResponse.
 	 */
 	public ResponseEntity<?> getDashboardDataCounts(String authToken,DashboardRequest dashboardReq,PMPAPIAccessLog accessLog,User user);
 	

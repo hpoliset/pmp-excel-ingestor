@@ -33,6 +33,7 @@ import org.srcm.heartfulness.model.json.response.CoordinatorAccessControlErrorRe
 import org.srcm.heartfulness.model.json.response.CoordinatorAccessControlResponse;
 import org.srcm.heartfulness.model.json.response.CoordinatorAccessControlSuccessResponse;
 import org.srcm.heartfulness.repository.CoordinatorAccessControlRepository;
+import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.repository.UserRepository;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
@@ -66,10 +67,13 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 
 	@Autowired
 	SrcmRestTemplate srcmRestTemplate;
-
+	
 	@Autowired
 	private CoordinatorAccessControlMail coordinatorAccessControlMail;
 
+	@Autowired
+	private ParticipantRepository participantRepository;
+	
 	/**
 	 * This method is used to insert Secondary coordinator details in database.
 	 * 
@@ -454,6 +458,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 							program.setPreceptorName(userProfile.getName());
 							// programRepository.updatePreceptorDetails(program);
 							programRepository.save(program);
+							participantRepository.save(program.getParticipantList(), program);
 
 							if (null != userProfile.getEmail()) {
 								// create user and assign role

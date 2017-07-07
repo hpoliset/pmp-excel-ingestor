@@ -265,8 +265,8 @@ public class CoordinatorAccessControlMail {
 			SimpleDateFormat outputsdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
 			Date pgrmCreateDate = inputsdf.parse(coordinatorAccessControlEmail.getProgramCreateDate());
 			addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
-			message.addRecipients(Message.RecipientType.TO,
-					InternetAddress.parse(coordinatorAccessControlEmail.getPreceptorEmailId()));
+			message.addRecipients(Message.RecipientType.TO,InternetAddress.parse(coordinatorAccessControlEmail.getPreceptorEmailId()));
+			message.setReplyTo(InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
 			message.setSubject(emptycoordinatoremailidsubject + " - " + coordinatorAccessControlEmail.getEventName());
 			message.setContent(getMessageContentbyTemplateName(emptycoordinatoremailidtemplate),
 					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
@@ -331,10 +331,11 @@ public class CoordinatorAccessControlMail {
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
-
+		message.setReplyTo(InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+		
 		if(null != coordinator.getJiraNumber() && !coordinator.getJiraNumber().isEmpty()){
 			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
-			message.setSubject("Jira Issue - "+ coordinator.getJiraNumber() +" "+ coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
+			message.setSubject(EmailLogConstants.JIRA_NO_PREFIX_SUBJECT + coordinator.getJiraNumber() +") "+ coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
 		}else{
 			message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
 		}
@@ -378,10 +379,11 @@ public class CoordinatorAccessControlMail {
 			Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
 			addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
-
+			message.setReplyTo(InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+			
 			if(null != coordinator.getJiraNumber() && !coordinator.getJiraNumber().isEmpty()){
 				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
-				message.setSubject("Jira Issue - "+ coordinator.getJiraNumber() +" "+ coordinatormailsubjecttocreateaccount + " - " + coordinator.getEventName());
+				message.setSubject(EmailLogConstants.JIRA_NO_PREFIX_SUBJECT + coordinator.getJiraNumber() +") "+ coordinatormailsubjecttocreateaccount + " - " + coordinator.getEventName());
 			}else{
 				message.setSubject(coordinatormailsubjecttocreateaccount + " - " + coordinator.getEventName());
 			}
@@ -436,10 +438,11 @@ public class CoordinatorAccessControlMail {
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(frommail, name));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(program.getCoordinatorEmail()));
+			message.setReplyTo(InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
 
 			if(null != program.getJiraIssueNumber() && !program.getJiraIssueNumber().isEmpty()){
 				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
-				message.setSubject("Jira Issue - "+ program.getJiraIssueNumber() +" "+ requestMailSubject + eventId);
+				message.setSubject(EmailLogConstants.JIRA_NO_PREFIX_SUBJECT + program.getJiraIssueNumber() +") "+ requestMailSubject + eventId);
 			}else{
 				message.setSubject(requestMailSubject + eventId);
 			}

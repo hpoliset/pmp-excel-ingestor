@@ -344,7 +344,7 @@ public class ProgramServiceImpl implements ProgramService {
 		List<ParticipantRequest> participantReqList = new ArrayList<ParticipantRequest>();
 		int programId = 0;
 		PositionAPIResult posResult = null;
-		
+
 		PMPAPIAccessLogDetails accessLogDetails = new 
 				PMPAPIAccessLogDetails(accessLog.getId(), EndpointConstants.POSITIONS_API, 
 						DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null, authToken);
@@ -667,6 +667,16 @@ public class ProgramServiceImpl implements ProgramService {
 	@Override
 	public int getProgramIdByEventId(String eventID) {
 		return programRepository.getProgramIdByEventId(eventID);
+	}
+
+	/**
+	 * Fetch program id and created Source by auto generated event Id.
+	 * @param eventId, input param to fetch program id and created Source.
+	 * @return List<String> with program Id and created Source details
+	 */
+	@Override
+	public List<String> getProgramIdAndCreatedSourceByEventId(String eventId){
+		return programRepository.getProgramIdAndCreatedSourceByEventId(eventId);
 	}
 
 	/**
@@ -1472,7 +1482,7 @@ public class ProgramServiceImpl implements ProgramService {
 			program.setWelcomeCardSignedByName(event.getWelcomeCardSignedByName());
 			program.setWelcomeCardSignerIdCardNumber(event.getWelcomeCardSignerIdCardNumber());
 			program.setRemarks(event.getRemarks());
-			program.setCreatedSource(PMPConstants.CREATED_SOURCE_DASHBOARD);
+			program.setCreatedSource(event.getCreatedSource());
 			program.setJiraIssueNumber(event.getJiraIssueNumber());
 			if(0 != program.getUserId()){
 				program.setUploaderMail(userRepository.getUserMailWithId(program.getUserId()).getEmail());
@@ -2029,7 +2039,7 @@ public class ProgramServiceImpl implements ProgramService {
 				searchRequest.setSearchField(searchField.getValue());
 			}
 		}
-		
+
 		if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 
 			LOGGER.info("Logged in user {} is a country coordinator ",accessLog.getUsername());
@@ -2053,7 +2063,7 @@ public class ProgramServiceImpl implements ProgramService {
 				ResponseEntity<List<String>> getCenters = (ResponseEntity<List<String>>) dashboardService.getCenterList(authToken, newRequest,accessLog, emailList,role);
 				mysrcmCenters.addAll(getCenters.getBody());
 			}
-			
+
 			LOGGER.info("Center information for log in user {} is {}",accessLog.getUsername(),mysrcmCenters.toString());
 
 			eventPagination.setTotalCount(programRepository.getPgrmCountBySrchParamsForLogInCoordinator(searchRequest, emailList, role,currentPositionType,mysrcmCenters));
