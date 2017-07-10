@@ -243,7 +243,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 							+ "batch_description=:batchDescription, " + "program_address=:programAddress, "
 							+ "program_district=:programDistrict, "
 							+ "organization_contact_designation=:organizationContactDesignation, "
-							+ "program_channel_type=:programChannelType " + "WHERE program_id=:programId",
+							+ "program_channel_type=:programChannelType,user_id=:userId " + "WHERE program_id=:programId",
 							parameterSource);
 			updateCoordinatorHistory(program.getProgramId(), new CoordinatorHistory(program.getProgramId(),
 					program.getCoordinatorName(), program.getCoordinatorEmail(), null));
