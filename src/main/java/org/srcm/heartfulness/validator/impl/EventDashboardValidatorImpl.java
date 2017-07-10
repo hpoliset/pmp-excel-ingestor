@@ -220,12 +220,13 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		Map<String, String> errors = new HashMap<>();
 		Date startDate = null;
 
-		if (null == event.getBatchDescription() || event.getBatchDescription().isEmpty()) {
+		if (null != event.getCreatedSource() && (null == event.getBatchDescription() || event.getBatchDescription().isEmpty())) {
 			errors.put("batchDescription", "Batch description is required");
 		}
+		
 		if (null == event.getProgramChannel() || event.getProgramChannel().isEmpty()) {
 			errors.put("programChannel", "Program channel is required");
-		}else if(event.getProgramChannel().equals(DashboardConstants.G_CONNECT_CHANNEL)){
+		}else if(null != event.getCreatedSource() && event.getProgramChannel().equals(DashboardConstants.G_CONNECT_CHANNEL)){
 			if (0 == event.getProgramChannelType()) {
 				errors.put("programChannelType", "Program channel type is required");
 			}else{
@@ -246,7 +247,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if (null == event.getEventCity() || event.getEventCity().isEmpty()) {
 			errors.put("eventCity", "Event city is required");
 		}
-		if (null == event.getProgramDistrict() || event.getProgramDistrict().isEmpty()) {
+		if (null != event.getCreatedSource() && (null == event.getProgramDistrict() || event.getProgramDistrict().isEmpty())) {
 			errors.put("programDistrict", "Program district is required");
 		}
 		if (null == event.getEventState() || event.getEventState().isEmpty()) {
