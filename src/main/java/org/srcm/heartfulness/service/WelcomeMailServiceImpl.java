@@ -439,7 +439,8 @@ public class WelcomeMailServiceImpl implements WelcomeMailService {
 								
 								try {
 									
-									sendEmailNotification.sendGeneratedEwelcomeIdDetailslToCoordinator(coordinatorEmail,eWelcomeIDParticipants, failedParticipants,session,user.getEmail(),map.getKey().getJiraNumber());
+									sendEmailNotification.sendGeneratedEwelcomeIdDetailslToCoordinator(coordinatorEmail,eWelcomeIDParticipants, 
+											failedParticipants,session,user.getEmail(),map.getKey().getJiraNumber(),map.getKey().getPgrmCreatedSource());
 											
 									PMPMailLog pmpMailLog = new PMPMailLog(map.getKey().getProgramId(), map.getKey()
 											.getCoordinatorEmail(), EmailLogConstants.WLCMID_EMAIL_DETAILS,

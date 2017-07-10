@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -588,16 +589,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 			} catch(Exception ex) {
 			}
 			
-			/*List<Integer> participantIds = this.namedParameterJdbcTemplate
-					.query("SELECT id "
-							+ " FROM participant"
-							+ " WHERE print_name=:printName AND program_id=:programId AND "
-							+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (email=:email) OR (mobile_phone=:mobilePhone))",
-							params, new RowMapper<Integer>() {
-								public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-									return rs.getInt(1);
-								}
-							});*/
+			
 
 			if (participantId > 0) {
 				participant.setId(participantId);
@@ -645,8 +637,24 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 			}
 
 			if (participant.getId() == 0) {
+				//check & remove if a participant(duplicate) is already inserted and add the updated participant to the list
+				for (Iterator<Participant> iter = insertList.listIterator(); iter.hasNext();) {
+					Participant listObject = iter.next();
+					if (listObject.equals(participant)) {
+						iter.remove();
+						break;
+					}
+				}
 				insertList.add(participant);
 			} else {
+				//check & remove if a participant(duplicate) is already inserted and add the updated participant to the list
+				for (Iterator<Participant> iter = updateList.listIterator(); iter.hasNext();) {
+					Participant listObject = iter.next();
+					if (listObject.equals(participant)) {
+						iter.remove();
+						break;
+					}
+				}
 				updateList.add(participant);
 			}
 		}

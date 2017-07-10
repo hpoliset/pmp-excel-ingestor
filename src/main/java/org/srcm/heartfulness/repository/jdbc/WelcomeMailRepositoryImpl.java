@@ -503,7 +503,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 		return this.jdbcTemplate
 				.query("SELECT p.program_channel,p.coordinator_name,p.coordinator_email,p.program_id,p.auto_generated_event_id,"
 						+ "pr.print_name,pr.email,pr.welcome_card_number,pr.id,pr.mobile_phone,pr.introduction_date,pr.ewelcome_id_state,"
-						+ "pr.ewelcome_id_remarks,p.event_city,p.event_place,p.program_start_date,p.create_time,p.user_id,p.jira_issue_number"
+						+ "pr.ewelcome_id_remarks,p.event_city,p.event_place,p.program_start_date,p.create_time,p.user_id,p.jira_issue_number,p.created_source"
 						+ " FROM program p,participant pr"
 						+ " WHERE p.program_id = pr.program_id"
 						+ " AND pr.create_time <= CURRENT_TIMESTAMP"
@@ -538,6 +538,7 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 									coordinatorEmail.setProgramCreationDate(resultSet.getDate(17));
 									coordinatorEmail.setUploaderId(resultSet.getInt(18));  
 									coordinatorEmail.setJiraNumber(resultSet.getString(19));
+									coordinatorEmail.setPgrmCreatedSource(resultSet.getString(20));
 									if (eWelcomeIdDetails.containsKey(coordinatorEmail)) {
 										eWelcomeIdDetails.get(coordinatorEmail).add(participant);
 									} else {

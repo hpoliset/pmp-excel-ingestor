@@ -647,8 +647,8 @@ public class SendMail {
 
 		}
 
-		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename),
-				EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
+		message.setContent(getMessageContentbyTemplateName(crdntrmailtemplatename),EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
+				
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -658,7 +658,7 @@ public class SendMail {
 	}
 
 	public void sendGeneratedEwelcomeIdDetailslToCoordinator(CoordinatorEmail coordinatorEmail,
-			List<Participant> participants, List<Participant> failedParticipants, Session session,String uploaderEmail,String jiraIssueNumber)
+			List<Participant> participants, List<Participant> failedParticipants, Session session,String uploaderEmail,String jiraIssueNumber,String pgrmCreatedSource)
 					throws AddressException, MessagingException, UnsupportedEncodingException {
 
 		SMTPMessage message = new SMTPMessage(session);
@@ -779,8 +779,15 @@ public class SendMail {
 			sb.append("</p>");
 
 		}
-		addParameter(EmailLogConstants.EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id="
-				+ coordinatorEmail.getEventID());
+		
+		String dashboardUrl = "";
+		if(null != pgrmCreatedSource && pgrmCreatedSource.equals(PMPConstants.CREATED_SOURCE_DASHBOARD_v2)){
+			dashboardUrl= SMSConstants.DASHBOARD_v2_HEARTFULNESS_UPDATEEVENT_URL;
+		}else {
+			dashboardUrl= SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL;
+		}
+		
+		addParameter(EmailLogConstants.EVENT_LINK_PARAMETER, dashboardUrl + "?id="+ coordinatorEmail.getEventID());
 		addParameter(EmailLogConstants.PARTICIPANTS_DETAILS_PARAMETER, sb.toString());
 
 		Calendar cal = Calendar.getInstance();

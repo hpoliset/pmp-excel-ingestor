@@ -2,8 +2,6 @@ package org.srcm.heartfulness.model;
 
 import java.util.Date;
 
-import javax.ws.rs.DefaultValue;
-
 /**
  * Created by vsonnathi on 11/22/15.
  */
@@ -478,6 +476,41 @@ public class Participant {
 
 	public void setDistrict(String district) {
 		this.district = district;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Participant other = (Participant) obj;
+		
+		if (printName == null) {
+			if (other.printName != null)
+				return false;
+		}
+		
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		}
+		
+		if (mobilePhone == null) {
+			if (other.mobilePhone != null)
+				return false;
+		}
+		
+		if(!((printName.equals(other.printName))&&(program_id==other.program_id)&&((email.equals(other.email)&&mobilePhone.equals(other.mobilePhone))
+				|| excelSheetSequenceNumber == other.excelSheetSequenceNumber
+				|| mobilePhone.equals(other.mobilePhone)
+				|| email.equals(other.email)))){
+			return false;
+		}
+		
+		return true;
 	}
 
 	@Override

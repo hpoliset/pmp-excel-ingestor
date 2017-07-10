@@ -26,6 +26,7 @@ public class CoordinatorEmail {
 	private int uploaderId;
 	private String uploaderMail;
 	private String jiraNumber;
+	private String pgrmCreatedSource;
 
 
 	public String getCoordinatorEmail() {
@@ -146,6 +147,14 @@ public class CoordinatorEmail {
 
 	public void setJiraNumber(String jiraNumber) {
 		this.jiraNumber = jiraNumber;
+	}
+	
+	public String getPgrmCreatedSource() {
+		return pgrmCreatedSource;
+	}
+
+	public void setPgrmCreatedSource(String pgrmCreatedSource) {
+		this.pgrmCreatedSource = pgrmCreatedSource;
 	}
 
 	@Override

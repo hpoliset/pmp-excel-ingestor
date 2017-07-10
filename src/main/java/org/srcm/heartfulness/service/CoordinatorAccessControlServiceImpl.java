@@ -496,6 +496,7 @@ public class CoordinatorAccessControlServiceImpl implements CoordinatorAccessCon
 									coordinator.setEventPlace(program.getEventPlace());
 									coordinator.setUploaderMail(program.getUploaderMail());
 									coordinator.setJiraNumber(program.getJiraIssueNumber());
+									coordinator.setPgrmCreatedSource(program.getCreatedSource());
 									SimpleDateFormat inputsdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 									coordinator.setProgramCreateDate(inputsdf.format(program.getProgramStartDate()));
 									if (null == program.getCoordinatorEmail() || program.getCoordinatorEmail().isEmpty()) {

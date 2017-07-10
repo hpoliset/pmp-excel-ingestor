@@ -13,6 +13,7 @@ public class CoordinatorAccessControlEmail {
 	private String eventPlace;
 	private String uploaderMail;
 	private String jiraNumber;
+	private String pgrmCreatedSource;
 
 	public String getCoordinatorEmail() {
 		return coordinatorEmail;
@@ -100,6 +101,14 @@ public class CoordinatorAccessControlEmail {
 
 	public void setJiraNumber(String jiraNumber) {
 		this.jiraNumber = jiraNumber;
+	}
+	
+	public String getPgrmCreatedSource() {
+		return pgrmCreatedSource;
+	}
+
+	public void setPgrmCreatedSource(String pgrmCreatedSource) {
+		this.pgrmCreatedSource = pgrmCreatedSource;
 	}
 
 	@Override
