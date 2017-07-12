@@ -2,6 +2,7 @@ package org.srcm.heartfulness.service;
 
 import java.util.List;
 
+import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.SessionDetails;
 import org.srcm.heartfulness.model.SessionImageDetails;
 import org.srcm.heartfulness.model.json.request.SearchSession;
@@ -46,7 +47,7 @@ public interface SessionDetailsService {
 	 * @param userRole Role of user in PMP           
 	 * @return list of session details for a particular event.
 	 */
-	public List<SessionDetails> getSessionDetails(int programId, String eventId, List<String> emailList, String userRole);
+	public List<SessionDetails> getSessionDetails(int programId, String eventId, List<String> emailList, String userRole,String authToken,PMPAPIAccessLog accessLog);
 
 	public int getSessionDetailsIdBySessionIdandProgramId(String sessionId, int programId);
 
@@ -74,7 +75,7 @@ public interface SessionDetailsService {
 	 * @return List<SessionDetails> list of session details is returned based
 	 * on search criteria. 
 	 */
-	public List<SessionDetails> getSearchSessionData(List<String> emailList, String userRole, SearchSession searchSession);
+	public List<SessionDetails> getSearchSessionData(List<String> emailList, String userRole, SearchSession searchSession,String authToken,PMPAPIAccessLog accessLog);
 
 	void saveSessionFilesWithType(SessionImageDetails sessionFiles); 
 

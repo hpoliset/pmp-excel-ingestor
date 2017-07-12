@@ -109,8 +109,16 @@ public class SessionDetailsController {
 			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP, StackTraceUtils.convertPojoToJson(eResponse));
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		}
+		
+		List<String> emailList = new ArrayList<String>();
+		if(null != user.getAbyasiId()){
+			emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
+		}
+		if(emailList.size() == 0){
+			emailList.add(accessLog.getUsername());
+		}
 
-		PMPResponse validationResponse = sessionDtlsValidator.validateSessionDetailsParams(sessionDetails, accessLog);
+		PMPResponse validationResponse = sessionDtlsValidator.validateSessionDetailsParams(emailList,user.getRole(),sessionDetails,authToken,accessLog);
 		if (validationResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(validationResponse, HttpStatus.OK);
 		}
@@ -264,9 +272,7 @@ public class SessionDetailsController {
 		}
 
 		List<SessionDetails> sessionDtlsList = sessionDtlsSrcv.getSessionDetails(sessionDetails.getProgramId(),
-				sessionDetails.getEventId(),emailList,user.getRole());
-
-
+				sessionDetails.getEventId(),emailList,user.getRole(),authToken,accessLog);
 		updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS,accessLog.getErrorMessage(), StackTraceUtils.convertPojoToJson(sessionDtlsList));
 		return new ResponseEntity<List<SessionDetails>>(sessionDtlsList, HttpStatus.OK);
 	}
@@ -328,7 +334,7 @@ public class SessionDetailsController {
 			emailList.add(accessLog.getUsername());
 		}
 		try{
-			searchSessionRequest.setSessionList(sessionDtlsSrcv.getSearchSessionData(emailList,user.getRole(),searchSessionRequest));
+			searchSessionRequest.setSessionList(sessionDtlsSrcv.getSearchSessionData(emailList,user.getRole(),searchSessionRequest,authToken,accessLog));
 			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS,null, StackTraceUtils.convertPojoToJson(searchSessionRequest));
 			return new ResponseEntity<SearchSession>(searchSessionRequest, HttpStatus.OK ); 
 		} catch(Exception e){

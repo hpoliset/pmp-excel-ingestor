@@ -33,7 +33,7 @@ public interface SessionDetailsValidator {
 	 *            to create the pmp api access log details in db.
 	 * @return success response is returned else an error response is returned
 	 */
-	PMPResponse validateSessionDetailsParams(SessionDetails sessionDetails, PMPAPIAccessLog accessLog);
+	PMPResponse validateSessionDetailsParams(List<String> emailList,String userRole,SessionDetails sessionDetails,String authToken,PMPAPIAccessLog accessLog);
 
 	/**
 	 * Method is used to validate the delete session details api call

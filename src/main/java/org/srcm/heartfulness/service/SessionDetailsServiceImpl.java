@@ -1,5 +1,6 @@
 package org.srcm.heartfulness.service;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,19 +9,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.srcm.heartfulness.constants.CoordinatorAccessControlConstants;
+import org.srcm.heartfulness.constants.EndpointConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
+import org.srcm.heartfulness.constants.PMPConstants;
+import org.srcm.heartfulness.enumeration.CoordinatorPosition;
+import org.srcm.heartfulness.model.PMPAPIAccessLog;
+import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.SessionDetails;
 import org.srcm.heartfulness.model.SessionImageDetails;
+import org.srcm.heartfulness.model.json.request.DashboardRequest;
 import org.srcm.heartfulness.model.json.request.SearchSession;
+import org.srcm.heartfulness.model.json.response.CoordinatorPositionResponse;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.PMPResponse;
+import org.srcm.heartfulness.model.json.response.PositionAPIResult;
 import org.srcm.heartfulness.model.json.response.SuccessResponse;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.repository.SessionDetailsRepository;
+import org.srcm.heartfulness.rest.template.DashboardRestTemplate;
+import org.srcm.heartfulness.util.DateUtils;
+import org.srcm.heartfulness.util.StackTraceUtils;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
  * @author Koustav Dutta
@@ -36,6 +52,15 @@ public class SessionDetailsServiceImpl implements SessionDetailsService {
 
 	@Autowired
 	ProgramRepository programRepository;
+	
+	@Autowired
+	APIAccessLogService apiAccessLogService;
+	
+	@Autowired
+	DashboardRestTemplate dashboardRestTemplate;
+	
+	@Autowired
+	DashboardService dashboardService;
 
 
 	@Override
@@ -75,28 +100,33 @@ public class SessionDetailsServiceImpl implements SessionDetailsService {
 
 	}
 
-
 	@Override
-	public List<SessionDetails> getSessionDetails(int programId,String eventId, List<String> emailList, String userRole) {
+	public List<SessionDetails> getSessionDetails(int programId,String eventId, List<String> emailList, String userRole,
+			String authToken,PMPAPIAccessLog accessLog) {
+		
 		List<SessionDetails> sessionDetailsList = new ArrayList<SessionDetails>();
 		SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
-		Program program = programRepository.getProgramByEmailAndRole(emailList, userRole, eventId);
-		if(program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_TRUE)){
-			return sessionDetailsList;
-		}else{
-			try{
-				sessionDetailsList = sessionDtlsRepo.getSessionDetails(programId);	
-				for(SessionDetails session : sessionDetailsList){
-					session.setEventId(eventId);
-					session.setSessionStringDate(sdf.format(session.getSessionDate()));
+		Program program = getProgram(emailList,userRole,eventId,authToken,accessLog);
+		
+		if(null != program){
+			
+			if(program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE)){
+				
+				try{
+					sessionDetailsList = sessionDtlsRepo.getSessionDetails(programId);	
+					for(SessionDetails session : sessionDetailsList){
+						session.setEventId(eventId);
+						session.setSessionStringDate(sdf.format(session.getSessionDate()));
+					}
+				}catch( DataAccessException dae){
+					LOGGER.error("DAE Failed to retrieve session details for event Id :{}",eventId);
+				}catch(Exception ex){
+					LOGGER.error("EX Failed to retrieve session details for event Id {}",eventId);
 				}
-			}catch( DataAccessException dae){
-				LOGGER.error("DAE Failed to retrieve session details for event Id :{}",eventId);
-			}catch(Exception ex){
-				LOGGER.error("EX Failed to retrieve session details for event Id {}",eventId);
+				
 			}
-			return sessionDetailsList;
 		}
+		return sessionDetailsList;
 	}
 
 
@@ -134,25 +164,139 @@ public class SessionDetailsServiceImpl implements SessionDetailsService {
 
 
 	@Override
-	public List<SessionDetails> getSearchSessionData(List<String> emailList, String userRole, SearchSession searchSession) {
+	public List<SessionDetails> getSearchSessionData(List<String> emailList, String userRole, SearchSession searchSession,
+			String authToken,PMPAPIAccessLog accessLog) {
+		
 		List<SessionDetails> sessionData = new ArrayList<SessionDetails>();
-		Program program = programRepository.getProgramByEmailAndRole(emailList, userRole, searchSession.getEventId());
-		if(program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_TRUE)){
-			return sessionData;
-		}else{
-			sessionData = sessionDtlsRepo.searchSessionData(program.getProgramId(),searchSession);
-			SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
-			for(SessionDetails session : sessionData){
-				session.setEventId(searchSession.getEventId());
-				session.setSessionStringDate(sdf.format(session.getSessionDate()));
+		Program program = getProgram(emailList,userRole,searchSession.getEventId(),authToken,accessLog);
+		
+		if(null != program){
+			
+			if(program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE)){
+				
+				sessionData = sessionDtlsRepo.searchSessionData(program.getProgramId(),searchSession);
+				SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
+				for(SessionDetails session : sessionData){
+					session.setEventId(searchSession.getEventId());
+					session.setSessionStringDate(sdf.format(session.getSessionDate()));
+				}
+				
 			}
-			return sessionData;
 		}
+		return sessionData;
 	}
 	
 	@Override
 	public void saveSessionFilesWithType(SessionImageDetails sessionFiles) {
 		sessionDtlsRepo.saveSessionFilesWithType(sessionFiles);
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	private Program getProgram(List<String> emailList,String userRole,String eventId,String authToken,PMPAPIAccessLog accessLog){
+		
+		boolean isNext = true;
+		int currentPositionValue = 0;
+		String currentPositionType =  "";
+		List<String> mysrcmZones =  new ArrayList<String>();
+		List<String> mysrcmCenters =  new ArrayList<String>();
+
+		PMPAPIAccessLogDetails accessLogDetails = new 
+				PMPAPIAccessLogDetails(accessLog.getId(), EndpointConstants.POSITIONS_API, 
+						DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null, authToken);
+		apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);		
+		PositionAPIResult posResult = null;
+
+		try {
+
+			posResult = dashboardRestTemplate.findCoordinatorPosition(authToken);
+
+			while(isNext){
+
+				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
+
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+
+						currentPositionValue = CoordinatorPosition.COUNTRY_COORDINATOR.getPositionValue();
+						currentPositionType =  crdntrPosition.getPositionType().getName();
+
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())){
+
+						if(CoordinatorPosition.ZONE_COORDINATOR.getPositionValue() > currentPositionValue){
+							currentPositionValue = CoordinatorPosition.ZONE_COORDINATOR.getPositionValue();
+							currentPositionType =  crdntrPosition.getPositionType().getName();
+						}
+
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
+
+						if(CoordinatorPosition.CENTER_COORDINATOR.getPositionValue() > currentPositionValue){
+							currentPositionValue = CoordinatorPosition.CENTER_COORDINATOR.getPositionValue();
+							currentPositionType =  crdntrPosition.getPositionType().getName();
+						}
+					}
+
+					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+						posResult.setNext(null);
+						break;
+					}
+
+				}
+
+				if(null == posResult.getNext()){
+					isNext = false;
+				}else{
+					posResult =  dashboardRestTemplate.findCoordinatorPosition(authToken,posResult.getNext());
+				}
+			}
+
+		} catch (JsonParseException jpe) {
+			LOGGER.error("JPE : Unable to fetch coordinator position type from MYSRCM {}",jpe.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(jpe));
+		} catch (JsonMappingException jme) {
+			LOGGER.error("JME : Unable to fetch coordinator position type from MYSRCM {}",jme.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(jme));
+		} catch (IOException ioe) {
+			LOGGER.error("IOE : Unable to fetch coordinator position type from MYSRCM {}",ioe.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(ioe));
+		} catch(Exception ex){
+			LOGGER.error("EX : Unable to fetch coordinator position type from MYSRCM {}",ex.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
+		}
+
+		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
+		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+		Program program = null;
+		
+		if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+			LOGGER.info("Logged in user {} is a country coordinator ",accessLog.getUsername());
+			program = programRepository.getProgramByEmailAndRole(emailList, userRole, eventId,currentPositionType,mysrcmCenters);
+
+		}else if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType()) || 
+				currentPositionType.equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType()) ){
+			
+			LOGGER.info("Logged in user {} is a zone/center coordinator ",accessLog.getUsername());
+			DashboardRequest dashboardReq =  new DashboardRequest();
+			dashboardReq.setCountry(PMPConstants.COUNTRY_INDIA);
+
+			ResponseEntity<List<String>> getZones = (ResponseEntity<List<String>>) dashboardService.getListOfZones(authToken, dashboardReq,accessLog, emailList,userRole);
+			mysrcmZones.addAll(getZones.getBody());
+
+			for(String zone : mysrcmZones){
+				DashboardRequest newRequest =  new DashboardRequest();
+				newRequest.setCountry(dashboardReq.getCountry());
+				newRequest.setZone(zone);
+				ResponseEntity<List<String>> getCenters = (ResponseEntity<List<String>>) dashboardService.getCenterList(authToken, newRequest,accessLog, emailList,userRole);
+				mysrcmCenters.addAll(getCenters.getBody());
+			} 	
+
+			LOGGER.info("Center information for log in user {} is {}",accessLog.getUsername(),mysrcmCenters.toString());
+			program = programRepository.getProgramByEmailAndRole(emailList, userRole, eventId,currentPositionType,mysrcmCenters);
+			
+		}else{
+			program = programRepository.getProgramByEmailAndRole(emailList, userRole, eventId,currentPositionType,mysrcmCenters);
+		}
+		return program;
 	}
 
 }
