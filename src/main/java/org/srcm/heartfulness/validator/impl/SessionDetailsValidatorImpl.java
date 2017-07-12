@@ -2,6 +2,7 @@ package org.srcm.heartfulness.validator.impl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -178,7 +179,6 @@ public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 		} else {
 			int programId = 0;
 			try {
-				//programId = programService.getProgramIdByEventId(sessionDetails.getEventId());
 				pgrmDetails = programService.getProgramIdAndCreatedSourceByEventId(sessionDetails.getEventId());
 				programId = Integer.parseInt( null != pgrmDetails ?  !pgrmDetails.isEmpty() ? pgrmDetails.get(0) : String.valueOf(0) : String.valueOf(0));
 			} catch (Exception ex) {
@@ -192,38 +192,59 @@ public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 				return eResponse;
 			} else {
 
-				String programStartDate = "";
-				String sessionDate ="";
-				HashMap<String, String> dates = programRepository.getSessionAndProgramDateByProgramId(programId);
-				for(Map.Entry<String, String> date : dates.entrySet()){
-					programStartDate = date.getKey();
-					sessionDate = date.getValue();
+				String programStartDate = "",sessionDate ="",programEndDate="";
+				ArrayList<String> dates = new ArrayList<String>();
+				try{
+					dates = programRepository.getSessionAndProgramDatesByProgramId(programId);
+				} catch(Exception ex){
+					LOGGER.error("Unable to fetch program start date");
+					eResponse.setError_description(ErrorConstants.PROGRAM_START_DATE_UNAVAILABLE);
+					accessLog.setErrorMessage(ErrorConstants.PROGRAM_START_DATE_UNAVAILABLE);
+					setPMPAccessLogAndPersist(accessLog, eResponse);
+					return eResponse;
 				}
 
-				try{
-					
-					if(null == sessionDate || sessionDate.isEmpty()){
-						
-						if(DateUtils.parseDate(programStartDate).equals(DateUtils.parseDate(sessionDetails.getSessionStringDate())) ? false
-								: !DateUtils.parseDate(programStartDate).before(DateUtils.parseDate(sessionDetails.getSessionStringDate()))){
-							eResponse.setError_description(ErrorConstants.SESSION_DATE_WITH_PROGRAM_DATE);
-							accessLog.setErrorMessage(ErrorConstants.SESSION_DATE_WITH_PROGRAM_DATE);
+
+				if(!dates.isEmpty()){
+					programStartDate = dates.get(0);
+					programEndDate = dates.get(1);
+					sessionDate = dates.get(2);
+					try{
+
+						if(null == sessionDate || sessionDate.isEmpty()){
+
+							if(DateUtils.parseDate(programStartDate).equals(DateUtils.parseDate(sessionDetails.getSessionStringDate())) ? false
+									: !DateUtils.parseDate(programStartDate).before(DateUtils.parseDate(sessionDetails.getSessionStringDate()))){
+								eResponse.setError_description(ErrorConstants.SESSION_DATE_WITH_PROGRAM_DATE);
+								accessLog.setErrorMessage(ErrorConstants.SESSION_DATE_WITH_PROGRAM_DATE);
+								setPMPAccessLogAndPersist(accessLog, eResponse);
+								return eResponse;
+							}
+							
+						}else if ( DateUtils.parseDate(sessionDate).equals(DateUtils.parseDate(sessionDetails.getSessionStringDate())) ? false
+								: !DateUtils.parseDate(sessionDate).before(DateUtils.parseDate(sessionDetails.getSessionStringDate()))){
+							eResponse.setError_description(ErrorConstants.SESSION_DATE_WITH_MAX_SESSION_DATE);
+							accessLog.setErrorMessage(ErrorConstants.SESSION_DATE_WITH_MAX_SESSION_DATE);
 							setPMPAccessLogAndPersist(accessLog, eResponse);
 							return eResponse;
 						}
-					}else if ( DateUtils.parseDate(sessionDate).equals(DateUtils.parseDate(sessionDetails.getSessionStringDate())) ? false
-							: !DateUtils.parseDate(sessionDate).before(DateUtils.parseDate(sessionDetails.getSessionStringDate()))){
-						eResponse.setError_description(ErrorConstants.SESSION_DATE_WITH_MAX_SESSION_DATE);
-						accessLog.setErrorMessage(ErrorConstants.SESSION_DATE_WITH_MAX_SESSION_DATE);
+						
+						if(null != programEndDate && !programEndDate.isEmpty()){
+							if(DateUtils.parseDate(programEndDate).equals(DateUtils.parseDate(sessionDetails.getSessionStringDate())) ? false
+									: DateUtils.parseDate(programEndDate).before(DateUtils.parseDate(sessionDetails.getSessionStringDate()))){
+								eResponse.setError_description(ErrorConstants.SESSION_DATE_AFTER_PROGRAM_END_DATE);
+								accessLog.setErrorMessage(ErrorConstants.SESSION_DATE_AFTER_PROGRAM_END_DATE);
+								setPMPAccessLogAndPersist(accessLog, eResponse);
+								return eResponse;
+							}
+						}
+					}catch (Exception e) {
+						eResponse.setError_description(ErrorConstants.INVALID_DATE_FORMAT);
+						accessLog.setErrorMessage(ErrorConstants.INVALID_DATE_FORMAT);
 						setPMPAccessLogAndPersist(accessLog, eResponse);
 						return eResponse;
 					}
-					
-				}catch (Exception e) {
-					eResponse.setError_description(ErrorConstants.INVALID_DATE_FORMAT);
-					accessLog.setErrorMessage(ErrorConstants.INVALID_DATE_FORMAT);
-					setPMPAccessLogAndPersist(accessLog, eResponse);
-					return eResponse;
+
 				}
 				sessionDetails.setProgramId(programId);
 			}
@@ -269,14 +290,14 @@ public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 
 		if( !pgrmDetails.isEmpty()  && null != pgrmDetails.get(1) 
 				&& pgrmDetails.get(1).equalsIgnoreCase(PMPConstants.CREATED_SOURCE_DASHBOARD_v2)) {
-			
+
 			if (null == sessionDetails.getPreceptorName() || sessionDetails.getPreceptorName().isEmpty()) {
 				eResponse.setError_description(ErrorConstants.EMPTY_PRECEPTOR_NAME);
 				accessLog.setErrorMessage(ErrorConstants.EMPTY_PRECEPTOR_NAME);
 				setPMPAccessLogAndPersist(accessLog, eResponse);
 				return eResponse;
 			}
-			
+
 			if (null == sessionDetails.getPreceptorEmail() || sessionDetails.getPreceptorEmail().isEmpty()) {
 				eResponse.setError_description(ErrorConstants.EMPTY_PRECEPTOR_EMAIL);
 				accessLog.setErrorMessage(ErrorConstants.EMPTY_PRECEPTOR_EMAIL);
@@ -290,15 +311,15 @@ public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 			}
 
 		}else{
-				if(null != sessionDetails.getPreceptorEmail() && !sessionDetails.getPreceptorEmail().isEmpty()
-						&& !sessionDetails.getPreceptorEmail().matches(ExpressionConstants.EMAIL_REGEX)){
-					eResponse.setError_description(ErrorConstants.INVALID_PRECEPTOR_EMAIL);
-					accessLog.setErrorMessage(ErrorConstants.INVALID_PRECEPTOR_EMAIL);
-					setPMPAccessLogAndPersist(accessLog, eResponse);
-					return eResponse;
-				}
+			if(null != sessionDetails.getPreceptorEmail() && !sessionDetails.getPreceptorEmail().isEmpty()
+					&& !sessionDetails.getPreceptorEmail().matches(ExpressionConstants.EMAIL_REGEX)){
+				eResponse.setError_description(ErrorConstants.INVALID_PRECEPTOR_EMAIL);
+				accessLog.setErrorMessage(ErrorConstants.INVALID_PRECEPTOR_EMAIL);
+				setPMPAccessLogAndPersist(accessLog, eResponse);
+				return eResponse;
+			}
 		}
-		
+
 		if(null != sessionDetails.getPreceptorMobile() && !sessionDetails.getPreceptorMobile().isEmpty()){
 			if(!sessionDetails.getPreceptorMobile().isEmpty() && !sessionDetails.getPreceptorMobile().matches(ExpressionConstants.MOBILE_REGEX)){
 				eResponse.setError_description(ErrorConstants.INVALID_PRECEPTOR_MOBILE);

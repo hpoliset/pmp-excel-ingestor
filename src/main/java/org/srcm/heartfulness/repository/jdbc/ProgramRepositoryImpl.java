@@ -2311,26 +2311,27 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 	}
 
-	/*
+	/* Method is to get the program start date,program end date 
+	 * and the maximum session date for the speific program.
 	 * (non-Javadoc)
-	 * @see org.srcm.heartfulness.repository.SessionDetailsRepository#getSessionAndProgramDateByProgramId(int)
+	 * @see org.srcm.heartfulness.repository.ProgramRepository#getSessionAndProgramDateByProgramId1(int)
 	 */
 	@Override
-	public HashMap<String, String> getSessionAndProgramDateByProgramId(int programId) {
-
-		HashMap<String, String> date = this.jdbcTemplate.query("SELECT p.program_start_date, max(s.session_date) FROM program p "
+	public ArrayList<String> getSessionAndProgramDatesByProgramId(int programId) {
+		ArrayList<String> date = this.jdbcTemplate.query("SELECT p.program_start_date,p.program_end_date, max(s.session_date) FROM program p "
 				+"LEFT OUTER JOIN session_details s "
-				+"ON p.program_id = s.program_id  WHERE p.program_id = ?",
-				new Object[]{programId},new ResultSetExtractor<HashMap<String, String>>(){
+				+"ON p.program_id = s.program_id  WHERE p.program_id = ?",new Object[]{programId}, new ResultSetExtractor<ArrayList<String>>(){
+
 					@Override
-					public HashMap<String, String>  extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-						HashMap<String, String> param = new HashMap<String, String>();
-						while(resultSet.next()){
-							param.put(resultSet.getString(1), resultSet.getString(2));
+					public ArrayList<String> extractData(ResultSet rs) throws SQLException, DataAccessException {
+						ArrayList<String> param = new ArrayList<String>();
+						while(rs.next()){
+						param.add(rs.getString(1));
+						param.add(rs.getString(2));
+						param.add(rs.getString(3));
 						}
 						return param;
 					}
-
 				});
 		return date;
 	}

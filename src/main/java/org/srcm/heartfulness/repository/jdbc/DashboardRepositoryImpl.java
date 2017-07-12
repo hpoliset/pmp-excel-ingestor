@@ -174,9 +174,7 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 								}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
 									counts.setProgramZone(resultSet.getString(5));
 									counts.setProgramCenter(resultSet.getString(6));
-									
 								}
-								
 							}
 							listOfCounts.add(counts);
 						}
@@ -204,6 +202,8 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 			baseQuery.append(" ,IFNULL(pgrm.program_zone,'Others') ");
 		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
 			baseQuery.append(" ,pgrm.program_zone,IFNULL(pgrm.program_center,'Others') ");
+		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+			baseQuery.append(" ,pgrm.program_zone,pgrm.program_center ");
 		}
 
 		baseQuery.append(" FROM program pgrm LEFT OUTER JOIN participant pctpt ON pgrm.program_id = pctpt.program_id  "
@@ -268,8 +268,10 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
 						counts.setProgramZone(resultSet.getString(5));
 						counts.setProgramCenter(resultSet.getString(6));
+					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+						counts.setProgramZone(resultSet.getString(5));
+						counts.setProgramCenter(resultSet.getString(6));
 					}
-
 					listOfCounts.add(counts);
 				}
 				return listOfCounts;
@@ -294,9 +296,11 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 
 
 		if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,IFNULL(pgrm.program_center,'Others') ");
+			baseQuery.append(" ,IFNULL(pgrm.program_zone,'Others'),IFNULL(pgrm.program_center,'Others') ");
 		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,IFNULL(pgrm.program_center,'Others') ");
+			baseQuery.append(" ,pgrm.program_zone,IFNULL(pgrm.program_center,'Others') ");
+		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+			baseQuery.append(" ,pgrm.program_zone,pgrm.program_center ");
 		}
 
 		baseQuery.append(" FROM program pgrm LEFT OUTER JOIN participant pctpt ON pgrm.program_id = pctpt.program_id  "
@@ -346,9 +350,14 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 					counts.setLocationCount(resultSet.getInt(4));
 
 					if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						counts.setProgramCenter(resultSet.getString(5));
+						counts.setProgramZone(resultSet.getString(5));
+						counts.setProgramCenter(resultSet.getString(6));
 					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						counts.setProgramCenter(resultSet.getString(5));
+						counts.setProgramZone(resultSet.getString(5));
+						counts.setProgramCenter(resultSet.getString(6));
+					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+						counts.setProgramZone(resultSet.getString(5));
+						counts.setProgramCenter(resultSet.getString(6));
 					}
 					listOfCounts.add(counts);
 				}
@@ -377,6 +386,8 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 			baseQuery.append(" ,IFNULL(pgrm.program_zone,'Others') ");
 		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
 			baseQuery.append(" ,pgrm.program_zone,IFNULL(pgrm.program_center,'Others') ");
+		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+			baseQuery.append(" ,pgrm.program_zone,pgrm.program_center ");
 		}
 
 		baseQuery.append("FROM program pgrm LEFT OUTER JOIN participant pctpt ON pgrm.program_id = pctpt.program_id  "
@@ -439,6 +450,9 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 					if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
 						counts.setProgramZone(resultSet.getString(5));
 					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
+						counts.setProgramZone(resultSet.getString(5));
+						counts.setProgramCenter(resultSet.getString(6));
+					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
 						counts.setProgramZone(resultSet.getString(5));
 						counts.setProgramCenter(resultSet.getString(6));
 					}

@@ -1,5 +1,6 @@
 package org.srcm.heartfulness.repository;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -481,6 +482,6 @@ public interface ProgramRepository {
 	
 	public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList, String role, int offset,String coordinatorType,List<String> mysrcmCenters);
 
-	public HashMap<String, String> getSessionAndProgramDateByProgramId(int programId);
+	public ArrayList<String> getSessionAndProgramDatesByProgramId(int programId);
 
 }

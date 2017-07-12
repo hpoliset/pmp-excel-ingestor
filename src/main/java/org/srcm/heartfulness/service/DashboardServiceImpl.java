@@ -394,13 +394,12 @@ public class DashboardServiceImpl implements DashboardService {
 						newRequest, accessLog, new ArrayList<String>(), "");
 				centers.addAll(getCenters.getBody());
 			}
-
 			LOGGER.info("Zone information for log in user {} is {}", accessLog.getUsername(), zones.toString());
-			LOGGER.info("Center information for log in user {} is {}", accessLog.getUsername(), zones.toString());
+			LOGGER.info("Center information for log in user {} is {}", accessLog.getUsername(), centers.toString());
 
 			try {
-				List<DashboardResponse> countResponse = dashboardRepository.getCountForCenterCoordinator(dashboardReq,
-						centers);
+				List<DashboardResponse> countResponse = dashboardRepository.getCountForCenterCoordinator(dashboardReq,centers);
+				
 				accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 				accessLog.setErrorMessage(null);
 				return new ResponseEntity<List<DashboardResponse>>(countResponse, HttpStatus.OK);

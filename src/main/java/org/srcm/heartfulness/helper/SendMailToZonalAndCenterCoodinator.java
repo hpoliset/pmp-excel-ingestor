@@ -217,7 +217,7 @@ public class SendMailToZonalAndCenterCoodinator {
 									//send mail to zone coordinator
 									try{
 
-										notificationMailToCoordinators.sendNotificationMailToCoordinators(abhyasiUserProfile.getFirst_name(),/*abhyasiUserProfile.getEmail()*/"koustav.dipak@htcindia.com",zonesDetails.getValue());
+										notificationMailToCoordinators.sendNotificationMailToCoordinators(abhyasiUserProfile.getFirst_name(),abhyasiUserProfile.getEmail(),zonesDetails.getValue());
 										notificationMailRepo.updateZoneOrCenterCoordinatorInformedStatus(DashboardConstants.ZONE_COORDINATOR_INFORMED_COLUMN,zonesDetails.getValue());
 
 									} catch(AddressException aex){
@@ -405,7 +405,7 @@ public class SendMailToZonalAndCenterCoodinator {
 									//send mail to center coordinator
 									try{
 
-										notificationMailToCoordinators.sendNotificationMailToCoordinators(abhyasiUserProfile.getFirst_name(),"koustav.dipak@htcindia.com",centerDetails.getValue());
+										notificationMailToCoordinators.sendNotificationMailToCoordinators(abhyasiUserProfile.getFirst_name(),abhyasiUserProfile.getEmail(),centerDetails.getValue());
 										notificationMailRepo.updateZoneOrCenterCoordinatorInformedStatus(DashboardConstants.CENTER_COORDINATOR_INFORMED_COLUMN,centerDetails.getValue());
 
 									} catch(AddressException aex){
