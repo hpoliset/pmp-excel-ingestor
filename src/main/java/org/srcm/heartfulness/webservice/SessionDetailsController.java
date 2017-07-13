@@ -192,8 +192,16 @@ public class SessionDetailsController {
 			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP, StackTraceUtils.convertPojoToJson(eResponse));
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		}
+		
+		List<String> emailList = new ArrayList<String>();
+		if(null != user.getAbyasiId()){
+			emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
+		}
+		if(emailList.size() == 0){
+			emailList.add(accessLog.getUsername());
+		}
 
-		PMPResponse validationResponse = sessionDtlsValidator.validateDeleteSessionDetailParams(sessionDetails, accessLog);
+		PMPResponse validationResponse = sessionDtlsValidator.validateDeleteSessionDetailParams(emailList,user.getRole(),sessionDetails, authToken,accessLog);
 		if (validationResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(validationResponse, HttpStatus.OK);
 		}
@@ -257,18 +265,18 @@ public class SessionDetailsController {
 			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP, StackTraceUtils.convertPojoToJson(eResponse));
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		}
-
-		PMPResponse validationResponse = sessionDtlsValidator.validateGetSessionDetailsParams(sessionDetails, accessLog);
-		if (validationResponse instanceof ErrorResponse) {
-			return new ResponseEntity<PMPResponse>(validationResponse, HttpStatus.OK);
-		}
-
+		
 		List<String> emailList = new ArrayList<String>();
 		if(null != user.getAbyasiId()){
 			emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
 		}
 		if(emailList.size() == 0){
 			emailList.add(accessLog.getUsername());
+		}
+
+		PMPResponse validationResponse = sessionDtlsValidator.validateGetSessionDetailsParams(emailList,user.getRole(),sessionDetails,authToken,accessLog);
+		if (validationResponse instanceof ErrorResponse) {
+			return new ResponseEntity<PMPResponse>(validationResponse, HttpStatus.OK);
 		}
 
 		List<SessionDetails> sessionDtlsList = sessionDtlsSrcv.getSessionDetails(sessionDetails.getProgramId(),
@@ -320,12 +328,7 @@ public class SessionDetailsController {
 			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP, StackTraceUtils.convertPojoToJson(eResponse));
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		}
-
-		PMPResponse validationResponse = sessionDtlsValidator.validateSearchSessionParams(searchSessionRequest, accessLog);
-		if (validationResponse instanceof ErrorResponse) {
-			return new ResponseEntity<PMPResponse>(validationResponse, HttpStatus.OK);
-		}
-
+		
 		List<String> emailList = new ArrayList<String>();
 		if(null != user.getAbyasiId()){
 			emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
@@ -333,6 +336,12 @@ public class SessionDetailsController {
 		if(emailList.size() == 0){
 			emailList.add(accessLog.getUsername());
 		}
+
+		PMPResponse validationResponse = sessionDtlsValidator.validateSearchSessionParams(emailList,user.getRole(),searchSessionRequest,authToken,accessLog);
+		if (validationResponse instanceof ErrorResponse) {
+			return new ResponseEntity<PMPResponse>(validationResponse, HttpStatus.OK);
+		}
+
 		try{
 			searchSessionRequest.setSessionList(sessionDtlsSrcv.getSearchSessionData(emailList,user.getRole(),searchSessionRequest,authToken,accessLog));
 			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS,null, StackTraceUtils.convertPojoToJson(searchSessionRequest));

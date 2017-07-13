@@ -52,5 +52,8 @@ public class ErrorConstants {
 	public static final String SESSION_DATE_WITH_MAX_SESSION_DATE 					= 	"Current session date should be greater than previous session date";
 	public static final String SESSION_DATE_AFTER_PROGRAM_END_DATE 					= 	"Session date should be before program end date";
 	public static final String PROGRAM_START_DATE_UNAVAILABLE 						= 	"Please update program start date before creating session";
-	public static final String UNAUTHORIZED_SESSION_ACCESS 							= 	"Unauthorized to create session for batch Id - ";
+	public static final String UNAUTHORIZED_CREATE_SESSION_ACCESS 					= 	"Unauthorized to create session for batch Id - ";
+	public static final String UNAUTHORIZED_DELETE_SESSION_ACCESS 					= 	"Unauthorized to delete session for batch Id - ";
+	public static final String UNAUTHORIZED_GETLIST_SESSION_ACCESS 					= 	"Unauthorized to get list of sessions for batch Id - ";
+	public static final String UNAUTHORIZED_SEARCH_SESSION_ACCESS 					= 	"Unauthorized to search session for batch Id - ";
 }

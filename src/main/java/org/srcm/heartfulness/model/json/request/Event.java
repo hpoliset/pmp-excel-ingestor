@@ -90,6 +90,7 @@ public class Event {
 	private String organizationContactDesignation;
 	@JsonInclude(value = Include.ALWAYS)
 	private int programChannelType;
+	@JsonInclude(value = Include.ALWAYS)
 	private String programStatus;
 	@JsonIgnore
 	private String createdSource;

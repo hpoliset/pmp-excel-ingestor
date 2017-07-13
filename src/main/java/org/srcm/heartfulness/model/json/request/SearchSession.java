@@ -34,6 +34,9 @@ public class SearchSession {
 	@JsonIgnore
 	private String dbSearchField;
 	
+	@JsonIgnore
+	private int programId;
+	
 	@JsonProperty("sessionlist")
 	private List<SessionDetails> sessionList;
 
@@ -92,4 +95,13 @@ public class SearchSession {
 	public void setDbSearchField(String dbSearchField) {
 		this.dbSearchField = dbSearchField;
 	}
+
+	public int getProgramId() {
+		return programId;
+	}
+
+	public void setProgramId(int programId) {
+		this.programId = programId;
+	}
+	
 }

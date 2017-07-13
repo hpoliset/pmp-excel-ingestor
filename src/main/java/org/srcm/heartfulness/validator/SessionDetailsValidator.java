@@ -39,35 +39,44 @@ public interface SessionDetailsValidator {
 	 * Method is used to validate the delete session details api call
 	 * parameters.For a particular event and a particular session this method
 	 * will validate the parameters provided are correct or wrong.
+	 * @param string 
+	 * @param emailList 
 	 * 
 	 * @param sessionDetails
 	 *            to get the auto generated event and session id.
+	 * @param authToken 
 	 * @param accessLog
 	 *            to persist the access log details in db.
 	 * @return success or error response depending on the parameters validated.
 	 */
-	PMPResponse validateDeleteSessionDetailParams(SessionDetails sessionDetails, PMPAPIAccessLog accessLog);
+	PMPResponse validateDeleteSessionDetailParams(List<String> emailList, String userRole, SessionDetails sessionDetails, String authToken, PMPAPIAccessLog accessLog);
 
 	/**
 	 * Method is used to validate the get session details list parametrs.
+	 * @param userRole 
+	 * @param emailList 
 	 * 
 	 * @param sessionDetails
 	 *            object is used to get the auto generated event id.
+	 * @param authToken 
 	 * @param accessLog
 	 *            is used to create log details in pmp.
 	 * @return success or error response depending on the validation.
 	 */
-	PMPResponse validateGetSessionDetailsParams(SessionDetails sessionDetails, PMPAPIAccessLog accessLog);
+	PMPResponse validateGetSessionDetailsParams(List<String> emailList, String userRole, SessionDetails sessionDetails, String authToken, PMPAPIAccessLog accessLog);
 
 	/**
 	 * Method is used to validate parameters which are
 	 * send to search sessions for a particular event.
+	 * @param string 
+	 * @param emailList 
 	 * @param searchSession Object is used to search session for 
 	 * a particular event Id.
+	 * @param authToken 
 	 * @param accessLog to log details in PMP system.
 	 * @return Success or Error response is returned depending on
 	 * validations.
 	 */
-	PMPResponse validateSearchSessionParams(SearchSession searchSession, PMPAPIAccessLog accessLog);
+	PMPResponse validateSearchSessionParams(List<String> emailList, String userRole, SearchSession searchSession, String authToken, PMPAPIAccessLog accessLog);
 
 }

@@ -171,7 +171,8 @@ public class EWelcomeIDGenerationScheduler {
 		return eWelcomeID;
 	}
 
-	/*@Scheduled(initialDelay = 10000, fixedRate = 10000)*///Let say every 2 minutes
+	//Let say every 10 seconds
+	/*@Scheduled(initialDelay = 10000, fixedRate = 10000)*/
 	public void pushProgramIdsToAwsSqs() {
 		LOGGER.info("Scheduler started to fetch program Id's and sent to SQS");
 		String queueName = amazonSqsRestTemplate.getQueuename();
@@ -190,7 +191,8 @@ public class EWelcomeIDGenerationScheduler {
 		LOGGER.info("Scheduler completed to fetch program Id's and sent to SQS");
 	}
 
-	/*@Scheduled(initialDelay = 30000 ,fixedDelay = 30000)*///Let say every 5 minutes
+	//Let say every 30 seconds
+	/*@Scheduled(initialDelay = 30000 ,fixedDelay = 30000)*/
 	public void generateEWelcomeIDsForParticipants() {
 		LOGGER.info("Scheduler started to pull program Id's from SQS and generating eWelcome Id's");
 		List<Integer> programIds;
