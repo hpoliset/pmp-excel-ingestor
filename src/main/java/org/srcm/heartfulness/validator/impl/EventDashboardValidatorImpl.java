@@ -12,34 +12,50 @@ import java.util.Map;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.CoordinatorAccessControlConstants;
 import org.srcm.heartfulness.constants.DashboardConstants;
+import org.srcm.heartfulness.constants.EndpointConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
+import org.srcm.heartfulness.enumeration.CoordinatorPosition;
 import org.srcm.heartfulness.enumeration.IssueeWelcomeId;
 import org.srcm.heartfulness.model.EventPagination;
+import org.srcm.heartfulness.model.PMPAPIAccessLog;
+import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.model.json.request.DashboardRequest;
 import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
+import org.srcm.heartfulness.model.json.response.CoordinatorPositionResponse;
+import org.srcm.heartfulness.model.json.response.PositionAPIResult;
 import org.srcm.heartfulness.model.json.response.Result;
 import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.repository.ChannelRepository;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
+import org.srcm.heartfulness.rest.template.DashboardRestTemplate;
+import org.srcm.heartfulness.service.APIAccessLogService;
+import org.srcm.heartfulness.service.DashboardService;
 import org.srcm.heartfulness.service.PmpParticipantService;
 import org.srcm.heartfulness.service.ProgramService;
 import org.srcm.heartfulness.service.UserProfileService;
 import org.srcm.heartfulness.util.DateUtils;
+import org.srcm.heartfulness.util.StackTraceUtils;
 import org.srcm.heartfulness.validator.EventDashboardValidator;
+import org.srcm.heartfulness.webservice.ParticipantsController;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -55,6 +71,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 @Component
 public class EventDashboardValidatorImpl implements EventDashboardValidator {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(EventDashboardValidatorImpl.class);
+
 	@Autowired
 	private UserProfileService userProfileService;
 
@@ -68,13 +86,22 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	Environment env;
 
 	@Autowired
-	ProgramRepository programrepository;
+	ProgramRepository programRepository;
 
 	@Autowired
 	ParticipantRepository participantRepository;
 
 	@Autowired
 	private ChannelRepository channelRepository;
+
+	@Autowired
+	APIAccessLogService apiAccessLogService;
+
+	@Autowired
+	DashboardRestTemplate dashboardRestTemplate;
+
+	@Autowired
+	DashboardService dashboardService;
 
 	/**
 	 * Method to validate mandatory fields in the participant request before
@@ -84,15 +111,19 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	 * @return
 	 */
 	@Override
-	public Map<String, String> checkParticipantMandatoryFields(ParticipantRequest participant) {
+	public Map<String, String> checkParticipantMandatoryFields(List<String> emailList, String userRole, ParticipantRequest participant, String authToken, PMPAPIAccessLog accessLog) {
 		Map<String, String> errors = new HashMap<>();
+		Program program = null;
 		if (null == participant.getEventId() || participant.getEventId().isEmpty()) {
 			errors.put("eventId", DashboardConstants.INVALID_OR_EMPTY_EVENTID);
-		} /*else if (null != participant.getEventId() && !participant.getEventId().matches(ExpressionConstants.EVENT_ID_REGEX)) {
-			errors.put("eventId", "event Id Format is invalid");
-		}*/ else {
-			if (0 == programService.getProgramIdByEventId(participant.getEventId()))
-				errors.put("eventId", DashboardConstants.INVALID_EVENTID);
+		}else {
+
+			program = getProgram(emailList, userRole, participant.getEventId(), authToken, accessLog);
+			if( null != program  && program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE)){
+				participant.setProgramId(program.getProgramId());
+			}else{
+				errors.put("eventId", ErrorConstants.UNAUTHORIZED_CREATE_PARTICIPANT_ACCESS + participant.getEventId());
+			}
 		}
 		if (null != participant.getGender()
 				&& !participant.getGender().isEmpty()
@@ -224,7 +255,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if (event.getCreatedSource().equals(PMPConstants.CREATED_SOURCE_DASHBOARD_v2) && (null == event.getBatchDescription() || event.getBatchDescription().isEmpty())) {
 			errors.put("batchDescription", "Batch description is required");
 		}
-		
+
 		if (null == event.getProgramChannel() || event.getProgramChannel().isEmpty()) {
 			errors.put("programChannel", "Program channel is required");
 		}else if(event.getCreatedSource().equals(PMPConstants.CREATED_SOURCE_DASHBOARD_v2) && event.getProgramChannel().equals(DashboardConstants.G_CONNECT_CHANNEL)){
@@ -302,15 +333,15 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			}
 
 		} 
-		
+
 		if(null != event.getAutoGeneratedEventId()){
 			String programId = "",maxSessionDate = "";
-			ArrayList<String> dateAndId = programrepository.getProgramIdAndMaxSessionDate(event.getAutoGeneratedEventId());
+			ArrayList<String> dateAndId = programRepository.getProgramIdAndMaxSessionDate(event.getAutoGeneratedEventId());
 			if(!dateAndId.isEmpty()){
-				
+
 				programId = dateAndId.get(0);
 				maxSessionDate =dateAndId.get(1) ;
-				
+
 				if(null != maxSessionDate){
 					try {
 						if(DateUtils.parseDate(event.getProgramEndDate()).equals(DateUtils.parseDate(maxSessionDate)) ? false
@@ -436,15 +467,20 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	 * @return errors
 	 */
 	@Override
-	public Map<String, String> checkDeleteRequestMandatoryFields(ParticipantIntroductionRequest participantRequest) {
+	public Map<String, String> checkDeleteRequestMandatoryFields(List<String> emailList, String userRole, ParticipantIntroductionRequest participantRequest, String authToken, PMPAPIAccessLog accessLog) {
 		Map<String, String> errors = new HashMap<>();
+		Program program = null;
+		
 		if (null == participantRequest.getEventId() || participantRequest.getEventId().isEmpty()) {
 			errors.put("eventId", "event Id is required");
-		} else if (null != participantRequest.getEventId() && !participantRequest.getEventId().matches(ExpressionConstants.EVENT_ID_REGEX)) {
-			errors.put("eventId", "event Id invalid");
-		} else if (0 == programService.getProgramIdByEventId(participantRequest.getEventId())) {
-			errors.put("eventId", "Invalid EventId - No event exists for the given event Id");
+		} else{
+			
+			program = getProgram(emailList, userRole, participantRequest.getEventId(), authToken, accessLog);
+			if( null == program  || program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_TRUE)){
+				errors.put("eventId", ErrorConstants.UNAUTHORIZED_CREATE_PARTICIPANT_ACCESS + participantRequest.getEventId());
+			}
 		}
+		
 		if (0 == participantRequest.getParticipantIds().size()) {
 			errors.put("partcipantIds", "No participant Ids are available to delete");
 		}
@@ -538,19 +574,22 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	 * @return errors <code>Map<String, String</code>.
 	 */
 	@Override
-	public Map<String, String> checkUpdateParticipantMandatoryFields(ParticipantRequest participant) {
+	public Map<String, String> checkUpdateParticipantMandatoryFields(List<String> emailList, String userRole, ParticipantRequest participant, String authToken, PMPAPIAccessLog accessLog) {
 		Map<String, String> errors = new HashMap<String, String>();
+		Program program = null;
 		if (null == participant.getPrintName() || participant.getPrintName().isEmpty()) {
 			errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.PRINT_NAME_REQUIRED);
 		}
 		if (null == participant.getEventId() || participant.getEventId().isEmpty()) {
 			errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_OR_EMPTY_EVENTID);
 		}else {
-			int programId = programrepository.getProgramIdByEventId(participant.getEventId());
-			if(programId <= 0 )
-				errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_EVENTID);
-			else
-				participant.setProgramId(programId);
+
+			program = getProgram(emailList, userRole, participant.getEventId(), authToken, accessLog);
+			if( null != program  && program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE)){
+				participant.setProgramId(program.getProgramId());
+			}else{
+				errors.put("eventId", ErrorConstants.UNAUTHORIZED_UPDATE_PARTICIPANT_ACCESS + participant.getEventId());
+			}
 		}
 
 		if (null == participant.getSeqId() || participant.getSeqId().isEmpty()) {
@@ -587,6 +626,131 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			return DashboardConstants.INVALID_SEARCH_TEXT;
 
 		return "";
+	}
+	
+	@Override
+	public String checkProgramAccess(List<String> emailList, String role, String eventId, String token,PMPAPIAccessLog accessLog) {
+			
+		String errorMsg = "";
+		Program program = null;
+		if (null == eventId || eventId.isEmpty()) {
+			errorMsg = DashboardConstants.INVALID_OR_EMPTY_EVENTID;
+		} else {
+			program = getProgram(emailList, role, eventId, token, accessLog);
+			if( null == program  || program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_TRUE)){
+				errorMsg = ErrorConstants.UNAUTHORIZED_CREATE_PARTICIPANT_ACCESS + eventId;
+			}
+			
+		}
+		return errorMsg;
+	}
+
+
+	@SuppressWarnings("unchecked")
+	private Program getProgram(List<String> emailList,String userRole,String eventId,String authToken,PMPAPIAccessLog accessLog){
+
+		boolean isNext = true;
+		int currentPositionValue = 0;
+		String currentPositionType =  "";
+		List<String> mysrcmZones =  new ArrayList<String>();
+		List<String> mysrcmCenters =  new ArrayList<String>();
+
+		PMPAPIAccessLogDetails accessLogDetails = new 
+				PMPAPIAccessLogDetails(accessLog.getId(), EndpointConstants.POSITIONS_API, 
+						DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null, authToken);
+		apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);		
+		PositionAPIResult posResult = null;
+
+		try {
+
+			posResult = dashboardRestTemplate.findCoordinatorPosition(authToken);
+
+			while(isNext){
+
+				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
+
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+
+						currentPositionValue = CoordinatorPosition.COUNTRY_COORDINATOR.getPositionValue();
+						currentPositionType =  crdntrPosition.getPositionType().getName();
+
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())){
+
+						if(CoordinatorPosition.ZONE_COORDINATOR.getPositionValue() > currentPositionValue){
+							currentPositionValue = CoordinatorPosition.ZONE_COORDINATOR.getPositionValue();
+							currentPositionType =  crdntrPosition.getPositionType().getName();
+						}
+
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
+
+						if(CoordinatorPosition.CENTER_COORDINATOR.getPositionValue() > currentPositionValue){
+							currentPositionValue = CoordinatorPosition.CENTER_COORDINATOR.getPositionValue();
+							currentPositionType =  crdntrPosition.getPositionType().getName();
+						}
+					}
+
+					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+						posResult.setNext(null);
+						break;
+					}
+
+				}
+
+				if(null == posResult.getNext()){
+					isNext = false;
+				}else{
+					posResult =  dashboardRestTemplate.findCoordinatorPosition(authToken,posResult.getNext());
+				}
+			}
+
+		} catch (JsonParseException jpe) {
+			LOGGER.error("JPE : Unable to fetch coordinator position type from MYSRCM {}",jpe.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(jpe));
+		} catch (JsonMappingException jme) {
+			LOGGER.error("JME : Unable to fetch coordinator position type from MYSRCM {}",jme.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(jme));
+		} catch (IOException ioe) {
+			LOGGER.error("IOE : Unable to fetch coordinator position type from MYSRCM {}",ioe.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(ioe));
+		} catch(Exception ex){
+			LOGGER.error("EX : Unable to fetch coordinator position type from MYSRCM {}",ex.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
+		}
+
+		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
+		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+		Program program = null;
+
+		if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+			LOGGER.info("Logged in user {} is a country coordinator ",accessLog.getUsername());
+			program = programRepository.getProgramByEmailAndRole(emailList, userRole, eventId,currentPositionType,mysrcmCenters);
+
+		}else if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType()) || 
+				currentPositionType.equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType()) ){
+
+			LOGGER.info("Logged in user {} is a zone/center coordinator ",accessLog.getUsername());
+			DashboardRequest dashboardReq =  new DashboardRequest();
+			dashboardReq.setCountry(PMPConstants.COUNTRY_INDIA);
+
+			ResponseEntity<List<String>> getZones = (ResponseEntity<List<String>>) dashboardService.getListOfZones(authToken, dashboardReq,accessLog, emailList,userRole);
+			mysrcmZones.addAll(getZones.getBody());
+
+			for(String zone : mysrcmZones){
+				DashboardRequest newRequest =  new DashboardRequest();
+				newRequest.setCountry(dashboardReq.getCountry());
+				newRequest.setZone(zone);
+				ResponseEntity<List<String>> getCenters = (ResponseEntity<List<String>>) dashboardService.getCenterList(authToken, newRequest,accessLog, emailList,userRole);
+				mysrcmCenters.addAll(getCenters.getBody());
+			} 	
+
+			LOGGER.info("Center information for log in user {} is {}",accessLog.getUsername(),mysrcmCenters.toString());
+			program = programRepository.getProgramByEmailAndRole(emailList, userRole, eventId,currentPositionType,mysrcmCenters);
+
+		}else{
+			program = programRepository.getProgramByEmailAndRole(emailList, userRole, eventId,currentPositionType,mysrcmCenters);
+		}
+		return program;
 	}
 
 }

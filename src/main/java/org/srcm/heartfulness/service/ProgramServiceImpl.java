@@ -333,92 +333,21 @@ public class ProgramServiceImpl implements ProgramService {
 	 * @return List<ParticipantRequest>
 	 */
 	@Override
-	public List<ParticipantRequest> getParticipantByEventId(String eventId,List<String> mail,String role, String authToken, PMPAPIAccessLog accessLog) {
-		LOGGER.info("Trying to get participant list for log in user {}",accessLog.getUsername());
+	public List<ParticipantRequest> getParticipantByEventId(String eventId,List<String> mailList,String role, String authToken, PMPAPIAccessLog accessLog) {
+		
+		 LOGGER.info("Trying to get participant list for log in user {}",accessLog.getUsername());
 
-		boolean isNext = true;
-		int currentPositionValue = 0;
-		String currentPositionType =  "";
-		List<Participant> participantList = new ArrayList<Participant>();
-		List<ParticipantRequest> participantReqList = new ArrayList<ParticipantRequest>();
-		int programId = 0;
-		PositionAPIResult posResult = null;
+	        List<Participant> participantList = new ArrayList<Participant>();
+	        List<ParticipantRequest> participantReqList = new ArrayList<ParticipantRequest>();
+	        int programId = 0;
 
-		PMPAPIAccessLogDetails accessLogDetails = new 
-				PMPAPIAccessLogDetails(accessLog.getId(), EndpointConstants.POSITIONS_API, 
-						DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null, authToken);
-		apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);	
-
-		try {
-
-			posResult = dashboardRestTemplate.findCoordinatorPosition(authToken);
-
-			while(isNext){
-
-				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
-
-					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
-
-						currentPositionValue = CoordinatorPosition.COUNTRY_COORDINATOR.getPositionValue();
-						currentPositionType =  crdntrPosition.getPositionType().getName();
-					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())){
-
-						if(CoordinatorPosition.ZONE_COORDINATOR.getPositionValue() > currentPositionValue){
-							currentPositionValue = CoordinatorPosition.ZONE_COORDINATOR.getPositionValue();
-							currentPositionType =  crdntrPosition.getPositionType().getName();
-						}
-
-					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
-
-						if(CoordinatorPosition.CENTER_COORDINATOR.getPositionValue() > currentPositionValue){
-							currentPositionValue = CoordinatorPosition.CENTER_COORDINATOR.getPositionValue();
-							currentPositionType =  crdntrPosition.getPositionType().getName();
-						}
-					}
-
-					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
-						posResult.setNext(null);
-						break;
-					}
-
-				}
-
-				if(null == posResult.getNext()){
-					isNext = false;
-				}else{
-					posResult =  dashboardRestTemplate.findCoordinatorPosition(authToken,posResult.getNext());
-				}
-			}
-
-		} catch (JsonParseException jpe) {
-			LOGGER.error("JPE : Unable to fetch coordinator position type from MYSRCM {}",jpe.getMessage());
-		} catch (JsonMappingException jme) {
-			LOGGER.error("JME : Unable to fetch coordinator position type from MYSRCM {}",jme.getMessage());
-		} catch (IOException ioe) {
-			LOGGER.error("IOE : Unable to fetch coordinator position type from MYSRCM {}",ioe.getMessage());
-		} catch(Exception ex){
-			LOGGER.error("EX : Unable to fetch coordinator position type from MYSRCM {}",ex.getMessage());
-		}
-
-		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
-		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
-		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-
-		programId = programRepository.getProgramIdByEventId(eventId);
-		if (programId == 0) {
-			return participantReqList;
-		} else {
-			if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType()) 
-					|| currentPositionType.equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType()) 
-					|| currentPositionType.equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())) {
-
-				LOGGER.info("Logged in user {} is a country/zone/center coordinator ", accessLog.getUsername());
-				return participantReqList;
-			} else {
-				participantList = programRepository.getParticipantList(programId, mail, role);
-				return getParticipantList(eventId, participantList);
-			}
-		}
+	        programId = programRepository.getProgramIdByEventId(eventId);
+	        if (programId == 0) {
+	            return participantReqList;
+	        } else {
+	            participantList = programRepository.getParticipantList(programId, mailList, role);
+	            return getParticipantList(eventId, participantList);
+	        } 
 
 	}
 
@@ -1845,6 +1774,7 @@ public class ProgramServiceImpl implements ProgramService {
 			event.setCoordinatorName(program.getCoordinatorName());
 			event.setCoordinatorEmail(program.getCoordinatorEmail());
 			event.setCoordinatorMobile(program.getCoordinatorMobile());
+			event.setProgramStatus(program.getProgramStatus());
 			eventList.add(event);
 		}
 

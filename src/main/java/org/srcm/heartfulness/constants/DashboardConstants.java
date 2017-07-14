@@ -35,6 +35,7 @@ public class DashboardConstants {
 	public static final String INVALID_PARTICIPANT_EMAIL									= 	"Email is invalid";
 	public static final String INVALID_INTRODUCED_DATE										= 	"Introduction date is invalid. Valid format DD-MM-YYYY";
 	public static final String INVALID_DOB													= 	"DOB is invalid. Valid format DD-MM-YYYY";
+	public static final String PARTICIPANT_NOT_AVAILABLE									= 	"Participant not available for the given Batch Id - ";
 	
 	/*Channel related*/
 	public static final String EMPTY_CHANNEL												= 	"Channel cannot be empty";

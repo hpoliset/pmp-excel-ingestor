@@ -56,4 +56,7 @@ public class ErrorConstants {
 	public static final String UNAUTHORIZED_DELETE_SESSION_ACCESS 					= 	"Unauthorized to delete session for batch Id - ";
 	public static final String UNAUTHORIZED_GETLIST_SESSION_ACCESS 					= 	"Unauthorized to get list of sessions for batch Id - ";
 	public static final String UNAUTHORIZED_SEARCH_SESSION_ACCESS 					= 	"Unauthorized to search session for batch Id - ";
+	public static final String UNAUTHORIZED_CREATE_PARTICIPANT_ACCESS 				= 	"Unauthorized to create participant for batch Id - ";
+	public static final String UNAUTHORIZED_UPDATE_PARTICIPANT_ACCESS 				= 	"Unauthorized to update participant for batch Id - ";
+	public static final String UNAUTHORIZED_DELETE_PARTICIPANT_ACCESS 				= 	"Unauthorized to delete participant for batch Id - ";
 }

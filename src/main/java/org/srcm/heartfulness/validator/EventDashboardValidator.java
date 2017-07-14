@@ -11,6 +11,7 @@ import javax.crypto.IllegalBlockSizeException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.EventPagination;
+import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
@@ -35,11 +36,15 @@ public interface EventDashboardValidator {
 	/**
 	 * Method to validate mandatory fields in the participant request before
 	 * creating participant.
+	 * @param string 
+	 * @param emailList 
 	 * 
 	 * @param participant
+	 * @param accessLog 
+	 * @param authToken 
 	 * @return
 	 */
-	public Map<String, String> checkParticipantMandatoryFields(ParticipantRequest participant);
+	public Map<String, String> checkParticipantMandatoryFields(List<String> emailList, String userRole, ParticipantRequest participant, String authToken, PMPAPIAccessLog accessLog);
 
 	/**
 	 * Method to validate the values given in
@@ -93,11 +98,15 @@ public interface EventDashboardValidator {
 	/**
 	 * Method to validate the values given in ParticipantIntroductionRequest
 	 * before deleting the participant.
+	 * @param userRole 
+	 * @param emailList 
 	 * 
 	 * @param participantRequest
+	 * @param accessLog 
+	 * @param authToken 
 	 * @return errors
 	 */
-	public Map<String, String> checkDeleteRequestMandatoryFields(ParticipantIntroductionRequest participantRequest);
+	public Map<String, String> checkDeleteRequestMandatoryFields(List<String> emailList, String userRole, ParticipantIntroductionRequest participantRequest, String authToken, PMPAPIAccessLog accessLog);
 
 	/**
 	 * Method to validate the mandatory fields in the participant request before
@@ -121,11 +130,15 @@ public interface EventDashboardValidator {
 	/**
 	 * Method to validate the mandatory fields in the <code>Participant</code>
 	 * request before updating the particpant details.
+	 * @param userRole 
+	 * @param emailList 
 	 * 
 	 * @param participant
+	 * @param accessLog 
+	 * @param authToken 
 	 * @return errors <code>Map<String, String</code>.
 	 */
-	public Map<String, String> checkUpdateParticipantMandatoryFields(ParticipantRequest participant);
+	public Map<String, String> checkUpdateParticipantMandatoryFields(List<String> emailList, String userRole, ParticipantRequest participant, String authToken, PMPAPIAccessLog accessLog);
 
 	/**
 	 * Method to validate the pagination properties before fetching the related
@@ -137,5 +150,8 @@ public interface EventDashboardValidator {
 	public String validatePaginationProperties(EventPagination eventPagination);
 	
 	public String validateSearchParameters(SearchRequest searchRequest);
+
+	public String checkProgramAccess(List<String> emailList, String role, String eventId, String token,PMPAPIAccessLog accessLog);
+			
 
 }

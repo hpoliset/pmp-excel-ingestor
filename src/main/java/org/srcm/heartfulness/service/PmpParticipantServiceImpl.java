@@ -397,95 +397,21 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	}*/
 
 	@Override
-	public ResponseEntity<?> getParticipantBySeqId(ParticipantRequest participantRequest,List<String> mail,String role, PMPAPIAccessLog accessLog, String authToken) {
-
+	public ResponseEntity<?> getParticipantBySeqId(ParticipantRequest participantRequest,List<String> emailList,String role, PMPAPIAccessLog accessLog, String authToken) {
+		
 		LOGGER.info("Trying to get participant details for log in user {}",accessLog.getUsername());
 
-		boolean isNext = true;
-		int currentPositionValue = 0;
-		String currentPositionType =  "";
-
-		PMPAPIAccessLogDetails accessLogDetails = new 
-				PMPAPIAccessLogDetails(accessLog.getId(), EndpointConstants.POSITIONS_API, 
-						DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null, authToken);
-		apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);		
-		PositionAPIResult posResult = null;
-
-		try {
-
-			posResult = dashboardRestTemplate.findCoordinatorPosition(authToken);
-
-			while(isNext){
-
-				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
-
-					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
-						currentPositionValue = CoordinatorPosition.COUNTRY_COORDINATOR.getPositionValue();
-						currentPositionType =  crdntrPosition.getPositionType().getName();
-					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())){
-
-						if(CoordinatorPosition.ZONE_COORDINATOR.getPositionValue() > currentPositionValue){
-							currentPositionValue = CoordinatorPosition.ZONE_COORDINATOR.getPositionValue();
-							currentPositionType =  crdntrPosition.getPositionType().getName();
-						}
-
-					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
-
-						if(CoordinatorPosition.CENTER_COORDINATOR.getPositionValue() > currentPositionValue){
-							currentPositionValue = CoordinatorPosition.CENTER_COORDINATOR.getPositionValue();
-							currentPositionType =  crdntrPosition.getPositionType().getName();
-						}
-
-					}
-
-					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
-						posResult.setNext(null);
-						break;
-					}
-
-				}
-
-				if(null == posResult.getNext()){
-					isNext = false;
-				}else{
-					posResult =  dashboardRestTemplate.findCoordinatorPosition(authToken,posResult.getNext());
-				}
-			}
-
-		} catch (JsonParseException jpe) {
-			LOGGER.error("JPE : Unable to fetch coordinator position type from MYSRCM {}",jpe.getMessage());
-		} catch (JsonMappingException jme) {
-			LOGGER.error("JME : Unable to fetch coordinator position type from MYSRCM {}",jme.getMessage());
-		} catch (IOException ioe) {
-			LOGGER.error("IOE : Unable to fetch coordinator position type from MYSRCM {}",ioe.getMessage());
-		} catch(Exception ex){
-			LOGGER.error("EX : Unable to fetch coordinator position type from MYSRCM {}",ex.getMessage());
-		}
-		
-		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
-		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
-		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-
-		if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())
-				|| currentPositionType.equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType()) || currentPositionType.equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType()) ) {
-			LOGGER.info("Logged in user {} is a country/zone/center coordinator ", accessLog.getUsername());
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.PROCESSING_FAILED);
+		Participant participant = findBySeqIdAndRole(participantRequest, emailList,role);
+		ParticipantRequest response = getParticipantRequestFromParticipant(participantRequest, participant);
+		if (null != response) {
+			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+			accessLog.setErrorMessage(null);
+			return new ResponseEntity<ParticipantRequest>(response, HttpStatus.OK);
+		} else {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.PARTICIPANT_NOT_AVAILABLE + participantRequest.getEventId());
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
-			accessLog.setErrorMessage(DashboardConstants.PROCESSING_FAILED);
-			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_FAILED);
-		}else{
-			Participant participant = findBySeqIdAndRole(participantRequest, mail,role);
-			ParticipantRequest response = getParticipantRequestFromParticipant(participantRequest, participant);
-			if (null != response) {
-				accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
-				accessLog.setErrorMessage(null);
-				return new ResponseEntity<ParticipantRequest>(response, HttpStatus.OK);
-			} else {
-				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_SEQ_ID);
-				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
-				accessLog.setErrorMessage(DashboardConstants.INVALID_SEQ_ID);
-				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-			}
+			accessLog.setErrorMessage(DashboardConstants.PARTICIPANT_NOT_AVAILABLE + participantRequest.getEventId());
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
 		}
 	}
 

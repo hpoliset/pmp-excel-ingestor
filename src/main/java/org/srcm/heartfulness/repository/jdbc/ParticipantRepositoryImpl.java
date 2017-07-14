@@ -182,11 +182,13 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 				emailString.append( i != (emailList.size() -1 ) ? "'"+emailList.get(i)+"'" + ",": "'"+emailList.get(i)+"'");
 			}
 		}
+		
 		if (null != userRole && !userRole.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
 			if (!userRole.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)) {
 				whereCondition.append(" (p.coordinator_email IN(" + emailString + ") OR pc.email IN(" + emailString + ")) ");
 			}
 		}
+		
 		if((null != userRole && userRole.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) || whereCondition.length() > 0 ){
 			whereCondition
 			.append((whereCondition.length() > 0) ? " AND pr.program_id=:programId AND pr.program_id=p.program_id "
