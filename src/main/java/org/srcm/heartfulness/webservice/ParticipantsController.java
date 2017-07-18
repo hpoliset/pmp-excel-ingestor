@@ -475,7 +475,8 @@ public class ParticipantsController {
 			LOGGER.info("SATRT :  logger ID: {} : Update introduction status method called : Partcicipants count - {} ",accessLog.getId(),
 					participantRequest.getParticipantIds().size());
 
-			Map<String, String> map = eventDashboardValidator.checkIntroductionRequestMandatoryFields(participantRequest, accessLog.getId());
+			//Map<String, String> map = eventDashboardValidator.checkIntroductionRequestMandatoryFields(participantRequest, accessLog.getId());
+			Map<String, String> map = eventDashboardValidator.checkIntroductionRequestMandatoryFields(emailList, user.getRole(), participantRequest, authToken, accessLog);
 
 			if (!map.isEmpty()) {
 

@@ -56,7 +56,7 @@ public interface EventDashboardValidator {
 	 * @return
 	 */
 	public Map<String, String> checkIntroductionRequestMandatoryFields(
-			ParticipantIntroductionRequest participantRequest, int id);
+			List<String> emailList,String userRole,ParticipantIntroductionRequest participantRequest,String authToken,PMPAPIAccessLog accessLog);
 
 	/**
 	 * Method to validate the values given in

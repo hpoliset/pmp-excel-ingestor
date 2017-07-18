@@ -118,7 +118,8 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			errors.put("eventId", DashboardConstants.INVALID_OR_EMPTY_EVENTID);
 		}else {
 
-			program = getProgram(emailList, userRole, participant.getEventId(), authToken, accessLog);
+			//program = getProgram(emailList, userRole, participant.getEventId(), authToken, accessLog);
+			program = programRepository.getProgramByEmailAndRoleForParticipant(emailList, userRole, participant.getEventId());
 			if( null != program  && program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE)){
 				participant.setProgramId(program.getProgramId());
 			}else{
@@ -175,7 +176,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	 * @param participantRequest
 	 * @return
 	 */
-	@Override
+	/*@Override
 	public Map<String, String> checkIntroductionRequestMandatoryFields(
 			ParticipantIntroductionRequest participantRequest, int id) {
 		Map<String, String> errors = new HashMap<>();
@@ -199,6 +200,32 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			errors.put("introduced", "Introduced status is required");
 		}
 		if (0 == participantRequest.getParticipantIds().size()) {
+			errors.put("partcipantIds", "No participant Ids are available to update the status");
+		}
+		return errors;
+	}*/
+
+	@Override
+	public Map<String, String> checkIntroductionRequestMandatoryFields(List<String> emailList,String userRole,ParticipantIntroductionRequest participantRequest,String authToken,PMPAPIAccessLog accessLog) {
+		Map<String, String> errors = new HashMap<>();
+		Program program = null;
+		if (null == participantRequest.getEventId() || participantRequest.getEventId().isEmpty()) {
+			errors.put("eventId", "event Id is required");
+		} else {
+			program = programRepository.getProgramByEmailAndRoleForParticipant(emailList, userRole, participantRequest.getEventId());
+			if( null != program  && program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE)){
+				String errorMessage = programService.validatePreceptorIDCardNumber(program, accessLog.getId());
+				if (null != errorMessage) {
+					errors.put("Preceptor ID card number", errorMessage);
+				}
+			}else{
+				errors.put("eventId", ErrorConstants.UNAUTHORIZED_UPDATE_PARTICIPANT_ACCESS + participantRequest.getEventId());
+			}
+		}
+		if (null == participantRequest.getIntroduced() || participantRequest.getIntroduced().isEmpty()) {
+			errors.put("introduced", "Introduced status is required");
+		}
+		if ( null == participantRequest.getParticipantIds() || 0 == participantRequest.getParticipantIds().size()) {
 			errors.put("partcipantIds", "No participant Ids are available to update the status");
 		}
 		return errors;
@@ -470,18 +497,19 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	public Map<String, String> checkDeleteRequestMandatoryFields(List<String> emailList, String userRole, ParticipantIntroductionRequest participantRequest, String authToken, PMPAPIAccessLog accessLog) {
 		Map<String, String> errors = new HashMap<>();
 		Program program = null;
-		
+
 		if (null == participantRequest.getEventId() || participantRequest.getEventId().isEmpty()) {
 			errors.put("eventId", "event Id is required");
 		} else{
-			
-			program = getProgram(emailList, userRole, participantRequest.getEventId(), authToken, accessLog);
+
+			//program = getProgram(emailList, userRole, participantRequest.getEventId(), authToken, accessLog);
+			program = programRepository.getProgramByEmailAndRoleForParticipant(emailList, userRole, participantRequest.getEventId());
 			if( null == program  || program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_TRUE)){
 				errors.put("eventId", ErrorConstants.UNAUTHORIZED_CREATE_PARTICIPANT_ACCESS + participantRequest.getEventId());
 			}
 		}
-		
-		if (0 == participantRequest.getParticipantIds().size()) {
+
+		if (null == participantRequest.getParticipantIds() ||  0 == participantRequest.getParticipantIds().size()) {
 			errors.put("partcipantIds", "No participant Ids are available to delete");
 		}
 		return errors;
@@ -584,7 +612,8 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_OR_EMPTY_EVENTID);
 		}else {
 
-			program = getProgram(emailList, userRole, participant.getEventId(), authToken, accessLog);
+			//program = getProgram(emailList, userRole, participant.getEventId(), authToken, accessLog);
+			program = programRepository.getProgramByEmailAndRoleForParticipant(emailList, userRole, participant.getEventId());
 			if( null != program  && program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE)){
 				participant.setProgramId(program.getProgramId());
 			}else{
@@ -627,130 +656,23 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 
 		return "";
 	}
-	
+
 	@Override
-	public String checkProgramAccess(List<String> emailList, String role, String eventId, String token,PMPAPIAccessLog accessLog) {
-			
+	public String checkProgramAccess(List<String> emailList, String userRole, String eventId, String token,PMPAPIAccessLog accessLog) {
+
 		String errorMsg = "";
 		Program program = null;
 		if (null == eventId || eventId.isEmpty()) {
 			errorMsg = DashboardConstants.INVALID_OR_EMPTY_EVENTID;
 		} else {
-			program = getProgram(emailList, role, eventId, token, accessLog);
+			//program = getProgram(emailList, role, eventId, token, accessLog);
+			program = programRepository.getProgramByEmailAndRoleForParticipant(emailList, userRole, eventId);
 			if( null == program  || program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_TRUE)){
 				errorMsg = ErrorConstants.UNAUTHORIZED_CREATE_PARTICIPANT_ACCESS + eventId;
 			}
-			
+
 		}
 		return errorMsg;
-	}
-
-
-	@SuppressWarnings("unchecked")
-	private Program getProgram(List<String> emailList,String userRole,String eventId,String authToken,PMPAPIAccessLog accessLog){
-
-		boolean isNext = true;
-		int currentPositionValue = 0;
-		String currentPositionType =  "";
-		List<String> mysrcmZones =  new ArrayList<String>();
-		List<String> mysrcmCenters =  new ArrayList<String>();
-
-		PMPAPIAccessLogDetails accessLogDetails = new 
-				PMPAPIAccessLogDetails(accessLog.getId(), EndpointConstants.POSITIONS_API, 
-						DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null, authToken);
-		apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);		
-		PositionAPIResult posResult = null;
-
-		try {
-
-			posResult = dashboardRestTemplate.findCoordinatorPosition(authToken);
-
-			while(isNext){
-
-				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
-
-					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
-
-						currentPositionValue = CoordinatorPosition.COUNTRY_COORDINATOR.getPositionValue();
-						currentPositionType =  crdntrPosition.getPositionType().getName();
-
-					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())){
-
-						if(CoordinatorPosition.ZONE_COORDINATOR.getPositionValue() > currentPositionValue){
-							currentPositionValue = CoordinatorPosition.ZONE_COORDINATOR.getPositionValue();
-							currentPositionType =  crdntrPosition.getPositionType().getName();
-						}
-
-					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
-
-						if(CoordinatorPosition.CENTER_COORDINATOR.getPositionValue() > currentPositionValue){
-							currentPositionValue = CoordinatorPosition.CENTER_COORDINATOR.getPositionValue();
-							currentPositionType =  crdntrPosition.getPositionType().getName();
-						}
-					}
-
-					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
-						posResult.setNext(null);
-						break;
-					}
-
-				}
-
-				if(null == posResult.getNext()){
-					isNext = false;
-				}else{
-					posResult =  dashboardRestTemplate.findCoordinatorPosition(authToken,posResult.getNext());
-				}
-			}
-
-		} catch (JsonParseException jpe) {
-			LOGGER.error("JPE : Unable to fetch coordinator position type from MYSRCM {}",jpe.getMessage());
-			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(jpe));
-		} catch (JsonMappingException jme) {
-			LOGGER.error("JME : Unable to fetch coordinator position type from MYSRCM {}",jme.getMessage());
-			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(jme));
-		} catch (IOException ioe) {
-			LOGGER.error("IOE : Unable to fetch coordinator position type from MYSRCM {}",ioe.getMessage());
-			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(ioe));
-		} catch(Exception ex){
-			LOGGER.error("EX : Unable to fetch coordinator position type from MYSRCM {}",ex.getMessage());
-			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
-		}
-
-		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
-		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
-		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-		Program program = null;
-
-		if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
-			LOGGER.info("Logged in user {} is a country coordinator ",accessLog.getUsername());
-			program = programRepository.getProgramByEmailAndRole(emailList, userRole, eventId,currentPositionType,mysrcmCenters);
-
-		}else if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType()) || 
-				currentPositionType.equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType()) ){
-
-			LOGGER.info("Logged in user {} is a zone/center coordinator ",accessLog.getUsername());
-			DashboardRequest dashboardReq =  new DashboardRequest();
-			dashboardReq.setCountry(PMPConstants.COUNTRY_INDIA);
-
-			ResponseEntity<List<String>> getZones = (ResponseEntity<List<String>>) dashboardService.getListOfZones(authToken, dashboardReq,accessLog, emailList,userRole);
-			mysrcmZones.addAll(getZones.getBody());
-
-			for(String zone : mysrcmZones){
-				DashboardRequest newRequest =  new DashboardRequest();
-				newRequest.setCountry(dashboardReq.getCountry());
-				newRequest.setZone(zone);
-				ResponseEntity<List<String>> getCenters = (ResponseEntity<List<String>>) dashboardService.getCenterList(authToken, newRequest,accessLog, emailList,userRole);
-				mysrcmCenters.addAll(getCenters.getBody());
-			} 	
-
-			LOGGER.info("Center information for log in user {} is {}",accessLog.getUsername(),mysrcmCenters.toString());
-			program = programRepository.getProgramByEmailAndRole(emailList, userRole, eventId,currentPositionType,mysrcmCenters);
-
-		}else{
-			program = programRepository.getProgramByEmailAndRole(emailList, userRole, eventId,currentPositionType,mysrcmCenters);
-		}
-		return program;
 	}
 
 }

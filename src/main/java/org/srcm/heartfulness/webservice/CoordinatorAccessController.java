@@ -320,15 +320,15 @@ public class CoordinatorAccessController {
 			method = RequestMethod.POST, 
 			consumes = MediaType.APPLICATION_JSON_VALUE , 
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> getRequestedCoordinatorList(@RequestHeader(value = "Authorization") String token,@Context HttpServletRequest httpRequest){
+	public ResponseEntity<?> getRequestedCoordinatorList(@RequestHeader(value = "Authorization") String authToken,@Context HttpServletRequest httpRequest){
 
 		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(null, httpRequest.getRemoteAddr(), httpRequest.getRequestURI(),
-				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,token);
+				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,authToken);
 		apiAccessLogService.createPmpAPIAccessLog(accessLog);
 
 		UserProfile userProfile = null;
 		try {
-			userProfile = eventDashboardValidator.validateToken(token, accessLog.getId());
+			userProfile = eventDashboardValidator.validateToken(authToken, accessLog.getId());
 			if (null == userProfile) {
 				LOGGER.info("UserProfile doesnot exists in MySrcm database");
 				CoordinatorAccessControlErrorResponse eResponse = new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, "Invalid client credentials");
@@ -365,7 +365,8 @@ public class CoordinatorAccessController {
 			}
 
 			LinkedHashMap<Integer,String> programIds; /*= new HashMap<Integer, String>();*/
-			programIds = coordntrAccssCntrlValidator.getProgramAndagEventIds(emailList,user.getRole());
+			//programIds = coordntrAccssCntrlValidator.getProgramAndagEventIds(emailList,user.getRole());
+			programIds = coordntrAccssCntrlValidator.getProgramAndagEventIds(emailList, user.getRole(), authToken, accessLog);
 
 			if(programIds.isEmpty()){
 				CoordinatorAccessControlErrorResponse eResponse = 
