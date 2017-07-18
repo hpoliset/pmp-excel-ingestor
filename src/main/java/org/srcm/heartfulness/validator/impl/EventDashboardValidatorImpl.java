@@ -219,7 +219,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 					errors.put("Preceptor ID card number", errorMessage);
 				}
 			}else{
-				errors.put("eventId", ErrorConstants.UNAUTHORIZED_UPDATE_PARTICIPANT_ACCESS + participantRequest.getEventId());
+				errors.put("eventId", ErrorConstants.UNAUTHORIZED_INTRODUCED_PARTICIPANT_ACCESS + participantRequest.getEventId());
 			}
 		}
 		if (null == participantRequest.getIntroduced() || participantRequest.getIntroduced().isEmpty()) {
@@ -505,7 +505,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 			//program = getProgram(emailList, userRole, participantRequest.getEventId(), authToken, accessLog);
 			program = programRepository.getProgramByEmailAndRoleForParticipant(emailList, userRole, participantRequest.getEventId());
 			if( null == program  || program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_TRUE)){
-				errors.put("eventId", ErrorConstants.UNAUTHORIZED_CREATE_PARTICIPANT_ACCESS + participantRequest.getEventId());
+				errors.put("eventId", ErrorConstants.UNAUTHORIZED_DELETE_PARTICIPANT_ACCESS + participantRequest.getEventId());
 			}
 		}
 
