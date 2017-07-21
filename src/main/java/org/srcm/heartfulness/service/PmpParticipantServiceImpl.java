@@ -16,25 +16,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.CoordinatorAccessControlConstants;
 import org.srcm.heartfulness.constants.DashboardConstants;
-import org.srcm.heartfulness.constants.EndpointConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
-import org.srcm.heartfulness.enumeration.CoordinatorPosition;
 import org.srcm.heartfulness.enumeration.ParticipantSearchField;
 import org.srcm.heartfulness.excelupload.transformer.impl.ExcelDataExtractorV2Impl;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
-import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.json.request.ParticipantIntroductionRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
-import org.srcm.heartfulness.model.json.response.CoordinatorPositionResponse;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
-import org.srcm.heartfulness.model.json.response.PositionAPIResult;
 import org.srcm.heartfulness.model.json.response.UpdateIntroductionResponse;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
@@ -396,7 +392,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 
 	}*/
 
-	@Override
+	/*@Override
 	public ResponseEntity<?> getParticipantBySeqId(ParticipantRequest participantRequest,List<String> emailList,String role, PMPAPIAccessLog accessLog, String authToken) {
 		
 		LOGGER.info("Trying to get participant details for log in user {}",accessLog.getUsername());
@@ -411,6 +407,38 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.PARTICIPANT_NOT_AVAILABLE + participantRequest.getEventId());
 			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 			accessLog.setErrorMessage(DashboardConstants.PARTICIPANT_NOT_AVAILABLE + participantRequest.getEventId());
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
+		}
+	}*/
+	
+	@Override
+	public ResponseEntity<?> getParticipantBySeqId(ParticipantRequest participantRequest,List<String> emailList,String role, PMPAPIAccessLog accessLog, String authToken) {
+		
+		LOGGER.info("Trying to get participant details for log in user {}",accessLog.getUsername());
+		//validate whether user has access to the event
+		Program program = programrepository.getProgramByEmailAndRoleForParticipant(emailList, role, participantRequest.getEventId());
+		if (null != program && program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE)) {
+			participantRequest.setProgramId(program.getProgramId());
+			//findBySeqId(participantRequest);
+			//fetch participant
+			Participant participant = programrepository.findParticipantBySeqId(participantRequest.getSeqId(), participantRequest.getProgramId());
+			//Participant participant = findBySeqIdAndRole(participantRequest, emailList,role);
+			ParticipantRequest response = getParticipantRequestFromParticipant(participantRequest, participant);
+			if (null != response) {
+				accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
+				accessLog.setErrorMessage(null);
+				return new ResponseEntity<ParticipantRequest>(response, HttpStatus.OK);
+			} else {
+				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.PARTICIPANT_NOT_AVAILABLE + participantRequest.getEventId());
+				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+				accessLog.setErrorMessage(DashboardConstants.PARTICIPANT_NOT_AVAILABLE + participantRequest.getEventId());
+				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
+			}
+		} else {
+			LOGGER.error(ErrorConstants.UNAUTHORIZED_GETDETAILS_PARTICIPANT_ACCESS + participantRequest.getEventId());
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.UNAUTHORIZED_GETDETAILS_PARTICIPANT_ACCESS + participantRequest.getEventId());
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage(ErrorConstants.UNAUTHORIZED_GETDETAILS_PARTICIPANT_ACCESS + participantRequest.getEventId());
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
 		}
 	}

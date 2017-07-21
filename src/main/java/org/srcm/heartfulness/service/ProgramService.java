@@ -98,7 +98,7 @@ public interface ProgramService {
 	 */
 	//public List<ParticipantRequest> getParticipantByEventId(String eventId,List<String> mail,String role);
 	
-	List<ParticipantRequest> getParticipantByEventId(String eventId, List<String> mail, String role, String authToken,PMPAPIAccessLog accessLog);
+	public Object getParticipantByEventId(String eventId, List<String> mail, String role, String authToken,PMPAPIAccessLog accessLog);
 
 	/**
 	 * This service method is used to create a new record or update an existing
