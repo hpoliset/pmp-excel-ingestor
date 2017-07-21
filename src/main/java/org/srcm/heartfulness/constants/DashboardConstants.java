@@ -22,6 +22,9 @@ public class DashboardConstants {
 	public static final String STATUS_SUCESS_UPDATE											=	"Status updated Successfully";
 	public static final String STATUS_ENUM_UPDATE											= 	"Invalid program status";
 	public static final String INVALID_USER													= 	"User doesn't have access to this event";
+	public static final String EVENT_ID														= 	"Event - ";
+	public static final String EVENT_CREATION_STATUS										= 	" created successfully";
+	public static final String EVENT_UPDATION_STATUS										= 	" updated successfully";
 	
 	/*Participant related*/
 	public static final String PRINT_NAME_REQUIRED											= 	"Participant name is required";

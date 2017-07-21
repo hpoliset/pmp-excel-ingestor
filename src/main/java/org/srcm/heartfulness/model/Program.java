@@ -107,6 +107,7 @@ public class Program {
 	@JsonIgnore
 	private String uploaderMail;
 	private String programStatus;
+	private String statusDescription;
 
 	public String getSrcmGroup() {
 		return srcmGroup;
@@ -604,6 +605,14 @@ public class Program {
 
 	public void setProgramStatus(String programStatus) {
 		this.programStatus = programStatus;
+	}
+	
+	public String getStatusDescription() {
+		return statusDescription;
+	}
+
+	public void setStatusDescription(String statusDescription) {
+		this.statusDescription = statusDescription;
 	}
 
 	/**
