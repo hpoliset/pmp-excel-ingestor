@@ -1850,8 +1850,8 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		}
 
 		try {
-			programIds = this.jdbcTemplate.query(baseQuery.toString()+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""),
-					new Object[] {}, new ResultSetExtractor<LinkedHashMap<Integer, String>>() {
+			programIds = this.namedParameterJdbcTemplate.query(baseQuery.toString()+ (whereCondition.length() > 0 ? " WHERE " + whereCondition : ""),params,
+					new ResultSetExtractor<LinkedHashMap<Integer, String>>() {
 				@Override
 				public LinkedHashMap<Integer, String> extractData(ResultSet resultSet)
 						throws SQLException, DataAccessException {
