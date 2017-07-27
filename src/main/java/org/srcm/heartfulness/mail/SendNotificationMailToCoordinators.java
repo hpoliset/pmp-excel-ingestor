@@ -224,7 +224,10 @@ public class SendNotificationMailToCoordinators {
 			
 			addParameter(EmailLogConstants.PROGRAM_DETAILS_PARAMETER, sb.toString());
 			
-			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinatorEmail));
+			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse("radhikashamshabad@symbiounsoft.com"));
+			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse("praveend@symbiounsoft.com"));
+			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse("narasimha.sunku@gmail.com"));
+			message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse("koustav.dipak@htcindia.com"));
 			message.setSubject(eventfollowupsubject);
 			message.setReplyTo(InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
 			message.setContent(getMessageContentbyTemplateName(eventfollowuptemplatename),EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);

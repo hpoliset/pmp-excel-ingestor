@@ -71,7 +71,7 @@ public class SendMailToZonalAndCenterCoodinator {
 
 
 	@SuppressWarnings("unused")
-	//@RequestMapping(value = "/api/mail/notify",method=RequestMethod.GET)
+	@RequestMapping(value = "/api/mail/notify",method=RequestMethod.GET)
 	/*@Scheduled(cron = "${zone.center.coordinator.mail.notification.cron.time}")*/
 	private void sendNotificationMailToZoneAndCenterCoordinator(){
 
