@@ -48,13 +48,13 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 
 	@Autowired
 	ProgramRepository programRepository;
-	
+
 	@Autowired
 	APIAccessLogService apiAccessLogService;
-	
+
 	@Autowired
 	DashboardRestTemplate dashboardRestTemplate;
-	
+
 	@Autowired
 	DashboardService dashboardService;
 
@@ -87,13 +87,16 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 	 * success or failure.
 	 */
 	@Override
-	public CoordinatorAccessControlResponse validateCoordinatorRequest(String approvedBy,ProgramCoordinators pgrmCoordinators) {
+	public CoordinatorAccessControlResponse validateCoordinatorRequest(List<String> approverList,String approverRole,ProgramCoordinators pgrmCoordinators) {
 
 		if(null == pgrmCoordinators.getEmail() || pgrmCoordinators.getEmail().isEmpty()){
 			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.REQUESTER_EMAIL_INVALID);
 		}
 
-		if(approvedBy.equalsIgnoreCase(pgrmCoordinators.getEmail())){
+		/*if(approvedBy.equalsIgnoreCase(pgrmCoordinators.getEmail())){
+		return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.APPROVER_SAME_APPROVER_REQUESTER);
+		}*/
+		if(approverList.contains(pgrmCoordinators.getEmail())){
 			return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.APPROVER_SAME_APPROVER_REQUESTER);
 		}
 
@@ -120,16 +123,16 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 			LOGGER.error("Preceptor not available for event "+pgrmCoordinators.getEventId());
 		}
 
-		if(!approvedBy.equalsIgnoreCase(program.getCoordinatorEmail()) && !approvedBy.equalsIgnoreCase(preceptorDetails.getEmail())){
+		if(!approverList.contains(program.getCoordinatorEmail()) && !approverList.contains(preceptorDetails.getEmail())){
 
-			User user = null;
+			/*User user = null;
 			try {
 				user = coordntrAccssCntrlRepo.getUserbyUserEmail(approvedBy);
 			} catch (Exception ex) {
 				LOGGER.error("Unable to fetch profile using mail {}",approvedBy );
-			}
+			}*/
 
-			if(null != user ? !user.getRole().equals(PMPConstants.LOGIN_ROLE_ADMIN) ? !user.getRole().equals(PMPConstants.LOGIN_GCONNECT_ADMIN) : false : true ){
+			if(!approverRole.equals(PMPConstants.LOGIN_ROLE_ADMIN) ? !approverRole.equals(PMPConstants.LOGIN_GCONNECT_ADMIN) : false){
 				return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.APPROVER_NO_AUTHORITY);
 			}
 		}
@@ -176,7 +179,7 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 
 		return pgrmRepository.getListOfProgramIdsByEmail(emailList,userRole);
 	}*/
-	
+
 	/**
 	 * This method is used to get all the program Id and auto generated
 	 * event Id's for the logged in user have conducted.
@@ -187,8 +190,9 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 	 * event Id's for the logged in user have conducted.
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public LinkedHashMap<Integer,String> getProgramAndagEventIds(List<String> emailList, String userRole, String authToken, PMPAPIAccessLog accessLog) {
-		
+
 		boolean isNext = true;
 		int currentPositionValue = 0;
 		String currentPositionType =  "";

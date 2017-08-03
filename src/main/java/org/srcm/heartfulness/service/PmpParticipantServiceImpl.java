@@ -161,7 +161,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					.equalsIgnoreCase(participantRequest.getThirdSitting())) ? 1 : 0);
 			participant.setWelcomeCardNumber((null != participantRequest.geteWelcomeID() && !participantRequest
 					.geteWelcomeID().isEmpty()) ? participantRequest.geteWelcomeID() : null);
-			participant.setCreatedSource(PMPConstants.CREATED_SOURCE_DASHBOARD);
+			//participant.setCreatedSource(PMPConstants.CREATED_SOURCE_DASHBOARD);
+			participant.setCreatedSource(participant.getProgram().getCreatedSource());
 			participant.setEwelcomeIdRemarks(participantRequest.getEwelcomeIdRemarks());
 			setParticipantEWelcomeIDStatus(participant.getProgram(), participant,PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, null);
 			participant.setReceiveUpdates(1);
@@ -722,6 +723,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				participant.setEwelcomeIdState(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
 				participant.setIsEwelcomeIdInformed(0);
 			} else {
+				participant.setIntroduced(1);
+				participant.setIntroductionDate(null != participant.getIntroductionDate() ? participant.getIntroductionDate() : null != participant.getFirstSittingDate()?participant.getFirstSittingDate():program.getProgramStartDate());
 				participant.setEwelcomeIdRemarks(remarks);
 				participant.setEwelcomeIdState(eWelcomeIDStatus);
 				participant.setIsEwelcomeIdInformed(0);

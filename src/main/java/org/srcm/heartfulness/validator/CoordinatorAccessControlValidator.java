@@ -35,7 +35,7 @@ public interface CoordinatorAccessControlValidator {
 	 * @return CoordinatorAccessControlResponse depending on the response is 
 	 * success or failure.
 	 */
-	CoordinatorAccessControlResponse validateCoordinatorRequest(String approvedBy,ProgramCoordinators pgrmCoordinators);
+	CoordinatorAccessControlResponse validateCoordinatorRequest(List<String> approverList,String approverRole,ProgramCoordinators pgrmCoordinators);
 
 	/**
 	 * This method is used to get all the program Id and auto generated

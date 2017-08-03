@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
+import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractor;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
@@ -169,7 +170,11 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 					participant.setEwelcomeIdState(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
 				}
 			}else{
-				participant.setWelcomeCardNumber(welcomeCardNo);
+				//participant.setWelcomeCardNumber(welcomeCardNo);
+				if(welcomeCardNo.matches(ExpressionConstants.WELCOME_CARD_MESG_REGEX) || welcomeCardNo.matches(ExpressionConstants.EWELCOME_ID_REGEX))
+					participant.setWelcomeCardNumber(welcomeCardNo);
+				else
+					participant.setEwelcomeIdGenerationMsg(welcomeCardNo);
 				String welcomeCardDateStr = participantRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString().trim();
 				Date welcomeCardDate = null;
 				try {

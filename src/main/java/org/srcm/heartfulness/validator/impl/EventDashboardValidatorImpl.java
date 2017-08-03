@@ -332,8 +332,10 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				try {
 					SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 					startDate = sdf.parse(event.getProgramStartDate());
-					if(startDate.after(new Date())){
-						errors.put("programStartDate", "Program start date cannot be a future date");
+					if(!event.getCreatedSource().equalsIgnoreCase(PMPConstants.CREATED_SOURCE_DASHBOARD_v2)){
+						if(startDate.after(new Date())){
+							errors.put("programStartDate", "Program start date cannot be a future date");
+						}
 					}
 				} catch (ParseException e) {
 					errors.put("programStartDate", "Invalid date format,correct format is dd-MM-yyyy");
@@ -576,9 +578,9 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				&& (null == participantInput.getWelcomeCardNumber() || participantInput.getWelcomeCardNumber().isEmpty())) {
 
 			isValid=true;
-		} else if (null != participantInput.getWelcomeCardNumber() && !participantInput.getWelcomeCardNumber() .isEmpty() ){
+		} else if (null != participantInput.getEwelcomeIdGenerationMsg() && !participantInput.getEwelcomeIdGenerationMsg().isEmpty() ){
 			for (IssueeWelcomeId field : IssueeWelcomeId.values()) {
-				if (participantInput.getWelcomeCardNumber().equalsIgnoreCase(field.getValue())) {
+				if (participantInput.getEwelcomeIdGenerationMsg().equalsIgnoreCase(field.getValue())) {
 					isValid=true;
 					break;
 				}

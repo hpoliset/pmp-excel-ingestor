@@ -59,6 +59,7 @@ public class Participant {
 	private Integer totalDays;
 	private String phone;
 	private String district;
+	private String ewelcomeIdGenerationMsg;
 
 	public String getCreatedSource() {
 		return createdSource;
@@ -478,6 +479,14 @@ public class Participant {
 		this.district = district;
 	}
 	
+	public String getEwelcomeIdGenerationMsg() {
+		return ewelcomeIdGenerationMsg;
+	}
+
+	public void setEwelcomeIdGenerationMsg(String ewelcomeIdGenerationMsg) {
+		this.ewelcomeIdGenerationMsg = ewelcomeIdGenerationMsg;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

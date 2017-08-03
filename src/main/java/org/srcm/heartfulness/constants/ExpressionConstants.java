@@ -27,5 +27,6 @@ public class ExpressionConstants {
 	public static final String SQL_DATE_FORMAT 					= 	"yyyy-MM-dd";
 	public static final String MAIL_DATE_FORMAT 				= 	"dd-MMM-yyyy";
 	//public static final String MOBILE_V1_0_REGEX 				= 	"^([0|\\+[0-9]{1,5})?([7-9][0-9]{9})$";
+	public static final String WELCOME_CARD_MESG_REGEX			=	"^[A-Z].*\\d$";
 	
 }
