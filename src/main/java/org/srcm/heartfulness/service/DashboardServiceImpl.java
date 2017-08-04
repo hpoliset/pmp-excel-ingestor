@@ -176,47 +176,6 @@ public class DashboardServiceImpl implements DashboardService {
 						return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
 					} 
 
-				/*	eResponse = dashboardValidator.validateStateField(dashboardReq.getState());
-					if (null != eResponse) {
-						return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-					} else if (null == dashboardReq.getDistrict()) {
-						eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-								DashboardConstants.DISTRICT_REQUIRED);
-						return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-					} else if (null == dashboardReq.getCity()) {
-						eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.CITY_REQUIRED);
-						return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-					}*/
-
-					/*if (dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD)) {
-						eResponse = validateCountry(dashboardReq, accessLog);
-						if (null != eResponse) {
-							return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-						}
-					} else if (!dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
-							&& dashboardReq.getDistrict().equalsIgnoreCase(DashboardConstants.ALL_FIELD)) {
-
-						eResponse = validateCountryAndState(dashboardReq, accessLog);
-						if (null != eResponse) {
-							return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-						}
-					} else if (!dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
-							&& !dashboardReq.getDistrict().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
-							&& dashboardReq.getCity().equalsIgnoreCase(DashboardConstants.ALL_FIELD)) {
-
-						eResponse = validateCountryStateAndDistrict(dashboardReq, accessLog);
-						if (null != eResponse) {
-							return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-						}
-					} else if (!dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
-							&& !dashboardReq.getDistrict().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
-							&& !dashboardReq.getCity().equalsIgnoreCase(DashboardConstants.ALL_FIELD)) {
-						eResponse = validateCountryStateDistrictAndCity(dashboardReq, accessLog);
-						if (null != eResponse) {
-							return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-						}
-					}*/
-
 					countResponse = dashboardRepository.getCountForCountryCoordinator(dashboardReq, true);
 
 				} else {
@@ -227,38 +186,6 @@ public class DashboardServiceImpl implements DashboardService {
 					if (null != eResponse) {
 						return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
 					} 
-					/*eResponse = dashboardValidator.validateZoneField(dashboardReq.getZone());
-					if (null != eResponse) {
-						return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-					} else if (null == dashboardReq.getCenter()) {
-						eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.CENTER_REQUIRED);
-						return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-					}
-
-					if (dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)) {
-
-						eResponse = validateCountry(dashboardReq, accessLog);
-						if (null != eResponse) {
-							return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-						}
-
-					} else if (!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
-							&& dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)) {
-
-						eResponse = validateCountryAndZone(dashboardReq, accessLog);
-						if (null != eResponse) {
-							return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-						}
-
-					} else if (!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
-							&& !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)) {
-
-						eResponse = validateCountryAndZoneAndCenter(dashboardReq, accessLog);
-						if (null != eResponse) {
-							return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-						}
-
-					}*/
 
 					countResponse = dashboardRepository.getCountForCountryCoordinator(dashboardReq, false);
 				}
@@ -283,41 +210,6 @@ public class DashboardServiceImpl implements DashboardService {
 			if (null != eResponse) {
 				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
 			}
-
-			/*if (null == dashboardReq.getCountry()) {
-				eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.COUNTRY_REQUIRED);
-				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-			} else if (null == dashboardReq.getZone()) {
-				eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.ZONE_REQUIRED);
-				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-			} else if (null == dashboardReq.getCenter()) {
-				eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.CENTER_REQUIRED);
-				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-			}*/
-
-			/*if (dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)) {
-
-				eResponse = validateCountry(dashboardReq, accessLog);
-				if (null != eResponse) {
-					return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-				}
-
-			} else if (!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
-					&& dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)) {
-
-				eResponse = validateCountryAndZone(dashboardReq, accessLog);
-				if (null != eResponse) {
-					return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-				}
-
-			} else if (!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
-					&& !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)) {
-
-				eResponse = validateCountryAndZoneAndCenter(dashboardReq, accessLog);
-				if (null != eResponse) {
-					return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
-				}
-			}*/
 
 			ResponseEntity<List<String>> getZones = (ResponseEntity<List<String>>) getListOfZones(authToken,
 					dashboardReq, accessLog, new ArrayList<String>(), "");

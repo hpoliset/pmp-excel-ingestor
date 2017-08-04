@@ -175,6 +175,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 					participant.setWelcomeCardNumber(welcomeCardNo);
 				else
 					participant.setEwelcomeIdGenerationMsg(welcomeCardNo);
+				
 				String welcomeCardDateStr = participantRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString().trim();
 				Date welcomeCardDate = null;
 				try {

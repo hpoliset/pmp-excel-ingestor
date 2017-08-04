@@ -155,9 +155,17 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				errors.put("email", DashboardConstants.INVALID_PARTICIPANT_EMAIL);
 			}
 		}
-		if (null != participant.getIntroductionDate()) {
+		if (null != participant.getIntroductionDate() && !participant.getIntroductionDate().isEmpty()) {
 			if (!participant.getIntroductionDate().matches(ExpressionConstants.DATE_REGEX)) {
 				errors.put("introductionDate", DashboardConstants.INVALID_INTRODUCED_DATE);
+			}else{
+				SimpleDateFormat sdfFormat = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
+				SimpleDateFormat sdfSqlFormat = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
+				try {
+					sdfSqlFormat.parse(sdfSqlFormat.format(sdfFormat.parse(participant.getIntroductionDate())));
+				} catch (ParseException e) {
+					LOGGER.error("Unable to parse introduced date for {} for event{}",participant.getPrintName(),participant.getEventId());
+				}
 			}
 		}
 		if (null != participant.getDateOfBirth()) {

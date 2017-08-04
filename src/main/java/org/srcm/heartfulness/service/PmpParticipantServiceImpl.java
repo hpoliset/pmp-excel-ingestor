@@ -120,8 +120,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setIntroduced((null != participantRequest.getIntroducedStatus() && PMPConstants.REQUIRED_YES
 					.equalsIgnoreCase(participantRequest.getIntroducedStatus())) ? 1 : 0);
 			participant.setIntroductionDate((null != participantRequest.getIntroductionDate() && !participantRequest
-					.getIntroductionDate().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest
-							.getIntroductionDate()))) : null);
+					.getIntroductionDate().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest.getIntroductionDate()))) : null);
 
 			if (null == participantRequest.getFirstSittingDate()) {
 				participant.setFirstSittingDate(null);
@@ -159,8 +158,13 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					.equalsIgnoreCase(participantRequest.getSecondSitting())) ? 1 : 0);
 			participant.setThirdSitting((null != participantRequest.getThirdSitting() && PMPConstants.REQUIRED_YES
 					.equalsIgnoreCase(participantRequest.getThirdSitting())) ? 1 : 0);
-			participant.setWelcomeCardNumber((null != participantRequest.geteWelcomeID() && !participantRequest
-					.geteWelcomeID().isEmpty()) ? participantRequest.geteWelcomeID() : null);
+			String welcomeCardNo = participantRequest.geteWelcomeID();
+			if(welcomeCardNo.matches(ExpressionConstants.WELCOME_CARD_MESG_REGEX) || welcomeCardNo.matches(ExpressionConstants.EWELCOME_ID_REGEX))
+				participant.setWelcomeCardNumber(welcomeCardNo);
+			else
+				participant.setEwelcomeIdGenerationMsg(welcomeCardNo);
+			//participant.setWelcomeCardNumber((null != participantRequest.geteWelcomeID() && !participantRequest
+					//.geteWelcomeID().isEmpty()) ? participantRequest.geteWelcomeID() : null);
 			//participant.setCreatedSource(PMPConstants.CREATED_SOURCE_DASHBOARD);
 			participant.setCreatedSource(participant.getProgram().getCreatedSource());
 			participant.setEwelcomeIdRemarks(participantRequest.getEwelcomeIdRemarks());
