@@ -159,7 +159,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setThirdSitting((null != participantRequest.getThirdSitting() && PMPConstants.REQUIRED_YES
 					.equalsIgnoreCase(participantRequest.getThirdSitting())) ? 1 : 0);
 			String welcomeCardNo = participantRequest.geteWelcomeID();
-			if(welcomeCardNo.matches(ExpressionConstants.WELCOME_CARD_MESG_REGEX) || welcomeCardNo.matches(ExpressionConstants.EWELCOME_ID_REGEX))
+			
+			if(null != welcomeCardNo && (welcomeCardNo.matches(ExpressionConstants.WELCOME_CARD_MESG_REGEX) || welcomeCardNo.matches(ExpressionConstants.EWELCOME_ID_REGEX)))
 				participant.setWelcomeCardNumber(welcomeCardNo);
 			else
 				participant.setEwelcomeIdGenerationMsg(welcomeCardNo);

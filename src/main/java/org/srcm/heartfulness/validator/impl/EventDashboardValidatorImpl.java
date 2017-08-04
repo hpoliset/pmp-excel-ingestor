@@ -165,6 +165,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 					sdfSqlFormat.parse(sdfSqlFormat.format(sdfFormat.parse(participant.getIntroductionDate())));
 				} catch (ParseException e) {
 					LOGGER.error("Unable to parse introduced date for {} for event{}",participant.getPrintName(),participant.getEventId());
+					errors.put("introductionDate", DashboardConstants.INVALID_INTRODUCED_DATE);
 				}
 			}
 		}
