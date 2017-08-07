@@ -104,9 +104,18 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				errors.put("email", "email is invalid");
 			}
 		}
-		if (null != participant.getIntroductionDate()) {
+		if (null != participant.getIntroductionDate() && !participant.getIntroductionDate().isEmpty()) {
 			if (!participant.getIntroductionDate().matches("^\\d{2}-\\d{2}-\\d{4}$")) {
 				errors.put("introductionDate", "date is invalid. Valid format DD-MM-YYYY");
+			}else{
+				SimpleDateFormat sdfFormat = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
+				SimpleDateFormat sdfSqlFormat = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
+				try {
+					sdfSqlFormat.parse(sdfSqlFormat.format(sdfFormat.parse(participant.getIntroductionDate())));
+				} catch (ParseException e) {
+					//LOGGER.error("Unable to parse introduced date for {} for event{}",participant.getPrintName(),participant.getEventId());
+					errors.put("introductionDate", "date is invalid. Valid format DD-MM-YYYY");
+				}
 			}
 		}
 		if (null != participant.getDateOfBirth()) {
@@ -398,14 +407,16 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				&& (null == participantInput.getWelcomeCardNumber() || participantInput.getWelcomeCardNumber()
 						.isEmpty())) {
 			isValid=true;
-		} else if (null != participantInput.getWelcomeCardNumber() && !participantInput.getWelcomeCardNumber() .isEmpty() ){
+		} else if (null != participantInput.getEwelcomeIdGenerationMsg() && !participantInput.getEwelcomeIdGenerationMsg() .isEmpty() ){
 			for (IssueeWelcomeId field : IssueeWelcomeId.values()) {
-				if (participantInput.getWelcomeCardNumber().equalsIgnoreCase(field.getValue())) {
+				if (participantInput.getEwelcomeIdGenerationMsg().equalsIgnoreCase(field.getValue())) {
 					isValid=true;
 					break;
 				}
 			}
-		} else if (!(null == participantInput.getThirdSittingDate()	&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting()))) {
+		} else if (!(null == participantInput.getThirdSittingDate()	&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting())) 
+				&& !(null == participantInput.getFirstSittingDate() && (null == participantInput.getFirstSitting() || 0 == participantInput.getFirstSitting()))
+				&& !(null == participantInput.getSecondSittingDate() && (null == participantInput.getSecondSitting() || 0 == participantInput.getSecondSitting()))) {
 			isValid=true;
 		}else if( null != participantInput.getTotalDays() ? participantInput.getTotalDays() > 2 : false  ){
 			isValid = true;

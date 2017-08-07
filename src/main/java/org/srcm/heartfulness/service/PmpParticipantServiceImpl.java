@@ -151,8 +151,13 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					.equalsIgnoreCase(participantRequest.getSecondSitting())) ? 1 : 0);
 			participant.setThirdSitting((null != participantRequest.getThirdSitting() && PMPConstants.REQUIRED_YES
 					.equalsIgnoreCase(participantRequest.getThirdSitting())) ? 1 : 0);
-			participant.setWelcomeCardNumber((null != participantRequest.geteWelcomeID() && !participantRequest
-					.geteWelcomeID().isEmpty()) ? participantRequest.geteWelcomeID() : null);
+			String welcomeCardNo = participantRequest.geteWelcomeID();
+			if(null != welcomeCardNo && (welcomeCardNo.matches(ExpressionConstants.WELCOME_CARD_MESG_REGEX) || welcomeCardNo.matches(ExpressionConstants.EWELCOME_ID_REGEX)))
+				participant.setWelcomeCardNumber(welcomeCardNo);
+			else
+				participant.setEwelcomeIdGenerationMsg(welcomeCardNo);
+			//participant.setWelcomeCardNumber((null != participantRequest.geteWelcomeID() && !participantRequest
+					//.geteWelcomeID().isEmpty()) ? participantRequest.geteWelcomeID() : null);
 			participant.setCreatedSource(PMPConstants.CREATED_SOURCE_DASHBOARD);
 			participant.setEwelcomeIdRemarks(participantRequest.getEwelcomeIdRemarks());
 			setParticipantEWelcomeIDStatus(participant.getProgram(), participant,
@@ -657,6 +662,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				participant.setEwelcomeIdState(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);
 				participant.setIsEwelcomeIdInformed(0);
 			} else {
+				participant.setIntroduced(1);
+				participant.setIntroductionDate(null != participant.getIntroductionDate() ? participant.getIntroductionDate() : null != participant.getFirstSittingDate()?participant.getFirstSittingDate():program.getProgramStartDate());
 				participant.setEwelcomeIdRemarks(remarks);
 				participant.setEwelcomeIdState(eWelcomeIDStatus);
 				participant.setIsEwelcomeIdInformed(0);

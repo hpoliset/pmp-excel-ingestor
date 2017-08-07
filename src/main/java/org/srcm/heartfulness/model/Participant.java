@@ -59,6 +59,7 @@ public class Participant {
 	private String ewelcomeIdState;
 	private String ewelcomeIdRemarks;
 	private Integer totalDays;
+	private String ewelcomeIdGenerationMsg;
 
 
 	public String getCreatedSource() {
@@ -461,6 +462,15 @@ public class Participant {
 
 	public void setTotalDays(Integer totalDays) {
 		this.totalDays = totalDays;
+	}
+	
+
+	public String getEwelcomeIdGenerationMsg() {
+		return ewelcomeIdGenerationMsg;
+	}
+
+	public void setEwelcomeIdGenerationMsg(String ewelcomeIdGenerationMsg) {
+		this.ewelcomeIdGenerationMsg = ewelcomeIdGenerationMsg;
 	}
 
 	@Override
