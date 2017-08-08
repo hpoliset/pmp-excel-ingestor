@@ -61,30 +61,43 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 	public List<DashboardResponse> getCountForCountryCoordinator(DashboardRequest dashboardReq,Boolean hierarchyType) {
 
 		StringBuilder baseQuery = new StringBuilder("SELECT count(DISTINCT pgrm.program_id),"
-				+ "count(DISTINCT pctpt.id),count(DISTINCT sd.session_id),count(DISTINCT pgrm.event_place) ");
+				+ "count(DISTINCT pctpt.id),count(DISTINCT sd.session_id),count(DISTINCT pgrm.event_place)");
 
 
 				if(hierarchyType){
 
 					if(dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						baseQuery.append(" ,IFNULL(pgrm.event_state,'Others') ");
+						baseQuery.append(",(select count(p.program_start_date) from program p WHERE p.program_start_date > CURDATE() "
+								+ "AND IFNULL(p.event_state,'Others')=IFNULL(pgrm.event_state,'Others')) as futute_event_count ,IFNULL(pgrm.event_state,'Others') ");
 					}else if(!dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getDistrict().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						baseQuery.append(" ,pgrm.event_state,IFNULL(pgrm.program_district,'Others') ");
+						baseQuery.append(",(select count(p.program_start_date) from program p WHERE p.program_start_date > CURDATE() "
+								+ "AND p.event_state=pgrm.event_state AND IFNULL(p.program_district,'Others') = IFNULL(pgrm.program_district,'Others')) as futute_event_count"
+								+ ",pgrm.event_state,IFNULL(pgrm.program_district,'Others') ");
 					}else if(!dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getDistrict().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
 							&& dashboardReq.getCity().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						baseQuery.append(" ,pgrm.event_state,pgrm.program_district,IFNULL(pgrm.event_city,'Others') ");
+						baseQuery.append(",(select count(p.program_start_date) from program p WHERE p.program_start_date > CURDATE() "
+								+ "AND p.event_state=pgrm.event_state AND p.program_district=pgrm.program_district "
+								+ "AND IFNULL(p.event_city,'Others')=IFNULL(pgrm.event_city,'Others')) as futute_event_count , "
+								+ "pgrm.event_state,pgrm.program_district,IFNULL(pgrm.event_city,'Others') ");
 					}else if(!dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getDistrict().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
 							&& !dashboardReq.getCity().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						baseQuery.append(" ,pgrm.event_state,pgrm.program_district,pgrm.event_city ");
+						baseQuery.append(",(select count(p.program_start_date) from program p WHERE p.program_start_date > CURDATE() "
+								+ "AND p.event_state=pgrm.event_state AND p.program_district=pgrm.program_district "
+								+ "AND p.event_city=pgrm.event_city) as futute_event_count ,pgrm.event_state,pgrm.program_district,pgrm.event_city ");
 					}
 				}else{
 
 					if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						baseQuery.append(" ,IFNULL(pgrm.program_zone,'Others')");
+						
+						baseQuery.append(",(select count(p.program_start_date) from program p WHERE p.program_start_date > CURDATE() "
+								+ "AND IFNULL(p.program_zone,'Others') = IFNULL(pgrm.program_zone,'Others')) as futute_event_count,IFNULL(pgrm.program_zone,'Others')");
 					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						baseQuery.append(" ,pgrm.program_zone,IFNULL(pgrm.program_center,'Others') ");
+						baseQuery.append(",(select count(p.program_start_date) from program p WHERE p.program_start_date > CURDATE() "
+								+ "AND p.program_zone=pgrm.program_zone AND IFNULL(p.program_center,'Others')=IFNULL(pgrm.program_center,'Others')) as futute_event_count"
+								+ ",pgrm.program_zone,IFNULL(pgrm.program_center,'Others') ");
 					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						baseQuery.append(" ,pgrm.program_zone,pgrm.program_center ");
+						baseQuery.append(",(select count(p.program_start_date) from program p WHERE p.program_start_date > CURDATE() "
+								+ "AND p.program_zone=pgrm.program_zone AND p.program_center=pgrm.program_center) as futute_event_count ,pgrm.program_zone,pgrm.program_center ");
 					}
 					
 				}
@@ -145,35 +158,35 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 							counts.setParticipantCount(resultSet.getInt(2));
 							counts.setSessionCount(resultSet.getInt(3));
 							counts.setLocationCount(resultSet.getInt(4));
-							
+							counts.setFutureEventCount(resultSet.getInt(5));
 							if(hierarchyType){
 
 								if(dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-									counts.setEventState(resultSet.getString(5));
+									counts.setEventState(resultSet.getString(6));
 								}else if(!dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getDistrict().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-									counts.setEventState(resultSet.getString(5));
-									counts.setProgramDistrict(resultSet.getString(6));
+									counts.setEventState(resultSet.getString(6));
+									counts.setProgramDistrict(resultSet.getString(7));
 								}else if(!dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getDistrict().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
 										&& dashboardReq.getCity().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-									counts.setEventState(resultSet.getString(5));
-									counts.setProgramDistrict(resultSet.getString(6));
-									counts.setEventCity(resultSet.getString(7));
+									counts.setEventState(resultSet.getString(6));
+									counts.setProgramDistrict(resultSet.getString(7));
+									counts.setEventCity(resultSet.getString(8));
 								}else if(!dashboardReq.getState().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getDistrict().equalsIgnoreCase(DashboardConstants.ALL_FIELD)
 										&& !dashboardReq.getCity().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-									counts.setEventState(resultSet.getString(5));
-									counts.setProgramDistrict(resultSet.getString(6));
-									counts.setEventCity(resultSet.getString(7));
+									counts.setEventState(resultSet.getString(6));
+									counts.setProgramDistrict(resultSet.getString(7));
+									counts.setEventCity(resultSet.getString(8));
 								}
 							}else{
 
 								if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-									counts.setProgramZone(resultSet.getString(5));
+									counts.setProgramZone(resultSet.getString(6));
 								}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-									counts.setProgramZone(resultSet.getString(5));
-									counts.setProgramCenter(resultSet.getString(6));
+									counts.setProgramZone(resultSet.getString(6));
+									counts.setProgramCenter(resultSet.getString(7));
 								}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-									counts.setProgramZone(resultSet.getString(5));
-									counts.setProgramCenter(resultSet.getString(6));
+									counts.setProgramZone(resultSet.getString(6));
+									counts.setProgramCenter(resultSet.getString(7));
 								}
 							}
 							listOfCounts.add(counts);
@@ -199,11 +212,15 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 				+ "count(DISTINCT pctpt.id),count(DISTINCT sd.session_id),count(DISTINCT pgrm.event_place) ");
 
 		if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,IFNULL(pgrm.program_zone,'Others') ");
+			baseQuery.append(",(select count(p.program_start_date) from program p WHERE p.program_start_date > CURDATE() "
+					+ "AND IFNULL(p.program_zone,'Others') = IFNULL(pgrm.program_zone,'Others'))as futute_event_count ,IFNULL(pgrm.program_zone,'Others') ");
 		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,pgrm.program_zone,IFNULL(pgrm.program_center,'Others') ");
+			baseQuery.append(",(select count(p.program_start_date) from program p WHERE p.program_start_date > CURDATE() "
+					+ "AND p.program_zone=pgrm.program_zone AND IFNULL(p.program_center,'Others')=IFNULL(pgrm.program_center,'Others')) "
+					+ "as futute_event_count,pgrm.program_zone,IFNULL(pgrm.program_center,'Others') ");
 		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,pgrm.program_zone,pgrm.program_center ");
+			baseQuery.append(",(select count(p.program_start_date) from program p WHERE p.program_start_date > CURDATE() "
+					+ " AND p.program_zone=pgrm.program_zone AND p.program_center=pgrm.program_center) as futute_event_count,pgrm.program_zone,pgrm.program_center ");
 		}
 
 		baseQuery.append(" FROM program pgrm LEFT OUTER JOIN participant pctpt ON pgrm.program_id = pctpt.program_id  "
@@ -262,15 +279,16 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 					counts.setParticipantCount(resultSet.getInt(2));
 					counts.setSessionCount(resultSet.getInt(3));
 					counts.setLocationCount(resultSet.getInt(4));
+					counts.setFutureEventCount(resultSet.getInt(5));
 
 					if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						counts.setProgramZone(resultSet.getString(5));
+						counts.setProgramZone(resultSet.getString(6));
 					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						counts.setProgramZone(resultSet.getString(5));
-						counts.setProgramCenter(resultSet.getString(6));
+						counts.setProgramZone(resultSet.getString(6));
+						counts.setProgramCenter(resultSet.getString(7));
 					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						counts.setProgramZone(resultSet.getString(5));
-						counts.setProgramCenter(resultSet.getString(6));
+						counts.setProgramZone(resultSet.getString(6));
+						counts.setProgramCenter(resultSet.getString(7));
 					}
 					listOfCounts.add(counts);
 				}
@@ -296,11 +314,16 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 
 
 		if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,IFNULL(pgrm.program_zone,'Others'),IFNULL(pgrm.program_center,'Others') ");
+			baseQuery.append(",(select count(p.program_start_date) from program p WHERE p.program_start_date > CURDATE() "
+					+ "AND IFNULL(p.program_zone,'Others') = IFNULL(pgrm.program_zone,'Others')) as futute_event_count,"
+					+ "IFNULL(pgrm.program_zone,'Others'),IFNULL(pgrm.program_center,'Others') ");
 		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,pgrm.program_zone,IFNULL(pgrm.program_center,'Others') ");
+			baseQuery.append(",(select count(p.program_start_date) from program p WHERE p.program_start_date > CURDATE() "
+					+ "AND p.program_zone=pgrm.program_zone AND IFNULL(p.program_center,'Others')=IFNULL(pgrm.program_center,'Others')) "
+					+ "as futute_event_count ,pgrm.program_zone,IFNULL(pgrm.program_center,'Others') ");
 		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,pgrm.program_zone,pgrm.program_center ");
+			baseQuery.append(",(select count(p.program_start_date) from program p WHERE p.program_start_date > CURDATE() "
+					+ "AND p.program_zone=pgrm.program_zone AND p.program_center=pgrm.program_center) as futute_event_count ,pgrm.program_zone,pgrm.program_center ");
 		}
 
 		baseQuery.append(" FROM program pgrm LEFT OUTER JOIN participant pctpt ON pgrm.program_id = pctpt.program_id  "
@@ -348,16 +371,17 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 					counts.setParticipantCount(resultSet.getInt(2));
 					counts.setSessionCount(resultSet.getInt(3));
 					counts.setLocationCount(resultSet.getInt(4));
+					counts.setFutureEventCount(resultSet.getInt(5));
 
 					if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						counts.setProgramZone(resultSet.getString(5));
-						counts.setProgramCenter(resultSet.getString(6));
+						counts.setProgramZone(resultSet.getString(6));
+						counts.setProgramCenter(resultSet.getString(7));
 					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						counts.setProgramZone(resultSet.getString(5));
-						counts.setProgramCenter(resultSet.getString(6));
+						counts.setProgramZone(resultSet.getString(6));
+						counts.setProgramCenter(resultSet.getString(7));
 					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						counts.setProgramZone(resultSet.getString(5));
-						counts.setProgramCenter(resultSet.getString(6));
+						counts.setProgramZone(resultSet.getString(6));
+						counts.setProgramCenter(resultSet.getString(7));
 					}
 					listOfCounts.add(counts);
 				}
@@ -383,11 +407,15 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 
 
 		if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,IFNULL(pgrm.program_zone,'Others') ");
+			baseQuery.append(",(select count(p.program_start_date) from program p WHERE p.program_start_date > CURDATE() "
+					+ "AND IFNULL(p.program_zone,'Others') = IFNULL(pgrm.program_zone,'Others'))as futute_event_count ,IFNULL(pgrm.program_zone,'Others') ");
 		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,pgrm.program_zone,IFNULL(pgrm.program_center,'Others') ");
+			baseQuery.append(",(select count(p.program_start_date) from program p WHERE p.program_start_date > CURDATE() "
+					+ "AND p.program_zone=pgrm.program_zone AND IFNULL(p.program_center,'Others')=IFNULL(pgrm.program_center,'Others')) "
+					+ "as futute_event_count ,pgrm.program_zone,IFNULL(pgrm.program_center,'Others') ");
 		}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-			baseQuery.append(" ,pgrm.program_zone,pgrm.program_center ");
+			baseQuery.append(",(select count(p.program_start_date) from program p WHERE p.program_start_date > CURDATE() "
+					+ "AND p.program_zone=pgrm.program_zone AND p.program_center=pgrm.program_center) as futute_event_count ,pgrm.program_zone,pgrm.program_center ");
 		}
 
 		baseQuery.append("FROM program pgrm LEFT OUTER JOIN participant pctpt ON pgrm.program_id = pctpt.program_id  "
@@ -446,15 +474,16 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 					counts.setParticipantCount(resultSet.getInt(2));
 					counts.setSessionCount(resultSet.getInt(3));
 					counts.setLocationCount(resultSet.getInt(4));
+					counts.setFutureEventCount(resultSet.getInt(5));
 
 					if(dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						counts.setProgramZone(resultSet.getString(5));
+						counts.setProgramZone(resultSet.getString(6));
 					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						counts.setProgramZone(resultSet.getString(5));
-						counts.setProgramCenter(resultSet.getString(6));
+						counts.setProgramZone(resultSet.getString(6));
+						counts.setProgramCenter(resultSet.getString(7));
 					}else if(!dashboardReq.getZone().equalsIgnoreCase(DashboardConstants.ALL_FIELD) && !dashboardReq.getCenter().equalsIgnoreCase(DashboardConstants.ALL_FIELD)){
-						counts.setProgramZone(resultSet.getString(5));
-						counts.setProgramCenter(resultSet.getString(6));
+						counts.setProgramZone(resultSet.getString(6));
+						counts.setProgramCenter(resultSet.getString(7));
 					}
 					listOfCounts.add(counts);
 				}
