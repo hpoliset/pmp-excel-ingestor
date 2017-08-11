@@ -2,6 +2,14 @@ package org.srcm.heartfulness.rest.template;
 
 import java.io.IOException;
 
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.ProxyAuthenticationStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -9,6 +17,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -37,7 +46,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
  */
 @Component
 @PropertySource("classpath:application.properties")
-@ConfigurationProperties(locations = "classpath:dev.aws.s3.properties", ignoreUnknownFields = true, prefix = "aws.s3")
+@ConfigurationProperties(locations = "classpath:prod.aws.s3.properties", ignoreUnknownFields = true, prefix = "aws.s3")
 public class AmazonS3RestTemplate extends RestTemplate {
 
 	@Autowired
@@ -219,8 +228,8 @@ public class AmazonS3RestTemplate extends RestTemplate {
 			factory.setHttpClient(client);
 			this.setRequestFactory(factory);
 
-		}*/
-
+		}
+*/
 	}
 
 }

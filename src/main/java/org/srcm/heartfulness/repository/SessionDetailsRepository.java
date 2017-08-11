@@ -103,4 +103,6 @@ public interface SessionDetailsRepository {
 
 	void saveSessionFilesWithType(SessionImageDetails sessionFiles);
 
+	public int getFirstSittingBySessionId(int sessionId);
+
 }

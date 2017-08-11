@@ -46,6 +46,7 @@ import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.repository.ChannelRepository;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
+import org.srcm.heartfulness.repository.SessionDetailsRepository;
 import org.srcm.heartfulness.rest.template.DashboardRestTemplate;
 import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.DashboardService;
@@ -102,6 +103,9 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 
 	@Autowired
 	DashboardService dashboardService;
+	
+	@Autowired
+	private SessionDetailsRepository sessionDtlsRepo;
 
 	/**
 	 * Method to validate mandatory fields in the participant request before
@@ -452,7 +456,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		} else if (!event.getCoordinatorMobile().matches(ExpressionConstants.MOBILE_REGEX)) {
 			errors.put("coordinatorMobile", "Coordinator mobile number is invalid");
 		}
-		if (null == event.getPreceptorIdCardNumber() || event.getPreceptorIdCardNumber().isEmpty()) {
+		if (event.getCreatedSource().equals(PMPConstants.CREATED_SOURCE_DASHBOARD) && (null == event.getPreceptorIdCardNumber() || event.getPreceptorIdCardNumber().isEmpty())) {
 			errors.put("preceptorIdCardNumber", "Preceptor Id card number is required");
 		}
 		if(null == event.getIsEwelcomeIdGenerationDisabled() || event.getIsEwelcomeIdGenerationDisabled().isEmpty()){
@@ -684,6 +688,11 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 
 		}
 		return errorMsg;
+	}
+
+	@Override
+	public int getSessionDetailsIdBySessionIdandProgramId(String sessionId, int programId) {
+		return sessionDtlsRepo.getSessionDetailsIdBySessionIdandProgramId(sessionId, programId);
 	}
 
 }

@@ -840,34 +840,48 @@ public class ProgramServiceImpl implements ProgramService {
 	@Override
 	@SuppressWarnings("unused")
 	public String generateeWelcomeID(Participant participant, int id) {
+		
 		if (participant.getId() > 0 && participant.getProgramId() > 0) {
+		
 			if (participant.getSeqId() != null && participant.getSeqId().length() == 4) {
+				
 				if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty()
 						|| !participant.getWelcomeCardNumber().matches(ExpressionConstants.EWELCOME_ID_REGEX)) {
-					if (0 == participant.getProgram().getFirstSittingBy()) {
-						return "Please check your preceptor ID and update event(First Sitting by value is empty)";
+					
+					//check first sitting by value
+					if(participant.getFirstSittingBy() <= 0){
+						if (0 == participant.getProgram().getFirstSittingBy()) {
+							return "Please check your preceptor ID and update event(First Sitting by value is empty)";
+						}
 					}
+					
 					// check whether participant already got ewelcomeID or not
 					String partcipantEwelcomeID = fetchParticipantEwelcomeID(participant, id);
 					if (null != partcipantEwelcomeID) {
 						return partcipantEwelcomeID;
 					} else {
+						
+						//get GeoSearchresponse
 						Object objResponse = eWelcomeIDGenerationHelper.getGeoSearchResponse(participant, id);
 						if (objResponse instanceof GeoSearchResponse) {
+							
 							GeoSearchResponse geoSearchResponse = (GeoSearchResponse) objResponse;
 							if (null != geoSearchResponse) {
-								Object citiesObj = eWelcomeIDGenerationHelper.getCitiesAPIResponse(geoSearchResponse,
-										id, participant);
+								
+								//get City Response
+								Object citiesObj = eWelcomeIDGenerationHelper.getCitiesAPIResponse(geoSearchResponse,id, participant);
 								if (citiesObj instanceof CitiesAPIResponse) {
 									CitiesAPIResponse citiesAPIResponse = (CitiesAPIResponse) citiesObj;
 									if (null != citiesAPIResponse) {
-										Object aspirantobj = eWelcomeIDGenerationHelper.generateEWelcomeId(participant,
-												id, geoSearchResponse, citiesAPIResponse);
+										
+										//generate eWelcome Id
+										Object aspirantobj = eWelcomeIDGenerationHelper.generateEWelcomeId(participant,id, geoSearchResponse, citiesAPIResponse);
+												
 										if (aspirantobj instanceof String) {
 											String eWelcomeID = (String) aspirantobj;
 											if (null != eWelcomeID) {
-												participant.getProgram().setSrcmGroup(
-														String.valueOf(geoSearchResponse.getNearestCenter()));
+												
+												participant.getProgram().setSrcmGroup(String.valueOf(geoSearchResponse.getNearestCenter()));
 												participant.setWelcomeCardNumber(eWelcomeID);
 												participant.setWelcomeCardDate(new Date());
 												participant.setIsEwelcomeIdInformed(0);
@@ -879,6 +893,7 @@ public class ProgramServiceImpl implements ProgramService {
 												participant.setIntroduced(1);
 												participantRepository.updateParticipantEwelcomeIDDetails(participant);
 												return "success";
+												
 											} else {
 												return "Error While generating eWelcomeID";
 											}

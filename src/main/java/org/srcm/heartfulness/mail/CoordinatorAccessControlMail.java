@@ -43,7 +43,7 @@ import com.sun.mail.smtp.SMTPMessage;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:dev.cac.mail.properties", ignoreUnknownFields = false, prefix = "mail.cac")
+@ConfigurationProperties(locations = "classpath:prod.cac.mail.properties", ignoreUnknownFields = false, prefix = "mail.cac")
 public class CoordinatorAccessControlMail {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CoordinatorAccessControlMail.class);
@@ -264,7 +264,7 @@ public class CoordinatorAccessControlMail {
 				dashboardUrl= SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL;
 			}
 			
-			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, dashboardUrl + "?id=" + coordinatorAccessControlEmail.getEventID());
+			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, dashboardUrl + coordinatorAccessControlEmail.getEventID());
 			addParameter(EmailLogConstants.EVENT_PLACE_PARAMETER, coordinatorAccessControlEmail.getEventPlace());
 			addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinatorAccessControlEmail.getEventName());
 			SimpleDateFormat inputsdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
@@ -335,7 +335,7 @@ public class CoordinatorAccessControlMail {
 		}else {
 			dashboardUrl= SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL;
 		}
-		addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, dashboardUrl + "?id=" + coordinator.getEventID());
+		addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, dashboardUrl + coordinator.getEventID());
 		addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinator.getEventName());
 		SimpleDateFormat outputsdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
 		addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER,null != coordinator.getProgramCreateDate() ? outputsdf.format(coordinator.getProgramCreateDate()) : "");
@@ -385,7 +385,7 @@ public class CoordinatorAccessControlMail {
 			}else {
 				dashboardUrl= SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL;
 			}
-			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, dashboardUrl + "?id=" + coordinator.getEventID());
+			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, dashboardUrl + coordinator.getEventID());
 			addParameter(EmailLogConstants.CREATE_PROFILE_LINK_PARAMETER,CoordinatorAccessControlConstants.HEARTFULNESS_CREATE_PROFILE_URL);
 			addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinator.getEventName());
 			addParameter(EmailLogConstants.EVENT_PLACE_PARAMETER, coordinator.getEventPlace());
@@ -450,7 +450,7 @@ public class CoordinatorAccessControlMail {
 			}else {
 				dashboardUrl= SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL;
 			}
-			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, dashboardUrl + "?id=" + eventId);
+			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, dashboardUrl + eventId);
 			addParameter(EmailLogConstants.SECONDARY_COORDINATOR_NAME_PARAMETER, null != user.getName() ? user.getName() : "");
 			addParameter(EmailLogConstants.SECONDARY_COORDINATOR_EMAIL_PARAMETER, null != user.getEmail() ? user.getEmail() : "");
 			addParameter(EmailLogConstants.SECONDARY_COORDINATOR_ABHYASIID_PARAMETER, null != user.getAbyasiId() ? user.getAbyasiId() :"");

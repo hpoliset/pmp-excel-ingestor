@@ -67,6 +67,9 @@ public class SessionDetails {
 	
 	@JsonProperty("preceptor_mobile")
 	private String preceptorMobile;
+	
+	@JsonIgnore
+	private int firstSittingBy;
 
 	public String getEventId() {
 		return eventId;
@@ -210,6 +213,14 @@ public class SessionDetails {
 
 	public void setPreceptorMobile(String preceptorMobile) {
 		this.preceptorMobile = preceptorMobile;
+	}
+
+	public int getFirstSittingBy() {
+		return firstSittingBy;
+	}
+
+	public void setFirstSittingBy(int firstSittingBy) {
+		this.firstSittingBy = firstSittingBy;
 	}
 
 	@Override

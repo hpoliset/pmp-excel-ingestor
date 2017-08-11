@@ -32,6 +32,7 @@ import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.PMPResponse;
 import org.srcm.heartfulness.model.json.response.UpdateIntroductionResponse;
+import org.srcm.heartfulness.repository.SessionDetailsRepository;
 import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.PmpParticipantService;
 import org.srcm.heartfulness.service.ProgramService;
@@ -92,12 +93,12 @@ public class ParticipantsController {
 	 * @return A ResponseEntity containing participant details if found, and a
 	 *         HTTP status code as described in the method comment.
 	 */
-	
+
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/getparticipantlist", 
-			method = RequestMethod.POST, 
-			consumes = MediaType.APPLICATION_JSON_VALUE, 
-			produces = MediaType.APPLICATION_JSON_VALUE)
+	method = RequestMethod.POST, 
+	consumes = MediaType.APPLICATION_JSON_VALUE, 
+	produces = MediaType.APPLICATION_JSON_VALUE)
 
 	public ResponseEntity<?> getParticipantList(@RequestHeader(value = "Authorization") String authToken,
 			@RequestBody(required = true) Event event, @Context HttpServletRequest httpRequest) {
@@ -575,14 +576,14 @@ public class ParticipantsController {
 
 	}
 
-	@RequestMapping(value = "/upload/exceldata", 
+	@RequestMapping(value = "/upload/exceldata",
 			method = RequestMethod.POST, 
 			consumes = MediaType.MULTIPART_FORM_DATA_VALUE, 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 
 	public ResponseEntity<?> createParticipant(@RequestParam("file") MultipartFile multipartFile,
 			@RequestHeader(value = "Authorization") String authToken, @Context HttpServletRequest httpRequest,
-			@RequestParam("eventId")String eventId) {
+			@RequestParam("eventId")String eventId,@RequestParam(required=false,name="sessionId")String sessionId) {
 
 		String fileDetails =   "Filename         :" + multipartFile.getOriginalFilename()
 		+ "File Size     :" + multipartFile.getSize()
@@ -636,6 +637,24 @@ public class ParticipantsController {
 					updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,ErrorConstants.INVALID_EVENT_ID, StackTraceUtils.convertPojoToJson(eResponse));
 					return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
 				}
+
+				if(null != sessionId){
+					int sessionID = 0;
+					try{
+						sessionID = eventDashboardValidator.getSessionDetailsIdBySessionIdandProgramId(sessionId , Integer.parseInt(details.get(0)));
+					} catch(Exception ex){
+						LOGGER.error("Invalid session Id while uploading excel file for event {} and session {}",eventId,sessionId);
+					}
+					if(sessionID <= 0){
+						ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,ErrorConstants.INVALID_SESSION_ID);
+						updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,StackTraceUtils.convertPojoToJson(eResponse), StackTraceUtils.convertPojoToJson(eResponse));
+						return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
+					}else{
+						details.add(String.valueOf(sessionID));
+					}
+				}else{
+					details.add(String.valueOf(0));
+				}
 			}catch(Exception ex){
 
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,ErrorConstants.INVALID_EVENT_ID);
@@ -645,7 +664,7 @@ public class ParticipantsController {
 
 			ResponseEntity<?> response = participantService.validateExcelAndPersistParticipantData(multipartFile.getOriginalFilename(), multipartFile.getBytes(),accessLog,details);
 			details.clear();
-			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED,null, StackTraceUtils.convertPojoToJson(response));
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS,null, StackTraceUtils.convertPojoToJson(response));
 			return response;
 
 		} catch(Exception ex){

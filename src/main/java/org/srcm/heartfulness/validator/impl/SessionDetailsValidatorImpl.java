@@ -365,7 +365,7 @@ public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 
 				userProfile = srcmRestTemplate.getAbyasiProfile(preceptorCardNo).getUserProfile()[0];
 
-				if (null == userProfile) {
+				if (null == userProfile || null == userProfile.getId()) {
 					eResponse.setError_description(ErrorConstants.INVALID_PRECEPTOR_ID_CARD_NO);
 					accessLogDetails.setErrorMessage(ErrorConstants.INVALID_PRECEPTOR_ID_CARD_NO);
 					setPMPAPIAccessLogDetailsAndPersist(accessLogDetails, eResponse);
@@ -376,6 +376,8 @@ public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 				if (null == sessionDetails.getPreceptorName() || sessionDetails.getPreceptorName().isEmpty()) {
 					sessionDetails.setPreceptorName(userProfile.getName());
 				}
+				sessionDetails.setFirstSittingBy(userProfile.getId());
+
 			} catch (HttpClientErrorException httpcee) {
 				eResponse.setError_description(ErrorConstants.INVALID_PRECEPTOR_ID_CARD_NO);
 				accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(httpcee));

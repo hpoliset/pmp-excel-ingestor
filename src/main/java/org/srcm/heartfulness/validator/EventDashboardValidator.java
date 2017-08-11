@@ -152,6 +152,8 @@ public interface EventDashboardValidator {
 	public String validateSearchParameters(SearchRequest searchRequest);
 
 	public String checkProgramAccess(List<String> emailList, String role, String eventId, String token,PMPAPIAccessLog accessLog);
+
+	public int getSessionDetailsIdBySessionIdandProgramId(String sessionId, int programId);
 			
 
 }

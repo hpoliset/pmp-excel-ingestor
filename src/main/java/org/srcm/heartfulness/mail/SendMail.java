@@ -50,7 +50,7 @@ import com.sun.mail.smtp.SMTPMessage;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:dev.mail.api.properties", ignoreUnknownFields = true, prefix = "mail.api")
+@ConfigurationProperties(locations = "classpath:prod.mail.api.properties", ignoreUnknownFields = true, prefix = "mail.api")
 public class SendMail {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendMail.class);
@@ -787,7 +787,7 @@ public class SendMail {
 			dashboardUrl= SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL;
 		}
 		
-		addParameter(EmailLogConstants.EVENT_LINK_PARAMETER, dashboardUrl + "?id="+ coordinatorEmail.getEventID());
+		addParameter(EmailLogConstants.EVENT_LINK_PARAMETER, dashboardUrl + coordinatorEmail.getEventID());
 		addParameter(EmailLogConstants.PARTICIPANTS_DETAILS_PARAMETER, sb.toString());
 
 		Calendar cal = Calendar.getInstance();

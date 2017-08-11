@@ -60,6 +60,8 @@ public class Participant {
 	private String phone;
 	private String district;
 	private String ewelcomeIdGenerationMsg;
+	private int sessionId; 
+	private int firstSittingBy;
 
 	public String getCreatedSource() {
 		return createdSource;
@@ -485,6 +487,22 @@ public class Participant {
 
 	public void setEwelcomeIdGenerationMsg(String ewelcomeIdGenerationMsg) {
 		this.ewelcomeIdGenerationMsg = ewelcomeIdGenerationMsg;
+	}
+	
+	public int getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(int sessionId) {
+		this.sessionId = sessionId;
+	}
+	
+	public int getFirstSittingBy() {
+		return firstSittingBy;
+	}
+
+	public void setFirstSittingBy(int firstSittingBy) {
+		this.firstSittingBy = firstSittingBy;
 	}
 
 	@Override

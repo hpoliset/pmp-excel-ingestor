@@ -71,8 +71,7 @@ public class SendMailToZonalAndCenterCoodinator {
 
 
 	@SuppressWarnings("unused")
-	@RequestMapping(value = "/api/mail/notify",method=RequestMethod.GET)
-	/*@Scheduled(cron = "${zone.center.coordinator.mail.notification.cron.time}")*/
+	@Scheduled(cron = "${zone.center.coordinator.mail.notification.cron.time}")
 	private void sendNotificationMailToZoneAndCenterCoordinator(){
 
 		PMPAPIAccessLog accessLogZoneWise = createPMPAPIAccessLog(DashboardConstants.ZONE_GROUP_TYPE.toUpperCase(),null);

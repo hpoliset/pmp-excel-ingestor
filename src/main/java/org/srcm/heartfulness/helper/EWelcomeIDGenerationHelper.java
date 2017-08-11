@@ -68,35 +68,30 @@ public class EWelcomeIDGenerationHelper {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	public Object generateEWelcomeId(Participant participant, int id, GeoSearchResponse geoSearchResponse,
-			CitiesAPIResponse citiesAPIResponse) {
+	public Object generateEWelcomeId(Participant participant, int id, GeoSearchResponse geoSearchResponse,CitiesAPIResponse citiesAPIResponse) {
+			
 		PMPAPIAccessLogDetails aspirantAPIAccessLogDetails = null;
 		Aspirant aspirant = new Aspirant();
 		aspirant.setCity(citiesAPIResponse.getName());
 		aspirant.setState(String.valueOf(geoSearchResponse.getStateId()));
 		aspirant.setCountry(String.valueOf(geoSearchResponse.getCountryId()));
 		SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
-		aspirant.setDateOfBirth((null != participant.getDateOfBirth()) ? sdf.format(participant.getDateOfBirth())
-				: null);
+		aspirant.setDateOfBirth((null != participant.getDateOfBirth()) ? sdf.format(participant.getDateOfBirth()): null);
 		aspirant.setDateOfJoining(null != participant.getFirstSittingDate() ? 
 				sdf.format(participant.getFirstSittingDate()) : 
 					((null != participant.getProgram().getProgramStartDate()) ? sdf.format(participant
 							.getProgram().getProgramStartDate()) : null));
-		aspirant.setEmail((null != participant.getEmail() && !participant.getEmail().isEmpty()) ? participant
-				.getEmail() : null);
-		aspirant.setFirstSittingBy(String.valueOf(participant.getProgram().getFirstSittingBy()));
-		aspirant.setSrcmGroup(0 != geoSearchResponse.getNearestCenter() ? String.valueOf(geoSearchResponse
-				.getNearestCenter()) : null);
-		aspirant.setMobile((null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty()) ? participant
-				.getMobilePhone() : null);
-		aspirant.setName((null != participant.getPrintName() && !participant.getPrintName().isEmpty()) ? participant
-				.getPrintName() : null);
-		aspirant.setFirstName((null != participant.getFirstName() && !participant.getFirstName().isEmpty()) ? participant
-				.getFirstName() : participant.getPrintName());
-		aspirant.setStreet((null != participant.getAddressLine1() && !participant.getAddressLine1().isEmpty()) ? participant
-				.getAddressLine1() : null);
-		aspirant.setStreet2((null != participant.getAddressLine2() && !participant.getAddressLine2().isEmpty()) ? participant
-				.getAddressLine2() : null);
+		
+		aspirant.setEmail((null != participant.getEmail() && !participant.getEmail().isEmpty()) ? participant.getEmail() : null);
+		aspirant.setFirstSittingBy(0 != participant.getFirstSittingBy() ? String.valueOf(participant.getFirstSittingBy()) : String.valueOf(participant.getProgram().getFirstSittingBy()));
+		//aspirant.setFirstSittingBy(String.valueOf(participant.getProgram().getFirstSittingBy()));
+		aspirant.setSrcmGroup(0 != geoSearchResponse.getNearestCenter() ? String.valueOf(geoSearchResponse.getNearestCenter()) : null);
+		aspirant.setMobile((null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty()) ? participant.getMobilePhone() : null);
+		aspirant.setName((null != participant.getPrintName() && !participant.getPrintName().isEmpty()) ? participant.getPrintName() : null);
+		aspirant.setFirstName((null != participant.getFirstName() && !participant.getFirstName().isEmpty()) ? participant.getFirstName() : participant.getPrintName());
+		aspirant.setStreet((null != participant.getAddressLine1() && !participant.getAddressLine1().isEmpty()) ? participant.getAddressLine1() : null);
+		aspirant.setStreet2((null != participant.getAddressLine2() && !participant.getAddressLine2().isEmpty()) ? participant.getAddressLine2() : null);
+				
 		aspirantAPIAccessLogDetails = new PMPAPIAccessLogDetails(id, EndpointConstants.CREATE_ASPIRANT_URI,
 				DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null,
 				StackTraceUtils.convertPojoToJson(aspirant), null);

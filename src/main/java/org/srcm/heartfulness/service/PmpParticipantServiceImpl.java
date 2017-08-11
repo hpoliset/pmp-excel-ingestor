@@ -820,6 +820,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			//participant.setProgramId(Integer.parseInt(details.get(0)));
 			//participant.setCreatedSource(PMPConstants.CREATED_SOURCE_EXCEL_VIA_DASHBOARD);
 			setParticipantEWelcomeIDStatus(pgrm,participant,PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE,null);
+			participant.setSessionId(Integer.parseInt(details.get(3)));
 		}
 		
 		try{
