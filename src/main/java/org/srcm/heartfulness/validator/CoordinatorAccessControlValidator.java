@@ -2,6 +2,8 @@ package org.srcm.heartfulness.validator;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+
+import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.ProgramCoordinators;
 import org.srcm.heartfulness.model.json.response.CoordinatorAccessControlErrorResponse;
 import org.srcm.heartfulness.model.json.response.CoordinatorAccessControlResponse;
@@ -33,7 +35,7 @@ public interface CoordinatorAccessControlValidator {
 	 * @return CoordinatorAccessControlResponse depending on the response is 
 	 * success or failure.
 	 */
-	CoordinatorAccessControlResponse validateCoordinatorRequest(String approvedBy,ProgramCoordinators pgrmCoordinators);
+	CoordinatorAccessControlResponse validateCoordinatorRequest(List<String> approverList,String approverRole,ProgramCoordinators pgrmCoordinators);
 
 	/**
 	 * This method is used to get all the program Id and auto generated
@@ -44,7 +46,7 @@ public interface CoordinatorAccessControlValidator {
 	 * @return LinkedHashMap<Integer,String> containing program Id and auto generated
 	 * event Id's for the logged in user have conducted.
 	 */
-	LinkedHashMap<Integer,String> getProgramAndagEventIds(List<String> emailList,String userRole);
+	LinkedHashMap<Integer,String> getProgramAndagEventIds(List<String> emailList, String userRole, String authToken, PMPAPIAccessLog accessLog);
 	
 
 }

@@ -219,8 +219,7 @@ public class SrcmRestTemplate extends RestTemplate {
 				+ getBase64Credentials(clientIdToCreateProfile, clientSecretToCreateProfile));
 		HttpEntity<?> httpEntity = new HttpEntity<Object>(bodyParams, httpHeaders);
 		ResponseEntity<String> response = this.exchange(accessTokenUri, HttpMethod.POST, httpEntity, String.class);
-		SrcmAuthenticationResponse tokenResponse = mapper.readValue(response.getBody(),
-				SrcmAuthenticationResponse.class);
+		SrcmAuthenticationResponse tokenResponse = mapper.readValue(response.getBody(),SrcmAuthenticationResponse.class);
 
 		httpHeaders.clear();
 		bodyParams.clear();

@@ -54,7 +54,9 @@ public class PMPConstants {
 	public static final String CREATED_SOURCE_EXCEL 				= 	"EXCEL";
 	public static final String CREATED_SOURCE_SMS 					= 	"SMS";
 	public static final String CREATED_SOURCE_DASHBOARD 			= 	"DASHBOARD";
+	public static final String CREATED_SOURCE_DASHBOARD_v2 			= 	"DASHBOARD_v2";
     public static final String CREATED_SOURCE_EXCEL_VIA_DASHBOARD 	= 	"EXCEL_VIA_DASHBOARD";
     public static final String CREATED_SOURCE_EXCEL_VIA_MOBILE 		= 	"EXCEL_VIA_MOBILE";
+    public static final String STATUS_ACTIVE						= 	"ACTIVE";
     
 }

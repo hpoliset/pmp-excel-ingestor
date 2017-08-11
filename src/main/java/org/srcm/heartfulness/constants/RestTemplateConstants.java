@@ -19,5 +19,8 @@ public class RestTemplateConstants {
 	public static final String PARAMS_FORMATTED_ADDRESS 	= 	"formatted_address";
 	public static final String ACCEPT 						= 	"Accept";
 	public static final String REQUEST_PARAMS				=	"request params" ;
+	public static final String CLIENT_ID					=	"client_id" ;
+	public static final String CLIENT_SECRET				=	"client_secret" ;
+	
 	
 }

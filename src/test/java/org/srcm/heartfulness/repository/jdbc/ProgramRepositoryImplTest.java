@@ -9,11 +9,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.srcm.heartfulness.PmpApplication;
+import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 /**
@@ -42,6 +45,7 @@ public class ProgramRepositoryImplTest {
         Assert.assertNotEquals("Incorrect Id => Not able save?", 0, program.getProgramId());
 
 //         delete the new created row from the database
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "program_coordinators","coordinator_history");
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "program", "program_id=?", program.getProgramId());
     }
 
@@ -87,6 +91,7 @@ public class ProgramRepositoryImplTest {
                 updatedProgram.getCoordinatorMobile());
 
         // Clean up the new created/updated row.
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "program_coordinators","coordinator_history");
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "program", "program_id=?", program.getProgramId());
     }
 
@@ -97,9 +102,10 @@ public class ProgramRepositoryImplTest {
 
         programRepository.save(program);
         participant.setProgram(program);
+       
 
         participantRepository.save(participant);
-        Assert.assertNotEquals("Incorrect Id => Not able save?", 0, participant.getId());
+        Assert.assertNotEquals("Incorrect Id => Not able to save?", 0, participant.getId());
 
         Participant newParticipant = participantRepository.findById(participant.getId());
         Assert.assertNotNull("Could not find newly created object", newParticipant);
@@ -128,6 +134,7 @@ public class ProgramRepositoryImplTest {
         Assert.assertNotNull("Address1 is null", updatedParticipant.getAddressLine1());
 
         // Clean up the new created/updated row.
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "program_coordinators","coordinator_history");
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "program", "program_id=?", program.getProgramId());
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "participant", "id=?", newParticipant.getId());
     }
@@ -162,6 +169,7 @@ public class ProgramRepositoryImplTest {
         program.setWelcomeCardSignerIdCardNumber("INARBS345");
 
         program.setRemarks("Attended BSC, MSC 1st year students");
+        program.setIsEwelcomeIdGenerationDisabled(EventDetailsUploadConstants.EWELCOME_ID_ENABLED_STATE);
         return program;
     }
 

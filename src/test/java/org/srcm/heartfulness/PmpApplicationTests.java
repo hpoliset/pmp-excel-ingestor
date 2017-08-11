@@ -21,6 +21,7 @@ import org.srcm.heartfulness.enumeration.ExcelType;
 import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractorFactory;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.util.ExcelParserUtils;
 import org.srcm.heartfulness.util.InvalidExcelFileException;
@@ -39,13 +40,16 @@ public class PmpApplicationTests {
     @Autowired
     private ProgramRepository programRepository;
     
+    @Autowired
+    private ParticipantRepository participantRepository;
+    
     private String eWelcomeIdCheckbox = "off";
 
 	@Test
 	public void parseAndPersistValidV21ExcelFile() throws IOException, InvalidExcelFileException {
 
         // start with clean slate.
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "program_coordinators","coordinator_history","program", "participant");
 
         String fileName = "v21ValidEventDate.xlsm";
         Resource v2ValidResource = resourceLoader.getResource("classpath:" + fileName);
@@ -55,7 +59,7 @@ public class PmpApplicationTests {
         Program validV21Program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
         List<Participant> participantList = validV21Program.getParticipantList();
         programRepository.save(validV21Program);
-
+        participantRepository.save(validV21Program.getParticipantList(), validV21Program);
         //Validate that is stored.
         Program newProgram = programRepository.findById(validV21Program.getProgramId());
         Assert.assertNotNull("Could not find newly created object", newProgram);
@@ -65,19 +69,19 @@ public class PmpApplicationTests {
         //Let's insert the excel file one more time.
         Program validV21ProgramDuplicate = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
         programRepository.save(validV21ProgramDuplicate);
+        participantRepository.save(validV21ProgramDuplicate.getParticipantList(), validV21ProgramDuplicate);
 
-        Assert.assertEquals("Should not have create a new row", validV21ProgramDuplicate.getProgramId(),
-                validV21Program.getProgramId());
+        Assert.assertEquals("Should not have create a new row", validV21ProgramDuplicate.getProgramId(),  validV21Program.getProgramId());
 
         // delete it ...
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "program_coordinators","coordinator_history","program", "participant");
 
     }
 
     @Test
     public void parseAndPersistDay1AndDay3() throws IOException, InvalidExcelFileException {
         // delete it ... start with a clean slate
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant");
+    	JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant","program_coordinators","coordinator_history");
 
         String fileName = "HFN-DATA-MH-PUNE-INPSAD332-20151016.xlsx";
         Resource v2ValidResource = resourceLoader.getResource("classpath:" + fileName);
@@ -89,6 +93,7 @@ public class PmpApplicationTests {
         validV21Program.setParticipantList(participantList);
 
         programRepository.save(validV21Program);
+        participantRepository.save(validV21Program.getParticipantList(), validV21Program);
 
         //Validate that is stored.
         Program newProgram = programRepository.findById(validV21Program.getProgramId());
@@ -105,6 +110,7 @@ public class PmpApplicationTests {
         List<Participant> participantListDuplicate = validV21ProgramDuplicate.getParticipantList();
         validV21ProgramDuplicate.setParticipantList(participantListDuplicate);
         programRepository.save(validV21ProgramDuplicate);
+        participantRepository.save(validV21ProgramDuplicate.getParticipantList(), validV21ProgramDuplicate);
 
         Assert.assertEquals("Should not have create a new row", validV21ProgramDuplicate.getProgramId(),
                 validV21Program.getProgramId());
@@ -114,7 +120,7 @@ public class PmpApplicationTests {
         System.out.println("participant.getWelcomeCardDate() = " + participant.getWelcomeCardDate());
 
         // delete it ...
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant");
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, "program_coordinators","coordinator_history","program", "participant");
     }
 
 }

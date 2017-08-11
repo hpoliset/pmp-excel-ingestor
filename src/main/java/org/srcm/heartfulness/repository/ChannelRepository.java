@@ -1,8 +1,10 @@
 package org.srcm.heartfulness.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import org.srcm.heartfulness.model.Channel;
+import org.srcm.heartfulness.model.json.response.ProgramChannelType;
 
 /**
  * Repository interface for managing <code>Channel</code> domain objects.
@@ -35,4 +37,27 @@ public interface ChannelRepository {
 	 */
 	public List<Channel> findAllActiveChannelsBasedOnRole(String role);
 
+	/**
+	 * Method is used to get the channel Id 
+	 * based on the channel passed.
+	 * @param channel to retrieve channel Id.
+	 * @return channel Id.
+	 */
+	public int getChannelId(String channel);
+
+	/**
+	 * Method is used to get the channel types based on channel Id.
+	 * @param channelId is used to retrieve channel types.
+	 * @return List<ProgramChannelType> channelTypes.
+	 */
+	public List<ProgramChannelType> getChannelType(int channelId);
+	
+	/**
+	 * Method is used to check whether channel is 
+	 * available for the provided channel type Id.
+	 * @param channelTypeId Id of channel type.
+	 * @return true if channel is available for the
+	 * provided id.
+	 */
+	public boolean validateChannelType(int channelTypeId);
 }

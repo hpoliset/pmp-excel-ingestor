@@ -1,7 +1,9 @@
 package org.srcm.heartfulness.repository;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import org.springframework.dao.DataAccessException;
@@ -9,6 +11,8 @@ import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.ProgramPermissionLetterdetails;
+import org.srcm.heartfulness.model.ProgramTestimonialDetails;
+import org.srcm.heartfulness.model.UploadedFiles;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.SearchRequest;
 
@@ -120,6 +124,8 @@ public interface ProgramRepository {
 	 * Fetch the list of participants for the given program ID
 	 * 
 	 * @param decryptedProgramId
+	 * @param mail
+	 * @param role
 	 * @return List<Participant>
 	 */
 	List<Participant> getParticipantList(int decryptedProgramId,List<String> mail,String role);
@@ -151,6 +157,13 @@ public interface ProgramRepository {
 	 * @return
 	 */
 	int getProgramIdByEventId(String eventID);
+	
+	/**
+	 * Fetch program id and created Source by auto generated event Id.
+	 * @param eventId, input param to fetch program id and created Source.
+	 * @return List<String> with program Id and created Source details
+	 */
+	public List<String> getProgramIdAndCreatedSourceByEventId(String eventId);
 
 	/**
 	 * Fetch the count of the events available for the given mail and based on
@@ -187,7 +200,8 @@ public interface ProgramRepository {
 	 * @param seqId
 	 * @param programId
 	 * @param mail
-	 * @return
+	 * @param role
+	 * @return Participant
 	 */
 	Participant findParticipantBySeqIdAndRole(String seqId, int programId,List<String> mail,String role);
 
@@ -323,7 +337,7 @@ public interface ProgramRepository {
 	 * @param role
 	 * @return
 	 */
-	int getProgramCountWithUserRoleAndEmailId(/*String email*/List<String> emailList, String role);
+	//int getProgramCountWithUserRoleAndEmailId(/*String email*/List<String> emailList, String role);
 
 	/**
 	 * Get the list of programs depending on the coordinator email and role.
@@ -334,7 +348,7 @@ public interface ProgramRepository {
 	 * @param pageSize
 	 * @return
 	 */
-	List<Program> getEventsByEmailAndRole(/*String email*/List<String> emailList, String role, int offset, int pageSize);
+	//List<Program> getEventsByEmailAndRole(List<String> emailList, String role, int offset, int pageSize);
 
 	/**
 	 * Method to get the program count w.r.t the search params provided and with
@@ -345,7 +359,7 @@ public interface ProgramRepository {
 	 * @param role
 	 * @return
 	 */
-	int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList/*String email*/, String role);
+	//int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList/*String email*/, String role);
 
 	/**
 	 * Method to search the events from the HFN Backend using few params.
@@ -356,7 +370,7 @@ public interface ProgramRepository {
 	 * @param offset
 	 * @return
 	 */
-	List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList/*String email*/, String role, int offset);
+	//List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList/*String email*/, String role, int offset);
 
 	/**
 	 * Method to check whether the auto generated event id already exists or
@@ -423,6 +437,60 @@ public interface ProgramRepository {
 	 * @return LinkedHashMap<Integer,String> containing program Id and auto generated
 	 * event Id's for the logged in user have conducted.
 	 */
-	LinkedHashMap<Integer,String> getListOfProgramIdsByEmail(List<String> emailList,String userRole);
+	LinkedHashMap<Integer,String> getListOfProgramIdsByEmail(List<String> emailList, String userRole, String coordinatorType, List<String> mysrcmCenters);
+	
+	/**
+	 * This method is used to get the program ids from database and upload it
+	 * to Amazon SQS.
+	 * @return List<Integer> program Ids.
+	 */
+	public List<Integer> getProgramIdsForSQSPush();
+	
+	/**
+	 * Below method is used to store upload file
+	 * details in PMP database.
+	 * @param uploadFiles Object which contains upload file details
+	 */
+	public void saveUploadedFiles(UploadedFiles uploadFiles);
+	
+	/**
+	 * Method to save the coordinator testimonial name and path details in
+	 * the PMP with reference to the program.
+	 * 
+	 * @param testimonialDetails
+	 */
+	void saveProgramTestimonialDetails(ProgramTestimonialDetails testimonialDetails);
+
+	/**
+	 * Method to get the list of coordinator testimonials available for
+	 * the program with the given program Id.
+	 * 
+	 * @param programId
+	 * @return <code>List<TestimonialDetails></code>
+	 */
+	List<ProgramTestimonialDetails> getListOfTestimonials(int programId);
+
+	void updateProgramStatus(Program program, String programStatus);
+	
+	Program getProgramByEmailAndRole(List<String> emailList,String userRole,String agEventId,String coordinatorType,List<String> mysrcmCenters);
+	
+	public int getProgramCountForLogInCoordinator(List<String> emailList, String role,String coordinatorType,List<String> centers);
+	
+	public List<Program> getEventsByEmailAndRole(List<String> emailList, String role, int offset, int pageSize,String coordinatorType,List<String> mysrcmCenters);
+	
+	public int getPgrmCountBySrchParamsForLogInCoordinator(SearchRequest searchRequest, List<String> emailList, String role,String coordinatorType,List<String> centers);
+	
+	public List<Program> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList, String role, int offset,String coordinatorType,List<String> mysrcmCenters);
+
+	public ArrayList<String> getSessionAndProgramDatesByProgramId(int programId);
+
+	/**
+	 * Method to get Program Id and Maximum session date for program auto generated Id
+	 * @param autoGeneratedEventId
+	 * @return ArrayList<String>, List of programId and Maximum session date if available
+	 */
+	public ArrayList<String> getProgramIdAndMaxSessionDate(String autoGeneratedEventId);
+
+	public Program getProgramByEmailAndRoleForParticipant(List<String> emailList, String userRole, String eventId);
 
 }

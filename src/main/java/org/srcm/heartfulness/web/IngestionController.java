@@ -5,9 +5,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Context;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -58,14 +60,20 @@ public class IngestionController {
 	}
 
 	@RequestMapping(value = "/ingest/processUpload", method = RequestMethod.POST)
-	public String processFileUpload(HttpServletRequest request, @RequestParam MultipartFile excelDataFile, ModelMap modelMap
+	public String processFileUpload(@Context HttpServletRequest httpRequest, @RequestParam MultipartFile excelDataFile, ModelMap modelMap
 			,@ModelAttribute("generateEWelcomeId") String eWelcomeIdCheckbox)
-			throws InvalidExcelFileException, IOException {
+					throws InvalidExcelFileException, IOException {
 
 		MultipartFile[] uploadedFile = new MultipartFile[]{excelDataFile};
-		List<ExcelUploadResponse> responseList = pmpIngestionService.parseAndPersistExcelFile(uploadedFile,eWelcomeIdCheckbox);
-		modelMap.addAttribute("uploadReponse", responseList);
-		return "success";
+		UserDetails userDetails = null;
+		try{
+			userDetails = (UserDetails)httpRequest.getSession().getAttribute("Authentication");
+			List<ExcelUploadResponse> responseList = pmpIngestionService.parseAndPersistExcelFile(uploadedFile,eWelcomeIdCheckbox,userDetails.getUsername());
+			modelMap.addAttribute("uploadReponse", responseList);
+			return "success";
+		} catch(Exception ex){
+			return "redirect:/login";
+		}
 	}
 
 	/**
@@ -98,12 +106,17 @@ public class IngestionController {
 	 */
 	@RequestMapping(value = "/ingest/processBulkUpload", method = RequestMethod.POST)
 	public String processFileUpload(@RequestParam MultipartFile uploadedExcelFiles[], ModelMap modelMap,
-			HttpServletResponse response, HttpServletRequest request,@ModelAttribute("generateEWelcomeId") String eWelcomeIdCheckbox) throws IOException {
+			HttpServletResponse response, HttpServletRequest httpRequest,@ModelAttribute("generateEWelcomeId") String eWelcomeIdCheckbox) throws IOException {
 
-		List<ExcelUploadResponse> responseList = pmpIngestionService.parseAndPersistExcelFile(uploadedExcelFiles,eWelcomeIdCheckbox);
-		modelMap.addAttribute("uploadReponse", responseList);
-		return "bulkUploadResponse";
-
+		UserDetails userDetails = null;
+		try{
+			userDetails = (UserDetails)httpRequest.getSession().getAttribute("Authentication");
+			List<ExcelUploadResponse> responseList = pmpIngestionService.parseAndPersistExcelFile(uploadedExcelFiles,eWelcomeIdCheckbox,userDetails.getUsername());
+			modelMap.addAttribute("uploadReponse", responseList);
+			return "bulkUploadResponse";
+		} catch(Exception ex){
+			return "redirect:/login";
+		}
 	}
 
 }

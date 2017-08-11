@@ -12,6 +12,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
@@ -21,16 +22,20 @@ import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.constants.PMPConstants;
+import org.srcm.heartfulness.enumeration.CoordinatorPosition;
 import org.srcm.heartfulness.enumeration.EventSearchField;
 import org.srcm.heartfulness.helper.EWelcomeIDGenerationHelper;
 import org.srcm.heartfulness.mail.CoordinatorAccessControlMail;
 import org.srcm.heartfulness.model.Coordinator;
 import org.srcm.heartfulness.model.CoordinatorAccessControlEmail;
 import org.srcm.heartfulness.model.CoordinatorEmail;
+import org.srcm.heartfulness.model.EventPagination;
+import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.PMPAPIAccessLogDetails;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
 import org.srcm.heartfulness.model.ProgramCoordinators;
+import org.srcm.heartfulness.model.json.request.DashboardRequest;
 import org.srcm.heartfulness.model.json.request.Event;
 import org.srcm.heartfulness.model.json.request.EventAdminChangeRequest;
 import org.srcm.heartfulness.model.json.request.ParticipantRequest;
@@ -38,10 +43,15 @@ import org.srcm.heartfulness.model.json.request.SearchRequest;
 import org.srcm.heartfulness.model.json.response.AbhyasiResult;
 import org.srcm.heartfulness.model.json.response.AbhyasiUserProfile;
 import org.srcm.heartfulness.model.json.response.CitiesAPIResponse;
+import org.srcm.heartfulness.model.json.response.CoordinatorPositionResponse;
 import org.srcm.heartfulness.model.json.response.EWelcomeIDErrorResponse;
+import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.GeoSearchResponse;
+import org.srcm.heartfulness.model.json.response.PositionAPIResult;
 import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
+import org.srcm.heartfulness.repository.UserRepository;
+import org.srcm.heartfulness.rest.template.DashboardRestTemplate;
 import org.srcm.heartfulness.rest.template.SrcmRestTemplate;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
@@ -86,6 +96,15 @@ public class ProgramServiceImpl implements ProgramService {
 
 	@Autowired
 	CoordinatorAccessControlMail coordinatorAccessControlMail;
+
+	@Autowired
+	UserRepository userRepository;
+
+	@Autowired
+	DashboardRestTemplate dashboardRestTemplate;
+
+	@Autowired
+	DashboardService dashboardService;
 
 	/*
 	 * (non-Javadoc)
@@ -205,7 +224,7 @@ public class ProgramServiceImpl implements ProgramService {
 	 * @param eventId
 	 * @return List<ParticipantRequest>
 	 */
-	@Override
+	/*@Override
 	public List<ParticipantRequest> getParticipantByEventId(String eventId,List<String> mail,String role) {
 		List<Participant> participantList = new ArrayList<Participant>();
 		List<ParticipantRequest> participantReqList = new ArrayList<ParticipantRequest>();
@@ -298,10 +317,45 @@ public class ProgramServiceImpl implements ProgramService {
 				participantReq.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
 						.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
 				participantReq.setEwelcomeIdRemarks(participant.getEwelcomeIdRemarks());
+				participantReq.setPhone(participant.getPhone());
+				participantReq.setDistrict(participant.getDistrict());
+				participantReq.setAgeGroup(participant.getAgeGroup());
 				participantReqList.add(participantReq);
 			}
 			return participantReqList;
 		}
+	}*/
+
+	/**
+	 * Returns the list of Participant details for a given auto
+	 * GeneratedEventId.
+	 * 
+	 * @param eventId
+	 * @return List<ParticipantRequest>
+	 */
+	@Override
+	public Object getParticipantByEventId(String eventId,List<String> mailList,String role, String authToken, PMPAPIAccessLog accessLog) {
+
+		LOGGER.info("Trying to get participant list for log in user {}",accessLog.getUsername());
+
+		List<Participant> participantList = new ArrayList<Participant>();
+		List<ParticipantRequest> participantReqList = new ArrayList<ParticipantRequest>();
+		Program program = programRepository.getProgramByEmailAndRoleForParticipant(mailList, role, eventId);
+		if(null != program && program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE)){
+			if (program.getProgramId() == 0) {
+				return participantReqList;
+			} else {
+				participantList = participantRepository.findByProgramId(program.getProgramId());
+				//participantList = programRepository.getParticipantList(program.getProgramId(), mailList, role);
+				return getParticipantList(eventId, participantList);
+			} 
+		}else{
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, ErrorConstants.UNAUTHORIZED_GETLIST_PARTICIPANT_ACCESS + eventId);
+			accessLog.setStatus(ErrorConstants.STATUS_FAILED);
+			accessLog.setErrorMessage(ErrorConstants.UNAUTHORIZED_GETLIST_PARTICIPANT_ACCESS + eventId);
+			return eResponse;
+		}
+
 	}
 
 	/**
@@ -551,6 +605,16 @@ public class ProgramServiceImpl implements ProgramService {
 	}
 
 	/**
+	 * Fetch program id and created Source by auto generated event Id.
+	 * @param eventId, input param to fetch program id and created Source.
+	 * @return List<String> with program Id and created Source details
+	 */
+	@Override
+	public List<String> getProgramIdAndCreatedSourceByEventId(String eventId){
+		return programRepository.getProgramIdAndCreatedSourceByEventId(eventId);
+	}
+
+	/**
 	 * Service to update the participant introduced status for the given
 	 * participant Ids of an given eventID.
 	 * 
@@ -679,11 +743,12 @@ public class ProgramServiceImpl implements ProgramService {
 	 * @param EventId
 	 * @return Event
 	 */
-	@Override
-	public Event getEventDetails(List<String> emailList, String userRole, String agEventId) {
+	/*@Override
+	public Event getEventDetails(List<String> emailList, String userRole, String eventId) {
 		Event eventDetails = new Event();
-		SimpleDateFormat convertedsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
-		Program program = programRepository.getProgramByEmailAndRole(emailList, userRole, agEventId);
+		SimpleDateFormat convertedsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);	
+		Program program = programRepository.getProgramByEmailAndRole(emailList, userRole, eventId);
+
 		eventDetails.setProgramChannel(program.getProgramChannel());
 		eventDetails.setProgramName(program.getProgramName());
 		if (null == program.getProgramStartDate()) {
@@ -738,8 +803,14 @@ public class ProgramServiceImpl implements ProgramService {
 		eventDetails.setIsEwelcomeIdGenerationDisabled(program.getIsEwelcomeIdGenerationDisabled());
 		eventDetails.setIsReadOnly(program.getIsReadOnly());
 		eventDetails.setJiraIssueNumber(program.getJiraIssueNumber());
+		eventDetails.setBatchDescription(program.getBatchDescription());
+		eventDetails.setProgramChannelType(program.getProgramChannelType());
+		eventDetails.setProgramAddress(program.getProgramAddress());
+		eventDetails.setProgramDistrict(program.getProgramDistrict());
+		eventDetails.setOrganizationContactDesignation(program.getOrganizationContactDesignation());
+		eventDetails.setProgramStatus(program.getProgramStatus());
 		return eventDetails;
-	}
+	}*/
 
 	/**
 	 * Retrieve <code>Auto generated eventId</code> from the data store by
@@ -769,46 +840,60 @@ public class ProgramServiceImpl implements ProgramService {
 	@Override
 	@SuppressWarnings("unused")
 	public String generateeWelcomeID(Participant participant, int id) {
+		
 		if (participant.getId() > 0 && participant.getProgramId() > 0) {
+		
 			if (participant.getSeqId() != null && participant.getSeqId().length() == 4) {
+				
 				if (participant.getWelcomeCardNumber() == null || participant.getWelcomeCardNumber().isEmpty()
 						|| !participant.getWelcomeCardNumber().matches(ExpressionConstants.EWELCOME_ID_REGEX)) {
-					if (0 == participant.getProgram().getFirstSittingBy()) {
-						return "Please check your preceptor ID and update event(First Sitting by value is empty)";
+					
+					//check first sitting by value
+					if(participant.getFirstSittingBy() <= 0){
+						if (0 == participant.getProgram().getFirstSittingBy()) {
+							return "Please check your preceptor ID and update event(First Sitting by value is empty)";
+						}
 					}
+					
 					// check whether participant already got ewelcomeID or not
 					String partcipantEwelcomeID = fetchParticipantEwelcomeID(participant, id);
 					if (null != partcipantEwelcomeID) {
 						return partcipantEwelcomeID;
 					} else {
+						
+						//get GeoSearchresponse
 						Object objResponse = eWelcomeIDGenerationHelper.getGeoSearchResponse(participant, id);
 						if (objResponse instanceof GeoSearchResponse) {
+							
 							GeoSearchResponse geoSearchResponse = (GeoSearchResponse) objResponse;
 							if (null != geoSearchResponse) {
-								Object citiesObj = eWelcomeIDGenerationHelper.getCitiesAPIResponse(geoSearchResponse,
-										id, participant);
+								
+								//get City Response
+								Object citiesObj = eWelcomeIDGenerationHelper.getCitiesAPIResponse(geoSearchResponse,id, participant);
 								if (citiesObj instanceof CitiesAPIResponse) {
 									CitiesAPIResponse citiesAPIResponse = (CitiesAPIResponse) citiesObj;
 									if (null != citiesAPIResponse) {
-										Object aspirantobj = eWelcomeIDGenerationHelper.generateEWelcomeId(participant,
-												id, geoSearchResponse, citiesAPIResponse);
+										
+										//generate eWelcome Id
+										Object aspirantobj = eWelcomeIDGenerationHelper.generateEWelcomeId(participant,id, geoSearchResponse, citiesAPIResponse);
+												
 										if (aspirantobj instanceof String) {
 											String eWelcomeID = (String) aspirantobj;
 											if (null != eWelcomeID) {
-												participant.getProgram().setSrcmGroup(
-														String.valueOf(geoSearchResponse.getNearestCenter()));
+												
+												participant.getProgram().setSrcmGroup(String.valueOf(geoSearchResponse.getNearestCenter()));
 												participant.setWelcomeCardNumber(eWelcomeID);
 												participant.setWelcomeCardDate(new Date());
 												participant.setIsEwelcomeIdInformed(0);
 												participant.setIntroduced(1);
 												participant.setEwelcomeIdRemarks(null);
-												participant.setIntroducedBy(participant.getProgram()
-														.getCoordinatorEmail());
+												participant.setIntroducedBy(participant.getProgram().getCoordinatorEmail());
 												participant.setEwelcomeIdState(PMPConstants.EWELCOMEID_COMPLETED_STATE);
 												participant.setIntroductionDate(null != participant.getIntroductionDate() ? participant.getIntroductionDate() : null != participant.getFirstSittingDate()?participant.getFirstSittingDate():participant.getProgram().getProgramStartDate());
 												participant.setIntroduced(1);
 												participantRepository.updateParticipantEwelcomeIDDetails(participant);
 												return "success";
+												
 											} else {
 												return "Error While generating eWelcomeID";
 											}
@@ -1109,14 +1194,14 @@ public class ProgramServiceImpl implements ProgramService {
 		return programRepository.getProgramDetailsToGenerateEwelcomeIDById(programId);
 	}
 
-	@Override
+	/*@Override
 	public int getProgramCountWithUserRoleAndEmailId(List<String> emailList, String role) {
 		return programRepository.getProgramCountWithUserRoleAndEmailId(emailList, role);
-	}
+	}*/
 
-	@Override
-	public List<Event> getEventListByEmailAndRole(List<String> emailList, String role, int offset,
-			int pageSize) {
+	/*@Override
+	public List<Event> getEventListByEmailAndRole(List<String> emailList, String role, int offset,int pageSize) {
+
 		List<Event> eventList = new ArrayList<Event>();
 		List<Program> programList = programRepository.getEventsByEmailAndRole(emailList, role, offset, pageSize);
 		SimpleDateFormat convertedsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
@@ -1157,31 +1242,45 @@ public class ProgramServiceImpl implements ProgramService {
 			event.setRemarks(program.getRemarks());
 			event.setJiraIssueNumber(program.getJiraIssueNumber());
 			event.setIsReadOnly(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE);
+			event.setBatchDescription(program.getBatchDescription());
+			event.setProgramChannelType(program.getProgramChannelType());
+			event.setProgramAddress(program.getProgramAddress());
+			event.setProgramDistrict(program.getProgramDistrict());
+			event.setProgramZone(program.getProgramZone());
+			event.setProgramCenter(program.getProgramCenter());
+			event.setOrganizationContactName(program.getOrganizationContactName());
+			event.setOrganizationContactDesignation(program.getOrganizationContactDesignation());
+			event.setOrganizationContactEmail(program.getOrganizationContactEmail());
+			event.setOrganizationContactMobile(program.getOrganizationContactMobile());
+			event.setCoordinatorAbhyasiId(program.getCoordinatorAbhyasiId());
+			event.setCoordinatorName(program.getCoordinatorName());
+			event.setCoordinatorEmail(program.getCoordinatorEmail());
+			event.setCoordinatorMobile(program.getCoordinatorMobile());
 			eventList.add(event);
 		}
 
 		return eventList;
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public int getPgrmCountBySrchParamsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList,String role) {
 		for (EventSearchField searchField : EventSearchField.values()) {
 			if (searchField.name().equals(searchRequest.getSearchField())) {
 				searchRequest.setSearchField(searchField.getValue());
 			}
-			/*if (searchField.name().equals(searchRequest.getSortBy())) {
+
+			if (searchField.name().equals(searchRequest.getSortBy())) {
 				searchRequest.setSortBy(searchField.getValue());
-			}*/
+			}
 		}
 		return programRepository.getPgrmCountBySrchParamsWithUserRoleAndEmailId(searchRequest, emailList, role);
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public List<Event> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList,String role, int offset) {
 		List<Event> eventList = new ArrayList<Event>();
 
-		List<Program> programList = programRepository.searchEventsWithUserRoleAndEmailId(searchRequest, emailList,
-				role, offset);
+		List<Program> programList = programRepository.searchEventsWithUserRoleAndEmailId(searchRequest, emailList,role, offset);
 
 		SimpleDateFormat convertedsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
 		for (Program program : programList) {
@@ -1220,6 +1319,20 @@ public class ProgramServiceImpl implements ProgramService {
 			event.setPreceptorIdCardNumber(program.getPreceptorIdCardNumber());
 			event.setJiraIssueNumber(program.getJiraIssueNumber());
 			event.setIsReadOnly(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE);
+			event.setBatchDescription(program.getBatchDescription());
+			event.setProgramChannelType(program.getProgramChannelType());
+			event.setProgramAddress(program.getProgramAddress());
+			event.setProgramDistrict(program.getProgramDistrict());
+			event.setProgramZone(program.getProgramZone());
+			event.setProgramCenter(program.getProgramCenter());
+			event.setOrganizationContactName(program.getOrganizationContactName());
+			event.setOrganizationContactDesignation(program.getOrganizationContactDesignation());
+			event.setOrganizationContactEmail(program.getOrganizationContactEmail());
+			event.setOrganizationContactMobile(program.getOrganizationContactMobile());
+			event.setCoordinatorAbhyasiId(program.getCoordinatorAbhyasiId());
+			event.setCoordinatorName(program.getCoordinatorName());
+			event.setCoordinatorEmail(program.getCoordinatorEmail());
+			event.setCoordinatorMobile(program.getCoordinatorMobile());
 			eventList.add(event);
 		}
 
@@ -1227,13 +1340,13 @@ public class ProgramServiceImpl implements ProgramService {
 			if (searchRequest.getSearchField().equals(searchField.getValue())) {
 				searchRequest.setSearchField(searchField.name());
 			}
-			/*if (searchRequest.getSortBy().equals(searchField.getValue())) {
+			if (searchRequest.getSortBy().equals(searchField.getValue())) {
 				searchRequest.setSortBy(searchField.name());
-			}*/
+			}
 		}
 
 		return eventList;
-	}
+	}*/
 
 	/*
 	 * (non-Javadoc)
@@ -1243,8 +1356,7 @@ public class ProgramServiceImpl implements ProgramService {
 	 * .srcm.heartfulness.model.json.request.Event, int)
 	 */
 	@Override
-	public void createOrUpdateProgram(Event event, int id) throws HttpClientErrorException, JsonParseException,
-	JsonMappingException, IOException {
+	public void createOrUpdateProgram(Event event, int id) {
 		SimpleDateFormat initialsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
 		Map<String, String> errors = new HashMap<String, String>();
 		errors = eventDashboardValidator.checkMandatoryEventFields(event);
@@ -1252,12 +1364,11 @@ public class ProgramServiceImpl implements ProgramService {
 			event.setErrors(errors);
 			event.setStatus(ErrorConstants.STATUS_FAILED);
 		} else {
-			Program program = programRepository
-					.findByAutoGeneratedEventId(null != event.getAutoGeneratedEventId() ? event
-							.getAutoGeneratedEventId() : null);
+
+			Program program = programRepository.findByAutoGeneratedEventId(null != event.getAutoGeneratedEventId() ? event.getAutoGeneratedEventId() : null);
 			String preceptorIdValidationResponse = null;
 			String existingCoordinatorEmailId = null != program.getCoordinatorEmail() ? program.getCoordinatorEmail(): "";
-			String existingPreceptorId = null != program.getPreceptorIdCardNumber() ? program.getPreceptorIdCardNumber() : "";  
+			String existingPreceptorId = null != program.getPreceptorIdCardNumber() ? program.getPreceptorIdCardNumber() : "";
 
 			CoordinatorEmail coordinatorEmail = new CoordinatorEmail();
 			coordinatorEmail.setCoordinatorEmail( (null == program.getCoordinatorEmail() || program.getCoordinatorEmail().isEmpty()) ? event.getCoordinatorEmail() : program.getCoordinatorEmail());
@@ -1290,8 +1401,7 @@ public class ProgramServiceImpl implements ProgramService {
 					event.setErrors(errors);
 				}
 			}
-			program.setAutoGeneratedEventId(null != event.getAutoGeneratedEventId() ? event.getAutoGeneratedEventId()
-					: null);
+			program.setAutoGeneratedEventId(null != event.getAutoGeneratedEventId() ? event.getAutoGeneratedEventId(): null);
 			program.setProgramName(event.getProgramName());
 			program.setProgramZone(event.getProgramZone());
 			program.setProgramCenter(event.getProgramCenter());
@@ -1320,11 +1430,19 @@ public class ProgramServiceImpl implements ProgramService {
 			program.setWelcomeCardSignedByName(event.getWelcomeCardSignedByName());
 			program.setWelcomeCardSignerIdCardNumber(event.getWelcomeCardSignerIdCardNumber());
 			program.setRemarks(event.getRemarks());
-			program.setCreatedSource(PMPConstants.CREATED_SOURCE_DASHBOARD);
+			program.setCreatedSource(event.getCreatedSource());
 			program.setJiraIssueNumber(event.getJiraIssueNumber());
+			if(0 != program.getUserId()){
+				program.setUploaderMail(userRepository.getUserMailWithId(program.getUserId()).getEmail());
+			}
+			program.setBatchDescription(event.getBatchDescription());
+			program.setProgramAddress(event.getProgramAddress());
+			program.setProgramDistrict(event.getProgramDistrict());
+			program.setOrganizationContactDesignation(event.getOrganizationContactDesignation());
+			program.setProgramChannelType(event.getProgramChannelType());
 			if (null == event.getIsEwelcomeIdGenerationDisabled()
 					|| event.getIsEwelcomeIdGenerationDisabled().trim().isEmpty()) {
-				errors.put("is EwelcomeId Generation Disabled", "EwelcomeId Generation Disabled state is required");
+				errors.put("isEwelcomeIdGenerationDisabled", "EwelcomeId Generation Disabled state is required");
 				event.setErrors(errors);
 			} else if (event.getIsEwelcomeIdGenerationDisabled().trim()
 					.equals(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE)) {
@@ -1339,6 +1457,9 @@ public class ProgramServiceImpl implements ProgramService {
 					preceptorIdValidationResponse = coordinatorAccessControlService.validatePreceptorIDCardNumberandCreateUser(program, id, null);
 					if(null != preceptorIdValidationResponse){
 						coordinatorEmail.setEventID(program.getAutoGeneratedEventId());
+						coordinatorEmail.setJiraNumber( null != event.getJiraIssueNumber() ? event.getJiraIssueNumber() : null != program.getJiraIssueNumber() ? program.getJiraIssueNumber() :"");
+						coordinatorEmail.setUploaderMail(program.getUploaderMail());
+						coordinatorEmail.setPgrmCreatedSource(program.getCreatedSource());
 						Runnable task = new Runnable() {
 							@Override
 							public void run() {
@@ -1363,7 +1484,9 @@ public class ProgramServiceImpl implements ProgramService {
 				validateAndSaveProgramAndProgramCoordinators(id, program, existingCoordinatorEmailId);
 				participantService.updateParticipantEWelcomeIDStatuswithProgramID(program.getProgramId(),PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, preceptorIdValidationResponse);
 				event.setAutoGeneratedEventId(program.getAutoGeneratedEventId());
+				event.setProgramStatus(program.getProgramStatus());
 				event.setStatus(ErrorConstants.STATUS_SUCCESS);
+				event.setStatusDescription(program.getStatusDescription());
 				//}
 			} else {
 				event.setStatus(ErrorConstants.STATUS_FAILED);
@@ -1386,11 +1509,12 @@ public class ProgramServiceImpl implements ProgramService {
 	private void validateAndSaveProgramAndProgramCoordinators(int id, Program program, String existingCoordinatorEmailId) {
 		// coordinator validation
 		if (!program.getCoordinatorEmail().equalsIgnoreCase(existingCoordinatorEmailId)) {
+
 			coordinatorAccessControlService.validateCoordinatorEmailID(program, id);
 			// persist coordinator details
-			ProgramCoordinators programCoordinators = new ProgramCoordinators(program.getProgramId(), 0,
-					program.getCoordinatorName(), program.getCoordinatorEmail(), 1);
+			ProgramCoordinators programCoordinators = new ProgramCoordinators(program.getProgramId(), 0,program.getCoordinatorName(), program.getCoordinatorEmail(), 1);
 			coordinatorAccessControlService.saveCoordinatorDetails(programCoordinators);
+
 			CoordinatorAccessControlEmail accessControlEmail = new CoordinatorAccessControlEmail();
 			accessControlEmail.setCoordinatorEmail(program.getCoordinatorEmail());
 			accessControlEmail.setCoordinatorName(program.getCoordinatorName());
@@ -1398,6 +1522,9 @@ public class ProgramServiceImpl implements ProgramService {
 			accessControlEmail.setEventName(program.getProgramChannel());
 			accessControlEmail.setProgramId(String.valueOf(program.getProgramId()));
 			accessControlEmail.setEventPlace(program.getEventPlace());
+			accessControlEmail.setUploaderMail(program.getUploaderMail());
+			accessControlEmail.setJiraNumber(program.getJiraIssueNumber());
+			accessControlEmail.setPgrmCreatedSource(program.getCreatedSource());
 			SimpleDateFormat inputsdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 			accessControlEmail.setProgramCreateDate(inputsdf.format(program.getProgramStartDate()));
 			Runnable task = new Runnable() {
@@ -1408,6 +1535,8 @@ public class ProgramServiceImpl implements ProgramService {
 				}
 			};
 			new Thread(task, "ServiceThread").start();
+
+
 		}
 
 	}
@@ -1417,4 +1546,648 @@ public class ProgramServiceImpl implements ProgramService {
 		return programRepository.getProgramAndParticipantDetails(autoGeneratedEventId);
 	}
 
+	@Override
+	public Event updateStatus(List<String> emailList, String role, String autoGeneratedEventId, String status,Program program) {
+		program.setProgramStatus(status);
+		programRepository.updateProgramStatus(program,status);
+		return null;
+	}
+
+	@Override
+	public Program getProgramByEmailAndRole(List<String> emailList, String userRole, String eventId,String authToken,PMPAPIAccessLog accessLog) {
+		//return programRepository.getProgramByEmailAndRole(emailList, role, autoGeneratedEventId);
+		return getProgram(emailList, userRole, eventId, authToken, accessLog);
+	}
+
+	@Override
+	public Event getEventDetails(List<String> emailList, String userRole, String agEventId,String authToken,PMPAPIAccessLog accessLog) {
+
+		Event eventDetails = new Event();
+		SimpleDateFormat convertedsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);	
+		Program program = getProgram(emailList, userRole, agEventId, authToken, accessLog);
+
+		eventDetails.setProgramChannel(program.getProgramChannel());
+		eventDetails.setProgramName(program.getProgramName());
+		if (null == program.getProgramStartDate()) {
+			eventDetails.setProgramStartDate("");
+		} else {
+			try {
+				eventDetails.setProgramStartDate(convertedsdf.format(program.getProgramStartDate()));
+			} catch (Exception e) {
+				eventDetails.setProgramStartDate("");
+			}
+		}
+		if (null == program.getProgramEndDate()) {
+			eventDetails.setProgramEndDate("");
+		} else {
+			try {
+
+				eventDetails.setProgramEndDate(convertedsdf.format(program.getProgramEndDate()));
+			} catch (Exception e) {
+				eventDetails.setProgramEndDate("");
+			}
+		}
+		eventDetails.setAutoGeneratedEventId(program.getAutoGeneratedEventId());
+		eventDetails.setProgramCenter(program.getProgramCenter());
+		eventDetails.setProgramZone(program.getProgramZone());
+		eventDetails.setCoordinatorName(program.getCoordinatorName());
+		eventDetails.setCoordinatorMobile(program.getCoordinatorMobile());
+		eventDetails.setCoordinatorEmail(program.getCoordinatorEmail());
+		eventDetails.setCoordinatorAbhyasiId(program.getCoordinatorAbhyasiId());
+		eventDetails.setCoordinatorPermissionLetterPath(program.getCoordinatorPermissionLetterPath());
+		eventDetails.setEventPlace(program.getEventPlace());
+		eventDetails.setEventCity(program.getEventCity());
+		eventDetails.setEventState(program.getEventState());
+		eventDetails.setEventCountry(program.getEventCountry());
+		eventDetails.setOrganizationName(program.getOrganizationName());
+		eventDetails.setOrganizationWebSite(program.getOrganizationWebSite());
+		eventDetails.setOrganizationBatchNo(program.getOrganizationBatchNo());
+		eventDetails.setOrganizationCity(program.getOrganizationCity());
+		eventDetails.setOrganizationLocation(program.getOrganizationLocation());
+		eventDetails.setOrganizationFullAddress(program.getOrganizationFullAddress());
+		eventDetails.setOrganizationDepartment(program.getOrganizationDepartment());
+		eventDetails.setOrganizationContactName(program.getOrganizationContactName());
+		eventDetails.setOrganizationContactMobile(program.getOrganizationContactMobile());
+		eventDetails.setOrganizationContactEmail(program.getOrganizationContactEmail());
+		eventDetails.setOrganizationDecisionMakerName(program.getOrganizationDecisionMakerName());
+		eventDetails.setOrganizationDecisionMakerEmail(program.getOrganizationDecisionMakerEmail());
+		eventDetails.setOrganizationDecisionMakerPhoneNo(program.getOrganizationDecisionMakerPhoneNo());
+		eventDetails.setPreceptorName(program.getPreceptorName());
+		eventDetails.setPreceptorIdCardNumber(program.getPreceptorIdCardNumber());
+		eventDetails.setWelcomeCardSignedByName(program.getWelcomeCardSignedByName());
+		eventDetails.setWelcomeCardSignerIdCardNumber(program.getWelcomeCardSignerIdCardNumber());
+		eventDetails.setRemarks(program.getRemarks());
+		eventDetails.setIsEwelcomeIdGenerationDisabled(program.getIsEwelcomeIdGenerationDisabled());
+		eventDetails.setIsReadOnly(program.getIsReadOnly());
+		eventDetails.setJiraIssueNumber(program.getJiraIssueNumber());
+		eventDetails.setBatchDescription(program.getBatchDescription());
+		eventDetails.setProgramChannelType(program.getProgramChannelType());
+		eventDetails.setProgramAddress(program.getProgramAddress());
+		eventDetails.setProgramDistrict(program.getProgramDistrict());
+		eventDetails.setOrganizationContactDesignation(program.getOrganizationContactDesignation());
+		eventDetails.setProgramStatus(program.getProgramStatus());
+		return eventDetails;
+
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Event> getEventListByEmailAndRole(List<String> emailList, String role, int offset,String authToken, PMPAPIAccessLog accessLog,EventPagination eventPagination) {
+
+		boolean isNext = true;
+		int currentPositionValue = 0;
+		String currentPositionType =  "";
+		List<String> mysrcmZones =  new ArrayList<String>();
+		List<String> mysrcmCenters =  new ArrayList<String>();
+		List<Event> eventList = new ArrayList<Event>();
+		List<Program> programList = new ArrayList<Program>();
+
+		PMPAPIAccessLogDetails accessLogDetails = new 
+				PMPAPIAccessLogDetails(accessLog.getId(), EndpointConstants.POSITIONS_API, 
+						DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null, authToken);
+		apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);		
+		PositionAPIResult posResult = null;
+
+		try {
+
+			posResult = dashboardRestTemplate.findCoordinatorPosition(authToken);
+
+			while(isNext){
+
+				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
+
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+
+						currentPositionValue = CoordinatorPosition.COUNTRY_COORDINATOR.getPositionValue();
+						currentPositionType =  crdntrPosition.getPositionType().getName();
+
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())){
+
+						if(CoordinatorPosition.ZONE_COORDINATOR.getPositionValue() > currentPositionValue){
+							currentPositionValue = CoordinatorPosition.ZONE_COORDINATOR.getPositionValue();
+							currentPositionType =  crdntrPosition.getPositionType().getName();
+						}
+
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
+
+						if(CoordinatorPosition.CENTER_COORDINATOR.getPositionValue() > currentPositionValue){
+							currentPositionValue = CoordinatorPosition.CENTER_COORDINATOR.getPositionValue();
+							currentPositionType =  crdntrPosition.getPositionType().getName();
+						}
+					}
+
+					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+						posResult.setNext(null);
+						break;
+					}
+
+				}
+
+				if(null == posResult.getNext()){
+					isNext = false;
+				}else{
+					posResult =  dashboardRestTemplate.findCoordinatorPosition(authToken,posResult.getNext());
+				}
+			}
+
+		} catch (JsonParseException jpe) {
+			LOGGER.error("JPE : Unable to fetch coordinator position type from MYSRCM {}",jpe.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(jpe));
+		} catch (JsonMappingException jme) {
+			LOGGER.error("JME : Unable to fetch coordinator position type from MYSRCM {}",jme.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(jme));
+		} catch (IOException ioe) {
+			LOGGER.error("IOE : Unable to fetch coordinator position type from MYSRCM {}",ioe.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(ioe));
+		} catch(Exception ex){
+			LOGGER.error("EX : Unable to fetch coordinator position type from MYSRCM {}",ex.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
+		}
+
+		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
+		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+
+		if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+
+			LOGGER.info("Logged in user {} is a country coordinator ",accessLog.getUsername());
+			eventPagination.setTotalCount(programRepository.getProgramCountForLogInCoordinator(emailList, role, currentPositionType,mysrcmCenters));
+			programList = programRepository.getEventsByEmailAndRole(emailList, role, offset, eventPagination.getPageSize(),currentPositionType,mysrcmCenters);
+
+		} else if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType()) || 
+				currentPositionType.equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType()) ){
+
+			LOGGER.info("Logged in user {} is a zone/center coordinator ",accessLog.getUsername());
+			DashboardRequest dashboardReq =  new DashboardRequest();
+			dashboardReq.setCountry(PMPConstants.COUNTRY_INDIA);
+
+			ResponseEntity<List<String>> getZones = (ResponseEntity<List<String>>) dashboardService.getListOfZones(authToken, dashboardReq,accessLog, emailList,role);
+			mysrcmZones.addAll(getZones.getBody());
+
+			for(String zone : mysrcmZones){
+				DashboardRequest newRequest =  new DashboardRequest();
+				newRequest.setCountry(dashboardReq.getCountry());
+				newRequest.setZone(zone);
+				ResponseEntity<List<String>> getCenters = (ResponseEntity<List<String>>) dashboardService.getCenterList(authToken, newRequest,accessLog, emailList,role);
+				mysrcmCenters.addAll(getCenters.getBody());
+			}
+
+			LOGGER.info("Center information for log in user {} is {}",accessLog.getUsername(),mysrcmCenters.toString());
+
+			eventPagination.setTotalCount(programRepository.getProgramCountForLogInCoordinator(emailList, role, currentPositionType,mysrcmCenters));
+			programList = programRepository.getEventsByEmailAndRole(emailList, role, offset, eventPagination.getPageSize(),currentPositionType,mysrcmCenters);
+
+		} else{
+
+			LOGGER.info("Logged in user {} is a batch coordinator ",accessLog.getUsername());
+			eventPagination.setTotalCount(programRepository.getProgramCountForLogInCoordinator(emailList, role, currentPositionType,mysrcmCenters));
+			programList = programRepository.getEventsByEmailAndRole(emailList, role, offset, eventPagination.getPageSize(),currentPositionType,mysrcmCenters);
+		}
+
+		SimpleDateFormat convertedsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
+		for (Program program : programList) {
+			Event event = new Event();
+			event.setAutoGeneratedEventId(program.getAutoGeneratedEventId());
+			event.setProgramChannel(program.getProgramChannel());
+			event.setProgramName(program.getProgramName());
+			if (null == program.getProgramStartDate()) {
+				event.setProgramStartDate("");
+			} else {
+				try {
+					event.setProgramStartDate(convertedsdf.format(program.getProgramStartDate()));
+				} catch (Exception e) {
+					event.setProgramStartDate("");
+				}
+			}
+			if (null == program.getProgramEndDate()) {
+				event.setProgramEndDate("");
+			} else {
+				try {
+					event.setProgramEndDate(convertedsdf.format(program.getProgramEndDate()));
+				} catch (Exception e) {
+					event.setProgramEndDate("");
+				}
+			}
+			event.setCoordinatorName(program.getCoordinatorName());
+			event.setCoordinatorMobile(program.getCoordinatorMobile());
+			event.setCoordinatorEmail(program.getCoordinatorEmail());
+			event.setOrganizationName(program.getOrganizationName());
+			event.setOrganizationDepartment(program.getOrganizationDepartment());
+			event.setEventPlace(program.getEventPlace());
+			event.setEventCity(program.getEventCity());
+			event.setEventState(program.getEventState());
+			event.setEventCountry(program.getEventCountry());
+			event.setPreceptorName(program.getPreceptorName());
+			event.setPreceptorIdCardNumber(program.getPreceptorIdCardNumber());
+			event.setRemarks(program.getRemarks());
+			event.setJiraIssueNumber(program.getJiraIssueNumber());
+			event.setIsReadOnly(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE);
+			event.setBatchDescription(program.getBatchDescription());
+			event.setProgramChannelType(program.getProgramChannelType());
+			event.setProgramAddress(program.getProgramAddress());
+			event.setProgramDistrict(program.getProgramDistrict());
+			event.setProgramZone(program.getProgramZone());
+			event.setProgramCenter(program.getProgramCenter());
+			event.setOrganizationContactName(program.getOrganizationContactName());
+			event.setOrganizationContactDesignation(program.getOrganizationContactDesignation());
+			event.setOrganizationContactEmail(program.getOrganizationContactEmail());
+			event.setOrganizationContactMobile(program.getOrganizationContactMobile());
+			event.setCoordinatorAbhyasiId(program.getCoordinatorAbhyasiId());
+			event.setCoordinatorName(program.getCoordinatorName());
+			event.setCoordinatorEmail(program.getCoordinatorEmail());
+			event.setCoordinatorMobile(program.getCoordinatorMobile());
+			event.setProgramStatus(program.getProgramStatus());
+			eventList.add(event);
+		}
+
+		return eventList;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Event> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList,
+			String role, int offset, String authToken, PMPAPIAccessLog accessLog, EventPagination eventPagination) {
+
+		boolean isNext = true;
+		int currentPositionValue = 0;
+		String currentPositionType =  "";
+		List<String> mysrcmZones =  new ArrayList<String>();
+		List<String> mysrcmCenters =  new ArrayList<String>();
+		List<Event> eventList = new ArrayList<Event>();
+		List<Program> programList = new ArrayList<Program>();
+
+		PMPAPIAccessLogDetails accessLogDetails = new 
+				PMPAPIAccessLogDetails(accessLog.getId(), EndpointConstants.POSITIONS_API, 
+						DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null, authToken);
+		apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);		
+		PositionAPIResult posResult = null;
+
+		try {
+
+			posResult = dashboardRestTemplate.findCoordinatorPosition(authToken);
+
+			while(isNext){
+
+				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
+
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+
+						currentPositionValue = CoordinatorPosition.COUNTRY_COORDINATOR.getPositionValue();
+						currentPositionType =  crdntrPosition.getPositionType().getName();
+
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())){
+
+						if(CoordinatorPosition.ZONE_COORDINATOR.getPositionValue() > currentPositionValue){
+							currentPositionValue = CoordinatorPosition.ZONE_COORDINATOR.getPositionValue();
+							currentPositionType =  crdntrPosition.getPositionType().getName();
+						}
+
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
+
+						if(CoordinatorPosition.CENTER_COORDINATOR.getPositionValue() > currentPositionValue){
+							currentPositionValue = CoordinatorPosition.CENTER_COORDINATOR.getPositionValue();
+							currentPositionType =  crdntrPosition.getPositionType().getName();
+						}
+					}
+
+					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+						posResult.setNext(null);
+						break;
+					}
+
+				}
+
+				if(null == posResult.getNext()){
+					isNext = false;
+				}else{
+					posResult =  dashboardRestTemplate.findCoordinatorPosition(authToken,posResult.getNext());
+				}
+			}
+
+		} catch (JsonParseException jpe) {
+			LOGGER.error("JPE : Unable to fetch coordinator position type from MYSRCM {}",jpe.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(jpe));
+		} catch (JsonMappingException jme) {
+			LOGGER.error("JME : Unable to fetch coordinator position type from MYSRCM {}",jme.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(jme));
+		} catch (IOException ioe) {
+			LOGGER.error("IOE : Unable to fetch coordinator position type from MYSRCM {}",ioe.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(ioe));
+		} catch(Exception ex){
+			LOGGER.error("EX : Unable to fetch coordinator position type from MYSRCM {}",ex.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
+		}
+
+		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
+		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+
+		for (EventSearchField searchField : EventSearchField.values()) {
+			if (searchField.name().equals(searchRequest.getSearchField())) {
+				searchRequest.setSearchField(searchField.getValue());
+			}
+		}
+
+		if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+
+			LOGGER.info("Logged in user {} is a country coordinator ",accessLog.getUsername());
+			eventPagination.setTotalCount(programRepository.getPgrmCountBySrchParamsForLogInCoordinator(searchRequest, emailList, role,currentPositionType,mysrcmCenters));
+			programList = programRepository.searchEventsWithUserRoleAndEmailId(searchRequest,emailList, role, offset,currentPositionType,mysrcmCenters);
+
+		} else if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType()) || 
+				currentPositionType.equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType()) ){
+
+			LOGGER.info("Logged in user {} is a zone/center coordinator ",accessLog.getUsername());
+			DashboardRequest dashboardReq =  new DashboardRequest();
+			dashboardReq.setCountry(PMPConstants.COUNTRY_INDIA);
+
+			ResponseEntity<List<String>> getZones = (ResponseEntity<List<String>>) dashboardService.getListOfZones(authToken, dashboardReq,accessLog, emailList,role);
+			mysrcmZones.addAll(getZones.getBody());
+
+			for(String zone : mysrcmZones){
+				DashboardRequest newRequest =  new DashboardRequest();
+				newRequest.setCountry(dashboardReq.getCountry());
+				newRequest.setZone(zone);
+				ResponseEntity<List<String>> getCenters = (ResponseEntity<List<String>>) dashboardService.getCenterList(authToken, newRequest,accessLog, emailList,role);
+				mysrcmCenters.addAll(getCenters.getBody());
+			}
+
+			LOGGER.info("Center information for log in user {} is {}",accessLog.getUsername(),mysrcmCenters.toString());
+
+			eventPagination.setTotalCount(programRepository.getPgrmCountBySrchParamsForLogInCoordinator(searchRequest, emailList, role,currentPositionType,mysrcmCenters));
+			programList = programRepository.searchEventsWithUserRoleAndEmailId(searchRequest,emailList, role, offset,currentPositionType,mysrcmCenters);
+
+		} else{
+
+			LOGGER.info("Logged in user {} is a batch coordinator ",accessLog.getUsername());
+
+			eventPagination.setTotalCount(programRepository.getPgrmCountBySrchParamsForLogInCoordinator(searchRequest, emailList, role,currentPositionType,mysrcmCenters));
+			programList = programRepository.searchEventsWithUserRoleAndEmailId(searchRequest,emailList, role, offset,currentPositionType,mysrcmCenters);
+		}
+
+		SimpleDateFormat convertedsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
+		for (Program program : programList) {
+			Event event = new Event();
+			event.setAutoGeneratedEventId(program.getAutoGeneratedEventId());
+			event.setProgramChannel(program.getProgramChannel());
+			event.setProgramName(program.getProgramName());
+			if (null == program.getProgramStartDate()) {
+				event.setProgramStartDate("");
+			} else {
+				try {
+					event.setProgramStartDate(convertedsdf.format(program.getProgramStartDate()));
+				} catch (Exception e) {
+					event.setProgramStartDate("");
+				}
+			}
+			if (null == program.getProgramEndDate()) {
+				event.setProgramEndDate("");
+			} else {
+				try {
+					event.setProgramEndDate(convertedsdf.format(program.getProgramEndDate()));
+				} catch (Exception e) {
+					event.setProgramEndDate("");
+				}
+			}
+			event.setCoordinatorName(program.getCoordinatorName());
+			event.setCoordinatorMobile(program.getCoordinatorMobile());
+			event.setCoordinatorEmail(program.getCoordinatorEmail());
+			event.setOrganizationName(program.getOrganizationName());
+			event.setOrganizationDepartment(program.getOrganizationDepartment());
+			event.setEventPlace(program.getEventPlace());
+			event.setEventCity(program.getEventCity());
+			event.setEventState(program.getEventState());
+			event.setEventCountry(program.getEventCountry());
+			event.setPreceptorName(program.getPreceptorName());
+			event.setPreceptorIdCardNumber(program.getPreceptorIdCardNumber());
+			event.setJiraIssueNumber(program.getJiraIssueNumber());
+			event.setIsReadOnly(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE);
+			event.setBatchDescription(program.getBatchDescription());
+			event.setProgramChannelType(program.getProgramChannelType());
+			event.setProgramAddress(program.getProgramAddress());
+			event.setProgramDistrict(program.getProgramDistrict());
+			event.setProgramZone(program.getProgramZone());
+			event.setProgramCenter(program.getProgramCenter());
+			event.setOrganizationContactName(program.getOrganizationContactName());
+			event.setOrganizationContactDesignation(program.getOrganizationContactDesignation());
+			event.setOrganizationContactEmail(program.getOrganizationContactEmail());
+			event.setOrganizationContactMobile(program.getOrganizationContactMobile());
+			event.setCoordinatorAbhyasiId(program.getCoordinatorAbhyasiId());
+			event.setCoordinatorName(program.getCoordinatorName());
+			event.setCoordinatorEmail(program.getCoordinatorEmail());
+			event.setCoordinatorMobile(program.getCoordinatorMobile());
+			eventList.add(event);
+		}
+
+		for (EventSearchField searchField : EventSearchField.values()) {
+			if (searchRequest.getSearchField().equals(searchField.getValue())) {
+				searchRequest.setSearchField(searchField.name());
+			}
+		}
+
+		return eventList;
+	}
+
+
+	private List<ParticipantRequest> getParticipantList(String eventId, List<Participant> participantList){
+
+		List<ParticipantRequest> participantReqList = new ArrayList<ParticipantRequest>();
+		SimpleDateFormat convertedsdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
+
+		for (Participant participant : participantList) {
+			ParticipantRequest participantReq = new ParticipantRequest();
+			participantReq.setSeqId(participant.getSeqId());
+			participantReq.setEventId(eventId);
+			participantReq.setPrintName(participant.getPrintName());
+			participantReq.setEmail(participant.getEmail());
+			participantReq.setMobilePhone(participant.getMobilePhone());
+			if (null == participant.getIntroductionDate()) {
+				participantReq.setIntroductionDate("");
+			} else {
+				try {
+					participantReq.setIntroductionDate(convertedsdf.format(participant.getIntroductionDate()));
+				} catch (Exception e) {
+					participantReq.setIntroductionDate("");
+				}
+			}
+			if (null == participant.getGender()) {
+				participantReq.setGender("");
+			} else if (PMPConstants.GENDER_MALE.equals(participant.getGender())) {
+				participantReq.setGender(PMPConstants.MALE);
+			} else if (PMPConstants.GENDER_FEMALE.equals(participant.getGender())) {
+				participantReq.setGender(PMPConstants.FEMALE);
+			} else {
+				participantReq.setGender("");
+			}
+
+			if (null == participant.getDateOfBirth()) {
+				participantReq.setDateOfBirth("");
+			} else {
+				try {
+					participantReq.setDateOfBirth(convertedsdf.format(participant.getDateOfBirth()));
+				} catch (Exception e) {
+					participantReq.setDateOfBirth("");
+				}
+			}
+
+			if (null == participant.getFirstSittingDate()) {
+				participantReq.setFirstSittingDate("");
+			} else {
+				try {
+					participantReq.setFirstSittingDate(convertedsdf.format(participant.getFirstSittingDate()));
+				} catch (Exception e) {
+					participantReq.setFirstSittingDate("");
+				}
+			}
+			if (null == participant.getSecondSittingDate()) {
+				participantReq.setSecondSittingDate("");
+			} else {
+				try {
+					participantReq.setSecondSittingDate(convertedsdf.format(participant.getSecondSittingDate()));
+				} catch (Exception e) {
+					participantReq.setSecondSittingDate("");
+				}
+			}
+			if (null == participant.getThirdSittingDate()) {
+				participantReq.setThirdSittingDate("");
+			} else {
+				try {
+					participantReq.setThirdSittingDate(convertedsdf.format(participant.getThirdSittingDate()));
+				} catch (Exception e) {
+					participantReq.setThirdSittingDate("");
+				}
+			}
+			participantReq.setFirstSitting((null != participant.getFirstSitting() && 1 == participant
+					.getFirstSitting()) ? PMPConstants.REQUIRED_YES : PMPConstants.REQUIRED_NO);
+			participantReq.setSecondSitting((null != participant.getSecondSitting() && 1 == participant
+					.getSecondSitting()) ? PMPConstants.REQUIRED_YES : PMPConstants.REQUIRED_NO);
+			participantReq.setThirdSitting((null != participant.getThirdSitting() && 1 == participant
+					.getThirdSitting()) ? PMPConstants.REQUIRED_YES : PMPConstants.REQUIRED_NO);
+			participantReq.setAddressLine1(participant.getAddressLine1());
+			participantReq.setAddressLine2(participant.getAddressLine2());
+			participantReq.setCity(participant.getCity());
+			participantReq.setState(participant.getState());
+			participantReq.setCountry(participant.getCountry());
+			participantReq.setAbhyasiId(participant.getAbhyasiId());
+			participantReq.setIntroducedBy(participant.getIntroducedBy());
+			participantReq.setIntroducedStatus(1 == participant.getIntroduced() ? PMPConstants.REQUIRED_YES
+					: PMPConstants.REQUIRED_NO);
+			participantReq.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant
+					.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
+			participantReq.setEwelcomeIdRemarks(participant.getEwelcomeIdRemarks());
+			participantReq.setPhone(participant.getPhone());
+			participantReq.setDistrict(participant.getDistrict());
+			participantReq.setAgeGroup(participant.getAgeGroup());
+			participantReqList.add(participantReq);
+		}
+		return participantReqList;
+
+	}
+
+	@SuppressWarnings("unchecked")
+	private Program getProgram(List<String> emailList,String userRole,String eventId,String authToken,PMPAPIAccessLog accessLog){
+
+		boolean isNext = true;
+		int currentPositionValue = 0;
+		String currentPositionType =  "";
+		List<String> mysrcmZones =  new ArrayList<String>();
+		List<String> mysrcmCenters =  new ArrayList<String>();
+
+		PMPAPIAccessLogDetails accessLogDetails = new 
+				PMPAPIAccessLogDetails(accessLog.getId(), EndpointConstants.POSITIONS_API, 
+						DateUtils.getCurrentTimeInMilliSec(), null, ErrorConstants.STATUS_FAILED, null, authToken);
+		apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);		
+		PositionAPIResult posResult = null;
+
+		try {
+
+			posResult = dashboardRestTemplate.findCoordinatorPosition(authToken);
+
+			while(isNext){
+
+				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
+
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+
+						currentPositionValue = CoordinatorPosition.COUNTRY_COORDINATOR.getPositionValue();
+						currentPositionType =  crdntrPosition.getPositionType().getName();
+
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType())){
+
+						if(CoordinatorPosition.ZONE_COORDINATOR.getPositionValue() > currentPositionValue){
+							currentPositionValue = CoordinatorPosition.ZONE_COORDINATOR.getPositionValue();
+							currentPositionType =  crdntrPosition.getPositionType().getName();
+						}
+
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
+
+						if(CoordinatorPosition.CENTER_COORDINATOR.getPositionValue() > currentPositionValue){
+							currentPositionValue = CoordinatorPosition.CENTER_COORDINATOR.getPositionValue();
+							currentPositionType =  crdntrPosition.getPositionType().getName();
+						}
+					}
+
+					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+						posResult.setNext(null);
+						break;
+					}
+
+				}
+
+				if(null == posResult.getNext()){
+					isNext = false;
+				}else{
+					posResult =  dashboardRestTemplate.findCoordinatorPosition(authToken,posResult.getNext());
+				}
+			}
+
+		} catch (JsonParseException jpe) {
+			LOGGER.error("JPE : Unable to fetch coordinator position type from MYSRCM {}",jpe.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(jpe));
+		} catch (JsonMappingException jme) {
+			LOGGER.error("JME : Unable to fetch coordinator position type from MYSRCM {}",jme.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(jme));
+		} catch (IOException ioe) {
+			LOGGER.error("IOE : Unable to fetch coordinator position type from MYSRCM {}",ioe.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(ioe));
+		} catch(Exception ex){
+			LOGGER.error("EX : Unable to fetch coordinator position type from MYSRCM {}",ex.getMessage());
+			accessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
+		}
+
+		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
+		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
+		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+		Program program = null;
+
+		if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+			LOGGER.info("Logged in user {} is a country coordinator ",accessLog.getUsername());
+			program = programRepository.getProgramByEmailAndRole(emailList, userRole, eventId,currentPositionType,mysrcmCenters);
+
+		}else if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType()) || 
+				currentPositionType.equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType()) ){
+
+			LOGGER.info("Logged in user {} is a zone/center coordinator ",accessLog.getUsername());
+			DashboardRequest dashboardReq =  new DashboardRequest();
+			dashboardReq.setCountry(PMPConstants.COUNTRY_INDIA);
+
+			ResponseEntity<List<String>> getZones = (ResponseEntity<List<String>>) dashboardService.getListOfZones(authToken, dashboardReq,accessLog, emailList,userRole);
+			mysrcmZones.addAll(getZones.getBody());
+
+			for(String zone : mysrcmZones){
+				DashboardRequest newRequest =  new DashboardRequest();
+				newRequest.setCountry(dashboardReq.getCountry());
+				newRequest.setZone(zone);
+				ResponseEntity<List<String>> getCenters = (ResponseEntity<List<String>>) dashboardService.getCenterList(authToken, newRequest,accessLog, emailList,userRole);
+				mysrcmCenters.addAll(getCenters.getBody());
+			} 	
+
+			LOGGER.info("Center information for log in user {} is {}",accessLog.getUsername(),mysrcmCenters.toString());
+			program = programRepository.getProgramByEmailAndRole(emailList, userRole, eventId,currentPositionType,mysrcmCenters);
+
+		}else{
+			program = programRepository.getProgramByEmailAndRole(emailList, userRole, eventId,currentPositionType,mysrcmCenters);
+		}
+		return program;
+	}
 }

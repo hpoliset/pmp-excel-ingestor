@@ -23,6 +23,10 @@ public class CoordinatorEmail {
 	private String eventCity;
 	private String eventPlace;
 	private Date programCreationDate;
+	private int uploaderId;
+	private String uploaderMail;
+	private String jiraNumber;
+	private String pgrmCreatedSource;
 
 
 	public String getCoordinatorEmail() {
@@ -119,6 +123,38 @@ public class CoordinatorEmail {
 
 	public void setProgramCreationDate(Date programCreationDate) {
 		this.programCreationDate = programCreationDate;
+	}
+	
+	public int getUploaderId() {
+		return uploaderId;
+	}
+
+	public void setUploaderId(int uploaderId) {
+		this.uploaderId = uploaderId;
+	}
+
+	public String getUploaderMail() {
+		return uploaderMail;
+	}
+
+	public void setUploaderMail(String uploaderMail) {
+		this.uploaderMail = uploaderMail;
+	}
+
+	public String getJiraNumber() {
+		return jiraNumber;
+	}
+
+	public void setJiraNumber(String jiraNumber) {
+		this.jiraNumber = jiraNumber;
+	}
+	
+	public String getPgrmCreatedSource() {
+		return pgrmCreatedSource;
+	}
+
+	public void setPgrmCreatedSource(String pgrmCreatedSource) {
+		this.pgrmCreatedSource = pgrmCreatedSource;
 	}
 
 	@Override

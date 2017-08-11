@@ -92,4 +92,6 @@ public interface UserProfileService {
 	 */
 	List<String> getEmailsWithAbhyasiId(String abyasiId);
 	
+	public User getUserMailWithId(int userId);
+	
 }

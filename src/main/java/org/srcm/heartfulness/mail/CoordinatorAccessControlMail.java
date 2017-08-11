@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 import org.srcm.heartfulness.constants.CoordinatorAccessControlConstants;
 import org.srcm.heartfulness.constants.EmailLogConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
+import org.srcm.heartfulness.constants.PMPConstants;
 import org.srcm.heartfulness.constants.SMSConstants;
 import org.srcm.heartfulness.model.CoordinatorAccessControlEmail;
 import org.srcm.heartfulness.model.CoordinatorEmail;
@@ -255,18 +256,23 @@ public class CoordinatorAccessControlMail {
 			Session session = sendMail.getSession();
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(frommail, name));
-			addParameter(EmailLogConstants.PRECEPTOR_NAME_PARAMETER,
-					sendMail.getName(coordinatorAccessControlEmail.getPreceptorName()));
-			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
-					+ "?id=" + coordinatorAccessControlEmail.getEventID());
+			addParameter(EmailLogConstants.PRECEPTOR_NAME_PARAMETER,sendMail.getName(coordinatorAccessControlEmail.getPreceptorName()));
+			String dashboardUrl = "";
+			if(null != coordinatorAccessControlEmail.getPgrmCreatedSource() && coordinatorAccessControlEmail.getPgrmCreatedSource().equals(PMPConstants.CREATED_SOURCE_DASHBOARD_v2)){
+				dashboardUrl= SMSConstants.DASHBOARD_v2_HEARTFULNESS_UPDATEEVENT_URL;
+			}else {
+				dashboardUrl= SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL;
+			}
+			
+			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, dashboardUrl + coordinatorAccessControlEmail.getEventID());
 			addParameter(EmailLogConstants.EVENT_PLACE_PARAMETER, coordinatorAccessControlEmail.getEventPlace());
 			addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinatorAccessControlEmail.getEventName());
 			SimpleDateFormat inputsdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 			SimpleDateFormat outputsdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
 			Date pgrmCreateDate = inputsdf.parse(coordinatorAccessControlEmail.getProgramCreateDate());
 			addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
-			message.addRecipients(Message.RecipientType.TO,
-					InternetAddress.parse(coordinatorAccessControlEmail.getPreceptorEmailId()));
+			message.addRecipients(Message.RecipientType.TO,InternetAddress.parse(coordinatorAccessControlEmail.getPreceptorEmailId()));
+			message.setReplyTo(InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
 			message.setSubject(emptycoordinatoremailidsubject + " - " + coordinatorAccessControlEmail.getEventName());
 			message.setContent(getMessageContentbyTemplateName(emptycoordinatoremailidtemplate),
 					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
@@ -323,8 +329,13 @@ public class CoordinatorAccessControlMail {
 
 		LOGGER.error("Sending mail to coordinator to update Preceptor Id ");
 		addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, sendMail.getName(coordinator.getCoordinatorName()));
-		addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
-				+ "?id=" + coordinator.getEventID());
+		String dashboardUrl = "";
+		if(null != coordinator.getPgrmCreatedSource() && coordinator.getPgrmCreatedSource().equals(PMPConstants.CREATED_SOURCE_DASHBOARD_v2)){
+			dashboardUrl= SMSConstants.DASHBOARD_v2_HEARTFULNESS_UPDATEEVENT_URL;
+		}else {
+			dashboardUrl= SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL;
+		}
+		addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, dashboardUrl + coordinator.getEventID());
 		addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinator.getEventName());
 		SimpleDateFormat outputsdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
 		addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER,null != coordinator.getProgramCreateDate() ? outputsdf.format(coordinator.getProgramCreateDate()) : "");
@@ -332,9 +343,19 @@ public class CoordinatorAccessControlMail {
 		SMTPMessage message = new SMTPMessage(session);
 		message.setFrom(new InternetAddress(frommail, name));
 		message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
-		message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
-		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent),
-				EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
+		message.setReplyTo(InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+		
+		if(null != coordinator.getJiraNumber() && !coordinator.getJiraNumber().isEmpty()){
+			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+			message.setSubject(EmailLogConstants.JIRA_NO_PREFIX_SUBJECT + coordinator.getJiraNumber() +") "+ coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
+		}else{
+			message.setSubject(coordinatormailforupdatingeventsubject + " - " + coordinator.getEventName());
+		}
+		if(null != coordinator.getUploaderMail() && !coordinator.getUploaderMail().isEmpty()){
+			message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(coordinator.getUploaderMail()));	
+		}
+
+		message.setContent(getMessageContentbyTemplateName(coordinatormailforupdatingevent),EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 		message.setAllow8bitMIME(true);
 		message.setSentDate(new Date());
 		message.setNotifyOptions(SMTPMessage.NOTIFY_SUCCESS);
@@ -351,18 +372,21 @@ public class CoordinatorAccessControlMail {
 	 * @param <code>CoordinatorAccessControlEmail</code> coordinator
 	 */
 	public void sendMailToCoordinatorWithLinktoCreateProfile(CoordinatorAccessControlEmail coordinator) {
-		
+
 		LOGGER.error("Sending mail to coordinator with a link to create profile");
 		try {
 			Session session = sendMail.getSession();
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(frommail, name));
-			addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER,
-					sendMail.getName(coordinator.getCoordinatorName()));
-			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL
-					+ "?id=" + coordinator.getEventID());
-			addParameter(EmailLogConstants.CREATE_PROFILE_LINK_PARAMETER,
-					CoordinatorAccessControlConstants.HEARTFULNESS_CREATE_PROFILE_URL);
+			addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER,sendMail.getName(coordinator.getCoordinatorName()));
+			String dashboardUrl = "";
+			if(null != coordinator.getPgrmCreatedSource() && coordinator.getPgrmCreatedSource().equals(PMPConstants.CREATED_SOURCE_DASHBOARD_v2)){
+				dashboardUrl= SMSConstants.DASHBOARD_v2_HEARTFULNESS_UPDATEEVENT_URL;
+			}else {
+				dashboardUrl= SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL;
+			}
+			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, dashboardUrl + coordinator.getEventID());
+			addParameter(EmailLogConstants.CREATE_PROFILE_LINK_PARAMETER,CoordinatorAccessControlConstants.HEARTFULNESS_CREATE_PROFILE_URL);
 			addParameter(EmailLogConstants.EVENT_NAME_PARAMETER, coordinator.getEventName());
 			addParameter(EmailLogConstants.EVENT_PLACE_PARAMETER, coordinator.getEventPlace());
 			SimpleDateFormat inputsdf = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
@@ -370,7 +394,18 @@ public class CoordinatorAccessControlMail {
 			Date pgrmCreateDate = inputsdf.parse(coordinator.getProgramCreateDate());
 			addParameter(EmailLogConstants.PROGRAM_CREATE_DATE_PARAMETER, outputsdf.format(pgrmCreateDate));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(coordinator.getCoordinatorEmail()));
-			message.setSubject(coordinatormailsubjecttocreateaccount + " - " + coordinator.getEventName());
+			message.setReplyTo(InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+			
+			if(null != coordinator.getJiraNumber() && !coordinator.getJiraNumber().isEmpty()){
+				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+				message.setSubject(EmailLogConstants.JIRA_NO_PREFIX_SUBJECT + coordinator.getJiraNumber() +") "+ coordinatormailsubjecttocreateaccount + " - " + coordinator.getEventName());
+			}else{
+				message.setSubject(coordinatormailsubjecttocreateaccount + " - " + coordinator.getEventName());
+			}
+			if(null != coordinator.getUploaderMail() && !coordinator.getUploaderMail().isEmpty()){
+				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(coordinator.getUploaderMail()));
+			}
+
 			message.setContent(getMessageContentbyTemplateName(coordinatormailtemplatetocreateaccount),
 					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 			message.setAllow8bitMIME(true);
@@ -404,12 +439,18 @@ public class CoordinatorAccessControlMail {
 
 	}
 
-	public void sendApprovalMailToPrimaryCoordinator(Program program, User user, String eventId, String secondaryCoordinatorNotes)
+	public void sendApprovalMailToPrimaryCoordinator(Program program, User user, String eventId, String secondaryCoordinatorNotes,String uploaderEmail)
 			throws MessagingException, UnsupportedEncodingException {
 		try{
 			addParameter(EmailLogConstants.COORDINATOR_NAME_PARAMETER, null != program.getCoordinatorName() ? program.getCoordinatorName() : "");
 			addParameter(EmailLogConstants.EVENT_ID_PARAMETER, eventId);
-			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + eventId);
+			String dashboardUrl = "";
+			if(null != program.getCreatedSource() && program.getCreatedSource().equals(PMPConstants.CREATED_SOURCE_DASHBOARD_v2)){
+				dashboardUrl= SMSConstants.DASHBOARD_v2_HEARTFULNESS_UPDATEEVENT_URL;
+			}else {
+				dashboardUrl= SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL;
+			}
+			addParameter(EmailLogConstants.UPDATE_EVENT_LINK_PARAMETER, dashboardUrl + eventId);
 			addParameter(EmailLogConstants.SECONDARY_COORDINATOR_NAME_PARAMETER, null != user.getName() ? user.getName() : "");
 			addParameter(EmailLogConstants.SECONDARY_COORDINATOR_EMAIL_PARAMETER, null != user.getEmail() ? user.getEmail() : "");
 			addParameter(EmailLogConstants.SECONDARY_COORDINATOR_ABHYASIID_PARAMETER, null != user.getAbyasiId() ? user.getAbyasiId() :"");
@@ -418,7 +459,18 @@ public class CoordinatorAccessControlMail {
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(frommail, name));
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(program.getCoordinatorEmail()));
-			message.setSubject(requestMailSubject + eventId);
+			message.setReplyTo(InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+
+			if(null != program.getJiraIssueNumber() && !program.getJiraIssueNumber().isEmpty()){
+				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(EmailLogConstants.HFN_JIRA_EMAIL));
+				message.setSubject(EmailLogConstants.JIRA_NO_PREFIX_SUBJECT + program.getJiraIssueNumber() +") "+ requestMailSubject + eventId);
+			}else{
+				message.setSubject(requestMailSubject + eventId);
+			}
+			if(null != uploaderEmail && !uploaderEmail.isEmpty()){
+				message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(uploaderEmail));
+			}
+
 			message.setContent(getMessageContentbyTemplateName(approvalMailTemplate),
 					EmailLogConstants.MAIL_CONTENT_TYPE_TEXT_HTML);
 			message.setAllow8bitMIME(true);
@@ -427,11 +479,11 @@ public class CoordinatorAccessControlMail {
 			Transport transport =session.getTransport(EmailLogConstants.MAIL_SMTP_PROPERTY);
 			transport.send(message);
 			transport.close();
-			
+
 			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(program.getProgramId()), program.getCoordinatorEmail(),
 					EmailLogConstants.MAIL_TO_PRIMARY_COORDINATOR_FOR_APPROVAL, EmailLogConstants.STATUS_SUCCESS, null);
 			mailLogRepository.createMailLog(pmpMailLog);
-			
+
 		} catch(Exception ex){
 			PMPMailLog pmpMailLog = new PMPMailLog(String.valueOf(program.getProgramId()), program.getCoordinatorEmail(),
 					EmailLogConstants.MAIL_TO_PRIMARY_COORDINATOR_FOR_APPROVAL, EmailLogConstants.STATUS_FAILED,

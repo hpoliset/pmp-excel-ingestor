@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.srcm.heartfulness.model.SessionDetails;
 import org.srcm.heartfulness.model.SessionImageDetails;
+import org.srcm.heartfulness.model.json.request.SearchSession;
 import org.srcm.heartfulness.model.json.response.PMPResponse;
 
 /**
@@ -88,5 +89,20 @@ public interface SessionDetailsRepository {
 	 * @return
 	 */
 	public List<SessionImageDetails> getListOfSessionImages(int sessionDetailsId);
+
+	/**
+	 * This method is used to search session details for a 
+	 * provided event Id.
+	 * @param programId to specify the program for which session needs
+	 *  to be searched.
+	 * @param searchSession Object with search params.
+	 * @return List<SessionDetails> list of session details is returned based
+	 * on search criteria.
+	 */
+	public List<SessionDetails> searchSessionData(int programId, SearchSession searchSession);
+
+	void saveSessionFilesWithType(SessionImageDetails sessionFiles);
+
+	public int getFirstSittingBySessionId(int sessionId);
 
 }

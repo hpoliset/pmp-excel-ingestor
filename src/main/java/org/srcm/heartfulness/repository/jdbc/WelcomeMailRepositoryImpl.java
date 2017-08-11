@@ -84,7 +84,6 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	 */
 	@Override
 	public void save(WelcomeMailDetails welcomeMailDetails) {
-		System.out.println(welcomeMailDetails);
 		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(welcomeMailDetails);
 		if (welcomeMailDetails.getId() == 0) {
 			Number newId = this.insertSubscriber.executeAndReturnKey(parameterSource);
@@ -400,7 +399,9 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	public Map<String, List<String>> getCoordinatorWithEmailDetails() {
 
 		return this.jdbcTemplate
-				.query("SELECT pgrm.coordinator_email,COUNT(pctpt.id),pgrm.program_channel,pgrm.coordinator_name,pgrm.program_id,pgrm.program_start_date,pgrm.event_place,pgrm.event_city,pgrm.create_time FROM program pgrm,participant pctpt"
+				.query("SELECT pgrm.coordinator_email,COUNT(pctpt.id),pgrm.program_channel,pgrm.coordinator_name,pgrm.program_id,pgrm.program_start_date,pgrm.event_place,pgrm.event_city,pgrm.create_time,"
+						+ " pgrm.user_id,pgrm.jira_issue_number "
+						+ " FROM program pgrm,participant pctpt"
 						+ " WHERE pgrm.program_id = pctpt.program_id"
 						+ " AND pctpt.welcome_mail_sent = 1 AND pctpt.is_co_ordinator_informed = 0"
 						+ " GROUP BY pctpt.program_id ", new Object[] {},
@@ -419,6 +420,8 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 									eventDetails.add(resultSet.getString(7));
 									eventDetails.add(resultSet.getString(8));
 									eventDetails.add(( null != resultSet.getString(9))?resultSet.getString(9):null); 
+									eventDetails.add(String.valueOf(resultSet.getInt(10)));
+									eventDetails.add(resultSet.getString(11));
 									details.put(resultSet.getString(5), eventDetails);
 								}
 								return details;
@@ -498,8 +501,9 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 	public Map<CoordinatorEmail, List<Participant>> getGeneratedEwelcomeIdDetails() {
 
 		return this.jdbcTemplate
-				.query("SELECT p.program_channel,p.coordinator_name,p.coordinator_email,p.program_id,p.auto_generated_event_id,pr.print_name,pr.email,"
-						+ "pr.welcome_card_number,pr.id,pr.mobile_phone,pr.introduction_date,pr.ewelcome_id_state,pr.ewelcome_id_remarks,p.event_city,p.event_place,p.program_start_date,p.create_time"
+				.query("SELECT p.program_channel,p.coordinator_name,p.coordinator_email,p.program_id,p.auto_generated_event_id,"
+						+ "pr.print_name,pr.email,pr.welcome_card_number,pr.id,pr.mobile_phone,pr.introduction_date,pr.ewelcome_id_state,"
+						+ "pr.ewelcome_id_remarks,p.event_city,p.event_place,p.program_start_date,p.create_time,p.user_id,p.jira_issue_number,p.created_source"
 						+ " FROM program p,participant pr"
 						+ " WHERE p.program_id = pr.program_id"
 						+ " AND pr.create_time <= CURRENT_TIMESTAMP"
@@ -532,6 +536,9 @@ public class WelcomeMailRepositoryImpl implements WelcomeMailRepository {
 									coordinatorEmail.setEventPlace(resultSet.getString(15));
 									coordinatorEmail.setProgramCreateDate(resultSet.getDate(16));
 									coordinatorEmail.setProgramCreationDate(resultSet.getDate(17));
+									coordinatorEmail.setUploaderId(resultSet.getInt(18));  
+									coordinatorEmail.setJiraNumber(resultSet.getString(19));
+									coordinatorEmail.setPgrmCreatedSource(resultSet.getString(20));
 									if (eWelcomeIdDetails.containsKey(coordinatorEmail)) {
 										eWelcomeIdDetails.get(coordinatorEmail).add(participant);
 									} else {

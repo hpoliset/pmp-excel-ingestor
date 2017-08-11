@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -81,7 +82,8 @@ public class IngestionRestController {
 
 			//service layer call for data validation and extraction
 			//MultipartFile[] uploadedFile = new MultipartFile[] { excelDataFile };
-			excelResponse = pmpIngestionService.parseAndPersistExcelFile(excelDataFile.getOriginalFilename(),excelDataFile.getBytes(),eWelcomeIdCheckbox,jiraIssueNumber);
+			//UserDetails userDetails= (UserDetails)httpRequest.getSession().getAttribute("Authentication");
+			excelResponse = pmpIngestionService.parseAndPersistExcelFile(excelDataFile.getOriginalFilename(),excelDataFile.getBytes(),eWelcomeIdCheckbox,jiraIssueNumber,accessLog.getUsername());
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 
 		} catch(Exception ex){
@@ -146,7 +148,8 @@ public class IngestionRestController {
 			/*for(Map.Entry<String, MultipartFile> map : uploadedFileDetails.entrySet()){
 				System.out.println("key=="+map.getKey()+"..value=="+map.getValue().getOriginalFilename());
 			}*/
-			excelUploadResponseList = pmpIngestionService.parseAndPersistExcelFile(uploadedFileDetails,eWelcomeIdCheckbox);
+			//UserDetails userDetails= (UserDetails)httpRequest.getSession().getAttribute("Authentication");
+			excelUploadResponseList = pmpIngestionService.parseAndPersistExcelFile(uploadedFileDetails,eWelcomeIdCheckbox,accessLog.getUsername());
 			accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 
 		} catch (Exception ex) {

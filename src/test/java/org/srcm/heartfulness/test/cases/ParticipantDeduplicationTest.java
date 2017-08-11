@@ -26,6 +26,7 @@ import org.srcm.heartfulness.excelupload.transformer.ExcelDataExtractorFactory;
 import org.srcm.heartfulness.helper.PmpApplicationHelper;
 import org.srcm.heartfulness.model.Participant;
 import org.srcm.heartfulness.model.Program;
+import org.srcm.heartfulness.repository.ParticipantRepository;
 import org.srcm.heartfulness.repository.ProgramRepository;
 import org.srcm.heartfulness.util.ExcelParserUtils;
 import org.srcm.heartfulness.util.InvalidExcelFileException;
@@ -53,6 +54,9 @@ public class ParticipantDeduplicationTest {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 
+	@Autowired
+	private ParticipantRepository participantRepository;
+	
 	private String eWelcomeIdCheckbox = "off";
 
 	/**
@@ -66,7 +70,7 @@ public class ParticipantDeduplicationTest {
 	public void parseAndPersistValidV2ExcelData() throws InvalidExcelFileException, IOException{
 
 		// start with clean slate.
-		JdbcTestUtils.deleteFromTables(jdbcTemplate, "program", "participant");
+		JdbcTestUtils.deleteFromTables(jdbcTemplate, "program_coordinators","coordinator_history","program", "participant");
 
 		String fileName = "v2excelsheet.xlsx";
 		byte[] fileContent = helper.getExcelContent(fileName);
@@ -80,6 +84,7 @@ public class ParticipantDeduplicationTest {
 		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
 		List<Participant> participantList = program.getParticipantList();
 		programRepository.save(program);
+		participantRepository.save(program.getParticipantList(), program);
 
 		//get the uploaded event
 		Program uploadedProgram = programRepository.findById(program.getProgramId());
@@ -90,6 +95,7 @@ public class ParticipantDeduplicationTest {
 		//Let's insert the excel file one more time.
 		Program sameProgram = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
 		programRepository.save(sameProgram);
+		participantRepository.save(program.getParticipantList(), program);
 
 		//Get the latest participant count
 		int pctptCount = JdbcTestUtils.countRowsInTable(jdbcTemplate, "participant");
@@ -128,6 +134,7 @@ public class ParticipantDeduplicationTest {
 		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
 		List<Participant> participantList = program.getParticipantList();
 		programRepository.save(program);
+		participantRepository.save(program.getParticipantList(), program);
 
 		//We have modified email and mobile number of two participants but since row number is same so participant count should be same
 		Program updatedProgram = programRepository.findById(program.getProgramId());
@@ -161,6 +168,7 @@ public class ParticipantDeduplicationTest {
 		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
 		List<Participant> participantList = program.getParticipantList();
 		programRepository.save(program);
+		participantRepository.save(program.getParticipantList(), program);
 
 		//We have modified mobile number of three participants but since name and email same so participant count should be same
 		Program updatedProgram = programRepository.findById(program.getProgramId());
@@ -193,6 +201,7 @@ public class ParticipantDeduplicationTest {
 		//Extract event and participant details and persist
 		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
 		programRepository.save(program);
+		participantRepository.save(program.getParticipantList(), program);
 
 		//We have modified email of two participants but since name and mobile number are same so participant count should be same
 		Program updatedProgram = programRepository.findById(program.getProgramId());
@@ -223,6 +232,7 @@ public class ParticipantDeduplicationTest {
 		//Extract event and participant details and persist
 		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
 		programRepository.save(program);
+		participantRepository.save(program.getParticipantList(), program);
 
 		//We have added a new record in the same excel sheet so count should increase by 1
 		Program updatedProgram = programRepository.findById(program.getProgramId());
@@ -254,6 +264,7 @@ public class ParticipantDeduplicationTest {
 		//Extract event and participant details and persist
 		Program program = ExcelDataExtractorFactory.extractProgramDetails(workbook, ExcelType.V2_1,eWelcomeIdCheckbox, EventDetailsUploadConstants.DEFAULT_JIRA_NUMBER);
 		programRepository.save(program);
+		participantRepository.save(program.getParticipantList(), program);
 
 		//Get the uploaded event
 		Program uploadedProgram = programRepository.findById(program.getProgramId());

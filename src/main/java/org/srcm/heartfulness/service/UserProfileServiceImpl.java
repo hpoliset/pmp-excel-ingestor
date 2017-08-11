@@ -155,6 +155,11 @@ public class UserProfileServiceImpl implements UserProfileService {
 	public List<String> getEmailsWithAbhyasiId(String abyasiId) {
 		return userRepository.getEmailsWithAbhyasiId(abyasiId);
 	}
+	
+	@Override
+	public User getUserMailWithId(int userId) {
+		return userRepository.getUserMailWithId(userId);
+	}
 
 
 }

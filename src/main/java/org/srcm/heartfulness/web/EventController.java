@@ -58,7 +58,7 @@ public class EventController {
 	@RequestMapping(value = "/updateevent", method = RequestMethod.GET)
 	public String showEventForm(@RequestParam(required = false, value = "id") String encryptedValue,
 			HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
-		return "redirect:" + SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + "?id=" + encryptedValue;
+		return "redirect:" + SMSConstants.SMS_HEARTFULNESS_UPDATEEVENT_URL + encryptedValue;
 	}
 
 	@RequestMapping(value = "/saveevent", method = RequestMethod.POST)

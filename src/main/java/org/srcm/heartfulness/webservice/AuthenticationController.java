@@ -2,8 +2,6 @@ package org.srcm.heartfulness.webservice;
 
 import java.io.IOException;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Context;

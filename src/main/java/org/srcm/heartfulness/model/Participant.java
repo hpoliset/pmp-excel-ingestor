@@ -2,8 +2,6 @@ package org.srcm.heartfulness.model;
 
 import java.util.Date;
 
-import javax.ws.rs.DefaultValue;
-
 /**
  * Created by vsonnathi on 11/22/15.
  */
@@ -59,7 +57,11 @@ public class Participant {
 	private String ewelcomeIdState;
 	private String ewelcomeIdRemarks;
 	private Integer totalDays;
-
+	private String phone;
+	private String district;
+	private String ewelcomeIdGenerationMsg;
+	private int sessionId; 
+	private int firstSittingBy;
 
 	public String getCreatedSource() {
 		return createdSource;
@@ -463,6 +465,81 @@ public class Participant {
 		this.totalDays = totalDays;
 	}
 
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+	
+	public String getEwelcomeIdGenerationMsg() {
+		return ewelcomeIdGenerationMsg;
+	}
+
+	public void setEwelcomeIdGenerationMsg(String ewelcomeIdGenerationMsg) {
+		this.ewelcomeIdGenerationMsg = ewelcomeIdGenerationMsg;
+	}
+	
+	public int getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(int sessionId) {
+		this.sessionId = sessionId;
+	}
+	
+	public int getFirstSittingBy() {
+		return firstSittingBy;
+	}
+
+	public void setFirstSittingBy(int firstSittingBy) {
+		this.firstSittingBy = firstSittingBy;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Participant other = (Participant) obj;
+		
+		if (printName == null) {
+			if (other.printName != null)
+				return false;
+		}
+		
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		}
+		
+		if (mobilePhone == null) {
+			if (other.mobilePhone != null)
+				return false;
+		}
+		
+		if(!((printName.equals(other.printName))&&(program_id==other.program_id)&&((email.equals(other.email)&&mobilePhone.equals(other.mobilePhone))
+				|| excelSheetSequenceNumber == other.excelSheetSequenceNumber
+				|| mobilePhone.equals(other.mobilePhone)
+				|| email.equals(other.email)))){
+			return false;
+		}
+		
+		return true;
+	}
+
 	@Override
 	public String toString() {
 		return "Participant [firstName=" + firstName + ", lastName=" + lastName + ", middleName=" + middleName
@@ -481,7 +558,8 @@ public class Participant {
 				+ ", excelSheetSequenceNumber=" + excelSheetSequenceNumber + ", seqId=" + seqId + ", welcomeMailSent="
 				+ welcomeMailSent + ", createdSource=" + createdSource + ", isCoOrdinatorInformed="
 				+ isCoOrdinatorInformed + ", isEwelcomeIdInformed=" + isEwelcomeIdInformed + ", ewelcomeIdState="
-				+ ewelcomeIdState + ", ewelcomeIdRemarks=" + ewelcomeIdRemarks + ", totalDays=" + totalDays + "]";
+				+ ewelcomeIdState + ", ewelcomeIdRemarks=" + ewelcomeIdRemarks + ", totalDays=" + totalDays + ", phone="
+				+ phone + ", district=" + district + "]";
 	}
-	
+
 }

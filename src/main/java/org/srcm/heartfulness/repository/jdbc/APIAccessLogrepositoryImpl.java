@@ -73,10 +73,10 @@ public class APIAccessLogrepositoryImpl implements APIAccesslogRepository {
 			}
 			return accessLog.getId();
 		} catch (DataAccessException daex) {
-			LOGGER.error("Failed to create/update PMP API Access Log", daex);
+			LOGGER.error("Failed to create/update PMP API Access Log {}", daex);
 			return 0;
 		} catch (Exception ex) {
-			LOGGER.error("Failed to create/update PMP API Access Log", ex);
+			LOGGER.error("Failed to create/update PMP API Access Log {}", ex);
 			return 0;
 		}
 	}
@@ -105,10 +105,10 @@ public class APIAccessLogrepositoryImpl implements APIAccesslogRepository {
 			}
 			return accessLogDetails.getId();
 		} catch (DataAccessException daex) {
-			LOGGER.error("Failed to create/update PMP API Access Log Details", daex);
+			LOGGER.error("Failed to create/update PMP API Access Log Details {}", daex);
 			return 0;
 		} catch (Exception ex) {
-			LOGGER.error("Failed to create/update PMP API Access Log Details", ex);
+			LOGGER.error("Failed to create/update PMP API Access Log Details {}", ex);
 			return 0;
 		}
 
