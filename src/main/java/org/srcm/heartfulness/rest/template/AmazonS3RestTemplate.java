@@ -46,7 +46,7 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
  */
 @Component
 @PropertySource("classpath:application.properties")
-@ConfigurationProperties(locations = "classpath:prod.aws.s3.properties", ignoreUnknownFields = true, prefix = "aws.s3")
+@ConfigurationProperties(locations = "classpath:dev.aws.s3.properties", ignoreUnknownFields = true, prefix = "aws.s3")
 public class AmazonS3RestTemplate extends RestTemplate {
 
 	@Autowired

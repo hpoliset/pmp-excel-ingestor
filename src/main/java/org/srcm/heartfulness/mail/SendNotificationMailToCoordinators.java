@@ -42,7 +42,7 @@ import com.sun.mail.smtp.SMTPMessage;
  *
  */
 @Component
-@ConfigurationProperties(locations = "classpath:prod.mail.api.properties", ignoreUnknownFields = true, prefix = "mail.api")
+@ConfigurationProperties(locations = "classpath:dev.mail.api.properties", ignoreUnknownFields = true, prefix = "mail.api")
 public class SendNotificationMailToCoordinators {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendNotificationMailToCoordinators.class);

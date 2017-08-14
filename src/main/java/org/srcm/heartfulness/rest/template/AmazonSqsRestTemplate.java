@@ -34,7 +34,7 @@ import com.amazonaws.services.sqs.model.SendMessageResult;
  */
 @Component
 @PropertySource("classpath:application.properties")
-@ConfigurationProperties(locations = "classpath:prod.aws.sqs.properties", ignoreUnknownFields = true, prefix = "aws.sqs")
+@ConfigurationProperties(locations = "classpath:dev.aws.sqs.properties", ignoreUnknownFields = true, prefix = "aws.sqs")
 public class AmazonSqsRestTemplate extends RestTemplate {
 	
 	private static Logger LOGGER = LoggerFactory.getLogger(AmazonSqsRestTemplate.class);
