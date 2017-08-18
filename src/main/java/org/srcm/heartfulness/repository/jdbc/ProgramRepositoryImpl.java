@@ -2481,7 +2481,55 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		}
 
 		return program;
-
+	}
+	
+	@Override
+	public List<Program> getInactiveProgramsDetails(List<String> emailList, String userRole, String currentPositionType,List<String> mysrcmCenters) {
+			
+		List<Program> programs = new ArrayList<Program>();
+		
+		Map<String,Object> params = new HashMap<>();
+		if(mysrcmCenters.isEmpty()){
+			params.put("centers", "");
+		}else{
+			params.put("centers", mysrcmCenters);
+		}
+		
+		StringBuilder baseQuery = new StringBuilder("SELECT  distinct p.program_id,"
+				+ " p.auto_generated_event_id,p.program_channel,p.program_name,"
+				+ " p.program_start_date,p.program_end_date,p.coordinator_mobile,p.coordinator_name,p.coordinator_email,"
+				+ " p.organization_department,p.organization_name,p.event_place,p.event_city,p.event_state,p.event_country,"
+				+ " p.preceptor_name,p.preceptor_id_card_number,p.remarks,p.jira_issue_number,p.batch_description, "
+				+ " p.program_channel_type,p.program_address,p.program_district,p.program_zone,p.program_center,"
+				+ " p.organization_contact_name,p.organization_contact_designation,p.organization_contact_email,"
+				+ " p.organization_contact_mobile,p.coordinator_abhyasi_id,p.coordinator_name,p.coordinator_email,"
+				+ " p.coordinator_mobile,p.program_status"
+				+ " FROM program p "
+				+ " LEFT OUTER JOIN session_details s "
+				+ " ON p.program_id = s.program_id "
+				+ " WHERE p.program_status = 'ACTIVE' ");
+		
+				baseQuery.append(" AND p.program_center IN( :centers)  AND "
+				+" ("
+				+ " ( "
+				+ " p.program_id NOT IN (SELECT program_id FROM session_details)  AND DATEDIFF(NOW(), p.program_start_date) >= 14 "
+				+ " ) "
+				+ " OR p.program_id  IN "
+				+ " ("
+				+ " select s.program_id from session_details s where s.session_date = "
+				+ " ("
+				+ " select max( sd.session_date) from session_details sd where sd.program_id = s.program_id "
+				+ " )"
+				+ " AND DATEDIFF(NOW(),s.session_date) >= 14 "
+				+ " )"
+				+ " )"			
+				);
+		//try{
+			programs = namedParameterJdbcTemplate.query(baseQuery.toString(),params,BeanPropertyRowMapper.newInstance(Program.class));
+		//} catch(Exception ex){
+			//LOGGER.error("Failed to get list of programs for which no activity is done within last 14 days {}",ex);
+		//}
+		return programs;
 	}
 
 }

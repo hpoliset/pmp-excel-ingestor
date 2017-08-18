@@ -57,6 +57,7 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 		validateParticipantDetails(participantSheet, errorList);
 		checkProgramMandatoryFields(eventSheet,errorList);
 		checkParticipantMandatoryFields(participantSheet, errorList);
+		checkProgramCharacterLength(eventSheet, errorList);
 		return errorList;
 	}
 
@@ -74,7 +75,7 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 			col = column.getCell();
 			if (!column.getHeader().equalsIgnoreCase(sheet.getRow(row).getCell(col,Row.CREATE_NULL_AS_BLANK).getStringCellValue().trim())) {
 				errorList.add(" Invalid Program Header:  " + column.getHeader()
-						+ " is not present as per the template.");
+				+ " is not present as per the template.");
 			}
 		}
 		LOGGER.info("Event Details structure validation completed for v2 template.");
@@ -94,7 +95,7 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 			col = column.getCell();
 			if (!column.getHeader().equalsIgnoreCase(sheet.getRow(row).getCell(col,Row.CREATE_NULL_AS_BLANK).getStringCellValue().trim())) {
 				errorList.add(" Invalid Participant Header " + column.getHeader()
-						+ " is not present as per the template.");
+				+ " is not present as per the template.");
 			}
 		}
 		LOGGER.info("INFO : Participants Details sheet structure validation completed for v2.1 template.");
@@ -204,12 +205,12 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 
 		LOGGER.info("Started validating Participation Details sheet mandatory fields for v2.1 template.");
 		int rowCount = participantSheet.getPhysicalNumberOfRows();
-       // List<String> participantNames = new LinkedList<>();
+		// List<String> participantNames = new LinkedList<>();
 		for (int i = 1; i < rowCount; i++) {
 			Row currentRow = participantSheet.getRow(i);
 			if (!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()) {
 				errorList.addAll(parseParticipantData(currentRow, i + 1));
-                //participantNames.add(currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim());
+				//participantNames.add(currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim());
 
 			}
 		}
@@ -334,8 +335,142 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 				}
 			}
 
+			if (V2ParticipantCols.NAME.getLength() < currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V2ParticipantCols.NAME.getHeader() + " should not contain more than " 
+						+ V2ParticipantCols.NAME.getLength() +" characters at row number " + rowNumber);
+			}
+
+
+			if (V2ParticipantCols.COUNTRY.getLength() < currentRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V2ParticipantCols.COUNTRY.getHeader() + " should not contain more than " + V2ParticipantCols.COUNTRY.getLength() +" characters at row number " + rowNumber);
+			}
+
+			if (V2ParticipantCols.STATE.getLength() < currentRow.getCell(5, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V2ParticipantCols.STATE.getHeader() + " should not contain more than " + V2ParticipantCols.STATE.getLength() +" characters at row number " + rowNumber);
+			}
+
+			if (V2ParticipantCols.CITY.getLength() < currentRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V2ParticipantCols.CITY.getHeader() + " should not contain more than " + V2ParticipantCols.CITY.getLength() +" characters at row number " + rowNumber);
+			}
+
+			if (V2ParticipantCols.EMAIL.getLength() < currentRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V2ParticipantCols.EMAIL.getHeader() + " should not contain more than " + V2ParticipantCols.EMAIL.getLength() +" characters at row number " + rowNumber);
+			}
+
+			if (V2ParticipantCols.MOBILE.getLength() < currentRow.getCell(8, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V2ParticipantCols.MOBILE.getHeader() + " should not contain more than " + V2ParticipantCols.MOBILE.getLength() +" characters at row number " + rowNumber);
+			}
+
+			if (V2ParticipantCols.PROFFESION.getLength() < currentRow.getCell(9, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V2ParticipantCols.PROFFESION.getHeader() + " should not contain more than " + V2ParticipantCols.PROFFESION.getLength() +" characters at row number " + rowNumber);
+			}
+
+			if (V2ParticipantCols.RECEIVE_UPDATES.getLength() < currentRow.getCell(12, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V2ParticipantCols.RECEIVE_UPDATES.getHeader() + " should not contain more than " + V2ParticipantCols.RECEIVE_UPDATES.getLength() +" characters at row number " + rowNumber);
+			}
+
+			if (V2ParticipantCols.GENDER.getLength() < currentRow.getCell(13, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V2ParticipantCols.GENDER.getHeader() + " should not contain more than " + V2ParticipantCols.GENDER.getLength() +" characters at row number " + rowNumber);
+			}
+
+			if (V2ParticipantCols.AGE_GROUP.getLength() < currentRow.getCell(12, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V2ParticipantCols.AGE_GROUP.getHeader() + " should not contain more than " + V2ParticipantCols.AGE_GROUP.getLength() +" characters at row number " + rowNumber);
+			}
+
+			if (V2ParticipantCols.PREF_LANGUAGE.getLength() < currentRow.getCell(13, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V2ParticipantCols.PREF_LANGUAGE.getHeader() + " should not contain more than " + V2ParticipantCols.PREF_LANGUAGE.getLength() +" characters at row number " + rowNumber);
+			}
+
+			if (V2ParticipantCols.WELCOME_CARD_NUMBER.getLength() < currentRow.getCell(14, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V2ParticipantCols.WELCOME_CARD_NUMBER.getHeader() + " should not contain more than " + V2ParticipantCols.WELCOME_CARD_NUMBER.getLength() +" characters at row number " + rowNumber);
+			}
+
+			if (V2ParticipantCols.REMARKS.getLength() < currentRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V2ParticipantCols.REMARKS.getHeader() + " should not contain more than " + V2ParticipantCols.REMARKS.getLength() +" characters at row number " + rowNumber);
+			}
+
 		}
 		return errorList;
+	}
+
+	public void checkProgramCharacterLength(Sheet eventSheet, List<String> errorList) {
+
+
+		LOGGER.info("INFO : Started validating Program Details character length for v2.1 template.");
+
+		if(V2ProgramCols.EVENT_TYPE.getLength() < eventSheet.getRow(2).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.EVENT_TYPE.getHeader() + " should not contain more than " + V2ProgramCols.EVENT_TYPE.getLength() +" characters ");
+		}
+
+		if(V2ProgramCols.EVENT_PLACE.getLength() < eventSheet.getRow(3).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.EVENT_PLACE.getHeader() + " should not contain more than " + V2ProgramCols.EVENT_PLACE.getLength() +" characters ");
+		}
+
+		if(V2ProgramCols.EVENT_COUNTRY.getLength() < eventSheet.getRow(4).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.EVENT_COUNTRY.getHeader() + " should not contain more than " + V2ProgramCols.EVENT_COUNTRY.getLength() +" characters ");
+		}
+
+		if(V2ProgramCols.EVENT_STATE.getLength() < eventSheet.getRow(4).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.EVENT_STATE.getHeader() + " should not contain more than " + V2ProgramCols.EVENT_STATE.getLength() +" characters ");
+		}
+
+		if(V2ProgramCols.EVENT_CITY.getLength() < eventSheet.getRow(5).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.EVENT_CITY.getHeader() + " should not contain more than " + V2ProgramCols.EVENT_CITY.getLength() +" characters ");
+		}
+
+		if(V2ProgramCols.EVENT_COORDINATORNAME.getLength() < eventSheet.getRow(6).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.EVENT_COORDINATORNAME.getHeader() + " should not contain more than " + V2ProgramCols.EVENT_COORDINATORNAME.getLength() +" characters ");
+		}
+
+		if(V2ProgramCols.EVENT_COORDINATOR_MOBILE.getLength() < eventSheet.getRow(7).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.EVENT_COORDINATOR_MOBILE.getHeader() + " should not contain more than " + V2ProgramCols.EVENT_COORDINATOR_MOBILE.getLength() +" characters ");
+		}
+
+		if(V2ProgramCols.EVENT_COORDINATOR_MAIL.getLength() < eventSheet.getRow(7).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.EVENT_COORDINATOR_MAIL.getHeader() + " should not contain more than " + V2ProgramCols.EVENT_COORDINATOR_MAIL.getLength() +" characters ");
+		}
+
+		if(V2ProgramCols.ORGANIZATION_NAME.getLength() < eventSheet.getRow(9).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.ORGANIZATION_NAME.getHeader() + " should not contain more than " + V2ProgramCols.ORGANIZATION_NAME.getLength() +" characters ");
+		}
+
+		if(V2ProgramCols.ORGANIZATION_CONTACT_PERSON.getLength() < eventSheet.getRow(9).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.ORGANIZATION_CONTACT_PERSON.getHeader() + " should not contain more than " + V2ProgramCols.ORGANIZATION_CONTACT_PERSON.getLength() +" characters ");
+		}
+
+
+		if(V2ProgramCols.ORGANIZATION_WEBSITE.getLength() < eventSheet.getRow(10).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.ORGANIZATION_WEBSITE.getHeader() + " should not contain more than " + V2ProgramCols.ORGANIZATION_WEBSITE.getLength() +" characters ");
+		}
+
+		if(V2ProgramCols.ORGANIZATION_CONTACT_MAILID.getLength() < eventSheet.getRow(10).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.ORGANIZATION_CONTACT_MAILID.getHeader() + " should not contain more than " + V2ProgramCols.ORGANIZATION_CONTACT_MAILID.getLength() +" characters ");
+		}
+
+		if(V2ProgramCols.ORGANIZATION_CONTACT_MOBILE.getLength() < eventSheet.getRow(11).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.ORGANIZATION_CONTACT_MOBILE.getHeader() + " should not contain more than " + V2ProgramCols.ORGANIZATION_CONTACT_MOBILE.getLength() +" characters ");
+		}
+
+		if(V2ProgramCols.PRECEPTOR_NAME.getLength() < eventSheet.getRow(13).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.PRECEPTOR_NAME.getHeader() + " should not contain more than " + V2ProgramCols.PRECEPTOR_NAME.getLength() +" characters ");
+		}
+
+		if(V2ProgramCols.WELCOME_CARD_SIGNEDBY.getLength() < eventSheet.getRow(13).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.WELCOME_CARD_SIGNEDBY.getHeader() + " should not contain more than " + V2ProgramCols.WELCOME_CARD_SIGNEDBY.getLength() +" characters ");
+		}
+
+		if(V2ProgramCols.PRECEPTOR_ID.getLength() < eventSheet.getRow(14).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.PRECEPTOR_ID.getHeader() + " should not contain more than " + V2ProgramCols.PRECEPTOR_ID.getLength() +" characters ");
+		}
+
+		if(V2ProgramCols.WELCOME_CARD_SIGNER_ID.getLength() < eventSheet.getRow(14).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.WELCOME_CARD_SIGNER_ID.getHeader() + " should not contain more than " + V2ProgramCols.WELCOME_CARD_SIGNER_ID.getLength() +" characters ");
+		}
+
+		if(V2ProgramCols.REMARKS.getLength() < eventSheet.getRow(17).getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			errorList.add(V2ProgramCols.REMARKS.getHeader() + " should not contain more than " + V2ProgramCols.REMARKS.getLength() +" characters ");
+		}
+		LOGGER.info("Event Details character length validation completed for v2 template.");
 	}
 
 }

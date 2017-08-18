@@ -49,6 +49,7 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 		validateParticipantDetails(sheet, errorList);
 		checkEventMandatoryFields(sheet, errorList);
 		checkParticipantMandatoryFields(sheet, errorList);
+		checkProgramCharacterLength(sheet, errorList);
 		return errorList;
 	}
 
@@ -183,8 +184,91 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 				LOGGER.error("Not able to parse Introduced date:[" + introducedDateStr + "] at row number " + rowNumber);
 				errorList.add("Not able to parse Introduced date:[" + introducedDateStr + "] at row number " + rowNumber);
 			}
+			
+			if (V1ParticipantCols.FULL_NAME.getLength() < currentRow.getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V1ParticipantCols.FULL_NAME.getHeader() + " should not contain more than " 
+							+ V1ParticipantCols.FULL_NAME.getLength() +" characters at row number " + rowNumber);
+			}
+			
+			if (V1ParticipantCols.CITY.getLength() < currentRow.getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V1ParticipantCols.CITY.getHeader() + " should not contain more than " 
+							+ V1ParticipantCols.CITY.getLength() +" characters at row number " + rowNumber);
+			}
+			
+			if (V1ParticipantCols.STATE.getLength() < currentRow.getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V1ParticipantCols.STATE.getHeader() + " should not contain more than " 
+							+ V1ParticipantCols.STATE.getLength() +" characters at row number " + rowNumber);
+			}
+			
+			if (V1ParticipantCols.EMAIL_ADDRESS.getLength() < currentRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V1ParticipantCols.EMAIL_ADDRESS.getHeader() + " should not contain more than " 
+							+ V1ParticipantCols.EMAIL_ADDRESS.getLength() +" characters at row number " + rowNumber);
+			}
+			
+			if (V1ParticipantCols.PHONE.getLength() < currentRow.getCell(5, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V1ParticipantCols.PHONE.getHeader() + " should not contain more than " 
+							+ V1ParticipantCols.PHONE.getLength() +" characters at row number " + rowNumber);
+			}
+			
+			if (V1ParticipantCols.OCCUPATION.getLength() < currentRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V1ParticipantCols.OCCUPATION.getHeader() + " should not contain more than " 
+							+ V1ParticipantCols.OCCUPATION.getLength() +" characters at row number " + rowNumber);
+			}
+			
+			if (V1ParticipantCols.INTRODUCED.getLength() < currentRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V1ParticipantCols.INTRODUCED.getHeader() + " should not contain more than " 
+							+ V1ParticipantCols.INTRODUCED.getLength() +" characters at row number " + rowNumber);
+			}
+			
+			if (V1ParticipantCols.INTRODUCED_BY.getLength() < currentRow.getCell(9, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+				errorList.add(V1ParticipantCols.INTRODUCED_BY.getHeader() + " should not contain more than " 
+							+ V1ParticipantCols.INTRODUCED_BY.getLength() +" characters at row number " + rowNumber);
+			}
 
 		}
 		return errorList;
+	}
+	
+	/**
+	 * 
+	 * @param sheet
+	 * @param eventErrorList
+	 * @return
+	 * @throws IOException
+	 */
+	public void checkProgramCharacterLength(Sheet sheet, List<String> eventErrorList) {
+		LOGGER.info("Started validating Event Details field length for altered 1.0 template.");
+		
+		if(V1ProgramCols.EVENT_TYPE.getLength() < sheet.getRow(3).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			eventErrorList.add(V1ProgramCols.EVENT_TYPE.getHeader() + " should not contain more than " + V1ProgramCols.EVENT_TYPE.getLength() +" characters ");
+		}
+		
+		if(V1ProgramCols.EVENT_COORDINATORNAME.getLength() < sheet.getRow(4).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			eventErrorList.add(V1ProgramCols.EVENT_COORDINATORNAME.getHeader() + " should not contain more than " + V1ProgramCols.EVENT_COORDINATORNAME.getLength() +" characters ");
+		}
+		
+		if(V1ProgramCols.EVENT_COORDINATOR_MAIL.getLength() < sheet.getRow(5).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			eventErrorList.add(V1ProgramCols.EVENT_COORDINATOR_MAIL.getHeader() + " should not contain more than " + V1ProgramCols.EVENT_COORDINATOR_MAIL.getLength() +" characters ");
+		}
+		
+		if(V1ProgramCols.CENTER_NAME.getLength() < sheet.getRow(6).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			eventErrorList.add(V1ProgramCols.CENTER_NAME.getHeader() + " should not contain more than " + V1ProgramCols.CENTER_NAME.getLength() +" characters ");
+		}
+		
+		if(V1ProgramCols.EVENT_STATE.getLength() < sheet.getRow(7).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			eventErrorList.add(V1ProgramCols.EVENT_STATE.getHeader() + " should not contain more than " + V1ProgramCols.EVENT_STATE.getLength() +" characters ");
+		}
+		
+		if(V1ProgramCols.EVENT_COUNTRY.getLength() < sheet.getRow(8).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			eventErrorList.add(V1ProgramCols.EVENT_COUNTRY.getHeader() + " should not contain more than " + V1ProgramCols.EVENT_COUNTRY.getLength() +" characters ");
+		}
+		
+		if(V1ProgramCols.INSTITUTION_NAME.getLength() < sheet.getRow(9).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			eventErrorList.add(V1ProgramCols.INSTITUTION_NAME.getHeader() + " should not contain more than " + V1ProgramCols.INSTITUTION_NAME.getLength() +" characters ");
+		}
+		
+		if(V1ProgramCols.WEBSITE.getLength() < sheet.getRow(10).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim().length()){
+			eventErrorList.add(V1ProgramCols.WEBSITE.getHeader() + " should not contain more than " + V1ProgramCols.WEBSITE.getLength() +" characters ");
+		}
 	}
 }

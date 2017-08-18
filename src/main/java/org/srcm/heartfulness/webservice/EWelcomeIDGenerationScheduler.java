@@ -241,6 +241,7 @@ public class EWelcomeIDGenerationScheduler {
 	 * Cron to generate EWelcomeIDs for the participants.
 	 */
 	/*@Scheduled(cron = "${welcome.mailids.generation.cron.time}")*/ 
+	@RequestMapping(value = "/generate/ewelcomeid")
 	public void generateEWelcomeIDsForParticipants() {
 
 		LOGGER.info("START : CRON : EWELCOMEID GENERATION : Scheduler to generate EwelcomeID's for the participants started at - "+ new Date());

@@ -433,9 +433,9 @@ public class DashboardServiceImpl implements DashboardService {
 		} else if (!mysrcmZones.isEmpty() || !mysrcmCenters.isEmpty()) {
 
 			try {
+				
 				LOGGER.info("Trying to fetch list of zones for zone/center coordinator {}", accessLog.getUsername());
-				responseListOfZones = dashboardRepository.getListOfZonesForZoneOrCenterCoordinator(dashboardReq,
-						mysrcmCenters, mysrcmZones);
+				responseListOfZones = dashboardRepository.getListOfZonesForZoneOrCenterCoordinator(dashboardReq,mysrcmCenters, mysrcmZones);
 			} catch (Exception ex) {
 
 				eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.PROCESSING_FAILED);
@@ -448,8 +448,8 @@ public class DashboardServiceImpl implements DashboardService {
 			try {
 
 				LOGGER.info("Trying to fetch list of zones for event coordinator {}", accessLog.getUsername());
-				responseListOfZones = dashboardRepository.getListOfZonesForEventCoordinator(emailList, userRole,
-						dashboardReq);
+				responseListOfZones = dashboardRepository.getListOfZonesForEventCoordinator(emailList, userRole,dashboardReq);
+						
 			} catch (Exception ex) {
 
 				eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.PROCESSING_FAILED);
@@ -552,9 +552,9 @@ public class DashboardServiceImpl implements DashboardService {
 		} else if (!mysrcmZones.isEmpty() || !mysrcmCenters.isEmpty()) {
 
 			try {
+				
 				LOGGER.info("Trying to fetch list of centers for zone/center coordinator {}", accessLog.getUsername());
-				responseCenterList = dashboardRepository.getListOfCentersForZoneOrCenterCoordinator(dashboardReq,
-						mysrcmZones, mysrcmCenters);
+				responseCenterList = dashboardRepository.getListOfCentersForZoneOrCenterCoordinator(dashboardReq,mysrcmZones, mysrcmCenters);
 			} catch (Exception ex) {
 
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
@@ -568,8 +568,7 @@ public class DashboardServiceImpl implements DashboardService {
 
 			try {
 				LOGGER.info("Trying to fetch list of centers for event coordinator {}", accessLog.getUsername());
-				responseCenterList = dashboardRepository.getListOfCentersForEventCoordinator(dashboardReq, emailList,
-						userRole);
+				responseCenterList = dashboardRepository.getListOfCentersForEventCoordinator(dashboardReq, emailList,userRole);
 			} catch (Exception ex) {
 
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,

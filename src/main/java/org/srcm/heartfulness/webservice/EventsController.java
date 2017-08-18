@@ -744,6 +744,83 @@ public class EventsController {
 		}
 	}
 
+	/**
+	 * Web service endpoint to get list of inactive event details.
+	 * 
+	 * If list of inactive events are found successfully, the service returns an success
+	 * response body with HTTP status 200.
+	 * 
+	 * If list of inactive events are not found, the service returns response with status
+	 * failed with HTTP status 200.
+	 * 
+	 * If some exception is raised while processing the request, error response
+	 * is returned with respective HttpStatus code.
+	 * 
+	 * @param token,Token to be validated against MySRCM endpoint.
+	 * @return A ResponseEntity containing success message, if created
+	 *         successfully, and a HTTP status code as described in the method comment.
+	 *        
+	 * @throws IOException
+	 */
+	@RequestMapping(value = "/getinactiveprograms", 
+			method = RequestMethod.POST,
+			consumes = MediaType.APPLICATION_JSON_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> getProgramDetails(@RequestHeader(value = "Authorization") String authToken,
+			@Context HttpServletRequest httpRequest) {
+
+		// save request details in PMP
+		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null, httpRequest, null);
+
+		// validate token details
+		PMPResponse pmpResponse = authTokenVldtr.validateAuthToken(authToken, accessLog);
+		if (pmpResponse instanceof ErrorResponse) {
+			return new ResponseEntity<PMPResponse>(pmpResponse, HttpStatus.OK);
+		}
+
+		LOGGER.info("Trying to fetch inactive program details for user : {} ",accessLog.getUsername());
+		User user = userProfileService.loadUserByEmail(accessLog.getUsername());
+
+		if (null == user) {
+
+			LOGGER.info(DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			accessLog.setErrorMessage(DashboardConstants.USER_UNAVAILABLE_IN_PMP);
+			updatePMPAPIAccessLog(accessLog, ErrorConstants.STATUS_FAILED, DashboardConstants.USER_UNAVAILABLE_IN_PMP,StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		}
+
+		List<String> emailList = new ArrayList<String>();
+		if (null != user.getAbyasiId()) {
+			emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
+		}
+		if (emailList.size() == 0) {
+			emailList.add(accessLog.getUsername());
+		}
+
+		List<Event> eventDetails = new ArrayList<Event>();
+		try {
+			eventDetails = programService.getInactiveEventDetails(emailList, user.getRole(), authToken, accessLog);
+
+			if(null  == eventDetails){
+				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.UNAUTHORIZED_TO_VIEW_INACTIVE_EVENTS);
+				updatePMPAPIAccessLog(accessLog, ErrorConstants.STATUS_SUCCESS, null, StackTraceUtils.convertPojoToJson(eResponse));
+				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.OK);
+			}
+
+			updatePMPAPIAccessLog(accessLog, ErrorConstants.STATUS_SUCCESS, null, StackTraceUtils.convertPojoToJson(eventDetails));
+			return new ResponseEntity<List<Event>>(eventDetails, HttpStatus.OK);
+
+		} catch (Exception e) {
+
+			LOGGER.error("Exception while fetching list of inactive program details {}", e);
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.PROCESSING_FAILED);
+			updatePMPAPIAccessLog(accessLog, ErrorConstants.STATUS_FAILED,StackTraceUtils.convertPojoToJson(eResponse),StackTraceUtils.convertStackTracetoString(e));
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+
 
 	private PMPAPIAccessLog createPMPAPIAccessLog(String username,HttpServletRequest httpRequest,String requestBody){
 

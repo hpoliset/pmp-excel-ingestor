@@ -386,4 +386,7 @@ public interface ProgramService {
 	
 	public List<Event> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList, String role,int offset,String authToken,PMPAPIAccessLog accessLog,EventPagination eventPagination);
 
+	public List<Event> getInactiveEventDetails(List<String> emailList, String userRole, String authToken,PMPAPIAccessLog accessLog);
+			
+
 }
