@@ -150,10 +150,10 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		if (null == participant.getCountry() || participant.getCountry().isEmpty()) {
 			errors.put("country", DashboardConstants.PARTICIPANT_COUNTRY_REQ);
 		}
-		if(null == participant.getDistrict() || participant.getDistrict().isEmpty()){
+		if((null != program.getCreatedSource() && program.getCreatedSource().equals(PMPConstants.CREATED_SOURCE_DASHBOARD_v2)) &&  
+				(null == participant.getDistrict() || participant.getDistrict().isEmpty())){
 			errors.put("district", DashboardConstants.PARTICIPANT_DISTRICT_REQ);
 		}
-
 		if (null != participant.getEmail()) {
 			if (!participant.getEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
 				errors.put("email", DashboardConstants.INVALID_PARTICIPANT_EMAIL);

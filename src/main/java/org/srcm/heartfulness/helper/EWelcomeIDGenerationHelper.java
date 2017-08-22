@@ -103,9 +103,10 @@ public class EWelcomeIDGenerationHelper {
 			aspirantAPIAccessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(userProfile));
 			aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
 			apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
+			LOGGER.info("User profile received from MYSRCM : "+userProfile.toString());
 			return userProfile.getRef();
 		} catch (HttpClientErrorException e) {
-			LOGGER.error("Update introduction status : HttpClientErrorException : {} ", e.getMessage());
+			LOGGER.error("Update introduction status : HttpClientErrorException : {} ", e);
 			ObjectMapper mapper = new ObjectMapper();
 			EWelcomeIDErrorResponse eWelcomeIDErrorResponse;
 			try {
@@ -115,9 +116,10 @@ public class EWelcomeIDGenerationHelper {
 				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 				apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
+				LOGGER.info("HTTP Client Error Exception (eWelcomeIDErrorResponse) :  "+eWelcomeIDErrorResponse);
 				return eWelcomeIDErrorResponse;
 			} catch (Exception e1) {
-				LOGGER.error("Update introduction status : CreateAspirant : Exception : {} ", e.getMessage());
+				LOGGER.error("Update introduction status : CreateAspirant : Exception : {} ", e1);
 				aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 				aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 				aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
@@ -125,15 +127,17 @@ public class EWelcomeIDGenerationHelper {
 				return null;
 			}
 		} catch (JsonParseException | JsonMappingException e) {
-			LOGGER.error("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",
-					e.getMessage());
+			
+			LOGGER.error("Update introduction status : CreateAspirant : JsonParse/JsonMapping Exception : {} ",e);
 			aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 			aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			apiAccessLogService.updatePmpAPIAccesslogDetails(aspirantAPIAccessLogDetails);
 			return null;
+			
 		} catch (Exception e) {
-			LOGGER.error("Update introduction status : CreateAspirant : Exception : {} ", e.getMessage());
+			
+			LOGGER.error("Update introduction status : CreateAspirant : Exception : {} ", e);
 			aspirantAPIAccessLogDetails.setResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			aspirantAPIAccessLogDetails.setStatus(ErrorConstants.STATUS_FAILED);
 			aspirantAPIAccessLogDetails.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
