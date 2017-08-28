@@ -867,12 +867,15 @@ public class ProgramServiceImpl implements ProgramService {
 						if (objResponse instanceof GeoSearchResponse) {
 							
 							GeoSearchResponse geoSearchResponse = (GeoSearchResponse) objResponse;
+							LOGGER.info("Geo search response : {}",geoSearchResponse.toString());
+							
 							if (null != geoSearchResponse) {
 								
 								//get City Response
 								Object citiesObj = eWelcomeIDGenerationHelper.getCitiesAPIResponse(geoSearchResponse,id, participant);
 								if (citiesObj instanceof CitiesAPIResponse) {
 									CitiesAPIResponse citiesAPIResponse = (CitiesAPIResponse) citiesObj;
+									LOGGER.info("City response : {}",citiesAPIResponse.toString());
 									if (null != citiesAPIResponse) {
 										
 										//generate eWelcome Id
@@ -880,6 +883,7 @@ public class ProgramServiceImpl implements ProgramService {
 												
 										if (aspirantobj instanceof String) {
 											String eWelcomeID = (String) aspirantobj;
+											LOGGER.info("Aspirant object as string response : {}",eWelcomeID);
 											if (null != eWelcomeID) {
 												
 												participant.getProgram().setSrcmGroup(String.valueOf(geoSearchResponse.getNearestCenter()));
@@ -900,6 +904,8 @@ public class ProgramServiceImpl implements ProgramService {
 											}
 										} else if (aspirantobj instanceof EWelcomeIDErrorResponse) {
 											EWelcomeIDErrorResponse eWelcomeIDErrorResponse = (EWelcomeIDErrorResponse) aspirantobj;
+											LOGGER.info("Aspirant object as EWelcomeIDErrorResponse  :"+eWelcomeIDErrorResponse.toString());
+											
 											if ((null != eWelcomeIDErrorResponse.getEmail() && !eWelcomeIDErrorResponse
 													.getEmail().isEmpty())) {
 												return eWelcomeIDErrorResponse.getEmail().get(0);
@@ -1502,8 +1508,13 @@ public class ProgramServiceImpl implements ProgramService {
 			while(isNext){
 
 				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
+					
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())){
+						
+						currentPositionValue = CoordinatorPosition.PRESIDENT.getPositionValue();
+						currentPositionType =  crdntrPosition.getPositionType().getName();
 
-					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					}else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 
 						currentPositionValue = CoordinatorPosition.COUNTRY_COORDINATOR.getPositionValue();
 						currentPositionType =  crdntrPosition.getPositionType().getName();
@@ -1523,7 +1534,12 @@ public class ProgramServiceImpl implements ProgramService {
 						}
 					}
 
-					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					/*if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+						posResult.setNext(null);
+						break;
+					}*/
+					if( crdntrPosition.isActive() && (currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType()) ||
+							currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType()) )){
 						posResult.setNext(null);
 						break;
 					}
@@ -1555,7 +1571,13 @@ public class ProgramServiceImpl implements ProgramService {
 		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 
-		if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+		if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())){
+			
+			LOGGER.info("Logged in user {} is President ",accessLog.getUsername());
+			eventPagination.setTotalCount(programRepository.getProgramCountForLogInCoordinator(emailList, role, currentPositionType,mysrcmCenters));
+			programList = programRepository.getEventsByEmailAndRole(emailList, role, offset, eventPagination.getPageSize(),currentPositionType,mysrcmCenters);
+		
+		}else if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 
 			LOGGER.info("Logged in user {} is a country coordinator ",accessLog.getUsername());
 			eventPagination.setTotalCount(programRepository.getProgramCountForLogInCoordinator(emailList, role, currentPositionType,mysrcmCenters));
@@ -1676,8 +1698,13 @@ public class ProgramServiceImpl implements ProgramService {
 			while(isNext){
 
 				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
+					
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())){
+						
+						currentPositionValue = CoordinatorPosition.PRESIDENT.getPositionValue();
+						currentPositionType =  crdntrPosition.getPositionType().getName();
 
-					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					}else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 
 						currentPositionValue = CoordinatorPosition.COUNTRY_COORDINATOR.getPositionValue();
 						currentPositionType =  crdntrPosition.getPositionType().getName();
@@ -1697,7 +1724,8 @@ public class ProgramServiceImpl implements ProgramService {
 						}
 					}
 
-					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					if( crdntrPosition.isActive() && (currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType()) ||
+							currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType()) )){
 						posResult.setNext(null);
 						break;
 					}
@@ -1734,8 +1762,14 @@ public class ProgramServiceImpl implements ProgramService {
 				searchRequest.setSearchField(searchField.getValue());
 			}
 		}
-
-		if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+		
+		if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())){
+			
+			LOGGER.info("Logged in user {} is a President ",accessLog.getUsername());
+			eventPagination.setTotalCount(programRepository.getPgrmCountBySrchParamsForLogInCoordinator(searchRequest, emailList, role,currentPositionType,mysrcmCenters));
+			programList = programRepository.searchEventsWithUserRoleAndEmailId(searchRequest,emailList, role, offset,currentPositionType,mysrcmCenters);
+			
+		}else if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 
 			LOGGER.info("Logged in user {} is a country coordinator ",accessLog.getUsername());
 			eventPagination.setTotalCount(programRepository.getPgrmCountBySrchParamsForLogInCoordinator(searchRequest, emailList, role,currentPositionType,mysrcmCenters));
@@ -1960,8 +1994,13 @@ public class ProgramServiceImpl implements ProgramService {
 			while(isNext){
 
 				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
+					
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())){
 
-					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+						currentPositionValue = CoordinatorPosition.PRESIDENT.getPositionValue();
+						currentPositionType =  crdntrPosition.getPositionType().getName();
+
+					} else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 
 						currentPositionValue = CoordinatorPosition.COUNTRY_COORDINATOR.getPositionValue();
 						currentPositionType =  crdntrPosition.getPositionType().getName();
@@ -1981,11 +2020,11 @@ public class ProgramServiceImpl implements ProgramService {
 						}
 					}
 
-					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					if( crdntrPosition.isActive() && (currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType()) ||
+							currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType()) )){
 						posResult.setNext(null);
 						break;
 					}
-
 				}
 
 				if(null == posResult.getNext()){
@@ -2013,10 +2052,11 @@ public class ProgramServiceImpl implements ProgramService {
 		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 
-		 if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType()) || 
-				currentPositionType.equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())){
+		 if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.ZONE_COORDINATOR.getPositionType()) 
+				 || currentPositionType.equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())
+				 || currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())){
 			 
-			LOGGER.info("Logged in user {} is a zone/center coordinator ",accessLog.getUsername());
+			LOGGER.info("Logged in user {} is a zone/center coordinator or President ",accessLog.getUsername());
 			DashboardRequest dashboardReq =  new DashboardRequest();
 			dashboardReq.setCountry(PMPConstants.COUNTRY_INDIA);
 
@@ -2121,8 +2161,13 @@ public class ProgramServiceImpl implements ProgramService {
 			while(isNext){
 
 				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
+					
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())){
+						
+						currentPositionValue = CoordinatorPosition.PRESIDENT.getPositionValue();
+						currentPositionType =  crdntrPosition.getPositionType().getName();
 
-					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					}else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 
 						currentPositionValue = CoordinatorPosition.COUNTRY_COORDINATOR.getPositionValue();
 						currentPositionType =  crdntrPosition.getPositionType().getName();
@@ -2142,7 +2187,8 @@ public class ProgramServiceImpl implements ProgramService {
 						}
 					}
 
-					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					if( crdntrPosition.isActive() && (currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType()) ||
+							currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType()) )){
 						posResult.setNext(null);
 						break;
 					}
@@ -2175,7 +2221,11 @@ public class ProgramServiceImpl implements ProgramService {
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 		Program program = null;
 
-		if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+		if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())){
+			LOGGER.info("Logged in user {} is President ",accessLog.getUsername());
+			program = programRepository.getProgramByEmailAndRole(emailList, userRole, eventId,currentPositionType,mysrcmCenters);
+			
+		}else if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 			LOGGER.info("Logged in user {} is a country coordinator ",accessLog.getUsername());
 			program = programRepository.getProgramByEmailAndRole(emailList, userRole, eventId,currentPositionType,mysrcmCenters);
 

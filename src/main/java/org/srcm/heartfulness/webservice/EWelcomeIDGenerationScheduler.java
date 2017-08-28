@@ -283,7 +283,7 @@ public class EWelcomeIDGenerationScheduler {
 								isvalid = programService.validatePreceptorIDCardNumber(program, accessLog.getId());
 							}
 						}
-						LOGGER.info("First Sitting By : "+program.getFirstSittingBy()+",Isvalid Response : "+isvalid);
+						LOGGER.info("First Sitting By : {},Preceptor ID Response : {}",program.getFirstSittingBy(),isvalid);
 						if (null == isvalid) {
 							String eWelcomeID = programService.generateeWelcomeID(participant, accessLog.getId());
 							if ("success".equalsIgnoreCase(eWelcomeID)) {
@@ -296,7 +296,7 @@ public class EWelcomeIDGenerationScheduler {
 										+ participant.getIsEwelcomeIdInformed();
 
 								updatePMPAPIAccessLog(accessLog, ErrorConstants.STATUS_SUCCESS, null, responseBody);
-								LOGGER.info("eWelcome Id success Response : "+responseBody);
+								LOGGER.info("eWelcome Id success Response : {}",responseBody);
 							} else {
 								eWelcomeID = transformErrorMsg(eWelcomeID);
 								LOGGER.info("Failed to create eWelcome ID : "+eWelcomeID);

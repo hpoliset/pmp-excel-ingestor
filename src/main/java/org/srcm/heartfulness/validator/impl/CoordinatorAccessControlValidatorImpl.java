@@ -132,9 +132,13 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 				LOGGER.error("Unable to fetch profile using mail {}",approvedBy );
 			}*/
 
-			if(!approverRole.equals(PMPConstants.LOGIN_ROLE_ADMIN) ? !approverRole.equals(PMPConstants.LOGIN_GCONNECT_ADMIN) : false){
+			/*if(!approverRole.equals(PMPConstants.LOGIN_ROLE_ADMIN) ? !approverRole.equals(PMPConstants.LOGIN_GCONNECT_ADMIN) : false){
 				return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.APPROVER_NO_AUTHORITY);
-			}
+			}*/
+			
+			if(!approverRole.equals(PMPConstants.LOGIN_ROLE_ADMIN) ? !approverRole.equals(PMPConstants.LOGIN_GCONNECT_ADMIN) ? !approverRole.equals(PMPConstants.LOGIN_ROLE_PRESIDENT) : false  : false){
+                return new CoordinatorAccessControlErrorResponse(ErrorConstants.STATUS_FAILED, CoordinatorAccessControlConstants.APPROVER_NO_AUTHORITY);
+            }
 		}
 
 		int alreadyApproved = -1;
@@ -211,8 +215,14 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 			while(isNext){
 
 				for(CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()){
+					
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())){
 
-					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+						if(CoordinatorPosition.PRESIDENT.getPositionValue() > currentPositionValue){
+							currentPositionValue = CoordinatorPosition.PRESIDENT.getPositionValue();
+							currentPositionType =  crdntrPosition.getPositionType().getName();
+						}
+					}else if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName().equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 
 						currentPositionValue = CoordinatorPosition.COUNTRY_COORDINATOR.getPositionValue();
 						currentPositionType =  crdntrPosition.getPositionType().getName();
@@ -232,7 +242,8 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 						}
 					}
 
-					if(crdntrPosition.isActive() && currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+					if(crdntrPosition.isActive() && (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType()) 
+							|| currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType()))){
 						posResult.setNext(null);
 						break;
 					}
@@ -263,8 +274,12 @@ public class CoordinatorAccessControlValidatorImpl implements CoordinatorAccessC
 		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
 		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+		
+		if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())){                       
 
-		if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
+			return programRepository.getListOfProgramIdsByEmail(emailList, userRole, currentPositionType, mysrcmCenters);
+
+		}else if(currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())){
 
 			LOGGER.info("Logged in user {} is a country coordinator ",accessLog.getUsername());
 			return programRepository.getListOfProgramIdsByEmail(emailList, userRole, currentPositionType, mysrcmCenters);

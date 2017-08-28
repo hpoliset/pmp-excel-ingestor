@@ -386,6 +386,15 @@ public interface ProgramService {
 	
 	public List<Event> searchEventsWithUserRoleAndEmailId(SearchRequest searchRequest, List<String> emailList, String role,int offset,String authToken,PMPAPIAccessLog accessLog,EventPagination eventPagination);
 
+	/**
+	 * Method to get list of events for log in coordinator where no activity was conducted for past 14 days
+	 * @param emailList, List of emails which is obtained from the logged in user
+	 * @param userRole, Role of the logged in user
+	 * @param authToken, Token to be validated against MySRCM endpoint.
+	 * @param accessLog, accessLog to store log details like username, IPaddress
+	 * @return list of inactive event details 
+	 * 
+	 */
 	public List<Event> getInactiveEventDetails(List<String> emailList, String userRole, String authToken,PMPAPIAccessLog accessLog);
 			
 

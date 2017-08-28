@@ -11,7 +11,8 @@ public enum CoordinatorPosition {
 	
 	CENTER_COORDINATOR(1,"Center Coordinator"),
 	ZONE_COORDINATOR(2,"Zone Coordinator"),
-	COUNTRY_COORDINATOR(3,"Country Coordinator");
+	COUNTRY_COORDINATOR(3,"Country Coordinator"),
+	PRESIDENT(4,"President");
 	
 	private int positionValue;
 	private String positionType;
