@@ -241,8 +241,10 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 							}
 						});
 			}
+			
+			//existing
 
-			if (participantId <= 0) {
+			/*if (participantId <= 0) {
 				participantId = this.jdbcTemplate.query(
 						"SELECT id from participant where print_name=? AND email=? AND program_id=?",
 						new Object[] { participant.getPrintName(), participant.getEmail(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
@@ -257,6 +259,37 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 			}
 
 			if (participantId <= 0) {
+				participantId = this.jdbcTemplate.query(
+						"SELECT id from participant where print_name=? AND mobile_phone=? AND program_id=?",
+						new Object[] { participant.getPrintName(), participant.getMobilePhone(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
+							@Override
+							public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+								if (resultSet.next()) {
+									return resultSet.getInt(1);
+								}
+								return 0;
+							}
+						});
+
+			}*/
+			
+			// changes
+			
+			if (null != participant.getEmail() && !participant.getEmail().isEmpty() && participantId <= 0) {
+				participantId = this.jdbcTemplate.query(
+						"SELECT id from participant where print_name=? AND email=? AND program_id=?",
+						new Object[] { participant.getPrintName(), participant.getEmail(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
+							@Override
+							public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+								if (resultSet.next()) {
+									return resultSet.getInt(1);
+								}
+								return 0;
+							}
+						});
+			}
+			
+			if (null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty() && participantId <= 0) {
 				participantId = this.jdbcTemplate.query(
 						"SELECT id from participant where print_name=? AND mobile_phone=? AND program_id=?",
 						new Object[] { participant.getPrintName(), participant.getMobilePhone(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
@@ -581,12 +614,35 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 			int participantId = 0;
 			try{
 
-				participantId = this.namedParameterJdbcTemplate
+				/*participantId = this.namedParameterJdbcTemplate
 						.queryForObject("SELECT id "
 								+ " FROM participant"
 								+ " WHERE print_name=:printName AND program_id=:programId AND "
 								+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (email=:email) OR (mobile_phone=:mobilePhone))",
-								params,Integer.class);
+								params,Integer.class);*/
+				
+				if(null != participant.getEmail() && !participant.getEmail().isEmpty()){
+					participantId = this.namedParameterJdbcTemplate
+							.queryForObject("SELECT id "
+									+ " FROM participant"
+									+ " WHERE print_name=:printName AND program_id=:programId AND "
+									+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (mobile_phone=:mobilePhone))",
+									params,Integer.class);
+				}else if(null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty()){
+					participantId = this.namedParameterJdbcTemplate
+							.queryForObject("SELECT id "
+									+ " FROM participant"
+									+ " WHERE print_name=:printName AND program_id=:programId AND "
+									+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (email=:email))",
+									params,Integer.class);
+				}else{
+					participantId = this.namedParameterJdbcTemplate
+							.queryForObject("SELECT id "
+									+ " FROM participant"
+									+ " WHERE print_name=:printName AND program_id=:programId AND "
+									+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (email=:email) OR (mobile_phone=:mobilePhone))",
+									params,Integer.class);
+				}
 
 			} catch(Exception ex) {
 			}

@@ -2274,7 +2274,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		if (searchRequest.getDateTo() != null && !searchRequest.getDateTo().isEmpty()) {
 			try {
 				if(role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)  || coordinatorType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType()) ){
-					whereCondition.append(" WHERE CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END " );
+					whereCondition.append(" AND CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END " );
 				}else{
 					whereCondition.append(" AND CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END " );
 				}
@@ -2375,11 +2375,11 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			}
 		}
 
-		if (searchRequest.getDateTo() != null && !searchRequest.getDateTo().isEmpty() || coordinatorType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType()) ) {
+		if (searchRequest.getDateTo() != null && !searchRequest.getDateTo().isEmpty()) {
 			try {
 
-				if(role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)){
-					whereCondition.append(" WHERE CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END ");
+				if(role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN) || coordinatorType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType()) ){
+					whereCondition.append(" AND CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END ");
 				}else{
 					whereCondition.append(" AND CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END ");
 				}
