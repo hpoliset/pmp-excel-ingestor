@@ -2261,7 +2261,12 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		if ((searchRequest.getDateFrom() != null && !searchRequest.getDateFrom().isEmpty())) {
 			try {
 				if(role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN) || coordinatorType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())){
-					whereCondition.append(" WHERE p.program_start_date >=:program_start_date ");
+					//added new validation
+					if (!("ALL".equals(searchRequest.getSearchField())) && null != searchRequest.getSearchField() && !searchRequest.getSearchField().isEmpty() && !searchRequest.getSearchText().isEmpty()) {
+						whereCondition.append(" AND p.program_start_date >=:program_start_date ");
+					}else{
+						whereCondition.append(" WHERE p.program_start_date >=:program_start_date ");
+					}
 				}else{
 					whereCondition.append(" AND p.program_start_date >=:program_start_date ");
 				}
@@ -2283,7 +2288,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 				LOGGER.error("Error While converting date {}", e.getMessage());
 			}
 		}
-		System.out.println("Base query=="+baseQuery.toString()+whereCondition.toString());
+		
 		return  this.namedParameterJdbcTemplate.queryForObject(baseQuery.toString() + (whereCondition.length() > 0 ? whereCondition : ""), params, Integer.class);
 	}
 
@@ -2365,7 +2370,13 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		if ((searchRequest.getDateFrom() != null && !searchRequest.getDateFrom().isEmpty())) {
 			try {
 				if(role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN) || coordinatorType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())){
-					whereCondition.append(" WHERE p.program_start_date >=:program_start_date ");
+					//whereCondition.append(" WHERE p.program_start_date >=:program_start_date ");
+					//new validation added
+					if (!("ALL".equals(searchRequest.getSearchField())) && null != searchRequest.getSearchField() && !searchRequest.getSearchField().isEmpty() && !searchRequest.getSearchText().isEmpty()) {
+						whereCondition.append(" AND p.program_start_date >=:program_start_date ");
+					}else{
+						whereCondition.append(" WHERE p.program_start_date >=:program_start_date ");
+					}
 				}else{
 					whereCondition.append(" AND p.program_start_date >=:program_start_date ");
 				}

@@ -81,70 +81,6 @@ public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 	DashboardService dashboardService;
 
 	/**
-	 * This method is used to validate the authentication token against
-	 * MYSRCM.If the token is successfully authenticated then a success response
-	 * is returned else an error response is returned.
-	 * 
-	 * @param authToken
-	 *            authToken Token to authenticate with mysrcm.
-	 * @param accessLog
-	 *            to persist the api log details.
-	 * @return PMPResponse success or failure response
-	 */
-	/*@Override
-	public PMPResponse validateAuthToken(String authToken, PMPAPIAccessLog accessLog) {
-
-		ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, "");
-		UserProfile userProfile = null;
-		try {
-			userProfile = eventDashboardValidator.validateToken(authToken, accessLog.getId());
-		} catch (IllegalBlockSizeException | NumberFormatException | BadPaddingException e) {
-			eResponse.setError_description("Invalid authorization token");
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			setPMPAccessLogAndPersist(accessLog, eResponse);
-			return eResponse;
-		} catch (HttpClientErrorException httpcee) {
-			eResponse.setError_description("Invalid client credentials");
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(httpcee));
-			setPMPAccessLogAndPersist(accessLog, eResponse);
-			return eResponse;
-		} catch (JsonParseException jpe) {
-			eResponse.setError_description("Error while fetching profile from MySRCM");
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(jpe));
-			setPMPAccessLogAndPersist(accessLog, eResponse);
-			return eResponse;
-		} catch (JsonMappingException jme) {
-			eResponse.setError_description("Error while fetching profile from MySRCM");
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(jme));
-			setPMPAccessLogAndPersist(accessLog, eResponse);
-			return eResponse;
-		} catch (IOException ioe) {
-			eResponse.setError_description("Error while fetching profile from MySRCM");
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ioe));
-			setPMPAccessLogAndPersist(accessLog, eResponse);
-			return eResponse;
-		} catch (Exception e) {
-			eResponse.setError_description("Invalid request");
-			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
-			setPMPAccessLogAndPersist(accessLog, eResponse);
-			return eResponse;
-		}
-		if (null == userProfile) {
-			eResponse.setError_description(ErrorConstants.INVALID_CREDENTIALS);
-			accessLog.setErrorMessage("UserProfile doesnot exists in MySrcm database");
-			setPMPAccessLogAndPersist(accessLog, eResponse);
-			return eResponse;
-		} else {
-			accessLog.setUsername(
-					null == userProfile.getUser_email() ? userProfile.getEmail() 
-							: userProfile.getUser_email().isEmpty() ? userProfile.getEmail() : userProfile.getUser_email());
-			SuccessResponse sResponse = new SuccessResponse(ErrorConstants.STATUS_SUCCESS,
-					"Token validation successfull");
-			return sResponse;
-		}
-	}*/
-
-	/**
 	 * Method is used to set the PMP API access log details.
 	 * 
 	 * @param accessLog
@@ -228,6 +164,7 @@ public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 										
 								if (!date.isEmpty()) {
 									String previousDate = date.get(0);
+									if(null != previousDate){					
 									try {
 										if (DateUtils.parseDate(previousDate)
 												.after(DateUtils.parseDate(sessionDetails.getSessionStringDate()))) {
@@ -237,6 +174,7 @@ public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 											setPMPAccessLogAndPersist(accessLog, eResponse);
 											return eResponse;
 										}
+										
 									} catch (ParseException e) {
 										
 										eResponse.setError_description(ErrorConstants.INVALID_DATE_FORMAT);
@@ -245,7 +183,18 @@ public class SessionDetailsValidatorImpl implements SessionDetailsValidator{
 										return eResponse;
 									}
 								}
-
+									if(null == previousDate){								
+										if (DateUtils.parseDate(programStartDate)
+												.equals(DateUtils.parseDate(sessionDetails.getSessionStringDate())) ? false
+														: !DateUtils.parseDate(programStartDate).before(DateUtils
+																.parseDate(sessionDetails.getSessionStringDate()))) {
+											eResponse.setError_description(ErrorConstants.SESSION_DATE_WITH_PROGRAM_DATE);
+											accessLog.setErrorMessage(ErrorConstants.SESSION_DATE_WITH_PROGRAM_DATE);
+											setPMPAccessLogAndPersist(accessLog, eResponse);
+											return eResponse;
+										}
+									}
+								}
 							}else {
 
 								if (null == sessionDate || sessionDate.isEmpty()) {
