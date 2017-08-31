@@ -2246,7 +2246,12 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		if ((searchRequest.getDateFrom() != null && !searchRequest.getDateFrom().isEmpty())) {
 			try {
 				if(role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)){
-					whereCondition.append(" WHERE p.program_start_date >=:program_start_date ");
+					//whereCondition.append(" WHERE p.program_start_date >=:program_start_date ");
+					if (!("ALL".equals(searchRequest.getSearchField())) && null != searchRequest.getSearchField() && !searchRequest.getSearchField().isEmpty() && !searchRequest.getSearchText().isEmpty()) {
+						whereCondition.append(" AND p.program_start_date >=:program_start_date ");
+					}else{
+						whereCondition.append(" WHERE p.program_start_date >=:program_start_date ");
+					}
 				}else{
 					whereCondition.append(" AND p.program_start_date >=:program_start_date ");
 				}
@@ -2346,7 +2351,12 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		if ((searchRequest.getDateFrom() != null && !searchRequest.getDateFrom().isEmpty())) {
 			try {
 				if(role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)){
-					whereCondition.append(" WHERE p.program_start_date >=:program_start_date ");
+					//whereCondition.append(" WHERE p.program_start_date >=:program_start_date ");
+					if (!("ALL".equals(searchRequest.getSearchField())) && null != searchRequest.getSearchField() && !searchRequest.getSearchField().isEmpty() && !searchRequest.getSearchText().isEmpty()) {
+						whereCondition.append(" AND p.program_start_date >=:program_start_date ");
+					}else{
+						whereCondition.append(" WHERE p.program_start_date >=:program_start_date ");
+					}
 				}else{
 					whereCondition.append(" AND p.program_start_date >=:program_start_date ");
 				}
@@ -2483,5 +2493,23 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		return program;
 
 	}
+	
+	@Override
+    public ArrayList<String> getPerviousSessionDate(String sessionId, String eventID) {
+        ArrayList<String> date = this.jdbcTemplate.query("SELECT max(session_date)  "
+                        +"FROM program p LEFT OUTER JOIN session_details s ON p.program_id =s.program_id "
+                        +"WHERE session_date < (SELECT session_date FROM session_details"
+                        + " WHERE auto_generated_session_id =? and p.auto_generated_event_id = ?) ",new Object[] {sessionId,eventID}, new ResultSetExtractor<ArrayList<String>>() {
+                            @Override
+                            public ArrayList<String> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                                ArrayList<String> param = new ArrayList<String>();
+                                while (rs.next()) {
+                                    param.add(rs.getString(1));
+                                }
+                                return param;
+                            }
+                        });
+        return date;
+    }
 
 }
