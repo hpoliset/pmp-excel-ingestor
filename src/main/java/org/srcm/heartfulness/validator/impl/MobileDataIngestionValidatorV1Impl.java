@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -154,6 +155,10 @@ public class MobileDataIngestionValidatorV1Impl implements EventDetailsExcelVali
 		if(eventSheet.getRow(1).getCell(11, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
 			errorMsg.add(" "+ MobileDataProgramCols.ORGANIZATION_NAME.getHeader() + " is a mandatory field and cannot be empty ");
 		}
+		String organizationEmail = eventSheet.getRow(1).getCell(13, Row.CREATE_NULL_AS_BLANK).toString().trim();
+		if(!organizationEmail.matches(ExpressionConstants.EMAIL_REGEX)){
+			errorMsg.add(" "+ MobileDataProgramCols.ORGANIZATION_CONTACT_EMAIL_ID.getHeader() + " is invalid ");
+		}
 		if(eventSheet.getRow(1).getCell(16, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()){
 			errorMsg.add(" "+ MobileDataProgramCols.PRECEPTOR_NAME.getHeader() + " is a mandatory field and cannot be empty ");
 		}
@@ -180,14 +185,26 @@ public class MobileDataIngestionValidatorV1Impl implements EventDetailsExcelVali
 
 	private void parseParticipantData(Row currentRow, int rowNumber,List<String> errorMsg) {
 
+		if(currentRow.getCell(2).getCellType() == Cell.CELL_TYPE_NUMERIC){
+			currentRow.getCell(2).setCellType(Cell.CELL_TYPE_STRING);
+		}
+		
 		String firstSittingValue = currentRow.getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim();
 		if(!firstSittingValue.isEmpty() ? firstSittingValue.equalsIgnoreCase("1") ? false : !firstSittingValue.equalsIgnoreCase("0")   : false){
 			errorMsg.add(" "+ MobileDataParticipantCols.FIRST_SITTING.getHeader() + " value entered ["+firstSittingValue+"] should be 1 or 0 at row number " + rowNumber);
 		}
 
+		if(currentRow.getCell(3).getCellType() == Cell.CELL_TYPE_NUMERIC){
+			currentRow.getCell(3).setCellType(Cell.CELL_TYPE_STRING);
+		}
+		
 		String secondSittingValue = currentRow.getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim();
 		if(!secondSittingValue.isEmpty() ? secondSittingValue.equalsIgnoreCase("1") ? false : !secondSittingValue.equalsIgnoreCase("0") : false){
 			errorMsg.add(" "+ MobileDataParticipantCols.SECONND_SITTING.getHeader() + " value entered ["+secondSittingValue+"] should be 1 or 0 at row number " + rowNumber);
+		}
+		
+		if(currentRow.getCell(4).getCellType() == Cell.CELL_TYPE_NUMERIC){
+			currentRow.getCell(4).setCellType(Cell.CELL_TYPE_STRING);
 		}
 
 		String thirdSittingValue = currentRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString().trim();
@@ -212,6 +229,11 @@ public class MobileDataIngestionValidatorV1Impl implements EventDetailsExcelVali
 		if(!phoneNumber.isEmpty() && !phoneNumber.matches(ExpressionConstants.MOBILE_V1_0_REGEX)){
 			errorMsg.add(" "+MobileDataParticipantCols.MOBILE.getHeader() + " number is invalid at row number "+rowNumber);
 		}*/
+		
+		if(currentRow.getCell(13).getCellType() == Cell.CELL_TYPE_NUMERIC){
+			currentRow.getCell(13).setCellType(Cell.CELL_TYPE_STRING);
+		}
+		
 		try{
 			String totalDays = currentRow.getCell(13, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if(!totalDays.isEmpty()){
@@ -244,6 +266,10 @@ public class MobileDataIngestionValidatorV1Impl implements EventDetailsExcelVali
 		if (MobileDataParticipantCols.MOBILE.getLength() < currentRow.getCell(8, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
 			errorMsg.add(MobileDataParticipantCols.MOBILE.getHeader() + " should not contain more than " 
 						+ MobileDataParticipantCols.MOBILE.getLength() +" characters at row number " + rowNumber);
+		}
+		
+		if(currentRow.getCell(9).getCellType() == Cell.CELL_TYPE_NUMERIC){
+			currentRow.getCell(9).setCellType(Cell.CELL_TYPE_STRING);
 		}
 		
 		if (MobileDataParticipantCols.RECEIVE_UPDATES.getLength() < currentRow.getCell(9, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {

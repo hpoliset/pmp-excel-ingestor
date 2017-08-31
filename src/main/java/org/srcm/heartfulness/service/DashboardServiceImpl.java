@@ -100,7 +100,13 @@ public class DashboardServiceImpl implements DashboardService {
 
 				for (CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()) {
 
-					if (crdntrPosition.isActive() && crdntrPosition.getPositionType().getName()
+					if(crdntrPosition.isActive() && crdntrPosition.getPositionType().getName()
+							.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())){
+
+						currentPositionValue = CoordinatorPosition.PRESIDENT.getPositionValue();
+						currentPositionType =  crdntrPosition.getPositionType().getName();
+
+					}else if (crdntrPosition.isActive() && crdntrPosition.getPositionType().getName()
 							.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())) {
 
 						currentPositionValue = CoordinatorPosition.COUNTRY_COORDINATOR.getPositionValue();
@@ -123,8 +129,8 @@ public class DashboardServiceImpl implements DashboardService {
 						}
 					}
 
-					if (crdntrPosition.isActive() && currentPositionType
-							.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())) {
+					if( crdntrPosition.isActive() && (currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType()) ||
+							currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType()) )){
 						posResult.setNext(null);
 						break;
 					}
@@ -156,9 +162,10 @@ public class DashboardServiceImpl implements DashboardService {
 		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 
-		if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())) {
+		if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType()) 
+				|| currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())) {
 
-			LOGGER.info("Logged in user {} is a country coordinator ", accessLog.getUsername());
+			LOGGER.info("Logged in user {} is a country coordinator/President ", accessLog.getUsername());
 
 			ErrorResponse eResponse = validateCountry(dashboardReq, accessLog);
 			if (null != eResponse) {
@@ -176,18 +183,18 @@ public class DashboardServiceImpl implements DashboardService {
 						return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
 					} 
 
-					countResponse = dashboardRepository.getCountForCountryCoordinator(dashboardReq, true);
+					countResponse = dashboardRepository.getCountForCountryCoordinatorOrPresident(dashboardReq, true, currentPositionType);
 
 				} else {
 
 					LOGGER.info("Trying to get dashboard count by Heartfulness heirarchy ");
-					
+
 					eResponse = validateCountryAndZoneAndCenter(dashboardReq,accessLog);
 					if (null != eResponse) {
 						return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
 					} 
 
-					countResponse = dashboardRepository.getCountForCountryCoordinator(dashboardReq, false);
+					countResponse = dashboardRepository.getCountForCountryCoordinatorOrPresident(dashboardReq, false, currentPositionType);
 				}
 
 				accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
@@ -205,7 +212,7 @@ public class DashboardServiceImpl implements DashboardService {
 
 			LOGGER.info("Logged in user {} is a zone coordinator ", accessLog.getUsername());
 			ErrorResponse eResponse = null;
-			
+
 			eResponse = validateCountryAndZoneAndCenter(dashboardReq, accessLog);
 			if (null != eResponse) {
 				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
@@ -244,7 +251,7 @@ public class DashboardServiceImpl implements DashboardService {
 
 			LOGGER.info("Logged in user {} is a center coordinator ", accessLog.getUsername());
 			ErrorResponse eResponse = null;
-			
+
 			eResponse = validateCountryAndZoneAndCenter(dashboardReq, accessLog);
 			if (null != eResponse) {
 				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
@@ -291,7 +298,7 @@ public class DashboardServiceImpl implements DashboardService {
 
 			try {
 				List<DashboardResponse> countResponse = dashboardRepository.getCountForCenterCoordinator(dashboardReq,centers);
-				
+
 				accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 				accessLog.setErrorMessage(null);
 				return new ResponseEntity<List<DashboardResponse>>(countResponse, HttpStatus.OK);
@@ -311,7 +318,7 @@ public class DashboardServiceImpl implements DashboardService {
 		if (null != eResponse) {
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.PRECONDITION_FAILED);
 		}
-		
+
 		List<String> emailList = new ArrayList<String>();
 		if (null != user.getAbyasiId()) {
 			emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
@@ -372,8 +379,11 @@ public class DashboardServiceImpl implements DashboardService {
 			while (isNext) {
 
 				for (CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()) {
-
+					
 					if (crdntrPosition.isActive() && crdntrPosition.getPositionType().getName()
+							.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())) {
+						currentPositionType = crdntrPosition.getPositionType().getName();
+					}else if (crdntrPosition.isActive() && crdntrPosition.getPositionType().getName()
 							.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())) {
 						currentPositionType = crdntrPosition.getPositionType().getName();
 					} else if (crdntrPosition.isActive() && crdntrPosition.getPositionType().getName()
@@ -384,9 +394,9 @@ public class DashboardServiceImpl implements DashboardService {
 						mysrcmCenters.add(crdntrPosition.getSrcmGroupDetail().getName());
 					}
 
-					if (crdntrPosition.isActive() && currentPositionType
-							.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())) {
-						posResult.setNext(null);
+					if (crdntrPosition.isActive() && (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())
+							|| currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType()))) {
+						posResult.setNext(null); 
 						break;
 					}
 
@@ -416,12 +426,13 @@ public class DashboardServiceImpl implements DashboardService {
 		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
 		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
-
-		if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())) {
+		
+		if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())
+				|| currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())) {
 
 			try {
-				LOGGER.info("Trying to fetch list of zones for country coordinator {}", accessLog.getUsername());
-				responseListOfZones = dashboardRepository.getListOfZonesForCountryCoordinator(dashboardReq);
+				LOGGER.info("Trying to fetch list of zones for country coordinator/ President {}", accessLog.getUsername());
+				responseListOfZones = dashboardRepository.getListOfZonesForCountryCoordinatorOrPresident(dashboardReq);
 			} catch (Exception ex) {
 
 				eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.PROCESSING_FAILED);
@@ -433,7 +444,7 @@ public class DashboardServiceImpl implements DashboardService {
 		} else if (!mysrcmZones.isEmpty() || !mysrcmCenters.isEmpty()) {
 
 			try {
-				
+
 				LOGGER.info("Trying to fetch list of zones for zone/center coordinator {}", accessLog.getUsername());
 				responseListOfZones = dashboardRepository.getListOfZonesForZoneOrCenterCoordinator(dashboardReq,mysrcmCenters, mysrcmZones);
 			} catch (Exception ex) {
@@ -449,7 +460,7 @@ public class DashboardServiceImpl implements DashboardService {
 
 				LOGGER.info("Trying to fetch list of zones for event coordinator {}", accessLog.getUsername());
 				responseListOfZones = dashboardRepository.getListOfZonesForEventCoordinator(emailList, userRole,dashboardReq);
-						
+
 			} catch (Exception ex) {
 
 				eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.PROCESSING_FAILED);
@@ -494,7 +505,11 @@ public class DashboardServiceImpl implements DashboardService {
 			while (isNext) {
 
 				for (CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()) {
+					
 					if (crdntrPosition.isActive() && crdntrPosition.getPositionType().getName()
+							.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())) {
+						currentPositionType = crdntrPosition.getPositionType().getName();
+					}else if (crdntrPosition.isActive() && crdntrPosition.getPositionType().getName()
 							.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())) {
 						currentPositionType = crdntrPosition.getPositionType().getName().toLowerCase();
 					} else if (crdntrPosition.isActive() && crdntrPosition.getPositionType().getName()
@@ -504,9 +519,10 @@ public class DashboardServiceImpl implements DashboardService {
 							.equalsIgnoreCase(CoordinatorPosition.CENTER_COORDINATOR.getPositionType())) {
 						mysrcmCenters.add(crdntrPosition.getSrcmGroupDetail().getName().toLowerCase());
 					}
-					if (crdntrPosition.isActive() && currentPositionType
-							.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())) {
-						posResult.setNext(null);
+					
+					if (crdntrPosition.isActive() && (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())
+							|| currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType()))) {
+						posResult.setNext(null); 
 						break;
 					}
 				}
@@ -536,10 +552,11 @@ public class DashboardServiceImpl implements DashboardService {
 		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 
-		if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())) {
+		if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())
+				|| currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())) {
 			try {
-				LOGGER.info("Trying to fetch list of centers for country coordinator {}", accessLog.getUsername());
-				responseCenterList = dashboardRepository.getListOfCentersForCountryCoordinator(dashboardReq);
+				LOGGER.info("Trying to fetch list of centers for country coordinator/ President {}", accessLog.getUsername());
+				responseCenterList = dashboardRepository.getListOfCentersForCountryCoordinatorOrPresident(dashboardReq);
 			} catch (Exception ex) {
 
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
@@ -552,7 +569,7 @@ public class DashboardServiceImpl implements DashboardService {
 		} else if (!mysrcmZones.isEmpty() || !mysrcmCenters.isEmpty()) {
 
 			try {
-				
+
 				LOGGER.info("Trying to fetch list of centers for zone/center coordinator {}", accessLog.getUsername());
 				responseCenterList = dashboardRepository.getListOfCentersForZoneOrCenterCoordinator(dashboardReq,mysrcmZones, mysrcmCenters);
 			} catch (Exception ex) {
@@ -614,7 +631,13 @@ public class DashboardServiceImpl implements DashboardService {
 
 				for (CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()) {
 
+					
 					if (crdntrPosition.isActive() && crdntrPosition.getPositionType().getName()
+							.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())) {
+						currentPositionType = crdntrPosition.getPositionType().getName().toLowerCase();
+						posResult.setNext(null);
+						break;
+					}else if (crdntrPosition.isActive() && crdntrPosition.getPositionType().getName()
 							.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())) {
 						currentPositionType = crdntrPosition.getPositionType().getName().toLowerCase();
 						posResult.setNext(null);
@@ -648,10 +671,11 @@ public class DashboardServiceImpl implements DashboardService {
 		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 
-		if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())) {
-			LOGGER.info("Trying to get list of states for Log in country coodinator {} ", accessLog.getUsername());
+		if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())
+				|| currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())) {
+			LOGGER.info("Trying to get list of states for Log in country coodinator/President {} ", accessLog.getUsername());
 			try {
-				responseStateList = dashboardRepository.getListOfStatesForCountryCoordinator(dashboardReq);
+				responseStateList = dashboardRepository.getListOfStatesForCountryCoordinatorOrPresident(dashboardReq);
 			} catch (Exception ex) {
 
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
@@ -706,6 +730,11 @@ public class DashboardServiceImpl implements DashboardService {
 				for (CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()) {
 
 					if (crdntrPosition.isActive() && crdntrPosition.getPositionType().getName()
+							.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())) {
+						currentPositionType = crdntrPosition.getPositionType().getName();
+						posResult.setNext(null);
+						break;
+					}else if (crdntrPosition.isActive() && crdntrPosition.getPositionType().getName()
 							.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())) {
 						currentPositionType = crdntrPosition.getPositionType().getName();
 						posResult.setNext(null);
@@ -737,9 +766,10 @@ public class DashboardServiceImpl implements DashboardService {
 		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 
-		if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())) {
+		if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())
+				|| currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())) {
 			try {
-				listOfDistricts = dashboardRepository.getListOfDistrictForCountryCoordinator(dashboardReq);
+				listOfDistricts = dashboardRepository.getListOfDistrictForCountryCoordinatorOrPresident(dashboardReq);
 			} catch (Exception ex) {
 				eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.PROCESSING_FAILED);
 				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
@@ -783,7 +813,13 @@ public class DashboardServiceImpl implements DashboardService {
 			while (isNext) {
 
 				for (CoordinatorPositionResponse crdntrPosition : posResult.getCoordinatorPosition()) {
+					
 					if (crdntrPosition.isActive() && crdntrPosition.getPositionType().getName()
+							.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())) {
+						currentPositionType = crdntrPosition.getPositionType().getName().toLowerCase();
+						posResult.setNext(null);
+						break;
+					}else if (crdntrPosition.isActive() && crdntrPosition.getPositionType().getName()
 							.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())) {
 						currentPositionType = crdntrPosition.getPositionType().getName().toLowerCase();
 						posResult.setNext(null);
@@ -817,9 +853,10 @@ public class DashboardServiceImpl implements DashboardService {
 		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
 		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
 
-		if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())) {
+		if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())
+				|| currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())) {
 			try {
-				responseCityList = dashboardRepository.getListOfCitiesForCountryCoordinator(dashboardReq);
+				responseCityList = dashboardRepository.getListOfCitiesForCountryCoordinatorOrPresident(dashboardReq);
 			} catch (Exception ex) {
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 						DashboardConstants.PROCESSING_FAILED);
@@ -1005,7 +1042,7 @@ public class DashboardServiceImpl implements DashboardService {
 	 * @return
 	 */
 	private ErrorResponse validateCountryStateDistrictAndCity(DashboardRequest dashboardReq,PMPAPIAccessLog accessLog) {
-			
+
 		ErrorResponse eResponse = null;
 
 		eResponse = dashboardValidator.validateCountryField(dashboardReq.getCountry());

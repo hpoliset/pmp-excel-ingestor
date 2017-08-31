@@ -96,6 +96,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 				try {
 					Date firstSittingDate = DateUtils.parseDate(firstSittingStr);
 					participant.setFirstSittingDate(firstSittingDate);
+					participant.setFirstSitting(1);
 				} catch (ParseException e) {
 					throw new InvalidExcelFileException("Not able to parse first sitting date:[" + firstSittingStr + "]");
 				}
@@ -111,6 +112,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 				try {
 					Date secondSittingDate = DateUtils.parseDate(secondSittingStr);
 					participant.setSecondSittingDate(secondSittingDate);
+					participant.setSecondSitting(1);	
 				} catch (ParseException e) {
 					throw new InvalidExcelFileException("Not able to parse second sitting date:[" + secondSittingStr + "]");
 				}
@@ -126,6 +128,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 				try {
 					Date thirdSittingDate = DateUtils.parseDate(thirdSittingStr);
 					participant.setThirdSittingDate(thirdSittingDate);
+					participant.setThirdSitting(1);
 				} catch (ParseException e) {
 					throw new InvalidExcelFileException("Not able to parse third sitting date:[" + thirdSittingStr + "]");
 				}

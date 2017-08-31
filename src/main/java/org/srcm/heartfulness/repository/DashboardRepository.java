@@ -20,7 +20,7 @@ public interface DashboardRepository {
 	 * @param hierarchyType,To validate coordinator type
 	 * @return List<DashboardResponse> based on DashboardRequest object.
 	 */
-	public List<DashboardResponse> getCountForCountryCoordinator(DashboardRequest dashboardReq,Boolean hierarchyType);
+	public List<DashboardResponse> getCountForCountryCoordinatorOrPresident(DashboardRequest dashboardReq,Boolean hierarchyType,String currentPositionType);
 	/**
 	 * Method to get count for zone coordinator
 	 * @param dashboardReq,Request object to get input params.
@@ -49,7 +49,7 @@ public interface DashboardRepository {
 	 * @param dashboardReq,Request object to get input params.
 	 * @return
 	 */
-	public List<String> getListOfZonesForCountryCoordinator(DashboardRequest dashboardReq);
+	public List<String> getListOfZonesForCountryCoordinatorOrPresident(DashboardRequest dashboardReq);
 	/**
 	 * Method to get list of zones for zone/center coordinator
 	 * @param dashboardReq,Request object to get input params.
@@ -71,7 +71,7 @@ public interface DashboardRepository {
 	 * @param dashboardReq,Request object to get input params.
 	 * @return
 	 */
-	public List<String> getListOfCentersForCountryCoordinator(DashboardRequest dashboardReq);
+	public List<String> getListOfCentersForCountryCoordinatorOrPresident(DashboardRequest dashboardReq);
 	/**
 	 * Method to get list of centers for zone/center coordinator
 	 * @param dashboardReq,Request object to get input params.
@@ -93,18 +93,18 @@ public interface DashboardRepository {
 	 * @param dashboardReq,Request object to get input params.
 	 * @return
 	 */
-	public List<String> getListOfStatesForCountryCoordinator(DashboardRequest dashboardReq);
+	public List<String> getListOfStatesForCountryCoordinatorOrPresident(DashboardRequest dashboardReq);
 	/**
 	 * Method to get list of districts for country coordinator
 	 * @param dashboardReq,Request object to get input params.
 	 * @return
 	 */
-	public List<String> getListOfDistrictForCountryCoordinator(DashboardRequest dashboardReq);
+	public List<String> getListOfDistrictForCountryCoordinatorOrPresident(DashboardRequest dashboardReq);
 	/**
 	 * Method to get list of cities for country coordinator
 	 * @param dashboardReq,Request object to get input params.
 	 * @return
 	 */
-	public List<String> getListOfCitiesForCountryCoordinator(DashboardRequest dashboardReq);
+	public List<String> getListOfCitiesForCountryCoordinatorOrPresident(DashboardRequest dashboardReq);
 
 }

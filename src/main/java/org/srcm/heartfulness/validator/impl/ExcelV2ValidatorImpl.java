@@ -373,19 +373,19 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 				errorList.add(V2ParticipantCols.GENDER.getHeader() + " should not contain more than " + V2ParticipantCols.GENDER.getLength() +" characters at row number " + rowNumber);
 			}
 
-			if (V2ParticipantCols.AGE_GROUP.getLength() < currentRow.getCell(12, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+			if (V2ParticipantCols.AGE_GROUP.getLength() < currentRow.getCell(14, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
 				errorList.add(V2ParticipantCols.AGE_GROUP.getHeader() + " should not contain more than " + V2ParticipantCols.AGE_GROUP.getLength() +" characters at row number " + rowNumber);
 			}
 
-			if (V2ParticipantCols.PREF_LANGUAGE.getLength() < currentRow.getCell(13, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+			if (V2ParticipantCols.PREF_LANGUAGE.getLength() < currentRow.getCell(15, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
 				errorList.add(V2ParticipantCols.PREF_LANGUAGE.getHeader() + " should not contain more than " + V2ParticipantCols.PREF_LANGUAGE.getLength() +" characters at row number " + rowNumber);
 			}
 
-			if (V2ParticipantCols.WELCOME_CARD_NUMBER.getLength() < currentRow.getCell(14, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+			if (V2ParticipantCols.WELCOME_CARD_NUMBER.getLength() < currentRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
 				errorList.add(V2ParticipantCols.WELCOME_CARD_NUMBER.getHeader() + " should not contain more than " + V2ParticipantCols.WELCOME_CARD_NUMBER.getLength() +" characters at row number " + rowNumber);
 			}
 
-			if (V2ParticipantCols.REMARKS.getLength() < currentRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
+			if (V2ParticipantCols.REMARKS.getLength() < currentRow.getCell(18, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {
 				errorList.add(V2ParticipantCols.REMARKS.getHeader() + " should not contain more than " + V2ParticipantCols.REMARKS.getLength() +" characters at row number " + rowNumber);
 			}
 

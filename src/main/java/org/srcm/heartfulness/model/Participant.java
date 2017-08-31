@@ -530,6 +530,10 @@ public class Participant {
 				return false;
 		}
 		
+		if(other.mobilePhone.trim().equalsIgnoreCase("0") && other.email.trim().isEmpty()){
+			return false;
+		}
+		
 		if(!((printName.equals(other.printName))&&(program_id==other.program_id)&&((email.equals(other.email)&&mobilePhone.equals(other.mobilePhone))
 				|| excelSheetSequenceNumber == other.excelSheetSequenceNumber
 				|| mobilePhone.equals(other.mobilePhone)
