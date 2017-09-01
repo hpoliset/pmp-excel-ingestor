@@ -182,13 +182,13 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 				emailString.append( i != (emailList.size() -1 ) ? "'"+emailList.get(i)+"'" + ",": "'"+emailList.get(i)+"'");
 			}
 		}
-		
+
 		if (null != userRole && !userRole.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
 			if (!userRole.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_ADMIN)) {
 				whereCondition.append(" (p.coordinator_email IN(" + emailString + ") OR pc.email IN(" + emailString + ")) ");
 			}
 		}
-		
+
 		if((null != userRole && userRole.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) || whereCondition.length() > 0 ){
 			whereCondition
 			.append((whereCondition.length() > 0) ? " AND pr.program_id=:programId AND pr.program_id=p.program_id "
@@ -241,8 +241,9 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 							}
 						});
 			}
-
-			if (participantId <= 0) {
+			
+			//existing
+			/*if (participantId <= 0) {
 				participantId = this.jdbcTemplate.query(
 						"SELECT id from participant where print_name=? AND email=? AND program_id=?",
 						new Object[] { participant.getPrintName(), participant.getEmail(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
@@ -269,8 +270,39 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 							}
 						});
 
-			}
+			}*/
 
+			//changes
+			
+			if (null != participant.getEmail() && !participant.getEmail().isEmpty() && participantId <= 0) {
+				participantId = this.jdbcTemplate.query(
+						"SELECT id from participant where print_name=? AND email=? AND program_id=?",
+						new Object[] { participant.getPrintName(), participant.getEmail(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
+							@Override
+							public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+								if (resultSet.next()) {
+									return resultSet.getInt(1);
+								}
+								return 0;
+							}
+						});
+			}
+			
+			if (null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty() && participantId <= 0) {
+				participantId = this.jdbcTemplate.query(
+						"SELECT id from participant where print_name=? AND mobile_phone=? AND program_id=?",
+						new Object[] { participant.getPrintName(), participant.getMobilePhone(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
+							@Override
+							public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+								if (resultSet.next()) {
+									return resultSet.getInt(1);
+								}
+								return 0;
+							}
+						});
+
+			}
+			
 			if (participantId > 0) {
 				participant.setId(participantId);
 				String seqId = this.jdbcTemplate.query("SELECT seqId from participant where id=?",
@@ -581,7 +613,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 			int participantId = 0;
 			try{
 
-				participantId = this.namedParameterJdbcTemplate
+				/*participantId = this.namedParameterJdbcTemplate
 						.queryForObject("SELECT id "
 								+ " FROM participant"
 								+ " WHERE print_name=:printName AND program_id=:programId AND "
@@ -589,9 +621,62 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 								params,Integer.class);
 
 			} catch(Exception ex) {
+			}*/
+
+				if(null != participant.getEmail() && !participant.getEmail().isEmpty()){
+					participantId = this.namedParameterJdbcTemplate
+							.queryForObject("SELECT id "
+									+ " FROM participant"
+									+ " WHERE print_name=:printName AND program_id=:programId AND "
+									+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (email=:email))",
+									params,Integer.class);
+				}else if(!participant.getMobilePhone().trim().equalsIgnoreCase("0")){
+					System.out.println(participant.getMobilePhone());
+					System.out.println("called Here Toooo "+participant.getPrintName());
+					participantId = this.namedParameterJdbcTemplate
+							.queryForObject("SELECT id "
+									+ " FROM participant"
+									+ " WHERE print_name=:printName AND program_id=:programId AND "
+									+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (mobile_phone=:mobilePhone))",
+									params,Integer.class);
+				}else if(participant.getMobilePhone().trim().equalsIgnoreCase("0") &&
+						participant.getEmail().isEmpty()){
+					participantId = this.namedParameterJdbcTemplate
+							.queryForObject("SELECT id "
+									+ " FROM participant"
+									+ " WHERE print_name=:printName AND program_id=:programId AND "
+									+ " excel_sheet_sequence_number=:excelSheetSequenceNumber",
+									params,Integer.class);
+					System.out.println(participantId);
+
+				}else{
+					participantId = this.namedParameterJdbcTemplate
+							.queryForObject("SELECT id "
+									+ " FROM participant"
+									+ " WHERE print_name=:printName AND program_id=:programId AND "
+									+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (email=:email) OR (mobile_phone=:mobilePhone))",
+									params,Integer.class);
+				}
+
+			} catch(Exception ex) {
+				List<Integer> ids = this.namedParameterJdbcTemplate
+						.queryForList("SELECT id "
+								+ " FROM participant"
+								+ " WHERE print_name=:printName AND program_id=:programId AND "
+								+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (email=:email) OR (mobile_phone=:mobilePhone))",
+								params,Integer.class);
+
+				if(ids != null && ids.size() > 1){
+					participantId = this.namedParameterJdbcTemplate
+							.queryForObject("SELECT id "
+									+ " FROM participant"
+									+ " WHERE print_name=:printName AND program_id=:programId AND "
+									+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber))",
+									params,Integer.class);
+				}
 			}
-			
-			
+
+
 
 			if (participantId > 0) {
 				participant.setId(participantId);
@@ -608,14 +693,14 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 				if (null != seqId && !seqId.isEmpty()) {
 					participant.setSeqId(seqId);
-					
+
 					Map<String, Object> parameters = new HashMap<>();
 					parameters.put("participantId", participantId);
-					
+
 					Participant oldParticipantDetails = this.namedParameterJdbcTemplate.queryForObject(
 							"SELECT * FROM participant WHERE id=:participantId", parameters,
 							BeanPropertyRowMapper.newInstance(Participant.class));
-					
+
 					if (null != oldParticipantDetails) {
 						if (null != oldParticipantDetails.getWelcomeCardNumber()
 								&& !oldParticipantDetails.getWelcomeCardNumber().isEmpty()
@@ -643,7 +728,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 					Participant listObject = iter.next();
 					if (listObject.equals(participant)) {
 						iter.remove();
-						break;
+						//break;
 					}
 				}
 				insertList.add(participant);
@@ -653,13 +738,13 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 					Participant listObject = iter.next();
 					if (listObject.equals(participant)) {
 						iter.remove();
-						break;
+						//break;
 					}
 				}
 				updateList.add(participant);
 			}
 		}
-		
+
 		if (!insertList.isEmpty()) {
 			LOGGER.info("Participant: Batch Insert Start");
 			SqlParameterSource[] insertBatch = SqlParameterSourceUtils.createBatch(insertList.toArray());
