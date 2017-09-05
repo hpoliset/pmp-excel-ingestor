@@ -629,8 +629,6 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 									+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (email=:email))",
 									params,Integer.class);
 				}else if(!participant.getMobilePhone().trim().equalsIgnoreCase("0")){
-					System.out.println(participant.getMobilePhone());
-					System.out.println("called Here Toooo "+participant.getPrintName());
 					participantId = this.namedParameterJdbcTemplate
 							.queryForObject("SELECT id "
 									+ " FROM participant"
@@ -645,7 +643,6 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 									+ " WHERE print_name=:printName AND program_id=:programId AND "
 									+ " excel_sheet_sequence_number=:excelSheetSequenceNumber",
 									params,Integer.class);
-					System.out.println(participantId);
 					
 				}else{
 					participantId = this.namedParameterJdbcTemplate

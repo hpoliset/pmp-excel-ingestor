@@ -19,6 +19,7 @@ import org.srcm.heartfulness.constants.EventDetailsUploadConstants;
 import org.srcm.heartfulness.constants.ExpressionConstants;
 import org.srcm.heartfulness.enumeration.V1ParticipantCols;
 import org.srcm.heartfulness.enumeration.V1ProgramCols;
+import org.srcm.heartfulness.enumeration.V2ParticipantCols;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.validator.EventDetailsExcelValidator;
 
@@ -170,6 +171,23 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 			if(null != ptncptEmail && !ptncptEmail.isEmpty()){
 				if(!ptncptEmail.matches(ExpressionConstants.EMAIL_REGEX)){
 					errorList.add(V1ParticipantCols.EMAIL_ADDRESS.getHeader() + "is invalid at row number "+rowNumber);
+				}
+			}
+			
+			String ptcpntMob = currentRow.getCell(5, Row.CREATE_NULL_AS_BLANK).toString().trim();
+			if(null != ptcpntMob && !ptcpntMob.isEmpty()){
+				
+				try{
+					
+					Double numbericMobilePhone = currentRow.getCell(5, Row.CREATE_NULL_AS_BLANK).getNumericCellValue();
+					String pctptMobNumber = String.valueOf(numbericMobilePhone.longValue()).trim();
+					if(!pctptMobNumber.matches(ExpressionConstants.MOBILE_REGEX)){
+						errorList.add(V1ParticipantCols.PHONE.getHeader() 
+								+ " is invalid at row number "+rowNumber);
+					}
+				} catch(Exception ex){
+					errorList.add(V1ParticipantCols.PHONE.getHeader() 
+							+ " is invalid at row number "+rowNumber);
 				}
 			}
 

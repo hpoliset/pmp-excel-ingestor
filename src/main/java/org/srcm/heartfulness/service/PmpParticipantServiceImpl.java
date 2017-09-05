@@ -296,6 +296,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					);*/
 			//need to check
 			participantRequest.setIntroductionDate(sdf.format(participant.getIntroductionDate()));
+
 		} catch(Exception ex){
 			LOGGER.error("Unable to set Introduced date");
 		}

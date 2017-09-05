@@ -92,6 +92,11 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 
 			String firstSittingStr = participantRow.getCell(1,
 					Row.CREATE_NULL_AS_BLANK).toString().trim();
+			//added by barath
+			if(null == firstSittingStr || firstSittingStr.isEmpty()){
+				participant.setFirstSitting(0);
+			}else{
+			
 			if (!"Y".equalsIgnoreCase(firstSittingStr) && !"N".equalsIgnoreCase(firstSittingStr)) {
 				try {
 					Date firstSittingDate = DateUtils.parseDate(firstSittingStr);
@@ -105,9 +110,14 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			}else if("N".equalsIgnoreCase(firstSittingStr)){
 				participant.setFirstSitting(0);
 			}
+		}
 
 			String secondSittingStr = participantRow.getCell(2,
 					Row.CREATE_NULL_AS_BLANK).toString().trim();
+			
+			if(null == secondSittingStr || secondSittingStr.isEmpty()){
+				participant.setSecondSitting(0);
+			}else{
 			if (!"Y".equalsIgnoreCase(secondSittingStr) && !"N".equalsIgnoreCase(secondSittingStr)) {
 				try {
 					Date secondSittingDate = DateUtils.parseDate(secondSittingStr);
@@ -121,9 +131,15 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			}else if("N".equalsIgnoreCase(secondSittingStr)){
 				participant.setSecondSitting(0);
 			}
-
+			}
+			
+			
 			String thirdSittingStr = participantRow.getCell(3,
 					Row.CREATE_NULL_AS_BLANK).toString().trim();
+			if(null == thirdSittingStr || thirdSittingStr.isEmpty()){
+				participant.setThirdSitting(0);
+			}else{
+			
 			if (!"Y".equalsIgnoreCase(thirdSittingStr) && !"N".equalsIgnoreCase(thirdSittingStr)) {
 				try {
 					Date thirdSittingDate = DateUtils.parseDate(thirdSittingStr);
@@ -137,6 +153,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			}else if("N".equalsIgnoreCase(thirdSittingStr)){
 				participant.setThirdSitting(0);
 			}
+			}
 
 			participant.setCountry(participantRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString().trim());
 			participant.setState(participantRow.getCell(5, Row.CREATE_NULL_AS_BLANK).toString().trim());
@@ -146,6 +163,9 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			try {
 				Double numbericMobilePhone = mobilePhoneCell.getNumericCellValue();
 				participant.setMobilePhone(String.valueOf(numbericMobilePhone.longValue()).trim());
+				if(participant.getMobilePhone().equals("0")){
+					participant.setMobilePhone("");
+				}
 			} catch (NumberFormatException | ClassCastException | IllegalStateException  e) {
 				LOGGER.error("Participant mobile phone number is not numeric, trying as string");
 				participant.setMobilePhone(String.valueOf(mobilePhoneCell).trim());

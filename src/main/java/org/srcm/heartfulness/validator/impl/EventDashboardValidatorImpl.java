@@ -154,7 +154,8 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				(null == participant.getDistrict() || participant.getDistrict().isEmpty())){
 			errors.put("district", DashboardConstants.PARTICIPANT_DISTRICT_REQ);
 		}
-		if (null != participant.getEmail()) {
+		
+		if (null != participant.getEmail() && !participant.getEmail().isEmpty()) {
 			if (!participant.getEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
 				errors.put("email", DashboardConstants.INVALID_PARTICIPANT_EMAIL);
 			}
