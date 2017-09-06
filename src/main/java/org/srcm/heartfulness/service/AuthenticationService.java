@@ -5,10 +5,10 @@ import java.text.ParseException;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
 import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -28,7 +28,10 @@ public interface AuthenticationService {
 	 * @throws IOException
 	 * @throws ParseException 
 	 */
-	SrcmAuthenticationResponse validateLogin(AuthenticationRequest authenticationRequest, HttpSession session, int id)
+	public SrcmAuthenticationResponse validateLogin(AuthenticationRequest authenticationRequest, HttpSession session, int id)
 			throws HttpClientErrorException, JsonParseException, JsonMappingException, IOException, ParseException;
+
+	public ResponseEntity<?> validateUserAndFetchProfile(AuthenticationRequest authenticationRequest, int id);
+
 	
 }

@@ -71,6 +71,7 @@ public class User {
 	@JsonInclude(value = Include.ALWAYS)
 	private String role;
 
+	@JsonIgnore
 	@JsonProperty("message")
 	private String message;
 

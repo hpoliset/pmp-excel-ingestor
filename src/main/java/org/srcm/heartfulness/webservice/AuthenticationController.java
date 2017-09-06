@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,12 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
+import org.srcm.heartfulness.constants.DashboardConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.helper.AuthorizationHelper;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.json.request.AuthenticationRequest;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.SrcmAuthenticationResponse;
+import org.srcm.heartfulness.model.json.response.UserProfile;
 import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.AuthenticationService;
 import org.srcm.heartfulness.service.UserProfileService;
@@ -103,8 +106,7 @@ public class AuthenticationController {
 		} catch (JsonParseException |JsonMappingException e) {
 
 			LOGGER.error("JsonParseException    :" + StackTraceUtils.convertStackTracetoString(e));
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					"Error while processing request");
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,"Error while processing request");
 			accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(e));
 			accessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
 			accessLog.setResponseBody(StackTraceUtils.convertPojoToJson(eResponse));
@@ -132,5 +134,52 @@ public class AuthenticationController {
 			return new ResponseEntity<ErrorResponse>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
+	}
+
+
+	@RequestMapping(value= "/authenticateduserprofile",method = RequestMethod.POST,
+			consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
+	
+	public ResponseEntity<?> authenticateAndgetUserProfileFromMysrcm (
+			@RequestBody AuthenticationRequest authenticationRequest, @Context HttpServletRequest httpRequest) {
+
+		//save request details in PMP
+		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(authenticationRequest.getUsername(),httpRequest,StackTraceUtils.convertPojoToJson(authenticationRequest));
+
+		LOGGER.info("Trying to Authenticate and fetch profile for :  {}", authenticationRequest.getUsername());
+		
+		try {
+			
+			ResponseEntity<?> response  =  authenticationService.validateUserAndFetchProfile(authenticationRequest, accessLog.getId());
+			updatePMPAPIAccessLog(accessLog, ErrorConstants.STATUS_SUCCESS, null, String.valueOf(response.getBody()));
+			return response;
+			
+		} catch(Exception ex){
+			
+			LOGGER.error("Exception while authenticating and fetching user profile for : {}", authenticationRequest.getUsername());
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.PROCESSING_FAILED);
+			updatePMPAPIAccessLog(accessLog, ErrorConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(ex), StackTraceUtils.convertPojoToJson(eResponse));
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+		
+		}
+	}
+
+	private PMPAPIAccessLog createPMPAPIAccessLog(String username,HttpServletRequest httpRequest,String requestBody){
+
+		PMPAPIAccessLog accessLog = new PMPAPIAccessLog(username, httpRequest.getRemoteAddr(), 
+				httpRequest.getRequestURI(),DateUtils.getCurrentTimeInMilliSec(), null, 
+				ErrorConstants.STATUS_FAILED, null,requestBody);
+		apiAccessLogService.createPmpAPIAccessLog(accessLog);
+		return accessLog;
+	}
+
+
+	private void updatePMPAPIAccessLog(PMPAPIAccessLog pmpApiAccessLog, String status, String errorMessage, String responseBody){
+
+		pmpApiAccessLog.setStatus(status);
+		pmpApiAccessLog.setErrorMessage(errorMessage);
+		pmpApiAccessLog.setTotalResponseTime(DateUtils.getCurrentTimeInMilliSec());
+		pmpApiAccessLog.setResponseBody(responseBody);
+		apiAccessLogService.updatePmpAPIAccessLog(pmpApiAccessLog);
 	}
 }
