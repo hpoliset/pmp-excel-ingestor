@@ -130,6 +130,52 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				errors.put("eventId", ErrorConstants.UNAUTHORIZED_CREATE_PARTICIPANT_ACCESS + participant.getEventId());
 			}
 		}
+		
+		if(null != participant.getFirstSittingDate() && !participant.getFirstSittingDate().isEmpty()){
+			if (!participant.getFirstSittingDate().matches(ExpressionConstants.DATE_REGEX)) {
+				errors.put("firstSittingDate", DashboardConstants.INVALID_FIRST_SITTING_DATE);
+			}else{
+				SimpleDateFormat sdfFormat = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
+				SimpleDateFormat sdfSqlFormat = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
+				try {
+					sdfSqlFormat.parse(sdfSqlFormat.format(sdfFormat.parse(participant.getFirstSittingDate())));
+				} catch (ParseException e) {
+					LOGGER.error("Unable to parse first sitting date for {} for event{}",participant.getPrintName(),participant.getEventId());
+					errors.put("firstSittingDate", DashboardConstants.INVALID_FIRST_SITTING_DATE);
+				}
+			}
+		}
+		
+		if(null != participant.getSecondSittingDate() && !participant.getSecondSittingDate().isEmpty()){
+			if (!participant.getSecondSittingDate().matches(ExpressionConstants.DATE_REGEX)) {
+				errors.put("secondSittingDate", DashboardConstants.INVALID_SECOND_SITTING_DATE);
+			}else{
+				SimpleDateFormat sdfFormat = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
+				SimpleDateFormat sdfSqlFormat = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
+				try {
+					sdfSqlFormat.parse(sdfSqlFormat.format(sdfFormat.parse(participant.getSecondSittingDate())));
+				} catch (ParseException e) {
+					LOGGER.error("Unable to parse second sitting date for {} for event{}",participant.getPrintName(),participant.getEventId());
+					errors.put("secondSittingDate", DashboardConstants.INVALID_SECOND_SITTING_DATE);
+				}
+			}
+		}
+		
+		if(null != participant.getThirdSittingDate() && !participant.getThirdSittingDate().isEmpty()){
+			if (!participant.getThirdSittingDate().matches(ExpressionConstants.DATE_REGEX)) {
+				errors.put("thirdSittingDate", DashboardConstants.INVALID_THIRD_SITTING_DATE);
+			}else{
+				SimpleDateFormat sdfFormat = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
+				SimpleDateFormat sdfSqlFormat = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
+				try {
+					sdfSqlFormat.parse(sdfSqlFormat.format(sdfFormat.parse(participant.getThirdSittingDate())));
+				} catch (ParseException e) {
+					LOGGER.error("Unable to parse third sitting date for {} for event{}",participant.getPrintName(),participant.getEventId());
+					errors.put("thirdSittingDate", DashboardConstants.INVALID_THIRD_SITTING_DATE);
+				}
+			}
+		}
+		
 		if (null != participant.getGender()
 				&& !participant.getGender().isEmpty()
 				&& !(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) || participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_FEMALE)
@@ -154,8 +200,8 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				(null == participant.getDistrict() || participant.getDistrict().isEmpty())){
 			errors.put("district", DashboardConstants.PARTICIPANT_DISTRICT_REQ);
 		}
-
-		if (null != participant.getEmail()) {
+		
+		if (null != participant.getEmail() && !participant.getEmail().isEmpty()) {
 			if (!participant.getEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
 				errors.put("email", DashboardConstants.INVALID_PARTICIPANT_EMAIL);
 			}
@@ -592,6 +638,12 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				&& (null == participantInput.getWelcomeCardNumber() || participantInput.getWelcomeCardNumber().isEmpty())) {
 
 			isValid=true;
+		} else if (!(null == participantInput.getThirdSittingDate()	&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting()))
+				&& !(null == participantInput.getFirstSittingDate() && (null == participantInput.getFirstSitting() || 0 == participantInput.getFirstSitting()))
+				&& !(null == participantInput.getSecondSittingDate() && (null == participantInput.getSecondSitting() || 0 == participantInput.getSecondSitting()))) {
+			isValid=true;
+		} else if( null != participantInput.getTotalDays() ? participantInput.getTotalDays() > 2 : false  ){
+			isValid = true;
 		} else if (null != participantInput.getEwelcomeIdGenerationMsg() && !participantInput.getEwelcomeIdGenerationMsg().isEmpty() ){
 			for (IssueeWelcomeId field : IssueeWelcomeId.values()) {
 				if (participantInput.getEwelcomeIdGenerationMsg().equalsIgnoreCase(field.getValue())) {
@@ -599,12 +651,6 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 					break;
 				}
 			}
-		} else if (!(null == participantInput.getThirdSittingDate()	&& (null == participantInput.getThirdSitting() || 0 == participantInput.getThirdSitting()))
-				&& !(null == participantInput.getFirstSittingDate() && (null == participantInput.getFirstSitting() || 0 == participantInput.getFirstSitting()))
-				&& !(null == participantInput.getSecondSittingDate() && (null == participantInput.getSecondSitting() || 0 == participantInput.getSecondSitting()))) {
-			isValid=true;
-		}else if( null != participantInput.getTotalDays() ? participantInput.getTotalDays() > 2 : false  ){
-			isValid = true;
 		}
 
 		return isValid;
