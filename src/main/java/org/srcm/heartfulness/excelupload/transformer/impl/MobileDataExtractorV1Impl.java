@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -126,7 +127,21 @@ public class MobileDataExtractorV1Impl implements ExcelDataExtractor{
 		Participant participant = new Participant();
 		participant.setPrintName(participantRow.getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		participant.setEmail(participantRow.getCell(7, Row.CREATE_NULL_AS_BLANK).toString().trim());
-		participant.setMobilePhone(participantRow.getCell(8, Row.CREATE_NULL_AS_BLANK).toString().trim());
+		Cell mobilePhoneCell = participantRow.getCell(8, Row.CREATE_NULL_AS_BLANK);
+		try {
+			Double numbericMobilePhone = mobilePhoneCell.getNumericCellValue();
+			participant.setMobilePhone(String.valueOf(numbericMobilePhone.longValue()).trim());
+			if(participant.getMobilePhone().equals("0")){
+				participant.setMobilePhone("");
+			}
+		} catch (NumberFormatException | ClassCastException | IllegalStateException  e) {
+			LOGGER.error("Participant mobile phone number is not numeric, trying as string");
+			participant.setMobilePhone(String.valueOf(mobilePhoneCell).trim());
+		} catch (Exception e) {
+			LOGGER.error("Participant mobile phone number is not numeric, trying as string");
+			participant.setMobilePhone(String.valueOf(mobilePhoneCell).trim());
+		}
+		//participant.setMobilePhone(participantRow.getCell(8, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		String gender = participantRow.getCell(10, Row.CREATE_NULL_AS_BLANK).toString().trim();
 		participant.setGender(gender.equalsIgnoreCase(PMPConstants.MALE)?PMPConstants.GENDER_MALE : gender.equalsIgnoreCase(PMPConstants.FEMALE) ? PMPConstants.GENDER_FEMALE : "");
 		participant.setCity(participantRow.getCell(6, Row.CREATE_NULL_AS_BLANK).toString().trim());

@@ -312,6 +312,23 @@ public class ExcelV2ValidatorImpl implements EventDetailsExcelValidator {
 							+ " is invalid at row number "+rowNumber);
 				}
 			}
+			
+			String ptcpntMob = currentRow.getCell(8, Row.CREATE_NULL_AS_BLANK).toString().trim();
+			if(null != ptcpntMob && !ptcpntMob.isEmpty()){
+				
+				try{
+					
+					Double numbericMobilePhone = currentRow.getCell(8, Row.CREATE_NULL_AS_BLANK).getNumericCellValue();
+					String pctptMobNumber = String.valueOf(numbericMobilePhone.longValue()).trim();
+					if(!pctptMobNumber.matches(ExpressionConstants.MOBILE_REGEX)){
+						errorList.add(V2ParticipantCols.MOBILE.getHeader() 
+								+ " is invalid at row number "+rowNumber);
+					}
+				} catch(Exception ex){
+					errorList.add(V2ParticipantCols.MOBILE.getHeader() 
+							+ " is invalid at row number "+rowNumber);
+				}
+			}
 
 			/*String welcomeCardNumber = currentRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if(!welcomeCardNumber.isEmpty()){

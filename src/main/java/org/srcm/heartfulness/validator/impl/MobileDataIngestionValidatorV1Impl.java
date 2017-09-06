@@ -205,6 +205,23 @@ public class MobileDataIngestionValidatorV1Impl implements EventDetailsExcelVali
 		if(!participantEmail.isEmpty() && !participantEmail.matches(ExpressionConstants.EMAIL_REGEX)){
 			errorMsg.add(" "+MobileDataParticipantCols.EMAIL.getHeader() + " is invalid at row number "+rowNumber);
 		}
+		
+		String ptcpntMob = currentRow.getCell(8, Row.CREATE_NULL_AS_BLANK).toString().trim();
+		if(null != ptcpntMob && !ptcpntMob.isEmpty()){
+			
+			try{
+				
+				Double numbericMobilePhone = currentRow.getCell(8, Row.CREATE_NULL_AS_BLANK).getNumericCellValue();
+				String pctptMobNumber = String.valueOf(numbericMobilePhone.longValue()).trim();
+				if(!pctptMobNumber.matches(ExpressionConstants.MOBILE_REGEX)){
+					errorMsg.add(MobileDataParticipantCols.MOBILE.getHeader() 
+							+ " is invalid at row number "+rowNumber);
+				}
+			} catch(Exception ex){
+				errorMsg.add(MobileDataParticipantCols.MOBILE.getHeader() 
+						+ " is invalid at row number "+rowNumber);
+			}
+		}
 
 		//mobile number validation
 		/*String phoneNumber = currentRow.getCell(8, Row.CREATE_NULL_AS_BLANK).toString().trim();

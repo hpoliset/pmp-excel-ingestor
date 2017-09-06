@@ -171,6 +171,23 @@ public class ExcelV1ValidatorImpl implements EventDetailsExcelValidator {
 					errorList.add(V1ParticipantCols.EMAIL_ADDRESS.getHeader() + "is invalid at row number "+rowNumber);
 				}
 			}
+			
+			String ptcpntMob = currentRow.getCell(5, Row.CREATE_NULL_AS_BLANK).toString().trim();
+			if(null != ptcpntMob && !ptcpntMob.isEmpty()){
+				
+				try{
+					
+					Double numbericMobilePhone = currentRow.getCell(5, Row.CREATE_NULL_AS_BLANK).getNumericCellValue();
+					String pctptMobNumber = String.valueOf(numbericMobilePhone.longValue()).trim();
+					if(!pctptMobNumber.matches(ExpressionConstants.MOBILE_REGEX)){
+						errorList.add(V1ParticipantCols.PHONE.getHeader() 
+								+ " is invalid at row number "+rowNumber);
+					}
+				} catch(Exception ex){
+					errorList.add(V1ParticipantCols.PHONE.getHeader() 
+							+ " is invalid at row number "+rowNumber);
+				}
+			}
 
 			String introducedDateStr = currentRow.getCell(8, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			try {

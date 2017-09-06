@@ -92,50 +92,62 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 
 			String firstSittingStr = participantRow.getCell(1,
 					Row.CREATE_NULL_AS_BLANK).toString().trim();
-			if (!"Y".equalsIgnoreCase(firstSittingStr) && !"N".equalsIgnoreCase(firstSittingStr)) {
-				try {
-					Date firstSittingDate = DateUtils.parseDate(firstSittingStr);
-					participant.setFirstSittingDate(firstSittingDate);
+			if(null == firstSittingStr || firstSittingStr.isEmpty()){
+				participant.setSecondSitting(0);
+			}else{
+				if (!"Y".equalsIgnoreCase(firstSittingStr) && !"N".equalsIgnoreCase(firstSittingStr)) {
+					try {
+						Date firstSittingDate = DateUtils.parseDate(firstSittingStr);
+						participant.setFirstSittingDate(firstSittingDate);
+						participant.setFirstSitting(1);
+					} catch (ParseException e) {
+						throw new InvalidExcelFileException("Not able to parse first sitting date:[" + firstSittingStr + "]");
+					}
+				}else if("Y".equalsIgnoreCase(firstSittingStr)){
 					participant.setFirstSitting(1);
-				} catch (ParseException e) {
-					throw new InvalidExcelFileException("Not able to parse first sitting date:[" + firstSittingStr + "]");
+				}else if("N".equalsIgnoreCase(firstSittingStr)){
+					participant.setFirstSitting(0);
 				}
-			}else if("Y".equalsIgnoreCase(firstSittingStr)){
-				participant.setFirstSitting(1);
-			}else if("N".equalsIgnoreCase(firstSittingStr)){
-				participant.setFirstSitting(0);
 			}
 
 			String secondSittingStr = participantRow.getCell(2,
 					Row.CREATE_NULL_AS_BLANK).toString().trim();
-			if (!"Y".equalsIgnoreCase(secondSittingStr) && !"N".equalsIgnoreCase(secondSittingStr)) {
-				try {
-					Date secondSittingDate = DateUtils.parseDate(secondSittingStr);
-					participant.setSecondSittingDate(secondSittingDate);
-					participant.setSecondSitting(1);
-				} catch (ParseException e) {
-					throw new InvalidExcelFileException("Not able to parse second sitting date:[" + secondSittingStr + "]");
-				}
-			} else if("Y".equalsIgnoreCase(secondSittingStr)){
-				participant.setSecondSitting(1);
-			}else if("N".equalsIgnoreCase(secondSittingStr)){
+			if(null == secondSittingStr || secondSittingStr.isEmpty()){
 				participant.setSecondSitting(0);
+			}else{
+				if (!"Y".equalsIgnoreCase(secondSittingStr) && !"N".equalsIgnoreCase(secondSittingStr)) {
+					try {
+						Date secondSittingDate = DateUtils.parseDate(secondSittingStr);
+						participant.setSecondSittingDate(secondSittingDate);
+						participant.setSecondSitting(1);
+					} catch (ParseException e) {
+						throw new InvalidExcelFileException("Not able to parse second sitting date:[" + secondSittingStr + "]");
+					}
+				} else if("Y".equalsIgnoreCase(secondSittingStr)){
+					participant.setSecondSitting(1);
+				}else if("N".equalsIgnoreCase(secondSittingStr)){
+					participant.setSecondSitting(0);
+				}
 			}
-
 			String thirdSittingStr = participantRow.getCell(3,
 					Row.CREATE_NULL_AS_BLANK).toString().trim();
-			if (!"Y".equalsIgnoreCase(thirdSittingStr) && !"N".equalsIgnoreCase(thirdSittingStr)) {
-				try {
-					Date thirdSittingDate = DateUtils.parseDate(thirdSittingStr);
-					participant.setThirdSittingDate(thirdSittingDate);
-					participant.setThirdSitting(1);
-				} catch (ParseException e) {
-					throw new InvalidExcelFileException("Not able to parse third sitting date:[" + thirdSittingStr + "]");
-				}
-			} else if("Y".equalsIgnoreCase(thirdSittingStr)){
-				participant.setThirdSitting(1);
-			}else if("N".equalsIgnoreCase(thirdSittingStr)){
+
+			if(null == thirdSittingStr || thirdSittingStr.isEmpty()){
 				participant.setThirdSitting(0);
+			}else{
+				if (!"Y".equalsIgnoreCase(thirdSittingStr) && !"N".equalsIgnoreCase(thirdSittingStr)) {
+					try {
+						Date thirdSittingDate = DateUtils.parseDate(thirdSittingStr);
+						participant.setThirdSittingDate(thirdSittingDate);
+						participant.setThirdSitting(1);
+					} catch (ParseException e) {
+						throw new InvalidExcelFileException("Not able to parse third sitting date:[" + thirdSittingStr + "]");
+					}
+				} else if("Y".equalsIgnoreCase(thirdSittingStr)){
+					participant.setThirdSitting(1);
+				}else if("N".equalsIgnoreCase(thirdSittingStr)){
+					participant.setThirdSitting(0);
+				}
 			}
 
 			participant.setCountry(participantRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString().trim());
@@ -146,6 +158,9 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			try {
 				Double numbericMobilePhone = mobilePhoneCell.getNumericCellValue();
 				participant.setMobilePhone(String.valueOf(numbericMobilePhone.longValue()).trim());
+				if(participant.getMobilePhone().equals("0")){
+					participant.setMobilePhone("");
+				}
 			} catch (NumberFormatException | ClassCastException | IllegalStateException  e) {
 				LOGGER.error("Participant mobile phone number is not numeric, trying as string");
 				participant.setMobilePhone(String.valueOf(mobilePhoneCell).trim());
@@ -178,7 +193,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 					participant.setWelcomeCardNumber(welcomeCardNo);
 				else
 					participant.setEwelcomeIdGenerationMsg(welcomeCardNo);
-				
+
 				String welcomeCardDateStr = participantRow.getCell(17, Row.CREATE_NULL_AS_BLANK).toString().trim();
 				Date welcomeCardDate = null;
 				try {
@@ -234,7 +249,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 
 		program.setPreceptorName(eventSheet.getRow(13).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		program.setPreceptorIdCardNumber(eventSheet.getRow(14).getCell(1, Row.CREATE_NULL_AS_BLANK).toString().trim());
-		
+
 		program.setRemarks(eventSheet.getRow(17).getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim());
 
 		String eventDateStr = eventSheet.getRow(3).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim();
@@ -270,7 +285,7 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			program.setIsEwelcomeIdGenerationDisabled(EventDetailsUploadConstants.EWELCOME_ID_ENABLED_STATE);
 		}
 		program.setSendersEmailAddress(eventSheet.getRow(16).getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim());
-		
+
 		LOGGER.info("Completed extracting program for V2 template");
 		return program;
 	}
