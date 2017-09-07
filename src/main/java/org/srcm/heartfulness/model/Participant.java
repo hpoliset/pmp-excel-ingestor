@@ -530,7 +530,7 @@ public class Participant {
 				return false;
 		}
 		
-		if((other.mobilePhone.trim().equalsIgnoreCase("0") || other.mobilePhone.trim().isEmpty()) && other.email.trim().isEmpty()){
+		if( other.mobilePhone.trim().isEmpty() && other.email.trim().isEmpty()){
 			return false;
 		}
 		
