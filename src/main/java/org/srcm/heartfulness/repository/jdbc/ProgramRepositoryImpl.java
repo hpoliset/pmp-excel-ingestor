@@ -2278,17 +2278,36 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 
 		if (searchRequest.getDateTo() != null && !searchRequest.getDateTo().isEmpty()) {
 			try {
-				if(role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)  || coordinatorType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType()) ){
-					whereCondition.append(" AND CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END " );
+
+				if(role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN) || coordinatorType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType()) ){
+					//new validation added
+					if (!("ALL".equals(searchRequest.getSearchField())) && null != searchRequest.getSearchField() 
+							&& !searchRequest.getSearchField().isEmpty() && !searchRequest.getSearchText().isEmpty()) {
+
+						if(null != searchRequest.getDateFrom() && !searchRequest.getDateFrom().isEmpty()){
+							whereCondition.append(" AND CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END ");
+						}else{
+							whereCondition.append(" WHERE CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END ");
+						}
+					}else{
+
+						if(null != searchRequest.getDateFrom() && !searchRequest.getDateFrom().isEmpty()){
+							whereCondition.append(" AND CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END ");
+						}else{
+							whereCondition.append(" WHERE CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END ");
+						}
+						//whereCondition.append(" WHERE p.program_start_date <=:program_start_date ");
+					}
 				}else{
-					whereCondition.append(" AND CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END " );
+					whereCondition.append(" AND CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END ");
 				}
+
 				params.put("program_end_date", DateUtils.parseToSqlDate(searchRequest.getDateTo()));
 			} catch (ParseException e) {
 				LOGGER.error("Error While converting date {}", e.getMessage());
 			}
 		}
-		
+
 		return  this.namedParameterJdbcTemplate.queryForObject(baseQuery.toString() + (whereCondition.length() > 0 ? whereCondition : ""), params, Integer.class);
 	}
 
@@ -2367,7 +2386,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			}
 		}
 
-		if ((searchRequest.getDateFrom() != null && !searchRequest.getDateFrom().isEmpty())) {
+		if (searchRequest.getDateFrom() != null && !searchRequest.getDateFrom().isEmpty()) {
 			try {
 				if(role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN) || coordinatorType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())){
 					//whereCondition.append(" WHERE p.program_start_date >=:program_start_date ");
@@ -2390,7 +2409,24 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 			try {
 
 				if(role.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN) || coordinatorType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType()) ){
-					whereCondition.append(" AND CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END ");
+					//new validation added
+					if (!("ALL".equals(searchRequest.getSearchField())) && null != searchRequest.getSearchField() 
+							&& !searchRequest.getSearchField().isEmpty() && !searchRequest.getSearchText().isEmpty()) {
+
+						if(null != searchRequest.getDateFrom() && !searchRequest.getDateFrom().isEmpty()){
+							whereCondition.append(" AND CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END ");
+						}else{
+							whereCondition.append(" WHERE CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END ");
+						}
+					}else{
+
+						if(null != searchRequest.getDateFrom() && !searchRequest.getDateFrom().isEmpty()){
+							whereCondition.append(" AND CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END ");
+						}else{
+							whereCondition.append(" WHERE CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END ");
+						}
+						//whereCondition.append(" WHERE p.program_start_date <=:program_start_date ");
+					}
 				}else{
 					whereCondition.append(" AND CASE WHEN p.program_start_date IS NOT NULL THEN p.program_start_date <=:program_end_date ELSE TRUE END ");
 				}
@@ -2486,7 +2522,7 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		if (userRole != null && !userRole.equalsIgnoreCase(PMPConstants.LOGIN_GCONNECT_ADMIN)) {
 			whereCondition.append(" AND (p.coordinator_email IN( " + emailString + ") OR pc.email IN(" + emailString + ")) ");
 		}
-		
+
 		if (userRole != null && userRole.equalsIgnoreCase(PMPConstants.LOGIN_ROLE_PRESIDENT)) {
 			whereCondition.setLength(0);
 		}
@@ -2565,23 +2601,23 @@ public class ProgramRepositoryImpl implements ProgramRepository {
 		//}
 		return programs;
 	}
-	
+
 	@Override
-    public ArrayList<String> getPerviousSessionDate(String sessionId, String eventID) {   //barath
-        ArrayList<String> date = this.jdbcTemplate.query("SELECT max(session_date)  "
-                        +"FROM program p LEFT OUTER JOIN session_details s ON p.program_id =s.program_id "
-                        +"WHERE session_date < (SELECT session_date FROM session_details"
-                        + " WHERE auto_generated_session_id =? and p.auto_generated_event_id = ?) ",new Object[] {sessionId,eventID}, new ResultSetExtractor<ArrayList<String>>() {
-                            @Override
-                            public ArrayList<String> extractData(ResultSet rs) throws SQLException, DataAccessException {
-                                ArrayList<String> param = new ArrayList<String>();
-                                while (rs.next()) {
-                                    param.add(rs.getString(1));
-                                }
-                                return param;
-                            }
-                        });
-        return date;
-    }
+	public ArrayList<String> getPerviousSessionDate(String sessionId, String eventID) {   //barath
+		ArrayList<String> date = this.jdbcTemplate.query("SELECT max(session_date)  "
+				+"FROM program p LEFT OUTER JOIN session_details s ON p.program_id =s.program_id "
+				+"WHERE session_date < (SELECT session_date FROM session_details"
+				+ " WHERE auto_generated_session_id =? and p.auto_generated_event_id = ?) ",new Object[] {sessionId,eventID}, new ResultSetExtractor<ArrayList<String>>() {
+					@Override
+					public ArrayList<String> extractData(ResultSet rs) throws SQLException, DataAccessException {
+						ArrayList<String> param = new ArrayList<String>();
+						while (rs.next()) {
+							param.add(rs.getString(1));
+						}
+						return param;
+					}
+				});
+		return date;
+	}
 
 }

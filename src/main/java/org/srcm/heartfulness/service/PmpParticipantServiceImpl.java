@@ -90,7 +90,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 		SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
 		SimpleDateFormat sdf1 = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 		Participant participant;
-		if ((null == participantRequest.getSeqId() || participantRequest.getSeqId().isEmpty())&& 0 == participantRequest.getId()) {
+		if ((null == participantRequest.getSeqId() || participantRequest.getSeqId().isEmpty()) && 0 == participantRequest.getId()) {
 			participant = new Participant();
 			participant.setProgramId(programrepository.getProgramIdByEventId(participantRequest.getEventId()));
 			participant.setProgram(programrepository.findById(participant.getProgramId()));
@@ -206,74 +206,101 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setCountry(participantRequest.getCountry());
 			participant.setAbhyasiId(participantRequest.getAbhyasiId());
 
-			//changes related to introduced
-			if(null != participantRequest.getIntroducedStatus() 
-					&& PMPConstants.REQUIRED_YES.equalsIgnoreCase(participantRequest.getIntroducedStatus()) 
-					&& (participant.getIntroduced() == 0 || null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()) ){
-
-				participant.setIntroduced(1);
-
-			}else if(null != participantRequest.getIntroducedStatus() 
-					&& PMPConstants.REQUIRED_NO.equalsIgnoreCase(participantRequest.getIntroducedStatus()) 
-					&& (participant.getIntroduced() == 0 || null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()) ){
-
-				participant.setIntroduced(0);
-
-			}
-
-			if( (null != participantRequest.getIntroductionDate() && !participantRequest.getIntroductionDate().isEmpty()) 
-					&& (null == participant.getIntroductionDate() && participant.getIntroduced() == 1)){
-
-				participant.setIntroductionDate(sdf1.parse(sdf1.format(sdf.parse(participantRequest.getIntroductionDate()))));
-
-			}else if((null != participantRequest.getIntroductionDate() && !participantRequest.getIntroductionDate().isEmpty()) 
-					&& (null != participant.getIntroductionDate() && participant.getIntroduced() == 1)){
-
-				participant.setIntroductionDate(sdf1.parse(sdf1.format(sdf.parse(participantRequest.getIntroductionDate()))));
-
-			}else if((null == participantRequest.getIntroductionDate() || participantRequest.getIntroductionDate().isEmpty())
-					&& (participant.getIntroduced() == 0 || null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()) ){
-				participant.setIntroductionDate(null);
-			}
-
-			if( (null != participantRequest.getIntroducedBy() && !participantRequest.getIntroducedBy().isEmpty()) 
-					&& ((null == participant.getIntroducedBy() || participant.getIntroducedBy().isEmpty()) && participant.getIntroduced() == 1) ){
-
-				participant.setIntroducedBy(participantRequest.getIntroducedBy());
-
-			}else if((null != participantRequest.getIntroducedBy() && !participantRequest.getIntroducedBy().isEmpty()) 
-					&& ((null != participant.getIntroducedBy() || participant.getIntroducedBy().isEmpty()) && participant.getIntroduced() == 1) ){
-
-				participant.setIntroducedBy(participantRequest.getIntroducedBy());
-
-			}else if((null != participantRequest.getIntroducedBy() && !participantRequest.getIntroducedBy().isEmpty()) 
-					&& (participant.getIntroduced() == 0 || null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()) ){
-				participant.setIntroducedBy(null == participantRequest.getIntroducedBy()?null:"");
-			}
-
-			//changes related to welcome card
-			if( ( null != participantRequest.geteWelcomeID() && !participantRequest.geteWelcomeID().isEmpty() 
-					&& (participantRequest.geteWelcomeID().matches(ExpressionConstants.EWELCOME_ID_REGEX) 
-							|| participantRequest.geteWelcomeID().matches(ExpressionConstants.WELCOME_CARD_MESG_REGEX))) 
-					&& (null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()) ){
-
-				participant.setWelcomeCardNumber(participantRequest.geteWelcomeID());
-
-			}else if( null != participantRequest.geteWelcomeID() && !participantRequest.geteWelcomeID().isEmpty()  
-					&& !participantRequest.geteWelcomeID().matches(ExpressionConstants.EWELCOME_ID_REGEX) 
-					&& (null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty())  ){
-
-				participant.setEwelcomeIdGenerationMsg(participantRequest.geteWelcomeID());
-
-			}else if( null != participantRequest.geteWelcomeID() && !participantRequest.geteWelcomeID().isEmpty()  
-					&& !participantRequest.geteWelcomeID().matches(ExpressionConstants.EWELCOME_ID_REGEX)
-					&& !participant.getWelcomeCardNumber().matches(ExpressionConstants.EWELCOME_ID_REGEX) ){
-
-				participant.setEwelcomeIdGenerationMsg(participantRequest.geteWelcomeID());
-			}
-
-			//sitting date changes
 			if(null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()){
+
+				/*if(null != participantRequest.getIntroducedStatus() 
+						&& PMPConstants.REQUIRED_YES.equalsIgnoreCase(participantRequest.getIntroducedStatus()) 
+						&& (participant.getIntroduced() == 0 || null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()) ){
+
+					participant.setIntroduced(1);
+
+				}else if(null != participantRequest.getIntroducedStatus() 
+						&& PMPConstants.REQUIRED_NO.equalsIgnoreCase(participantRequest.getIntroducedStatus()) 
+						&& (participant.getIntroduced() == 0 || null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()) ){
+
+					participant.setIntroduced(0);
+
+				}*/
+
+				//changes related to introduced
+				if(null != participantRequest.getIntroducedStatus() && !participantRequest.getIntroducedStatus().isEmpty()){
+
+					participant.setIntroduced(participantRequest.getIntroducedStatus().equalsIgnoreCase(PMPConstants.REQUIRED_YES) ? 1:0);
+
+					if(participantRequest.getIntroducedStatus().equalsIgnoreCase(PMPConstants.REQUIRED_YES)
+							&& (null != participantRequest.getIntroductionDate() && !participantRequest.getIntroductionDate().isEmpty()) ){
+
+						participant.setIntroductionDate(sdf1.parse(sdf1.format(sdf.parse(participantRequest.getIntroductionDate()))));
+
+					}else if(participantRequest.getIntroducedStatus().equalsIgnoreCase(PMPConstants.REQUIRED_NO)){
+						participant.setIntroductionDate(null);
+					}
+
+					if(participantRequest.getIntroducedStatus().equalsIgnoreCase(PMPConstants.REQUIRED_YES)
+							&& (null != participantRequest.getIntroducedBy() && !participantRequest.getIntroducedBy().isEmpty()) ){
+
+						participant.setIntroducedBy(participantRequest.getIntroducedBy());
+
+					}else if(participantRequest.getIntroducedStatus().equalsIgnoreCase(PMPConstants.REQUIRED_NO)){
+						participant.setIntroducedBy("");
+					}
+				}
+
+				//changes in introduced dates
+				/*if( (null != participantRequest.getIntroductionDate() && !participantRequest.getIntroductionDate().isEmpty()) 
+						&& (null == participant.getIntroductionDate() && participant.getIntroduced() == 1)){
+
+					participant.setIntroductionDate(sdf1.parse(sdf1.format(sdf.parse(participantRequest.getIntroductionDate()))));
+
+				}else if((null != participantRequest.getIntroductionDate() && !participantRequest.getIntroductionDate().isEmpty()) 
+						&& (null != participant.getIntroductionDate() && participant.getIntroduced() == 1)){
+
+					participant.setIntroductionDate(sdf1.parse(sdf1.format(sdf.parse(participantRequest.getIntroductionDate()))));
+
+				}else if((null == participantRequest.getIntroductionDate() || participantRequest.getIntroductionDate().isEmpty())
+						&& (participant.getIntroduced() == 0 || null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()) ){
+					participant.setIntroductionDate(null);
+				}
+				//changes in introduced by
+				if( (null != participantRequest.getIntroducedBy() && !participantRequest.getIntroducedBy().isEmpty()) 
+						&& ((null == participant.getIntroducedBy() || participant.getIntroducedBy().isEmpty()) && participant.getIntroduced() == 1) ){
+
+					participant.setIntroducedBy(participantRequest.getIntroducedBy());
+
+				}else if((null != participantRequest.getIntroducedBy() && !participantRequest.getIntroducedBy().isEmpty()) 
+						&& ((null != participant.getIntroducedBy() || participant.getIntroducedBy().isEmpty()) && participant.getIntroduced() == 1) ){
+
+					participant.setIntroducedBy(participantRequest.getIntroducedBy());
+
+				}else if((null != participantRequest.getIntroducedBy() && !participantRequest.getIntroducedBy().isEmpty()) 
+						&& (participant.getIntroduced() == 0 || null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()) ){
+					participant.setIntroducedBy(null == participantRequest.getIntroducedBy()?null:"");
+				}*/
+
+				//changes related to welcome card
+				if( ( null != participantRequest.geteWelcomeID() && !participantRequest.geteWelcomeID().isEmpty() 
+						&& (participantRequest.geteWelcomeID().matches(ExpressionConstants.EWELCOME_ID_REGEX) 
+								|| participantRequest.geteWelcomeID().matches(ExpressionConstants.WELCOME_CARD_MESG_REGEX))) ){ 
+					//&& (null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()) ){
+
+					participant.setWelcomeCardNumber(participantRequest.geteWelcomeID());
+
+				}else if( null != participantRequest.geteWelcomeID() && !participantRequest.geteWelcomeID().isEmpty()  
+						&& !participantRequest.geteWelcomeID().matches(ExpressionConstants.EWELCOME_ID_REGEX) 
+						/*&& (null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty())*/  ){
+
+					participant.setEwelcomeIdGenerationMsg(participantRequest.geteWelcomeID());
+
+				}/*else if( null != participantRequest.geteWelcomeID() && !participantRequest.geteWelcomeID().isEmpty()  
+						&& !participantRequest.geteWelcomeID().matches(ExpressionConstants.EWELCOME_ID_REGEX)
+						&& !participant.getWelcomeCardNumber().matches(ExpressionConstants.EWELCOME_ID_REGEX) ){
+
+					participant.setEwelcomeIdGenerationMsg(participantRequest.geteWelcomeID());
+				}*/
+				//}
+
+				//sitting date changes
+				//if(null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()){
 				if (null == participantRequest.getFirstSittingDate() || participantRequest.getFirstSittingDate().isEmpty()) {
 					participant.setFirstSittingDate(null);
 				} else {
@@ -318,6 +345,14 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 				participant.setFirstSitting((null != participantRequest.getFirstSitting() && PMPConstants.REQUIRED_YES.equalsIgnoreCase(participantRequest.getFirstSitting())) ? 1 : 0);
 				participant.setSecondSitting((null != participantRequest.getSecondSitting() && PMPConstants.REQUIRED_YES.equalsIgnoreCase(participantRequest.getSecondSitting())) ? 1 : 0);
 				participant.setThirdSitting((null != participantRequest.getThirdSitting() && PMPConstants.REQUIRED_YES.equalsIgnoreCase(participantRequest.getThirdSitting())) ? 1 : 0);
+			}else{
+
+				if( null != participantRequest.geteWelcomeID() && !participantRequest.geteWelcomeID().isEmpty()  
+						&& !participantRequest.geteWelcomeID().matches(ExpressionConstants.EWELCOME_ID_REGEX)
+						&& !participant.getWelcomeCardNumber().matches(ExpressionConstants.EWELCOME_ID_REGEX) ){
+
+					participant.setEwelcomeIdGenerationMsg(participantRequest.geteWelcomeID());
+				}
 			}
 			//participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
 
@@ -358,9 +393,8 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					);*/
 			//need to check
 			participantRequest.setIntroductionDate(sdf.format(participant.getIntroductionDate()));
-
 		} catch(Exception ex){
-			LOGGER.error("Unable to set Introduced date");
+			LOGGER.error("Unable to set Introduced date"+ex);
 		}
 
 		//participantRequest.setAbhyasiId(participant.getAbhyasiId());
@@ -629,8 +663,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	public Participant findBySeqId(ParticipantRequest participantRequest) {
 		if (0 != programrepository.getProgramIdByEventId(participantRequest.getEventId())) {
 			participantRequest.setProgramId(programrepository.getProgramIdByEventId(participantRequest.getEventId()));
-			Participant newParticipant = programrepository.findParticipantBySeqId(participantRequest.getSeqId(),
-					participantRequest.getProgramId());
+			Participant newParticipant = programrepository.findParticipantBySeqId(participantRequest.getSeqId(),participantRequest.getProgramId());
 			return newParticipant;
 		} else {
 			return null;
