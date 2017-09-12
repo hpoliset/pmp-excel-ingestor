@@ -255,12 +255,12 @@ public class DashboardController {
 			return new ResponseEntity<ErrorResponse>(errResopnse, HttpStatus.PRECONDITION_REQUIRED);
 		}
 
-		if(null != user.getAbyasiId()){
+		/*if(null != user.getAbyasiId()){
 			emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
 		}
 		if(emailList.size() == 0){
 			emailList.add(accessLog.getUsername());
-		}
+		}*/
 
 		LOGGER.info("Trying to fetch list of states for log in user {}",accessLog.getUsername());
 		ResponseEntity<?> dashboardRsp = dashboardService.getStateList(authToken, dashboardReq, accessLog, emailList, user.getRole());
