@@ -392,7 +392,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 						:	sdf.format(participant.getIntroductionDate())null
 					);*/
 			//need to check
-			participantRequest.setIntroductionDate(sdf.format(participant.getIntroductionDate()));
+			participantRequest.setIntroductionDate(null == participant.getIntroductionDate() ? null : sdf.format(participant.getIntroductionDate()));
 		} catch(Exception ex){
 			LOGGER.error("Unable to set Introduced date"+ex);
 		}
@@ -860,7 +860,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			} else {
 				participant.setIntroduced(1);
 				participant.setIntroductionDate(null != participant.getIntroductionDate() ? participant.getIntroductionDate() : null != participant.getFirstSittingDate()?participant.getFirstSittingDate():program.getProgramStartDate());
-				participant.setIntroducedBy(program.getCoordinatorEmail());
+				participant.setIntroducedBy( (null != participant.getIntroducedBy() && !participant.getIntroducedBy().isEmpty()) ? participant.getIntroducedBy() : program.getCoordinatorEmail());
 				participant.setEwelcomeIdRemarks(remarks);
 				participant.setEwelcomeIdState(eWelcomeIDStatus);
 				participant.setIsEwelcomeIdInformed(0);

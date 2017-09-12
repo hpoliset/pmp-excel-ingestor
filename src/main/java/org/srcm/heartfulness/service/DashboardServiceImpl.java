@@ -615,11 +615,11 @@ public class DashboardServiceImpl implements DashboardService {
 	public ResponseEntity<?> getStateList(String authToken, DashboardRequest dashboardReq, PMPAPIAccessLog accessLog,
 			List<String> emailList, String userRole) {
 
-		boolean isNext = true;
-		String currentPositionType = "";
+		//boolean isNext = true;
+		//String currentPositionType = "";
 		List<String> responseStateList = new ArrayList<String>();
 
-		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(accessLog.getId(),
+		/*PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(accessLog.getId(),
 				EndpointConstants.POSITIONS_API, DateUtils.getCurrentTimeInMilliSec(), null,
 				ErrorConstants.STATUS_FAILED, null, authToken);
 		apiAccessLogService.createPmpAPIAccesslogDetails(accessLogDetails);
@@ -669,23 +669,22 @@ public class DashboardServiceImpl implements DashboardService {
 
 		accessLogDetails.setStatus(ErrorConstants.STATUS_SUCCESS);
 		accessLogDetails.setResponseBody(StackTraceUtils.convertPojoToJson(posResult));
-		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);
+		apiAccessLogService.updatePmpAPIAccesslogDetails(accessLogDetails);*/
 
-		if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())
-				|| currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())) {
-			LOGGER.info("Trying to get list of states for Log in country coodinator/President {} ", accessLog.getUsername());
+		//if (currentPositionType.equalsIgnoreCase(CoordinatorPosition.COUNTRY_COORDINATOR.getPositionType())
+				//|| currentPositionType.equalsIgnoreCase(CoordinatorPosition.PRESIDENT.getPositionType())) {
+			LOGGER.info("Trying to get list of states for Log in user {} ", accessLog.getUsername());
 			try {
 				responseStateList = dashboardRepository.getListOfStatesForCountryCoordinatorOrPresident(dashboardReq);
 			} catch (Exception ex) {
 
-				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-						DashboardConstants.PROCESSING_FAILED);
+				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.PROCESSING_FAILED);
 				accessLog.setStatus(ErrorConstants.STATUS_FAILED);
 				accessLog.setErrorMessage(StackTraceUtils.convertStackTracetoString(ex));
 				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 
-		}
+		//}
 
 		accessLog.setStatus(ErrorConstants.STATUS_SUCCESS);
 		accessLog.setErrorMessage(null);
