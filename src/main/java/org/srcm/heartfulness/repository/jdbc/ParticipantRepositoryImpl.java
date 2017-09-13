@@ -210,24 +210,58 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	@Override
 	public void save(Participant participant) {
 
-		// See if this participant already exists or not
-		/*if (participant.getId() == 0) {
+		// If participant doesn't exist
+		if (participant.getId() == 0 && (null == participant.getSeqId() || participant.getSeqId().isEmpty())) {
 
 			Integer participantId = 0;
 
-			participantId = this.jdbcTemplate.query(
-					"SELECT id from participant where print_name=? AND email=? AND mobile_phone=? AND program_id=?",
-					new Object[] { participant.getPrintName(), participant.getEmail(), participant.getMobilePhone(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
-						@Override
-						public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-							if (resultSet.next()) {
-								return resultSet.getInt(1);
+			//if both email and mobile available
+			if ( (null != participant.getEmail() && !participant.getEmail().isEmpty()) && (null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty()) ) {
+				participantId = this.jdbcTemplate.query(
+						"SELECT id from participant where print_name=? AND email=? AND mobile_phone=? AND program_id=?",
+						new Object[] { participant.getPrintName(), participant.getEmail(), participant.getMobilePhone(),participant.getProgramId() }, new ResultSetExtractor<Integer>() {
+							@Override
+							public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+								if (resultSet.next()) {
+									return resultSet.getInt(1);
+								}
+								return 0;
 							}
-							return 0;
-						}
-					});
+						});
 
-			if (participantId <= 0 && participant.getExcelSheetSequenceNumber() > 0) {
+				//if only email is available
+			}else if(null != participant.getEmail() && !participant.getEmail().isEmpty() && participantId <= 0){
+				participantId = this.jdbcTemplate.query(
+						"SELECT id from participant where print_name=? AND email=? AND program_id=?",
+						new Object[] { participant.getPrintName(), participant.getEmail(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
+							@Override
+							public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+								if (resultSet.next()) {
+									return resultSet.getInt(1);
+								}
+								return 0;
+							}
+						});
+
+				//if only mobile is available
+			}else if (null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty() && participantId <= 0) {
+				participantId = this.jdbcTemplate.query(
+						"SELECT id from participant where print_name=? AND mobile_phone=? AND program_id=?",
+						new Object[] { participant.getPrintName(), participant.getMobilePhone(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
+							@Override
+							public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
+								if (resultSet.next()) {
+									return resultSet.getInt(1);
+								}
+								return 0;
+							}
+						});
+
+			}
+
+
+
+			/*if (participantId <= 0 && participant.getExcelSheetSequenceNumber() > 0) {
 				participantId = this.jdbcTemplate.query(
 						"SELECT id from participant where  print_name=? AND excel_sheet_sequence_number=? AND program_id=?",
 						new Object[] { participant.getPrintName(), participant.getExcelSheetSequenceNumber(),  participant.getProgramId() }, new ResultSetExtractor<Integer>() {
@@ -239,71 +273,48 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 								return 0;
 							}
 						});
-			}
-
-			//existing
-
-			if (participantId <= 0) {
-				participantId = this.jdbcTemplate.query(
-						"SELECT id from participant where print_name=? AND email=? AND program_id=?",
-						new Object[] { participant.getPrintName(), participant.getEmail(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
-							@Override
-							public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-								if (resultSet.next()) {
-									return resultSet.getInt(1);
-								}
-								return 0;
-							}
-						});
-			}
-
-			if (participantId <= 0) {
-				participantId = this.jdbcTemplate.query(
-						"SELECT id from participant where print_name=? AND mobile_phone=? AND program_id=?",
-						new Object[] { participant.getPrintName(), participant.getMobilePhone(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
-							@Override
-							public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-								if (resultSet.next()) {
-									return resultSet.getInt(1);
-								}
-								return 0;
-							}
-						});
-
-			}
-
-			// changes
-
-			if (null != participant.getEmail() && !participant.getEmail().isEmpty() && participantId <= 0) {
-				participantId = this.jdbcTemplate.query(
-						"SELECT id from participant where print_name=? AND email=? AND program_id=?",
-						new Object[] { participant.getPrintName(), participant.getEmail(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
-							@Override
-							public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-								if (resultSet.next()) {
-									return resultSet.getInt(1);
-								}
-								return 0;
-							}
-						});
-			}
-
-			if (null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty() && participantId <= 0) {
-				participantId = this.jdbcTemplate.query(
-						"SELECT id from participant where print_name=? AND mobile_phone=? AND program_id=?",
-						new Object[] { participant.getPrintName(), participant.getMobilePhone(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
-							@Override
-							public Integer extractData(ResultSet resultSet) throws SQLException, DataAccessException {
-								if (resultSet.next()) {
-									return resultSet.getInt(1);
-								}
-								return 0;
-							}
-						});
-
-			}
+			}*/
 
 			if (participantId > 0) {
+
+				Map<String, Object> params = new HashMap<>();
+				params.put("participantId", participantId);
+
+				Participant oldParticipantDetails=this.namedParameterJdbcTemplate.queryForObject(
+						"SELECT * FROM participant WHERE id=:participantId", params,BeanPropertyRowMapper.newInstance(Participant.class));
+
+				if(null != oldParticipantDetails){
+
+					if(null != oldParticipantDetails.getWelcomeCardNumber() && !oldParticipantDetails.getWelcomeCardNumber().isEmpty() 
+							&& (oldParticipantDetails.getWelcomeCardNumber().matches(ExpressionConstants.EWELCOME_ID_REGEX) || 
+									oldParticipantDetails.getWelcomeCardNumber().matches(ExpressionConstants.WELCOME_CARD_MESG_REGEX))){
+
+						participant.setIntroduced(oldParticipantDetails.getIntroduced());
+						participant.setIntroducedBy(oldParticipantDetails.getIntroducedBy());
+						participant.setIntroductionDate(oldParticipantDetails.getIntroductionDate());
+						
+						participant.setWelcomeCardNumber(oldParticipantDetails.getWelcomeCardNumber());
+						participant.setEwelcomeIdState(oldParticipantDetails.getEwelcomeIdState());
+						participant.setWelcomeCardDate(oldParticipantDetails.getWelcomeCardDate());
+						participant.setIsEwelcomeIdInformed(oldParticipantDetails.getIsEwelcomeIdInformed());
+						
+						participant.setFirstSitting(oldParticipantDetails.getFirstSitting());
+						participant.setSecondSitting(oldParticipantDetails.getSecondSitting());
+						participant.setThirdSitting(oldParticipantDetails.getThirdSitting());
+						participant.setFirstSittingDate( null != oldParticipantDetails.getFirstSittingDate() ? oldParticipantDetails.getFirstSittingDate() : null);
+						participant.setSecondSittingDate( null != oldParticipantDetails.getSecondSittingDate() ? oldParticipantDetails.getSecondSittingDate() : null);
+						participant.setThirdSittingDate( null != oldParticipantDetails.getThirdSittingDate() ? oldParticipantDetails.getThirdSittingDate() : null);
+						
+					}
+				}else{
+					participant.setSeqId(checkExistanceOfAutoGeneratedSeqId(SmsUtil.generateFourDigitPIN(),participant.getProgramId()));
+				}
+			}else{
+				participant.setSeqId(checkExistanceOfAutoGeneratedSeqId(SmsUtil.generateFourDigitPIN(),participant.getProgramId()));
+			}
+
+
+			/*if (participantId > 0) {
 				participant.setId(participantId);
 				String seqId = this.jdbcTemplate.query("SELECT seqId from participant where id=?",
 						new Object[] { participantId }, new ResultSetExtractor<String>() {
@@ -339,12 +350,12 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 				}
 			} else {
 				participant.setSeqId(checkExistanceOfAutoGeneratedSeqId(SmsUtil.generateFourDigitPIN(),participant.getProgramId()));
-			}
-		}*/
-
-		if(participant.getId() == 0 && (null == participant.getSeqId() || participant.getSeqId().isEmpty())){
-			participant.setSeqId(checkExistanceOfAutoGeneratedSeqId(SmsUtil.generateFourDigitPIN(),participant.getProgramId()));
+			}*/
 		}
+
+		/*if(participant.getId() == 0 && (null == participant.getSeqId() || participant.getSeqId().isEmpty())){
+			participant.setSeqId(checkExistanceOfAutoGeneratedSeqId(SmsUtil.generateFourDigitPIN(),participant.getProgramId()));
+		}*/
 
 		BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(participant);
 		if (participant.getId() == 0) {
@@ -658,7 +669,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 			} catch(Exception ex) {
 				LOGGER.error("Exception while finding existing participant combination for user {}",participant.getPrintName());
-				
+
 				/*List<Integer> ids = this.namedParameterJdbcTemplate
 						.queryForList("SELECT id "
 								+ " FROM participant"
@@ -749,11 +760,11 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 					participant.setWelcomeCardDate(oldParticipantDetails.getWelcomeCardDate());
 					participant.setEwelcomeIdState(oldParticipantDetails.getEwelcomeIdState());
 					participant.setIsEwelcomeIdInformed(oldParticipantDetails.getIsEwelcomeIdInformed());
-					
+
 					participant.setFirstSittingDate(oldParticipantDetails.getFirstSittingDate());
 					participant.setSecondSittingDate(oldParticipantDetails.getSecondSittingDate());
 					participant.setThirdSittingDate(oldParticipantDetails.getThirdSittingDate());
-					
+
 					participant.setFirstSitting(oldParticipantDetails.getFirstSitting());
 					participant.setSecondSitting(oldParticipantDetails.getSecondSitting());
 					participant.setThirdSitting(oldParticipantDetails.getThirdSitting());
