@@ -120,6 +120,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		Program program = null;
 		if (null == participant.getEventId() || participant.getEventId().isEmpty()) {
 			errors.put("eventId", DashboardConstants.INVALID_OR_EMPTY_EVENTID);
+			return errors;
 		}else {
 
 			//program = getProgram(emailList, userRole, participant.getEventId(), authToken, accessLog);
@@ -128,6 +129,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				participant.setProgramId(program.getProgramId());
 			}else{
 				errors.put("eventId", ErrorConstants.UNAUTHORIZED_CREATE_PARTICIPANT_ACCESS + participant.getEventId());
+				return errors;
 			}
 		}
 		
@@ -667,11 +669,9 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	public Map<String, String> checkUpdateParticipantMandatoryFields(List<String> emailList, String userRole, ParticipantRequest participant, String authToken, PMPAPIAccessLog accessLog) {
 		Map<String, String> errors = new HashMap<String, String>();
 		Program program = null;
-		if (null == participant.getPrintName() || participant.getPrintName().isEmpty()) {
-			errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.PRINT_NAME_REQUIRED);
-		}
 		if (null == participant.getEventId() || participant.getEventId().isEmpty()) {
 			errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_OR_EMPTY_EVENTID);
+			return errors;
 		}else {
 
 			//program = getProgram(emailList, userRole, participant.getEventId(), authToken, accessLog);
@@ -680,13 +680,109 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				participant.setProgramId(program.getProgramId());
 			}else{
 				errors.put("eventId", ErrorConstants.UNAUTHORIZED_UPDATE_PARTICIPANT_ACCESS + participant.getEventId());
+				return errors;
 			}
 		}
 
+		if (null == participant.getPrintName() || participant.getPrintName().isEmpty()) {
+			errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.PRINT_NAME_REQUIRED);
+		}
 		if (null == participant.getSeqId() || participant.getSeqId().isEmpty()) {
 			errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.SEQ_ID_REQUIRED);
 		}else if(0 == participantRepository.getParticipantCountByProgIdAndSeqId(participant.getProgramId(),participant.getSeqId())){
 			errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_SEQ_ID);
+		}
+		
+		if(null != participant.getFirstSittingDate() && !participant.getFirstSittingDate().isEmpty()){
+			if (!participant.getFirstSittingDate().matches(ExpressionConstants.DATE_REGEX)) {
+				errors.put("firstSittingDate", DashboardConstants.INVALID_FIRST_SITTING_DATE);
+			}else{
+				SimpleDateFormat sdfFormat = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
+				SimpleDateFormat sdfSqlFormat = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
+				try {
+					sdfSqlFormat.parse(sdfSqlFormat.format(sdfFormat.parse(participant.getFirstSittingDate())));
+				} catch (ParseException e) {
+					LOGGER.error("Unable to parse first sitting date for {} for event{}",participant.getPrintName(),participant.getEventId());
+					errors.put("firstSittingDate", DashboardConstants.INVALID_FIRST_SITTING_DATE);
+				}
+			}
+		}
+		
+		if(null != participant.getSecondSittingDate() && !participant.getSecondSittingDate().isEmpty()){
+			if (!participant.getSecondSittingDate().matches(ExpressionConstants.DATE_REGEX)) {
+				errors.put("secondSittingDate", DashboardConstants.INVALID_SECOND_SITTING_DATE);
+			}else{
+				SimpleDateFormat sdfFormat = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
+				SimpleDateFormat sdfSqlFormat = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
+				try {
+					sdfSqlFormat.parse(sdfSqlFormat.format(sdfFormat.parse(participant.getSecondSittingDate())));
+				} catch (ParseException e) {
+					LOGGER.error("Unable to parse second sitting date for {} for event{}",participant.getPrintName(),participant.getEventId());
+					errors.put("secondSittingDate", DashboardConstants.INVALID_SECOND_SITTING_DATE);
+				}
+			}
+		}
+		
+		if(null != participant.getThirdSittingDate() && !participant.getThirdSittingDate().isEmpty()){
+			if (!participant.getThirdSittingDate().matches(ExpressionConstants.DATE_REGEX)) {
+				errors.put("thirdSittingDate", DashboardConstants.INVALID_THIRD_SITTING_DATE);
+			}else{
+				SimpleDateFormat sdfFormat = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
+				SimpleDateFormat sdfSqlFormat = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
+				try {
+					sdfSqlFormat.parse(sdfSqlFormat.format(sdfFormat.parse(participant.getThirdSittingDate())));
+				} catch (ParseException e) {
+					LOGGER.error("Unable to parse third sitting date for {} for event{}",participant.getPrintName(),participant.getEventId());
+					errors.put("thirdSittingDate", DashboardConstants.INVALID_THIRD_SITTING_DATE);
+				}
+			}
+		}
+		
+		if (null != participant.getGender()
+				&& !participant.getGender().isEmpty()
+				&& !(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) || participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_FEMALE)
+						|| participant.getGender().equalsIgnoreCase(PMPConstants.MALE) || participant.getGender()
+						.equalsIgnoreCase(PMPConstants.FEMALE))) {
+			errors.put("gender", DashboardConstants.INVALID_GENDER);
+		}
+
+		if (null == participant.getCity() || participant.getCity().isEmpty()) {
+			errors.put("city", DashboardConstants.PARTICIPANT_City_REQ);
+		}
+		if (null == participant.getState() || participant.getState().isEmpty()) {
+			errors.put("state", DashboardConstants.PARTICIPANT_STATE_REQ);
+		}
+		if (null == participant.getCountry() || participant.getCountry().isEmpty()) {
+			errors.put("country", DashboardConstants.PARTICIPANT_COUNTRY_REQ);
+		}
+		if((null != program.getCreatedSource() && program.getCreatedSource().equals(PMPConstants.CREATED_SOURCE_DASHBOARD_v2)) &&  
+				(null == participant.getDistrict() || participant.getDistrict().isEmpty())){
+			errors.put("district", DashboardConstants.PARTICIPANT_DISTRICT_REQ);
+		}
+		
+		if (null != participant.getEmail() && !participant.getEmail().isEmpty()) {
+			if (!participant.getEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
+				errors.put("email", DashboardConstants.INVALID_PARTICIPANT_EMAIL);
+			}
+		}
+		if (null != participant.getIntroductionDate() && !participant.getIntroductionDate().isEmpty()) {
+			if (!participant.getIntroductionDate().matches(ExpressionConstants.DATE_REGEX)) {
+				errors.put("introductionDate", DashboardConstants.INVALID_INTRODUCED_DATE);
+			}else{
+				SimpleDateFormat sdfFormat = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
+				SimpleDateFormat sdfSqlFormat = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
+				try {
+					sdfSqlFormat.parse(sdfSqlFormat.format(sdfFormat.parse(participant.getIntroductionDate())));
+				} catch (ParseException e) {
+					LOGGER.error("Unable to parse introduced date for {} for event{}",participant.getPrintName(),participant.getEventId());
+					errors.put("introductionDate", DashboardConstants.INVALID_INTRODUCED_DATE);
+				}
+			}
+		}
+		if (null != participant.getDateOfBirth()) {
+			if (!participant.getDateOfBirth().matches(ExpressionConstants.DATE_REGEX)) {
+				errors.put("dateOfBirth", DashboardConstants.INVALID_DOB);
+			}
 		}
 		return errors;
 	}
