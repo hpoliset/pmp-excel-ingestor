@@ -116,11 +116,31 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setState(participantRequest.getState());
 			participant.setCountry(participantRequest.getCountry());
 			participant.setAbhyasiId(participantRequest.getAbhyasiId());
-			participant.setIntroducedBy(participantRequest.getIntroducedBy());
+			//participant.setIntroducedBy(participantRequest.getIntroducedBy());
 
 			participant.setIntroduced((null != participantRequest.getIntroducedStatus() && PMPConstants.REQUIRED_YES.equalsIgnoreCase(participantRequest.getIntroducedStatus())) ? 1 : 0);
-			participant.setIntroductionDate((null != participantRequest.getIntroductionDate() && !participantRequest
-					.getIntroductionDate().isEmpty() && participant.getIntroduced() == 1) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest.getIntroductionDate()))) : null);
+			
+			if(participantRequest.getIntroducedStatus().equalsIgnoreCase(PMPConstants.REQUIRED_YES)
+					&& (null != participantRequest.getIntroductionDate() && !participantRequest.getIntroductionDate().isEmpty()) ){
+
+				participant.setIntroductionDate(sdf1.parse(sdf1.format(sdf.parse(participantRequest.getIntroductionDate()))));
+
+			}else if(participantRequest.getIntroducedStatus().equalsIgnoreCase(PMPConstants.REQUIRED_NO)){
+				participant.setIntroductionDate(null);
+			}
+
+			if(participantRequest.getIntroducedStatus().equalsIgnoreCase(PMPConstants.REQUIRED_YES)
+					&& (null != participantRequest.getIntroducedBy() && !participantRequest.getIntroducedBy().isEmpty()) ){
+
+				participant.setIntroducedBy(participantRequest.getIntroducedBy());
+
+			}else if(participantRequest.getIntroducedStatus().equalsIgnoreCase(PMPConstants.REQUIRED_NO)){
+				participant.setIntroducedBy("");
+			}
+			
+			
+			//participant.setIntroductionDate((null != participantRequest.getIntroductionDate() && !participantRequest
+					//.getIntroductionDate().isEmpty() && participant.getIntroduced() == 1) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest.getIntroductionDate()))) : null);
 
 			if (null == participantRequest.getFirstSittingDate()) {
 				participant.setFirstSittingDate(null);
