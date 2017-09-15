@@ -124,13 +124,20 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		}else {
 
 			//program = getProgram(emailList, userRole, participant.getEventId(), authToken, accessLog);
-			program = programRepository.getProgramByEmailAndRoleForParticipant(emailList, userRole, participant.getEventId());
-			if( null != program  && program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE)){
-				participant.setProgramId(program.getProgramId());
-			}else{
-				errors.put("eventId", ErrorConstants.UNAUTHORIZED_CREATE_PARTICIPANT_ACCESS + participant.getEventId());
+			try{
+				
+				program = programRepository.getProgramByEmailAndRoleForParticipant(emailList, userRole, participant.getEventId());
+				if( null != program  && program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE)){
+					participant.setProgramId(program.getProgramId());
+				}else{
+					errors.put("eventId", ErrorConstants.UNAUTHORIZED_CREATE_PARTICIPANT_ACCESS + participant.getEventId());
+					return errors;
+				}
+			} catch(Exception ex){
+				errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_EVENTID);
 				return errors;
 			}
+			
 		}
 		
 		if(null != participant.getFirstSittingDate() && !participant.getFirstSittingDate().isEmpty()){
@@ -675,13 +682,19 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		}else {
 
 			//program = getProgram(emailList, userRole, participant.getEventId(), authToken, accessLog);
-			program = programRepository.getProgramByEmailAndRoleForParticipant(emailList, userRole, participant.getEventId());
-			if( null != program  && program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE)){
-				participant.setProgramId(program.getProgramId());
-			}else{
-				errors.put("eventId", ErrorConstants.UNAUTHORIZED_UPDATE_PARTICIPANT_ACCESS + participant.getEventId());
+			try{
+				program = programRepository.getProgramByEmailAndRoleForParticipant(emailList, userRole, participant.getEventId());
+				if( null != program  && program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE)){
+					participant.setProgramId(program.getProgramId());
+				}else{
+					errors.put("eventId", ErrorConstants.UNAUTHORIZED_UPDATE_PARTICIPANT_ACCESS + participant.getEventId());
+					return errors;
+				}
+			} catch(Exception ex){
+				errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_EVENTID);
 				return errors;
 			}
+			
 		}
 
 		if (null == participant.getPrintName() || participant.getPrintName().isEmpty()) {

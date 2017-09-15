@@ -228,9 +228,10 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 								return 0;
 							}
 						});
+			} 
 
-				//if only email is available
-			}else if(null != participant.getEmail() && !participant.getEmail().isEmpty() && participantId <= 0){
+			//if only email is available
+			if(participantId == 0 && null != participant.getEmail() && !participant.getEmail().isEmpty() && participantId <= 0){
 				participantId = this.jdbcTemplate.query(
 						"SELECT id from participant where print_name=? AND email=? AND program_id=?",
 						new Object[] { participant.getPrintName(), participant.getEmail(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
@@ -242,9 +243,10 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 								return 0;
 							}
 						});
+			}
 
-				//if only mobile is available
-			}else if (null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty() && participantId <= 0) {
+			//if only mobile is available
+			if (participantId == 0 && null != participant.getMobilePhone() && !participant.getMobilePhone().isEmpty() && participantId <= 0) {
 				participantId = this.jdbcTemplate.query(
 						"SELECT id from participant where print_name=? AND mobile_phone=? AND program_id=?",
 						new Object[] { participant.getPrintName(), participant.getMobilePhone(), participant.getProgramId() }, new ResultSetExtractor<Integer>() {
@@ -256,7 +258,6 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 								return 0;
 							}
 						});
-
 			}
 
 			/*if (participantId <= 0 && participant.getExcelSheetSequenceNumber() > 0) {
@@ -363,7 +364,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	}
 
 	private void setNewPartcipantToExistingParticipant(Participant participant, Participant oldParticipantDetails) {
-		
+
 		participant.setSeqId(oldParticipantDetails.getSeqId());
 		participant.setFirstName(oldParticipantDetails.getFirstName());
 		participant.setMiddleName(oldParticipantDetails.getMiddleName());
@@ -378,15 +379,15 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 		participant.setIsEwelcomeIdInformed(oldParticipantDetails.getIsEwelcomeIdInformed());
 		participant.setBatch(oldParticipantDetails.getBatch());
 		participant.setReceiveUpdates(oldParticipantDetails.getReceiveUpdates());
-		
-		
-		
+
+
+
 		//depends on welcome card generated or not
 		//participant.setTotalDays();
 		//participant.setEwelcomeIdState(oldParticipantDetails.getEwelcomeIdState());
 		//participant.setEwelcomeIdGenerationMsg(oldParticipantDetails.getEwelcomeIdGenerationMsg());
-		
-		
+
+
 
 		if(null != oldParticipantDetails.getWelcomeCardNumber() && !oldParticipantDetails.getWelcomeCardNumber().isEmpty() 
 				&& (oldParticipantDetails.getWelcomeCardNumber().matches(ExpressionConstants.EWELCOME_ID_REGEX) || 
@@ -409,19 +410,19 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 			participant.setThirdSittingDate( null != oldParticipantDetails.getThirdSittingDate() ? oldParticipantDetails.getThirdSittingDate() : null);
 
 		}
-		
+
 		//participant.setPrintName(participantRequest.getPrintName());
 		//participant.setEmail(participantRequest.getEmail());
 		//participant.setMobilePhone(participantRequest.getMobilePhone());
 		//if ((null != participantRequest.getGender() && !participantRequest.getGender().isEmpty() && (participantRequest
-				//.getGender().equalsIgnoreCase(PMPConstants.MALE) || participantRequest.getGender()
-				//.equalsIgnoreCase(PMPConstants.FEMALE))))
-			//participant
-			//.setGender(participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE) ? PMPConstants.GENDER_MALE
-					//: PMPConstants.GENDER_FEMALE);
+		//.getGender().equalsIgnoreCase(PMPConstants.MALE) || participantRequest.getGender()
+		//.equalsIgnoreCase(PMPConstants.FEMALE))))
+		//participant
+		//.setGender(participantRequest.getGender().equalsIgnoreCase(PMPConstants.MALE) ? PMPConstants.GENDER_MALE
+		//: PMPConstants.GENDER_FEMALE);
 		//participant.setGender(participantRequest.getGender());
 		//participant.setDateOfBirth((null != participantRequest.getDateOfBirth() && !participantRequest
-				//.getDateOfBirth().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest.getDateOfBirth()))) : null);
+		//.getDateOfBirth().isEmpty()) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest.getDateOfBirth()))) : null);
 
 		//participant.setAddressLine1(participantRequest.getAddressLine1());
 		//participant.setAddressLine2(participantRequest.getAddressLine2());
@@ -432,7 +433,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 
 		/*if(null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()){
 
-		
+
 			//changes related to introduced
 			if(null != participantRequest.getIntroducedStatus() && !participantRequest.getIntroducedStatus().isEmpty()){
 
@@ -457,7 +458,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 				}
 			}
 
-			
+
 
 			//changes related to welcome card
 			if( ( null != participantRequest.geteWelcomeID() && !participantRequest.geteWelcomeID().isEmpty() 
