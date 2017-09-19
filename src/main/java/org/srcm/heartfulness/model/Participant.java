@@ -507,15 +507,20 @@ public class Participant {
 
 	@Override
 	public boolean equals(Object obj) {
+		
 		if (this == obj)
 			return true;
+		
 		if (obj == null)
 			return false;
+		
+		
 		if (getClass() != obj.getClass())
 			return false;
+		
 		Participant other = (Participant) obj;
 		
-		if (printName == null) {
+		/*if (printName == null) {
 			if (other.printName != null)
 				return false;
 		}
@@ -539,7 +544,35 @@ public class Participant {
 				|| mobilePhone.equals(other.mobilePhone)
 				|| email.equals(other.email)))){
 			return false;
+		}*/
+		
+		if(null == other.getPrintName() || other.getPrintName().isEmpty()){
+			return false;
 		}
+		
+		if( other.mobilePhone.trim().isEmpty() && other.email.trim().isEmpty()){
+			return false;
+		}
+		
+		if( printName.equals(other.printName) && program_id==other.program_id && excelSheetSequenceNumber == other.excelSheetSequenceNumber ){
+			return false;
+		}
+		
+		if( printName.equals(other.printName) && program_id==other.program_id && email.equals(other.email) ){
+			return false;
+		}
+		
+		if( printName.equals(other.printName) && program_id==other.program_id && mobilePhone.equals(other.mobilePhone) ){
+			return false;
+		}
+		
+		
+		/*if(!((printName.equals(other.printName))&&(program_id==other.program_id)&&((email.equals(other.email)&&mobilePhone.equals(other.mobilePhone))
+				|| excelSheetSequenceNumber == other.excelSheetSequenceNumber
+				|| mobilePhone.equals(other.mobilePhone)
+				|| email.equals(other.email)))){
+			return false;
+		}*/
 		
 		return true;
 	}

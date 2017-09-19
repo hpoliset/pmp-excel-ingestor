@@ -627,27 +627,53 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 			int participantId = 0;
 			try{
 
+				//if excel sheet seq ID is available
+				if( participant.getExcelSheetSequenceNumber() > 0 && participantId <= 0 ){
+
+					try{
+
+						participantId = this.namedParameterJdbcTemplate
+								.queryForObject("SELECT id "
+										+ " FROM participant"
+										+ " WHERE print_name=:printName AND program_id=:programId AND "
+										+ " excel_sheet_sequence_number=:excelSheetSequenceNumber",params,Integer.class);
+
+					} catch(Exception ex){}
+				}
+
 				//if email is only available
-				if(null != participant.getEmail() && !participant.getEmail().isEmpty()){
-					participantId = this.namedParameterJdbcTemplate
-							.queryForObject("SELECT id "
-									+ " FROM participant"
-									+ " WHERE print_name=:printName AND program_id=:programId AND "
-									+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (email=:email))",
-									params,Integer.class);
+				if(null != participant.getEmail() && !participant.getEmail().isEmpty() && participantId <= 0){
+
+					try{
+
+						participantId = this.namedParameterJdbcTemplate
+								.queryForObject("SELECT id "
+										+ " FROM participant"
+										+ " WHERE print_name=:printName AND program_id=:programId AND email=:email "
+										//+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (email=:email))",
+										,params,Integer.class);
+
+					} catch(Exception ex){}
+
 				}
 
 				//if mobile is only available
 				if( !participant.getMobilePhone().trim().isEmpty() && participantId <= 0){
-					participantId = this.namedParameterJdbcTemplate
-							.queryForObject("SELECT id "
-									+ " FROM participant"
-									+ " WHERE print_name=:printName AND program_id=:programId AND "
-									+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (mobile_phone=:mobilePhone))",
-									params,Integer.class);
+
+					try{
+
+						participantId = this.namedParameterJdbcTemplate
+								.queryForObject("SELECT id "
+										+ " FROM participant"
+										+ " WHERE print_name=:printName AND program_id=:programId AND mobile_phone=:mobilePhone "
+										//+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (mobile_phone=:mobilePhone))",
+										,params,Integer.class);
+
+					} catch(Exception ex){}
+
 				}
 				//if both email + mobile is empty and excel sheet seq ID is available
-				if( participant.getMobilePhone().trim().isEmpty() &&	participant.getEmail().isEmpty() && participantId <= 0 ){
+				/*if( participant.getMobilePhone().trim().isEmpty() &&	participant.getEmail().isEmpty() && participantId <= 0 ){
 
 					participantId = this.namedParameterJdbcTemplate
 							.queryForObject("SELECT id "
@@ -656,9 +682,9 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 									+ " excel_sheet_sequence_number=:excelSheetSequenceNumber",
 									params,Integer.class);
 
-				}
+				}*/
 				//if nothing matches
-				if(participantId <=0 ){
+				/*if(participantId <=0 ){
 
 					participantId = this.namedParameterJdbcTemplate
 							.queryForObject("SELECT id "
@@ -666,7 +692,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 									+ " WHERE print_name=:printName AND program_id=:programId AND "
 									+ " ((email=:email AND mobile_phone=:mobilePhone) OR (excel_sheet_sequence_number=:excelSheetSequenceNumber) OR (email=:email) OR (mobile_phone=:mobilePhone))",
 									params,Integer.class);
-				}
+				}*/
 
 			} catch(Exception ex) {
 				LOGGER.error("Exception while finding existing participant combination for user {}",participant.getPrintName());
