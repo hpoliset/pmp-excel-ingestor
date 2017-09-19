@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Sheet;
@@ -86,7 +87,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	 * @throws ParseException
 	 */
 	@Override
-	public ParticipantRequest createParticipant(ParticipantRequest participantRequest) throws ParseException {
+	public ResponseEntity<?> createParticipant(ParticipantRequest participantRequest) throws ParseException {
 		SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
 		SimpleDateFormat sdf1 = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 		Participant participant;
@@ -203,8 +204,12 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setPhone(participantRequest.getPhone());
 			participant.setDistrict(participantRequest.getDistrict());
 			participant.setAgeGroup(participantRequest.getAgeGroup());
+			
+			participantRepository.save(participant);
+			participantRequest.setSeqId(participant.getSeqId());
 
 		} else {
+			
 			participant = findBySeqId(participantRequest);
 			participant.setPrintName(participantRequest.getPrintName());
 			participant.setEmail(participantRequest.getEmail());
@@ -227,20 +232,6 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setAbhyasiId(participantRequest.getAbhyasiId());
 
 			if(null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()){
-
-				/*if(null != participantRequest.getIntroducedStatus() 
-						&& PMPConstants.REQUIRED_YES.equalsIgnoreCase(participantRequest.getIntroducedStatus()) 
-						&& (participant.getIntroduced() == 0 || null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()) ){
-
-					participant.setIntroduced(1);
-
-				}else if(null != participantRequest.getIntroducedStatus() 
-						&& PMPConstants.REQUIRED_NO.equalsIgnoreCase(participantRequest.getIntroducedStatus()) 
-						&& (participant.getIntroduced() == 0 || null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()) ){
-
-					participant.setIntroduced(0);
-
-				}*/
 
 				//changes related to introduced
 				if(null != participantRequest.getIntroducedStatus() && !participantRequest.getIntroducedStatus().isEmpty()){
@@ -266,37 +257,6 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					}
 				}
 
-				//changes in introduced dates
-				/*if( (null != participantRequest.getIntroductionDate() && !participantRequest.getIntroductionDate().isEmpty()) 
-						&& (null == participant.getIntroductionDate() && participant.getIntroduced() == 1)){
-
-					participant.setIntroductionDate(sdf1.parse(sdf1.format(sdf.parse(participantRequest.getIntroductionDate()))));
-
-				}else if((null != participantRequest.getIntroductionDate() && !participantRequest.getIntroductionDate().isEmpty()) 
-						&& (null != participant.getIntroductionDate() && participant.getIntroduced() == 1)){
-
-					participant.setIntroductionDate(sdf1.parse(sdf1.format(sdf.parse(participantRequest.getIntroductionDate()))));
-
-				}else if((null == participantRequest.getIntroductionDate() || participantRequest.getIntroductionDate().isEmpty())
-						&& (participant.getIntroduced() == 0 || null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()) ){
-					participant.setIntroductionDate(null);
-				}
-				//changes in introduced by
-				if( (null != participantRequest.getIntroducedBy() && !participantRequest.getIntroducedBy().isEmpty()) 
-						&& ((null == participant.getIntroducedBy() || participant.getIntroducedBy().isEmpty()) && participant.getIntroduced() == 1) ){
-
-					participant.setIntroducedBy(participantRequest.getIntroducedBy());
-
-				}else if((null != participantRequest.getIntroducedBy() && !participantRequest.getIntroducedBy().isEmpty()) 
-						&& ((null != participant.getIntroducedBy() || participant.getIntroducedBy().isEmpty()) && participant.getIntroduced() == 1) ){
-
-					participant.setIntroducedBy(participantRequest.getIntroducedBy());
-
-				}else if((null != participantRequest.getIntroducedBy() && !participantRequest.getIntroducedBy().isEmpty()) 
-						&& (participant.getIntroduced() == 0 || null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()) ){
-					participant.setIntroducedBy(null == participantRequest.getIntroducedBy()?null:"");
-				}*/
-
 				//changes related to welcome card
 				if( ( null != participantRequest.geteWelcomeID() && !participantRequest.geteWelcomeID().isEmpty() 
 						&& (participantRequest.geteWelcomeID().matches(ExpressionConstants.EWELCOME_ID_REGEX) 
@@ -311,16 +271,9 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 
 					participant.setEwelcomeIdGenerationMsg(participantRequest.geteWelcomeID());
 
-				}/*else if( null != participantRequest.geteWelcomeID() && !participantRequest.geteWelcomeID().isEmpty()  
-						&& !participantRequest.geteWelcomeID().matches(ExpressionConstants.EWELCOME_ID_REGEX)
-						&& !participant.getWelcomeCardNumber().matches(ExpressionConstants.EWELCOME_ID_REGEX) ){
-
-					participant.setEwelcomeIdGenerationMsg(participantRequest.geteWelcomeID());
-				}*/
-				//}
+				}
 
 				//sitting date changes
-				//if(null == participant.getWelcomeCardNumber() || participant.getWelcomeCardNumber().isEmpty()){
 				if (null == participantRequest.getFirstSittingDate() || participantRequest.getFirstSittingDate().isEmpty()) {
 					participant.setFirstSittingDate(null);
 				} else {
@@ -374,44 +327,30 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 					participant.setEwelcomeIdGenerationMsg(participantRequest.geteWelcomeID());
 				}
 			}
-			//participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
 
 			setParticipantEWelcomeIDStatus(participant.getProgram(), participant,PMPConstants.EWELCOMEID_TO_BE_CREATED_STATE, null);
 
 			participant.setPhone(participantRequest.getPhone());
 			participant.setDistrict(participantRequest.getDistrict());
 			participant.setAgeGroup(participantRequest.getAgeGroup());
-		}
-		participantRepository.save(participant);
-		participantRequest.setSeqId(participant.getSeqId());
-		//participantRequest.setPrintName(participant.getPrintName());
-		//participantRequest.setEmail(participant.getEmail());
-		//participantRequest.setMobilePhone(participant.getMobilePhone());
-		/*if (participant.getGender() != null && !participant.getGender().isEmpty()) {
-			if ((participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_FEMALE) || participant.getGender()
-					.equalsIgnoreCase(PMPConstants.GENDER_MALE)))
-				participant
-				.setGender(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) ? PMPConstants.MALE
-						: PMPConstants.FEMALE);
-			participantRequest.setGender(participant.getGender());
-		}*/
 
-		//participantRequest.setDateOfBirth((null != participant.getDateOfBirth() && !participantRequest.getDateOfBirth()
-		//.isEmpty()) ? sdf.format(participant.getDateOfBirth()) : null);
-		//participantRequest.setAddressLine1(participant.getAddressLine1());
-		//participantRequest.setAddressLine2(participant.getAddressLine2());
-		//participantRequest.setCity(participant.getCity());
-		//participantRequest.setState(participant.getState());
-		//participantRequest.setCountry(participant.getCountry());
+			
+			String msg = participantRepository.checkIfParticipantExists(participant, DashboardConstants.PCTPT_UPDATE);
+			if(msg != ""){
+				
+				HashMap<String, String> errors = new HashMap<String, String>();
+				errors.put("duplicate-participant", msg);
+				return new ResponseEntity<HashMap<String, String>>(errors,HttpStatus.OK);
+				
+			}else{
+				participantRepository.save(participant);
+				participantRequest.setSeqId(participant.getSeqId());
+			}
+		}
+		
 		participantRequest.setIntroducedStatus(0 != participant.getIntroduced() ? PMPConstants.REQUIRED_YES : PMPConstants.REQUIRED_NO);
 		try{
 
-			/*participantRequest.setIntroductionDate(
-					(
-							null != participantRequest.getIntroductionDate() && !participantRequest.getIntroductionDate().isEmpty()) ? sdf.format(participant.getIntroductionDate()) 
-						:	sdf.format(participant.getIntroductionDate())null
-					);*/
-			//need to check
 			participantRequest.setIntroductionDate(null == participant.getIntroductionDate() ? null : sdf.format(participant.getIntroductionDate()));
 		} catch(Exception ex){
 			LOGGER.error("Unable to set Introduced date"+ex);
@@ -454,7 +393,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 		participantRequest.seteWelcomeID((null != participant.getWelcomeCardNumber() && !participant.getWelcomeCardNumber().isEmpty()) ? participant.getWelcomeCardNumber() : null);
 		participantRequest.setEwelcomeIdRemarks(participant.getEwelcomeIdRemarks());
 
-		return participantRequest;
+		return new ResponseEntity<ParticipantRequest>(participantRequest,HttpStatus.OK);
 	}
 
 	/**
