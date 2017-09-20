@@ -606,6 +606,7 @@ public class ParticipantRepositoryImpl implements ParticipantRepository {
 	@Override
 	@Transactional
 	public void save(List<Participant> participants, Program program) {
+
 		LOGGER.info("Started persisting Participants");
 
 		List<Participant> insertList = new ArrayList<Participant>();

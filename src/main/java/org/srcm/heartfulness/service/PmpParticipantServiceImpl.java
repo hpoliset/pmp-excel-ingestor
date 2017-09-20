@@ -88,6 +88,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 	 */
 	@Override
 	public ResponseEntity<?> createParticipant(ParticipantRequest participantRequest) throws ParseException {
+
 		SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
 		SimpleDateFormat sdf1 = new SimpleDateFormat(ExpressionConstants.SQL_DATE_FORMAT);
 		Participant participant;
@@ -120,7 +121,7 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			//participant.setIntroducedBy(participantRequest.getIntroducedBy());
 
 			participant.setIntroduced((null != participantRequest.getIntroducedStatus() && PMPConstants.REQUIRED_YES.equalsIgnoreCase(participantRequest.getIntroducedStatus())) ? 1 : 0);
-			
+
 			if(participantRequest.getIntroducedStatus().equalsIgnoreCase(PMPConstants.REQUIRED_YES)
 					&& (null != participantRequest.getIntroductionDate() && !participantRequest.getIntroductionDate().isEmpty()) ){
 
@@ -138,10 +139,10 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			}else if(participantRequest.getIntroducedStatus().equalsIgnoreCase(PMPConstants.REQUIRED_NO)){
 				participant.setIntroducedBy("");
 			}
-			
-			
+
+
 			//participant.setIntroductionDate((null != participantRequest.getIntroductionDate() && !participantRequest
-					//.getIntroductionDate().isEmpty() && participant.getIntroduced() == 1) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest.getIntroductionDate()))) : null);
+			//.getIntroductionDate().isEmpty() && participant.getIntroduced() == 1) ? sdf1.parse(sdf1.format(sdf.parse(participantRequest.getIntroductionDate()))) : null);
 
 			if (null == participantRequest.getFirstSittingDate()) {
 				participant.setFirstSittingDate(null);
@@ -204,12 +205,12 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setPhone(participantRequest.getPhone());
 			participant.setDistrict(participantRequest.getDistrict());
 			participant.setAgeGroup(participantRequest.getAgeGroup());
-			
+
 			participantRepository.save(participant);
 			participantRequest.setSeqId(participant.getSeqId());
 
 		} else {
-			
+
 			participant = findBySeqId(participantRequest);
 			participant.setPrintName(participantRequest.getPrintName());
 			participant.setEmail(participantRequest.getEmail());
@@ -334,20 +335,20 @@ public class PmpParticipantServiceImpl implements PmpParticipantService {
 			participant.setDistrict(participantRequest.getDistrict());
 			participant.setAgeGroup(participantRequest.getAgeGroup());
 
-			
+
 			String msg = participantRepository.checkIfParticipantExists(participant, DashboardConstants.PCTPT_UPDATE);
 			if(msg != ""){
-				
+
 				HashMap<String, String> errors = new HashMap<String, String>();
 				errors.put("duplicate-participant", msg);
 				return new ResponseEntity<HashMap<String, String>>(errors,HttpStatus.OK);
-				
+
 			}else{
 				participantRepository.save(participant);
 				participantRequest.setSeqId(participant.getSeqId());
 			}
 		}
-		
+
 		participantRequest.setIntroducedStatus(0 != participant.getIntroduced() ? PMPConstants.REQUIRED_YES : PMPConstants.REQUIRED_NO);
 		try{
 

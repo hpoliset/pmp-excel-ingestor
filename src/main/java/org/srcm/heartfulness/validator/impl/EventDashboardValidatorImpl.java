@@ -103,7 +103,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 
 	@Autowired
 	DashboardService dashboardService;
-	
+
 	@Autowired
 	private SessionDetailsRepository sessionDtlsRepo;
 
@@ -116,6 +116,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	 */
 	@Override
 	public Map<String, String> checkParticipantMandatoryFields(List<String> emailList, String userRole, ParticipantRequest participant, String authToken, PMPAPIAccessLog accessLog) {
+
 		Map<String, String> errors = new HashMap<>();
 		Program program = null;
 		if (null == participant.getEventId() || participant.getEventId().isEmpty()) {
@@ -125,7 +126,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 
 			//program = getProgram(emailList, userRole, participant.getEventId(), authToken, accessLog);
 			try{
-				
+
 				program = programRepository.getProgramByEmailAndRoleForParticipant(emailList, userRole, participant.getEventId());
 				if( null != program  && program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE)){
 					participant.setProgramId(program.getProgramId());
@@ -137,9 +138,9 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_EVENTID);
 				return errors;
 			}
-			
+
 		}
-		
+
 		if(null != participant.getFirstSittingDate() && !participant.getFirstSittingDate().isEmpty()){
 			if (!participant.getFirstSittingDate().matches(ExpressionConstants.DATE_REGEX)) {
 				errors.put("firstSittingDate", DashboardConstants.INVALID_FIRST_SITTING_DATE);
@@ -154,7 +155,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				}
 			}
 		}
-		
+
 		if(null != participant.getSecondSittingDate() && !participant.getSecondSittingDate().isEmpty()){
 			if (!participant.getSecondSittingDate().matches(ExpressionConstants.DATE_REGEX)) {
 				errors.put("secondSittingDate", DashboardConstants.INVALID_SECOND_SITTING_DATE);
@@ -169,7 +170,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				}
 			}
 		}
-		
+
 		if(null != participant.getThirdSittingDate() && !participant.getThirdSittingDate().isEmpty()){
 			if (!participant.getThirdSittingDate().matches(ExpressionConstants.DATE_REGEX)) {
 				errors.put("thirdSittingDate", DashboardConstants.INVALID_THIRD_SITTING_DATE);
@@ -184,7 +185,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				}
 			}
 		}
-		
+
 		if (null != participant.getGender()
 				&& !participant.getGender().isEmpty()
 				&& !(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) || participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_FEMALE)
@@ -209,7 +210,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				(null == participant.getDistrict() || participant.getDistrict().isEmpty())){
 			errors.put("district", DashboardConstants.PARTICIPANT_DISTRICT_REQ);
 		}
-		
+
 		if (null != participant.getEmail() && !participant.getEmail().isEmpty()) {
 			if (!participant.getEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
 				errors.put("email", DashboardConstants.INVALID_PARTICIPANT_EMAIL);
@@ -674,6 +675,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 	 */
 	@Override
 	public Map<String, String> checkUpdateParticipantMandatoryFields(List<String> emailList, String userRole, ParticipantRequest participant, String authToken, PMPAPIAccessLog accessLog) {
+
 		Map<String, String> errors = new HashMap<String, String>();
 		Program program = null;
 		if (null == participant.getEventId() || participant.getEventId().isEmpty()) {
@@ -694,7 +696,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_EVENTID);
 				return errors;
 			}
-			
+
 		}
 
 		if (null == participant.getPrintName() || participant.getPrintName().isEmpty()) {
@@ -705,7 +707,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 		}else if(0 == participantRepository.getParticipantCountByProgIdAndSeqId(participant.getProgramId(),participant.getSeqId())){
 			errors.put(ErrorConstants.STATUS_FAILED, DashboardConstants.INVALID_SEQ_ID);
 		}
-		
+
 		if(null != participant.getFirstSittingDate() && !participant.getFirstSittingDate().isEmpty()){
 			if (!participant.getFirstSittingDate().matches(ExpressionConstants.DATE_REGEX)) {
 				errors.put("firstSittingDate", DashboardConstants.INVALID_FIRST_SITTING_DATE);
@@ -720,7 +722,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				}
 			}
 		}
-		
+
 		if(null != participant.getSecondSittingDate() && !participant.getSecondSittingDate().isEmpty()){
 			if (!participant.getSecondSittingDate().matches(ExpressionConstants.DATE_REGEX)) {
 				errors.put("secondSittingDate", DashboardConstants.INVALID_SECOND_SITTING_DATE);
@@ -735,7 +737,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				}
 			}
 		}
-		
+
 		if(null != participant.getThirdSittingDate() && !participant.getThirdSittingDate().isEmpty()){
 			if (!participant.getThirdSittingDate().matches(ExpressionConstants.DATE_REGEX)) {
 				errors.put("thirdSittingDate", DashboardConstants.INVALID_THIRD_SITTING_DATE);
@@ -750,7 +752,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				}
 			}
 		}
-		
+
 		if (null != participant.getGender()
 				&& !participant.getGender().isEmpty()
 				&& !(participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_MALE) || participant.getGender().equalsIgnoreCase(PMPConstants.GENDER_FEMALE)
@@ -772,7 +774,7 @@ public class EventDashboardValidatorImpl implements EventDashboardValidator {
 				(null == participant.getDistrict() || participant.getDistrict().isEmpty())){
 			errors.put("district", DashboardConstants.PARTICIPANT_DISTRICT_REQ);
 		}
-		
+
 		if (null != participant.getEmail() && !participant.getEmail().isEmpty()) {
 			if (!participant.getEmail().matches(ExpressionConstants.EMAIL_REGEX)) {
 				errors.put("email", DashboardConstants.INVALID_PARTICIPANT_EMAIL);

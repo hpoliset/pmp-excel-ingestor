@@ -554,16 +554,28 @@ public class Participant {
 			return false;
 		}
 		
-		if( printName.equals(other.printName) && program_id==other.program_id && excelSheetSequenceNumber == other.excelSheetSequenceNumber ){
-			return false;
+		if( printName.equals(other.printName) 
+				&& program_id==other.program_id 
+				&& excelSheetSequenceNumber == other.excelSheetSequenceNumber 
+				&& id == other.getId()){
+			
+			return true;
 		}
 		
-		if( printName.equals(other.printName) && program_id==other.program_id && email.equals(other.email) ){
-			return false;
+		if( printName.equals(other.printName) 
+				&& program_id==other.program_id 
+				&& email.equalsIgnoreCase(other.email) 
+				&& id == other.getId() ){
+			
+			return true;
 		}
 		
-		if( printName.equals(other.printName) && program_id==other.program_id && mobilePhone.equals(other.mobilePhone) ){
-			return false;
+		if( printName.equals(other.printName) 
+				&& program_id==other.program_id 
+				&& mobilePhone.equals(other.mobilePhone) 
+				&& id == other.getId() ){
+			
+			return true;
 		}
 		
 		
@@ -574,7 +586,7 @@ public class Participant {
 			return false;
 		}*/
 		
-		return true;
+		return false;
 	}
 
 	@Override
