@@ -150,9 +150,16 @@ public class MobileDataExtractorV1Impl implements ExcelDataExtractor{
 		participant.setRemarks(participantRow.getCell(14, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		participant.setLanguage(participantRow.getCell(12, Row.CREATE_NULL_AS_BLANK).toString().trim());
 		participant.setAgeGroup(participantRow.getCell(11, Row.CREATE_NULL_AS_BLANK).toString().trim());
-		participant.setFirstSitting(Integer.parseInt(participantRow.getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim()));
-		participant.setSecondSitting(Integer.parseInt(participantRow.getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim()));
-		participant.setThirdSitting(Integer.parseInt(participantRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString().trim()));
+		
+		String firstSittingValue = participantRow.getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim();
+		participant.setFirstSitting(firstSittingValue.isEmpty() ? 0 : Integer.parseInt(firstSittingValue));
+		
+		String secondSittingValue = participantRow.getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim();
+		participant.setSecondSitting(secondSittingValue.isEmpty() ? 0 : Integer.parseInt(secondSittingValue));
+		
+		String thirdSittingValue = participantRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString().trim();
+		participant.setThirdSitting(thirdSittingValue.isEmpty() ? 0 : Integer.parseInt(thirdSittingValue));
+
 		participant.setReceiveUpdates(participantRow.getCell(9, Row.CREATE_NULL_AS_BLANK).toString().trim().equalsIgnoreCase("Y") ? 1:0 );
 		if(disableEwelcomeIdGeneration){
 			participant.setEwelcomeIdState(EventDetailsUploadConstants.EWELCOME_ID_DISABLED_STATE);

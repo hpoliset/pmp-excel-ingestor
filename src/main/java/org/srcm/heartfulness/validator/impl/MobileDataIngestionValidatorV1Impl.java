@@ -186,8 +186,8 @@ public class MobileDataIngestionValidatorV1Impl implements EventDetailsExcelVali
 
 	private void parseParticipantData(Row currentRow, int rowNumber,List<String> errorMsg) {
 
-		if(currentRow.getCell(2).getCellType() == Cell.CELL_TYPE_NUMERIC){
-			currentRow.getCell(2).setCellType(Cell.CELL_TYPE_STRING);
+		if(currentRow.getCell(2,Row.CREATE_NULL_AS_BLANK).getCellType() == Cell.CELL_TYPE_NUMERIC){
+			currentRow.getCell(2,Row.CREATE_NULL_AS_BLANK).setCellType(Cell.CELL_TYPE_STRING);
 		}
 		
 		String firstSittingValue = currentRow.getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim();
@@ -195,8 +195,8 @@ public class MobileDataIngestionValidatorV1Impl implements EventDetailsExcelVali
 			errorMsg.add(" "+ MobileDataParticipantCols.FIRST_SITTING.getHeader() + " value entered ["+firstSittingValue+"] should be 1 or 0 at row number " + rowNumber);
 		}
 
-		if(currentRow.getCell(3).getCellType() == Cell.CELL_TYPE_NUMERIC){
-			currentRow.getCell(3).setCellType(Cell.CELL_TYPE_STRING);
+		if(currentRow.getCell(3,Row.CREATE_NULL_AS_BLANK).getCellType() == Cell.CELL_TYPE_NUMERIC){
+			currentRow.getCell(3,Row.CREATE_NULL_AS_BLANK).setCellType(Cell.CELL_TYPE_STRING);
 		}
 		
 		String secondSittingValue = currentRow.getCell(3, Row.CREATE_NULL_AS_BLANK).toString().trim();
@@ -204,8 +204,8 @@ public class MobileDataIngestionValidatorV1Impl implements EventDetailsExcelVali
 			errorMsg.add(" "+ MobileDataParticipantCols.SECONND_SITTING.getHeader() + " value entered ["+secondSittingValue+"] should be 1 or 0 at row number " + rowNumber);
 		}
 		
-		if(currentRow.getCell(4).getCellType() == Cell.CELL_TYPE_NUMERIC){
-			currentRow.getCell(4).setCellType(Cell.CELL_TYPE_STRING);
+		if(currentRow.getCell(4,Row.CREATE_NULL_AS_BLANK).getCellType() == Cell.CELL_TYPE_NUMERIC){
+			currentRow.getCell(4,Row.CREATE_NULL_AS_BLANK).setCellType(Cell.CELL_TYPE_STRING);
 		}
 
 		String thirdSittingValue = currentRow.getCell(4, Row.CREATE_NULL_AS_BLANK).toString().trim();
@@ -248,8 +248,8 @@ public class MobileDataIngestionValidatorV1Impl implements EventDetailsExcelVali
 			errorMsg.add(" "+MobileDataParticipantCols.MOBILE.getHeader() + " number is invalid at row number "+rowNumber);
 		}*/
 		
-		if(currentRow.getCell(13).getCellType() == Cell.CELL_TYPE_NUMERIC){
-			currentRow.getCell(13).setCellType(Cell.CELL_TYPE_STRING);
+		if(currentRow.getCell(13,Row.CREATE_NULL_AS_BLANK).getCellType() == Cell.CELL_TYPE_NUMERIC){
+			currentRow.getCell(13,Row.CREATE_NULL_AS_BLANK).setCellType(Cell.CELL_TYPE_STRING);
 		}
 		
 		try{
@@ -286,8 +286,8 @@ public class MobileDataIngestionValidatorV1Impl implements EventDetailsExcelVali
 						+ MobileDataParticipantCols.MOBILE.getLength() +" characters at row number " + rowNumber);
 		}
 		
-		if(currentRow.getCell(9).getCellType() == Cell.CELL_TYPE_NUMERIC){
-			currentRow.getCell(9).setCellType(Cell.CELL_TYPE_STRING);
+		if(currentRow.getCell(9,Row.CREATE_NULL_AS_BLANK).getCellType() == Cell.CELL_TYPE_NUMERIC){
+			currentRow.getCell(9,Row.CREATE_NULL_AS_BLANK).setCellType(Cell.CELL_TYPE_STRING);
 		}
 		
 		if (MobileDataParticipantCols.RECEIVE_UPDATES.getLength() < currentRow.getCell(9, Row.CREATE_NULL_AS_BLANK).toString().trim().length()) {

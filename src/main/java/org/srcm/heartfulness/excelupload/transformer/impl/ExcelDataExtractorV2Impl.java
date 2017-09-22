@@ -187,6 +187,9 @@ public class ExcelDataExtractorV2Impl implements ExcelDataExtractor {
 			participant.setAgeGroup(participantRow.getCell(14, Row.CREATE_NULL_AS_BLANK).toString().trim());
 			participant.setLanguage(participantRow.getCell(15, Row.CREATE_NULL_AS_BLANK).toString().trim());
 
+			if(participantRow.getCell(16,Row.CREATE_NULL_AS_BLANK).getCellType() == Cell.CELL_TYPE_NUMERIC){
+                participantRow.getCell(16,Row.CREATE_NULL_AS_BLANK).setCellType(Cell.CELL_TYPE_STRING);
+            }
 			String welcomeCardNo = participantRow.getCell(16, Row.CREATE_NULL_AS_BLANK).toString().trim();
 			if(welcomeCardNo.isEmpty()){
 				if(disableEwelcomeIdGeneration){
