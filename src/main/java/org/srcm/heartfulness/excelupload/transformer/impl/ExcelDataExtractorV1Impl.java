@@ -84,6 +84,7 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 	 * @throws InvalidExcelFileException
 	 */
 	private Participant parseParticipantRow(Row currentRow, boolean disableEwelcomeIdGeneration) throws InvalidExcelFileException {
+		
 		Participant participant = new Participant();
 		if (!currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim().isEmpty()) {
 			double seqNo = Double.valueOf(currentRow.getCell(0, Row.CREATE_NULL_AS_BLANK).toString().trim());
@@ -141,6 +142,7 @@ public class ExcelDataExtractorV1Impl implements ExcelDataExtractor {
 	 * @throws InvalidExcelFileException
 	 */
 	private Program parseProgram(Sheet sheet, boolean disableEwelcomeIdGeneration) throws InvalidExcelFileException {
+		
 		LOGGER.info("Started to parse program data for altered 1.0 template.");
 		Program program = new Program();
 		program.setProgramChannel(sheet.getRow(3).getCell(2, Row.CREATE_NULL_AS_BLANK).toString().trim());

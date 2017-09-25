@@ -271,18 +271,20 @@ public class ParticipantsController {
 			updatePMPAPIAccessLog(accessLog, ErrorConstants.STATUS_FAILED, map.toString(), StackTraceUtils.convertPojoToJson(map));
 			return new ResponseEntity<Map<String, String>>(map, HttpStatus.PRECONDITION_FAILED);
 		} else {
-			ParticipantRequest newparticipant;
+			//ParticipantRequest newparticipant;
+			ResponseEntity<?> response;
 			try {
-				newparticipant = participantService.createParticipant(participant);
+				//newparticipant = participantService.createParticipant(participant);
+				response = participantService.createParticipant(participant);
+				updatePMPAPIAccessLog(accessLog, ErrorConstants.STATUS_SUCCESS, null, StackTraceUtils.convertPojoToJson(response.getBody()));
+				return response;//new ResponseEntity<ParticipantRequest>(newparticipant, HttpStatus.OK);
+
 			} catch (Exception e) {
 				LOGGER.error("Error while craeting participant record {}",e);
 				ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.PROCESSING_FAILED);
 				updatePMPAPIAccessLog(accessLog, ErrorConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e), StackTraceUtils.convertPojoToJson(eResponse));
 				return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-
-			updatePMPAPIAccessLog(accessLog, ErrorConstants.STATUS_SUCCESS, null, StackTraceUtils.convertPojoToJson(newparticipant));
-			return new ResponseEntity<ParticipantRequest>(newparticipant, HttpStatus.OK);
 		}
 	}
 
@@ -340,18 +342,21 @@ public class ParticipantsController {
 			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED, errors.toString(), StackTraceUtils.convertPojoToJson(errors));
 			return new ResponseEntity<Map<String, String>>(errors, HttpStatus.PRECONDITION_FAILED);
 		}
-		ParticipantRequest newparticipant;
+		//ParticipantRequest newparticipant;
+		ResponseEntity<?> response;
 		try {
-			newparticipant = participantService.createParticipant(participant);
+
+			//newparticipant = participantService.createParticipant(participant);
+			response = participantService.createParticipant(participant);
+			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS, null, StackTraceUtils.convertPojoToJson(response.getBody()));
+			return response; // new ResponseEntity<ParticipantRequest>(newparticipant, HttpStatus.OK);
+
 		} catch (Exception e) {
 			LOGGER.error("Exception while updating participant information   {}", e);
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED, DashboardConstants.PROCESSING_FAILED);
 			updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_FAILED, StackTraceUtils.convertStackTracetoString(e), StackTraceUtils.convertPojoToJson(eResponse));
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
-		updatePMPAPIAccessLog(accessLog,ErrorConstants.STATUS_SUCCESS, null, StackTraceUtils.convertPojoToJson(newparticipant));
-		return new ResponseEntity<ParticipantRequest>(newparticipant, HttpStatus.OK);
 	}
 
 	/**
