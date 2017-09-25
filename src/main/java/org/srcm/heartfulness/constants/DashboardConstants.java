@@ -42,6 +42,8 @@ public class DashboardConstants {
 	public static final String INVALID_FIRST_SITTING_DATE									= 	"First Sitting date is invalid. Valid format DD-MM-YYYY";
 	public static final String INVALID_SECOND_SITTING_DATE									= 	"Second Sitting date is invalid. Valid format DD-MM-YYYY";
 	public static final String INVALID_THIRD_SITTING_DATE									= 	"Third Sitting date is invalid. Valid format DD-MM-YYYY";
+	public static final String PCTPT_CREATE													= 	"PCTPT_CREATE";
+	public static final String PCTPT_UPDATE													= 	"PCTPT_UPDATE";
 	
 	/*Channel related*/
 	public static final String EMPTY_CHANNEL												= 	"Channel cannot be empty";

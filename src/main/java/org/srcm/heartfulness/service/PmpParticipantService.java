@@ -34,7 +34,7 @@ public interface PmpParticipantService {
 	 * @return participant details
 	 * @throws ParseException
 	 */
-	public ParticipantRequest createParticipant(ParticipantRequest participant) throws ParseException;
+	public ResponseEntity<?> createParticipant(ParticipantRequest participant) throws ParseException;
 
 	/**
 	 * Service to get the participant details depending on the seqId and event
