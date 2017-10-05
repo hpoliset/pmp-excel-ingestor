@@ -652,7 +652,7 @@ public class DashboardRepositoryImpl implements DashboardRepository{
 
 		params.put("eventCountry",dashboardReq.getCountry());
 
-		if(zones.contains(dashboardReq.getZone())){
+		if(zones.contains(dashboardReq.getZone().toLowerCase())){
 			params.put("programZone", dashboardReq.getZone());
 			params.put("programZoneSelected", "");
 		} else{
