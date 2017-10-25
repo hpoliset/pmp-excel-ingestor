@@ -76,5 +76,7 @@ public class DashboardConstants {
 	public static final String CENTER_COORDINATOR_INFORMED_COLUMN							=	"is_center_coordinator_informed";
 	public static final String EVENT_STATUS_COMPLETED								    	=	"Event is already completed";
 	public static final String UNAUTHORIZED_TO_VIEW_INACTIVE_EVENTS							= 	"Unauthorized to view list of inactive events";
+	public static final String SESSION_NOT_BELONG_TO_EVENT								    =	"Session does not belong to the given event";
+	public static final String EVENT_ID_NOT_EXIST								   			=	"Please provide a valid event id";
 	
 }
