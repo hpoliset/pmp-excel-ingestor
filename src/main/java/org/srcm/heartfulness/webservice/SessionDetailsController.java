@@ -98,17 +98,25 @@ public class SessionDetailsController {
 		//save request details in PMP
 		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,StackTraceUtils.convertPojoToJson(sessionDetails));
 
+		
+		
 		//validate token details
 		PMPResponse tokenResponse = authTokenVldtr.validateAuthToken(authToken, accessLog);
 		if (tokenResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(tokenResponse, HttpStatus.OK);
 		}
 
+		if (null == sessionDetails.getEventId() ||sessionDetails.getEventId().isEmpty()) {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_OR_EMPTY_EVENTID);
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_REQUIRED);
+		}
+		else{
 		int eventId = programService.getProgramIdByEventId(sessionDetails.getEventId());
 		if (eventId == 0) {
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					DashboardConstants.EVENT_ID_NOT_EXIST);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		}
 		}
 		
 		User user = userProfileService.loadUserByEmail(accessLog.getUsername());
@@ -187,18 +195,24 @@ public class SessionDetailsController {
 
 		//save request details in PMP
 		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,StackTraceUtils.convertPojoToJson(sessionDetails));
-
+				
 		//validate token details
 		PMPResponse tokenResponse = authTokenVldtr.validateAuthToken(authToken, accessLog);
 		if (tokenResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(tokenResponse, HttpStatus.OK);
 		}
 
-		int eventId = programService.getProgramIdByEventId(sessionDetails.getEventId());
-		if (eventId == 0) {
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					DashboardConstants.EVENT_ID_NOT_EXIST);
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		if (null == sessionDetails.getEventId() ||sessionDetails.getEventId().isEmpty()) {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_OR_EMPTY_EVENTID);
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_REQUIRED);
+		}
+		else{
+				int eventId = programService.getProgramIdByEventId(sessionDetails.getEventId());
+				if (eventId == 0) {
+					ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
+							DashboardConstants.EVENT_ID_NOT_EXIST);
+					return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+				}
 		}
 		
 		User user = userProfileService.loadUserByEmail(accessLog.getUsername());
@@ -267,18 +281,24 @@ public class SessionDetailsController {
 
 		//save request details in PMP
 		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,StackTraceUtils.convertPojoToJson(sessionDetails));
-
+				
 		//validate token details
 		PMPResponse pmpResponse = authTokenVldtr.validateAuthToken(authToken, accessLog);
 		if(pmpResponse instanceof ErrorResponse){
 			return new ResponseEntity<PMPResponse>(pmpResponse, HttpStatus.OK);
 		}
 
+		if (null == sessionDetails.getEventId() ||sessionDetails.getEventId().isEmpty()) {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_OR_EMPTY_EVENTID);
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_REQUIRED);
+		}
+		else{
 		int eventId = programService.getProgramIdByEventId(sessionDetails.getEventId());
 		if (eventId == 0) {
 			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
 					DashboardConstants.EVENT_ID_NOT_EXIST);
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		}
 		}
 		
 		User user = userProfileService.loadUserByEmail(accessLog.getUsername());
@@ -338,19 +358,25 @@ public class SessionDetailsController {
 
 		//save request details in PMP
 		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,StackTraceUtils.convertPojoToJson(searchSessionRequest));
-
 		//validate token details
 		PMPResponse pmpResponse = authTokenVldtr.validateAuthToken(authToken, accessLog);
 		if(pmpResponse instanceof ErrorResponse){
 			return new ResponseEntity<PMPResponse>(pmpResponse, HttpStatus.OK);
 		}
-		
-		int eventId = programService.getProgramIdByEventId(searchSessionRequest.getEventId());
-		if (eventId == 0) {
-			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
-					DashboardConstants.EVENT_ID_NOT_EXIST);
-			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+				
+		if (null == searchSessionRequest.getEventId() ||searchSessionRequest.getEventId().isEmpty()) {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_OR_EMPTY_EVENTID);
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_REQUIRED);
 		}
+		else{
+				int eventId = programService.getProgramIdByEventId(searchSessionRequest.getEventId());
+				if (eventId == 0) {
+					ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
+							DashboardConstants.EVENT_ID_NOT_EXIST);
+					return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+				}
+		}
+		
 
 		User user = userProfileService.loadUserByEmail(accessLog.getUsername());
 		if (null == user) {
