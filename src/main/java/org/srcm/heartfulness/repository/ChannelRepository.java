@@ -60,4 +60,11 @@ public interface ChannelRepository {
 	 * provided id.
 	 */
 	public boolean validateChannelType(int channelTypeId);
+	
+	/**
+	 * Method is used to get the channel types based on channel Id.
+	 * @param channelId is used to retrieve channel types.
+	 * @return List<ProgramChannelType> channelTypes.
+	 */
+	public List<ProgramChannelType> getChannelType(/*int channelId,*/ String channelName);
 }
