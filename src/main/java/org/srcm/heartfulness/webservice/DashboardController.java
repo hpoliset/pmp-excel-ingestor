@@ -4,6 +4,7 @@
 package org.srcm.heartfulness.webservice;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -156,7 +157,7 @@ public class DashboardController {
 			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
 		}
 
-		List<String> emailList = new ArrayList<String>();
+		List<String> emailList = new LinkedList<String>();
 		if(null != user.getAbyasiId()){
 			emailList = userProfileService.getEmailsWithAbhyasiId(user.getAbyasiId());
 		}
@@ -230,7 +231,7 @@ public class DashboardController {
 	public ResponseEntity<?> getStates(@RequestHeader(value = "Authorization") String authToken,
 			@RequestBody DashboardRequest dashboardReq, @Context HttpServletRequest httpRequest) {
 
-		List<String> emailList = new ArrayList<String>();
+		List<String> emailList = new LinkedList<String>();
 		//save request details in PMP
 		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,authToken);
 
