@@ -56,13 +56,13 @@ public class ChannelServiceImpl implements ChannelService {
 	@Override
 	public List<ProgramChannelType> getListOfChannelTypes(String channel) {
 		List<ProgramChannelType> listOfChannelTypes = new ArrayList<ProgramChannelType>();
-		int channelId = channelRepository.getChannelId(channel);
-		if( 0 == channelId){
+		//int channelId = channelRepository.getChannelId(channel);
+		/*if( 0 == channelId){
 			return listOfChannelTypes;
-		}else{
-			listOfChannelTypes = channelRepository.getChannelType(channelId);
+		}else{*/
+			listOfChannelTypes = channelRepository.getChannelType(channel);
 			return listOfChannelTypes;
-		}
+		//}
 	}
 
 }

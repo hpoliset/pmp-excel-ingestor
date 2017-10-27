@@ -3,6 +3,7 @@ package org.srcm.heartfulness.service;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -104,7 +105,7 @@ public class SessionDetailsServiceImpl implements SessionDetailsService {
 	public List<SessionDetails> getSessionDetails(int programId,String eventId, List<String> emailList, String userRole,
 			String authToken,PMPAPIAccessLog accessLog) {
 
-		List<SessionDetails> sessionDetailsList = new ArrayList<SessionDetails>();
+		List<SessionDetails> sessionDetailsList = new LinkedList<SessionDetails>();
 		SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);
 		
 		try{
@@ -160,7 +161,7 @@ public class SessionDetailsServiceImpl implements SessionDetailsService {
 	public List<SessionDetails> getSearchSessionData(List<String> emailList, String userRole, SearchSession searchSession,
 			String authToken,PMPAPIAccessLog accessLog) {
 
-		List<SessionDetails> sessionData = new ArrayList<SessionDetails>();
+		List<SessionDetails> sessionData = new LinkedList<SessionDetails>();
 
 		sessionData = sessionDtlsRepo.searchSessionData(searchSession.getProgramId(),searchSession);
 		SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.DATE_FORMAT);

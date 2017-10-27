@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.srcm.heartfulness.constants.DashboardConstants;
 import org.srcm.heartfulness.constants.ErrorConstants;
 import org.srcm.heartfulness.model.PMPAPIAccessLog;
 import org.srcm.heartfulness.model.json.response.ErrorResponse;
@@ -24,6 +25,7 @@ import org.srcm.heartfulness.model.json.response.PMPResponse;
 import org.srcm.heartfulness.model.json.response.Response;
 import org.srcm.heartfulness.service.APIAccessLogService;
 import org.srcm.heartfulness.service.AmazonS3Service;
+import org.srcm.heartfulness.service.ProgramService;
 import org.srcm.heartfulness.util.DateUtils;
 import org.srcm.heartfulness.util.StackTraceUtils;
 import org.srcm.heartfulness.validator.AmazonS3RequestValidator;
@@ -48,6 +50,9 @@ public class AmazonS3Controller {
 
 	@Autowired
 	APIAccessLogService apiAccessLogService;
+	
+	@Autowired
+	ProgramService programService;
 
 	/**
 	 * Webservice endpoint to upload the coordinator permission letter to the
@@ -190,6 +195,18 @@ public class AmazonS3Controller {
 		//save request details in PMP
 		String requestBody = "eventId : " + eventId + " , fileCount : " + multipartFiles.length;
 		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,requestBody);
+		
+		if (null == eventId ||eventId.isEmpty()) {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_OR_EMPTY_EVENTID);
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_REQUIRED);
+		}
+		else{
+		if (programService.getProgramIdByEventId(eventId) == 0) {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
+					DashboardConstants.EVENT_ID_NOT_EXIST);
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		}
+		}
 
 		try {
 
@@ -229,6 +246,17 @@ public class AmazonS3Controller {
 		String requestBody = "eventId : " + eventId + " , sessionId " + sessionId;
 		PMPAPIAccessLog accessLog = createPMPAPIAccessLog(null,httpRequest,requestBody);
 
+		if (null == eventId ||eventId.isEmpty()) {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_OR_EMPTY_EVENTID);
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_REQUIRED);
+		}
+		else{
+		if (programService.getProgramIdByEventId(eventId) == 0) {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
+					DashboardConstants.EVENT_ID_NOT_EXIST);
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		}
+		}
 		try {
 
 			Response eResponse = amazonS3RequestValidator.validateDownloadSessionImagesRequest(sessionId, eventId, accessLog,authToken);

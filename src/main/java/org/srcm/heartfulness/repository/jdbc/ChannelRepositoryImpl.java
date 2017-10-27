@@ -151,5 +151,24 @@ public class ChannelRepositoryImpl implements ChannelRepository {
 		else
 			return true;
 	}
+	
+	@Override
+	public List<ProgramChannelType> getChannelType(/*int channelId,*/String channelName) { 
+		List<ProgramChannelType> progChannelType = new ArrayList<ProgramChannelType>();
+		Map<String, Object> params = new HashMap<>();
+		//params.put("channelId", channelId);
+		params.put("channelName", channelName);
+		SqlParameterSource sqlParameterSource = new MapSqlParameterSource(params);
+		
+		/*progChannelType = this.namedParameterJdbcTemplate.query("SELECT id,name FROM channel_type "
+				+ "WHERE active=1 and channel_id =:channelId",sqlParameterSource
+				, BeanPropertyRowMapper.newInstance(ProgramChannelType.class));*/
+		
+		progChannelType = this.namedParameterJdbcTemplate.query("select ct.id ,ct.name from channel_type ct , "
+				+ "channel c where c.id = ct.channel_id and c.active = 1 and ct.active = 1 and  c.name = :channelName",sqlParameterSource
+				, BeanPropertyRowMapper.newInstance(ProgramChannelType.class));
+		
+		return progChannelType;
+	}
 
 }

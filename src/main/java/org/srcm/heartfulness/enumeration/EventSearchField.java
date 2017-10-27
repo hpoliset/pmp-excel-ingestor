@@ -9,6 +9,7 @@ package org.srcm.heartfulness.enumeration;
  */
 public enum EventSearchField {
 
+	programOrbatchID("auto_generated_event_id"),
 	programChannel("program_channel"),
 	coordinatorName("coordinator_name"),
 	coordinatorEmail("coordinator_email"),

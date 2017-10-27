@@ -27,6 +27,7 @@ import org.srcm.heartfulness.model.json.response.ErrorResponse;
 import org.srcm.heartfulness.model.json.response.PMPResponse;
 import org.srcm.heartfulness.model.json.response.SuccessResponse;
 import org.srcm.heartfulness.service.APIAccessLogService;
+import org.srcm.heartfulness.service.ProgramService;
 import org.srcm.heartfulness.service.SessionDetailsService;
 import org.srcm.heartfulness.service.UserProfileService;
 import org.srcm.heartfulness.util.DateUtils;
@@ -61,6 +62,9 @@ public class SessionDetailsController {
 
 	@Autowired
 	private UserProfileService userProfileService;
+	
+	@Autowired
+	ProgramService programService;
 
 	/**
 	 * Web service endpoint to create and update a session details for a
@@ -99,6 +103,19 @@ public class SessionDetailsController {
 		if (tokenResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(tokenResponse, HttpStatus.OK);
 		}
+		
+		if (null == sessionDetails.getEventId() ||sessionDetails.getEventId().isEmpty()) {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_OR_EMPTY_EVENTID);
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_REQUIRED);
+		}
+		else{
+		int eventId = programService.getProgramIdByEventId(sessionDetails.getEventId());
+		if (eventId == 0) {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
+					DashboardConstants.EVENT_ID_NOT_EXIST);
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		}
+		}		
 
 		User user = userProfileService.loadUserByEmail(accessLog.getUsername());
 		if (null == user) {
@@ -182,6 +199,19 @@ public class SessionDetailsController {
 		if (tokenResponse instanceof ErrorResponse) {
 			return new ResponseEntity<PMPResponse>(tokenResponse, HttpStatus.OK);
 		}
+		
+		if (null == sessionDetails.getEventId() ||sessionDetails.getEventId().isEmpty()) {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_OR_EMPTY_EVENTID);
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_REQUIRED);
+		}
+		else{
+				int eventId = programService.getProgramIdByEventId(sessionDetails.getEventId());
+				if (eventId == 0) {
+					ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
+							DashboardConstants.EVENT_ID_NOT_EXIST);
+					return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+				}
+		}
 
 		User user = userProfileService.loadUserByEmail(accessLog.getUsername());
 		if (null == user) {
@@ -255,6 +285,19 @@ public class SessionDetailsController {
 		if(pmpResponse instanceof ErrorResponse){
 			return new ResponseEntity<PMPResponse>(pmpResponse, HttpStatus.OK);
 		}
+		
+		if (null == sessionDetails.getEventId() ||sessionDetails.getEventId().isEmpty()) {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_OR_EMPTY_EVENTID);
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_REQUIRED);
+		}
+		else{
+		int eventId = programService.getProgramIdByEventId(sessionDetails.getEventId());
+		if (eventId == 0) {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
+					DashboardConstants.EVENT_ID_NOT_EXIST);
+			return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+		}
+		}
 
 		User user = userProfileService.loadUserByEmail(accessLog.getUsername());
 		if (null == user) {
@@ -318,6 +361,19 @@ public class SessionDetailsController {
 		PMPResponse pmpResponse = authTokenVldtr.validateAuthToken(authToken, accessLog);
 		if(pmpResponse instanceof ErrorResponse){
 			return new ResponseEntity<PMPResponse>(pmpResponse, HttpStatus.OK);
+		}
+		
+		if (null == searchSessionRequest.getEventId() ||searchSessionRequest.getEventId().isEmpty()) {
+			ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,DashboardConstants.INVALID_OR_EMPTY_EVENTID);
+			return new ResponseEntity<ErrorResponse>(eResponse,HttpStatus.PRECONDITION_REQUIRED);
+		}
+		else{
+				int eventId = programService.getProgramIdByEventId(searchSessionRequest.getEventId());
+				if (eventId == 0) {
+					ErrorResponse eResponse = new ErrorResponse(ErrorConstants.STATUS_FAILED,
+							DashboardConstants.EVENT_ID_NOT_EXIST);
+					return new ResponseEntity<ErrorResponse>(eResponse, HttpStatus.BAD_REQUEST);
+				}
 		}
 
 		User user = userProfileService.loadUserByEmail(accessLog.getUsername());

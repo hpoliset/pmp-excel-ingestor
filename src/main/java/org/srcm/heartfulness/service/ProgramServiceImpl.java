@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -338,8 +339,8 @@ public class ProgramServiceImpl implements ProgramService {
 
 		LOGGER.info("Trying to get participant list for log in user {}",accessLog.getUsername());
 
-		List<Participant> participantList = new ArrayList<Participant>();
-		List<ParticipantRequest> participantReqList = new ArrayList<ParticipantRequest>();
+		List<Participant> participantList = new LinkedList<Participant>();
+		List<ParticipantRequest> participantReqList = new LinkedList<ParticipantRequest>();
 		Program program = programRepository.getProgramByEmailAndRoleForParticipant(mailList, role, eventId);
 		if(null != program && program.getIsReadOnly().equals(CoordinatorAccessControlConstants.IS_READ_ONLY_FALSE)){
 			if (program.getProgramId() == 0) {
@@ -1811,10 +1812,10 @@ public class ProgramServiceImpl implements ProgramService {
 		boolean isNext = true;
 		int currentPositionValue = 0;
 		String currentPositionType =  "";
-		List<String> mysrcmZones =  new ArrayList<String>();
-		List<String> mysrcmCenters =  new ArrayList<String>();
-		List<Event> eventList = new ArrayList<Event>();
-		List<Program> programList = new ArrayList<Program>();
+		List<String> mysrcmZones =  new LinkedList<String>();
+		List<String> mysrcmCenters =  new LinkedList<String>();
+		List<Event> eventList = new LinkedList<Event>();
+		List<Program> programList = new LinkedList<Program>();
 
 		PMPAPIAccessLogDetails accessLogDetails = new 
 				PMPAPIAccessLogDetails(accessLog.getId(), EndpointConstants.POSITIONS_API, 

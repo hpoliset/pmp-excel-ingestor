@@ -5,6 +5,7 @@ package org.srcm.heartfulness.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -83,8 +84,8 @@ public class DashboardServiceImpl implements DashboardService {
 		boolean isNext = true;
 		int currentPositionValue = 0;
 		String currentPositionType = "";
-		List<String> zones = new ArrayList<String>();
-		List<String> centers = new ArrayList<String>();
+		List<String> zones = new LinkedList<String>();
+		List<String> centers = new LinkedList<String>();
 
 		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(accessLog.getId(),
 				EndpointConstants.POSITIONS_API, DateUtils.getCurrentTimeInMilliSec(), null,
@@ -347,9 +348,9 @@ public class DashboardServiceImpl implements DashboardService {
 	public ResponseEntity<?> getListOfZones(String authToken, DashboardRequest dashboardReq, PMPAPIAccessLog accessLog,
 			List<String> emailList, String userRole) {
 
-		List<String> mysrcmZones = new ArrayList<String>();
-		List<String> mysrcmCenters = new ArrayList<String>();
-		List<String> responseListOfZones = new ArrayList<String>();
+		List<String> mysrcmZones = new LinkedList<String>();
+		List<String> mysrcmCenters = new LinkedList<String>();
+		List<String> responseListOfZones = new LinkedList<String>();
 		String currentPositionType = "";
 
 		ErrorResponse eResponse = null;
@@ -479,9 +480,9 @@ public class DashboardServiceImpl implements DashboardService {
 
 		boolean isNext = true;
 		String currentPositionType = "";
-		List<String> mysrcmZones = new ArrayList<String>();
-		List<String> mysrcmCenters = new ArrayList<String>();
-		List<String> responseCenterList = new ArrayList<String>();
+		List<String> mysrcmZones = new LinkedList<String>();
+		List<String> mysrcmCenters = new LinkedList<String>();
+		List<String> responseCenterList = new LinkedList<String>();
 
 		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(accessLog.getId(),
 				EndpointConstants.POSITIONS_API, DateUtils.getCurrentTimeInMilliSec(), null,
@@ -601,7 +602,7 @@ public class DashboardServiceImpl implements DashboardService {
 
 		//boolean isNext = true;
 		//String currentPositionType = "";
-		List<String> responseStateList = new ArrayList<String>();
+		List<String> responseStateList = new LinkedList<String>();
 
 		/*PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(accessLog.getId(),
 				EndpointConstants.POSITIONS_API, DateUtils.getCurrentTimeInMilliSec(), null,
@@ -684,7 +685,7 @@ public class DashboardServiceImpl implements DashboardService {
 			List<String> emailList, String role) {
 
 		String currentPositionType = "";
-		List<String> listOfDistricts = new ArrayList<String>();
+		List<String> listOfDistricts = new LinkedList<String>();
 
 		ErrorResponse eResponse = null;
 		eResponse = validateCountryAndState(dashboardReq, accessLog);
@@ -770,9 +771,9 @@ public class DashboardServiceImpl implements DashboardService {
 
 		boolean isNext = true;
 		String currentPositionType = "";
-		List<String> zones = new ArrayList<String>();
-		List<String> centers = new ArrayList<String>();
-		List<String> responseCityList = new ArrayList<String>();
+		List<String> zones = new LinkedList<String>();
+		List<String> centers = new LinkedList<String>();
+		List<String> responseCityList = new LinkedList<String>();
 
 		PMPAPIAccessLogDetails accessLogDetails = new PMPAPIAccessLogDetails(accessLog.getId(),
 				EndpointConstants.POSITIONS_API, DateUtils.getCurrentTimeInMilliSec(), null,
