@@ -823,10 +823,10 @@ public class SendMail {
 		try {
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, -1);
-			SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
-			Date date = new Date();
-			String date_str = sdf.format(date);
-			addParameter(EmailLogConstants.DATE_PARAMETER, date_str);
+			//SimpleDateFormat sdf = new SimpleDateFormat(ExpressionConstants.MAIL_DATE_FORMAT);
+			//Date date = new Date();
+			//String date_str = sdf.format(date);
+			//addParameter(EmailLogConstants.DATE_PARAMETER, date_str);
 			Session session = getSession();
 			SMTPMessage message = new SMTPMessage(session);
 			message.setFrom(new InternetAddress(frommail, name));
